@@ -1,12 +1,5 @@
 import type { SessionMetrics, VenueConfig, MonthlyData } from '@/types/momence';
-import { 
-  Users, 
-  Calendar, 
-  DollarSign, 
-  TrendingUp, 
-  Clock, 
-  Target 
-} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface SummaryCardsProps {
   metrics: SessionMetrics | null;
@@ -17,12 +10,14 @@ interface SummaryCardsProps {
 export function SummaryCards({ metrics, venueConfig, monthlyData }: SummaryCardsProps) {
   if (!metrics || !venueConfig) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="stat-card animate-pulse">
-            <div className="h-4 bg-muted rounded w-20 mb-2"></div>
-            <div className="h-8 bg-muted rounded w-16"></div>
-          </div>
+          <Card key={i} className="animate-pulse">
+            <CardContent className="p-4">
+              <div className="h-3 bg-muted rounded w-20 mb-2"></div>
+              <div className="h-6 bg-muted rounded w-16"></div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     );
@@ -43,68 +38,58 @@ export function SummaryCards({ metrics, venueConfig, monthlyData }: SummaryCards
       label: 'Monthly Visitors',
       value: avgMonthlyVisitors.toLocaleString(),
       sublabel: 'avg',
-      icon: Users,
-      color: 'text-secondary',
     },
     {
       label: 'Weekly Visitors',
       value: avgWeeklyVisitors.toLocaleString(),
       sublabel: 'avg',
-      icon: Users,
-      color: 'text-secondary',
     },
     {
       label: 'Ticket Price',
       value: `$${venueConfig.price}`,
       sublabel: 'AUD',
-      icon: DollarSign,
-      color: 'text-success',
     },
     {
       label: 'Session Capacity',
       value: venueConfig.capacity.toString(),
       sublabel: 'per session',
-      icon: Target,
-      color: 'text-warning',
     },
     {
       label: 'Avg Utilisation',
       value: `${metrics.avgUtilisation.toFixed(1)}%`,
       sublabel: 'of capacity',
-      icon: TrendingUp,
-      color: metrics.avgUtilisation >= 70 ? 'text-success' : metrics.avgUtilisation >= 40 ? 'text-warning' : 'text-error',
+      highlight: metrics.avgUtilisation >= 70 ? 'high' : metrics.avgUtilisation >= 40 ? 'medium' : 'low',
     },
     {
       label: 'Monthly Revenue',
       value: `$${Math.round(avgMonthlyRevenue).toLocaleString()}`,
       sublabel: 'avg',
-      icon: DollarSign,
-      color: 'text-success',
     },
     {
       label: 'Operating Since',
       value: metrics.operatingSince,
       sublabel: 'first session',
-      icon: Clock,
-      color: 'text-primary',
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
-      {cards.map((card, index) => {
-        const Icon = card.icon;
-        return (
-          <div key={index} className="stat-card">
-            <div className="flex items-center justify-between mb-2">
-              <span className="stat-label">{card.label}</span>
-              <Icon className={`w-4 h-4 ${card.color}`} />
-            </div>
-            <div className="stat-value">{card.value}</div>
-            <div className="text-xs text-muted-foreground mt-1">{card.sublabel}</div>
-          </div>
-        );
-      })}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      {cards.map((card, index) => (
+        <Card key={index}>
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground mb-1">{card.label}</p>
+            <p className={`text-xl font-semibold ${
+              card.highlight === 'high' ? 'text-green-600' :
+              card.highlight === 'medium' ? 'text-amber-600' :
+              card.highlight === 'low' ? 'text-red-600' :
+              'text-foreground'
+            }`}>
+              {card.value}
+            </p>
+            <p className="text-xs text-muted-foreground">{card.sublabel}</p>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

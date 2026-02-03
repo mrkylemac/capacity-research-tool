@@ -1,5 +1,6 @@
 import type { TimeSlotData } from '@/types/momence';
-import { Clock } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface DemandPatternsProps {
   data: TimeSlotData[];
@@ -8,93 +9,86 @@ interface DemandPatternsProps {
 export function DemandPatterns({ data }: DemandPatternsProps) {
   if (data.length === 0) {
     return (
-      <div className="stat-card">
-        <h3 className="section-title">
-          <Clock className="w-5 h-5 text-secondary" />
-          Demand by Time Slot
-        </h3>
-        <div className="text-center py-8 text-muted-foreground">
+      <Card>
+        <CardContent className="p-5 text-center text-muted-foreground">
           No data available. Fetch sessions to see demand patterns.
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 
   const maxUtil = Math.max(...data.map(d => d.utilisation));
 
   return (
-    <div className="stat-card">
-      <h3 className="section-title">
-        <Clock className="w-5 h-5 text-secondary" />
-        Demand by Time Slot
-      </h3>
-      
-      {/* Table View */}
-      <div className="overflow-x-auto mb-6">
-        <table className="table-dashboard">
-          <thead>
-            <tr>
-              <th>Time Slot</th>
-              <th className="text-right">Avg Tickets</th>
-              <th className="text-right">Capacity</th>
-              <th className="text-right">Utilisation</th>
-              <th className="text-center">Demand</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, index) => (
-              <tr key={index}>
-                <td className="font-medium">{row.slot}</td>
-                <td className="text-right">{row.avgTickets}</td>
-                <td className="text-right">{row.capacity}</td>
-                <td className="text-right">{row.utilisation.toFixed(1)}%</td>
-                <td className="text-center">
-                  <span className={`badge badge-sm ${getBandClass(row.utilisationBand)}`}>
-                    {row.utilisationBand}
-                  </span>
-                </td>
+    <Card>
+      <CardContent className="p-5">
+        {/* Table View */}
+        <div className="overflow-x-auto mb-6">
+          <table className="notion-table">
+            <thead>
+              <tr>
+                <th>Time Slot</th>
+                <th className="text-right">Avg Tickets</th>
+                <th className="text-right">Capacity</th>
+                <th className="text-right">Utilisation</th>
+                <th className="text-center">Demand</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Bar Chart */}
-      <div className="space-y-2">
-        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
-          Utilisation by Time Slot
+            </thead>
+            <tbody>
+              {data.map((row, index) => (
+                <tr key={index}>
+                  <td className="font-medium">{row.slot}</td>
+                  <td className="text-right">{row.avgTickets}</td>
+                  <td className="text-right">{row.capacity}</td>
+                  <td className="text-right">{row.utilisation.toFixed(1)}%</td>
+                  <td className="text-center">
+                    <Badge variant={getBadgeVariant(row.utilisationBand)}>
+                      {row.utilisationBand}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        {data.map((row, index) => (
-          <div key={index} className="flex items-center gap-3">
-            <div className="w-28 text-xs text-muted-foreground truncate">{row.slot}</div>
-            <div className="flex-1 bg-muted rounded-full h-4 overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${getBarClass(row.utilisationBand)}`}
-                style={{ width: `${(row.utilisation / maxUtil) * 100}%` }}
-              />
+
+        {/* Bar Chart */}
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground mb-3">
+            Utilisation by Time Slot
+          </p>
+          {data.map((row, index) => (
+            <div key={index} className="flex items-center gap-3">
+              <div className="w-24 text-xs text-muted-foreground truncate">{row.slot}</div>
+              <div className="flex-1 bg-muted rounded-full h-3 overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${getBarClass(row.utilisationBand)}`}
+                  style={{ width: `${(row.utilisation / maxUtil) * 100}%` }}
+                />
+              </div>
+              <div className="w-10 text-xs text-right text-muted-foreground">
+                {row.utilisation.toFixed(0)}%
+              </div>
             </div>
-            <div className="w-12 text-xs text-right text-muted-foreground">
-              {row.utilisation.toFixed(0)}%
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
-function getBandClass(band: 'High' | 'Medium' | 'Low'): string {
+function getBadgeVariant(band: 'High' | 'Medium' | 'Low'): 'default' | 'secondary' | 'destructive' {
   switch (band) {
-    case 'High': return 'badge-success';
-    case 'Medium': return 'badge-warning';
-    case 'Low': return 'badge-error';
+    case 'High': return 'default';
+    case 'Medium': return 'secondary';
+    case 'Low': return 'destructive';
   }
 }
 
 function getBarClass(band: 'High' | 'Medium' | 'Low'): string {
   switch (band) {
-    case 'High': return 'bg-success';
-    case 'Medium': return 'bg-warning';
-    case 'Low': return 'bg-error';
+    case 'High': return 'bg-green-500';
+    case 'Medium': return 'bg-amber-500';
+    case 'Low': return 'bg-red-500';
   }
 }

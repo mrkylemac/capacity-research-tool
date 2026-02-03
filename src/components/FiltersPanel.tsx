@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { format, subMonths } from 'date-fns';
 import { API_CONFIG, type PageSizeOption } from '@/config/api';
-import { Calendar, Search, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface FiltersPanelProps {
   onFetchData: (hostId: string, fromDate: string, toDate: string, pageSize: number) => void;
@@ -20,90 +29,65 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="stat-card mb-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Settings className="w-5 h-5 text-primary" />
-        <h2 className="font-semibold text-foreground">Query Parameters</h2>
-      </div>
+    <form onSubmit={handleSubmit} className="notion-card mb-6">
+      <h3 className="text-sm font-medium text-foreground mb-4">Query Parameters</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Host ID */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text text-muted-foreground text-xs uppercase tracking-wider">Host ID</span>
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="hostId" className="text-xs text-muted-foreground">Host ID</Label>
+          <Input
+            id="hostId"
             type="text"
             value={hostId}
             onChange={(e) => setHostId(e.target.value)}
-            className="input input-bordered bg-muted border-border text-foreground w-full"
             placeholder="49448"
           />
         </div>
 
         {/* From Date */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1">
-              <Calendar className="w-3 h-3" /> From Date
-            </span>
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="fromDate" className="text-xs text-muted-foreground">From Date</Label>
+          <Input
+            id="fromDate"
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="input input-bordered bg-muted border-border text-foreground w-full"
           />
         </div>
 
         {/* To Date */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1">
-              <Calendar className="w-3 h-3" /> To Date
-            </span>
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="toDate" className="text-xs text-muted-foreground">To Date</Label>
+          <Input
+            id="toDate"
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="input input-bordered bg-muted border-border text-foreground w-full"
           />
         </div>
 
         {/* Page Size */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text text-muted-foreground text-xs uppercase tracking-wider">Page Size</span>
-          </label>
-          <select
-            value={pageSize}
-            onChange={(e) => setPageSize(Number(e.target.value) as PageSizeOption)}
-            className="select select-bordered bg-muted border-border text-foreground w-full"
-          >
-            {API_CONFIG.pageSizeOptions.map(size => (
-              <option key={size} value={size}>{size}</option>
-            ))}
-          </select>
+        <div className="space-y-2">
+          <Label htmlFor="pageSize" className="text-xs text-muted-foreground">Page Size</Label>
+          <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v) as PageSizeOption)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {API_CONFIG.pageSizeOptions.map(size => (
+                <SelectItem key={size} value={String(size)}>{size}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Fetch Button */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text opacity-0">Action</span>
-          </label>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="btn bg-primary hover:bg-primary/90 text-primary-foreground border-none w-full gap-2"
-          >
-            {isLoading ? (
-              <span className="loading loading-spinner loading-sm"></span>
-            ) : (
-              <Search className="w-4 h-4" />
-            )}
-            Fetch Data
-          </button>
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground opacity-0">Action</Label>
+          <Button type="submit" disabled={isLoading} className="w-full">
+            {isLoading ? 'Loading...' : 'Fetch Data'}
+          </Button>
         </div>
       </div>
     </form>

@@ -2,59 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Sauna & Ice Dashboard Design System */
+/* Clean Notion-inspired Design System */
 
 @layer base {
   :root {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 96%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
 
-    --card: 217 33% 17%;
-    --card-foreground: 210 40% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
 
-    --popover: 217 33% 17%;
-    --popover-foreground: 210 40% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
 
-    --primary: 25 95% 53%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 199 89% 48%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 217 33% 25%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 24 94% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217 33% 25%;
-    --input: 217 33% 25%;
-    --ring: 25 95% 53%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 9%;
 
-    --radius: 0.75rem;
+    --radius: 0.375rem;
 
-    /* Custom sauna/ice colors */
-    --sauna: 25 95% 53%;
-    --sauna-foreground: 0 0% 100%;
-    --ice: 199 89% 48%;
-    --ice-foreground: 0 0% 100%;
+    /* Semantic colors */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --error: 0 84% 60%;
+    --error-foreground: 0 0% 100%;
 
-    /* Gradient definitions */
-    --gradient-sauna: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(20 95% 45%) 100%);
-    --gradient-ice: linear-gradient(135deg, hsl(199 89% 48%) 0%, hsl(210 90% 40%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(217 33% 20%) 0%, hsl(217 33% 14%) 100%);
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 0 0% 9%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 0% 9%;
+  }
 
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 25 95% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 33% 20%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 217 33% 25%;
-    --sidebar-ring: 25 95% 53%;
+  .dark {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
+
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 0% 83%;
   }
 }
 
@@ -70,57 +97,75 @@
 }
 
 @layer components {
-  .stat-card {
-    @apply bg-card rounded-xl p-5 border border-border/50 transition-all duration-300;
-    background: var(--gradient-card);
+  .notion-page {
+    @apply max-w-4xl mx-auto px-6 py-8;
   }
 
-  .stat-card:hover {
-    @apply border-primary/30 shadow-lg shadow-primary/5;
-    transform: translateY(-2px);
+  .notion-title {
+    @apply text-4xl font-bold text-foreground mb-2 tracking-tight;
   }
 
-  .stat-value {
-    @apply text-2xl font-bold text-foreground;
+  .notion-subtitle {
+    @apply text-lg text-muted-foreground mb-8;
   }
 
-  .stat-label {
-    @apply text-sm text-muted-foreground font-medium uppercase tracking-wider;
+  .notion-h1 {
+    @apply text-2xl font-semibold text-foreground mt-10 mb-4;
   }
 
-  .table-dashboard {
+  .notion-h2 {
+    @apply text-xl font-semibold text-foreground mt-8 mb-3;
+  }
+
+  .notion-h3 {
+    @apply text-base font-semibold text-foreground mt-6 mb-2;
+  }
+
+  .notion-text {
+    @apply text-base text-foreground leading-relaxed;
+  }
+
+  .notion-muted {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .notion-divider {
+    @apply border-t border-border my-8;
+  }
+
+  .notion-card {
+    @apply bg-card rounded-lg border border-border p-5;
+  }
+
+  .notion-callout {
+    @apply bg-muted/50 rounded-lg p-4 border-l-4 border-foreground/20;
+  }
+
+  .notion-table {
     @apply w-full text-sm;
   }
 
-  .table-dashboard th {
-    @apply text-left text-muted-foreground font-semibold uppercase tracking-wider text-xs py-3 px-4 border-b border-border;
+  .notion-table th {
+    @apply text-left text-muted-foreground font-medium text-xs py-2 px-3 border-b border-border;
   }
 
-  .table-dashboard td {
-    @apply py-3 px-4 border-b border-border/50;
+  .notion-table td {
+    @apply py-2 px-3 border-b border-border;
   }
 
-  .table-dashboard tr:hover td {
+  .notion-table tr:hover td {
     @apply bg-muted/30;
   }
 
   .utilisation-high {
-    @apply text-success font-semibold;
+    @apply text-green-600 font-medium;
   }
 
   .utilisation-medium {
-    @apply text-warning font-semibold;
+    @apply text-amber-600 font-medium;
   }
 
   .utilisation-low {
-    @apply text-error font-semibold;
-  }
-
-  .section-title {
-    @apply text-lg font-bold text-foreground mb-4 flex items-center gap-2;
-  }
-
-  .chart-bar {
-    @apply bg-primary rounded transition-all duration-500;
+    @apply text-red-600 font-medium;
   }
 }

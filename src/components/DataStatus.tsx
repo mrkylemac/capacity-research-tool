@@ -1,5 +1,3 @@
-import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
-
 interface DataStatusProps {
   isLoading: boolean;
   error: Error | null;
@@ -12,31 +10,26 @@ export function DataStatus({ isLoading, error, totalCount, totalPages, currentPa
   if (isLoading) {
     return (
       <div className="flex items-center justify-center gap-2 py-4 text-muted-foreground">
-        <Loader2 className="w-5 h-5 animate-spin text-primary" />
-        <span>Fetching session data...</span>
+        <span className="animate-pulse">Fetching session data...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center gap-2 p-4 rounded-lg bg-error/10 border border-error/20 text-error">
-        <AlertCircle className="w-5 h-5" />
-        <span>Error loading data: {error.message}</span>
+      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
+        Error loading data: {error.message}
       </div>
     );
   }
 
   if (totalCount > 0) {
     return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-        <CheckCircle2 className="w-4 h-4 text-success" />
-        <span>
-          Loaded <strong className="text-foreground">{totalCount}</strong> sessions
-          {totalPages > 1 && (
-            <> (page {currentPage} of {totalPages})</>
-          )}
-        </span>
+      <div className="text-sm text-muted-foreground mb-4">
+        Loaded <strong className="text-foreground">{totalCount}</strong> sessions
+        {totalPages > 1 && (
+          <> (page {currentPage} of {totalPages})</>
+        )}
       </div>
     );
   }

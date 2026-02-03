@@ -1,5 +1,5 @@
 import type { MonthlyData } from '@/types/momence';
-import { CalendarDays } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface MonthlyTableProps {
   data: MonthlyData[];
@@ -8,15 +8,11 @@ interface MonthlyTableProps {
 export function MonthlyTable({ data }: MonthlyTableProps) {
   if (data.length === 0) {
     return (
-      <div className="stat-card">
-        <h3 className="section-title">
-          <CalendarDays className="w-5 h-5 text-primary" />
-          Monthly Performance
-        </h3>
-        <div className="text-center py-8 text-muted-foreground">
+      <Card>
+        <CardContent className="p-5 text-center text-muted-foreground">
           No data available. Fetch sessions to see monthly performance.
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -35,58 +31,56 @@ export function MonthlyTable({ data }: MonthlyTableProps) {
     : 0;
 
   return (
-    <div className="stat-card overflow-hidden">
-      <h3 className="section-title mb-0 pb-4">
-        <CalendarDays className="w-5 h-5 text-primary" />
-        Monthly Performance
-      </h3>
-      <div className="overflow-x-auto -mx-5">
-        <table className="table-dashboard min-w-full">
-          <thead>
-            <tr className="bg-muted/30">
-              <th>Month</th>
-              <th className="text-right">Sessions</th>
-              <th className="text-right">Tickets</th>
-              <th className="text-right">Capacity</th>
-              <th className="text-right">Utilisation</th>
-              <th className="text-right">Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, index) => (
-              <tr key={index}>
-                <td className="font-medium">
-                  {row.month} {row.year}
+    <Card>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <table className="notion-table min-w-full">
+            <thead>
+              <tr className="bg-muted/30">
+                <th>Month</th>
+                <th className="text-right">Sessions</th>
+                <th className="text-right">Tickets</th>
+                <th className="text-right">Capacity</th>
+                <th className="text-right">Utilisation</th>
+                <th className="text-right">Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row, index) => (
+                <tr key={index}>
+                  <td className="font-medium">
+                    {row.month} {row.year}
+                  </td>
+                  <td className="text-right">{row.sessions}</td>
+                  <td className="text-right">{row.ticketsSold}</td>
+                  <td className="text-right">{row.capacity}</td>
+                  <td className={`text-right ${getUtilisationClass(row.utilisation)}`}>
+                    {row.utilisation.toFixed(1)}%
+                  </td>
+                  <td className="text-right text-green-600 font-medium">
+                    ${row.revenue.toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-muted/50 font-semibold">
+                <td>Total / Average</td>
+                <td className="text-right">{totals.sessions}</td>
+                <td className="text-right">{totals.ticketsSold}</td>
+                <td className="text-right">{totals.capacity}</td>
+                <td className={`text-right ${getUtilisationClass(avgUtilisation)}`}>
+                  {avgUtilisation.toFixed(1)}%
                 </td>
-                <td className="text-right">{row.sessions}</td>
-                <td className="text-right">{row.ticketsSold}</td>
-                <td className="text-right">{row.capacity}</td>
-                <td className={`text-right ${getUtilisationClass(row.utilisation)}`}>
-                  {row.utilisation.toFixed(1)}%
-                </td>
-                <td className="text-right text-success font-medium">
-                  ${row.revenue.toLocaleString()}
+                <td className="text-right text-green-600">
+                  ${totals.revenue.toLocaleString()}
                 </td>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="bg-muted/50 font-semibold">
-              <td>Total / Average</td>
-              <td className="text-right">{totals.sessions}</td>
-              <td className="text-right">{totals.ticketsSold}</td>
-              <td className="text-right">{totals.capacity}</td>
-              <td className={`text-right ${getUtilisationClass(avgUtilisation)}`}>
-                {avgUtilisation.toFixed(1)}%
-              </td>
-              <td className="text-right text-success">
-                ${totals.revenue.toLocaleString()}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
+            </tfoot>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
