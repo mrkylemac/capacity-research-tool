@@ -1,73 +1,133 @@
-# Welcome to your Lovable project
+# Momence API Explorer
 
-## Project info
+A web dashboard for exploring Sauna & Ice session data from the Momence readonly API.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Quick Start
 
-## How can I edit this code?
+```bash
+# Install dependencies
+npm install
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Configuration
 
-**Use GitHub Codespaces**
+### API URL
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Edit `src/config/api.ts` to configure the Momence API endpoint:
 
-## What technologies are used for this project?
+```typescript
+export const API_CONFIG = {
+  // Base URL for the Momence API
+  baseUrl: 'https://api.momence.com/v1',
+  
+  // Default host ID
+  defaultHostId: '49448',
+  
+  // Page size options
+  pageSizeOptions: [20, 50, 100],
+  defaultPageSize: 50,
+};
+```
 
-This project is built with:
+### Mock Data
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+By default, the app uses mock data for development. To use the real API:
 
-## How can I deploy this project?
+1. Update `src/hooks/useSessions.ts`:
+   ```typescript
+   useSessions({ useMockData: false })
+   ```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+2. Ensure the Momence API supports CORS or use a proxy.
 
-## Can I connect a custom domain to my Lovable project?
+## How It Works
 
-Yes, you can!
+### Date Range & Query
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Enter a Host ID (default: 49448)
+2. Select a date range (From/To dates)
+3. Choose a page size (20, 50, or 100)
+4. Click "Fetch Data"
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The app queries the Momence API with:
+- `hostId` - Venue identifier
+- `startsAtFrom` - ISO date string for range start
+- `startsAtTo` - ISO date string for range end
+- `page` - Pagination page number
+- `pageSize` - Results per page
+
+### Metrics Calculation
+
+All metrics are computed client-side from the fetched session data:
+
+| Metric | Formula |
+|--------|---------|
+| Total Sessions | Count of all sessions in range |
+| Total Tickets Sold | Sum of `ticketsSold` for all sessions |
+| Total Capacity | Sum of `capacity` for all sessions |
+| Avg Utilisation % | (Total Tickets Sold / Total Capacity) × 100 |
+| Total Revenue | Sum of (ticketsSold × fixedTicketPrice) |
+| Avg Revenue per Visit | Total Revenue / Total Tickets Sold |
+| Avg Revenue per Session | Total Revenue / Total Sessions |
+| Sessions per Day | Total Sessions / Days in Range |
+| Sessions per Week | Sessions per Day × 7 |
+
+### Monthly Aggregation
+
+Sessions are grouped by month (using `startsAt`), with per-month calculations for:
+- Session count
+- Tickets sold
+- Capacity
+- Utilisation %
+- Revenue
+
+### Demand Patterns
+
+Sessions are grouped into 2-hour time slots based on `startsAt`:
+- 4:30–6:30, 6:30–8:30, 8:30–10:30, etc.
+
+For each slot:
+- Average tickets per session
+- Capacity
+- Utilisation band (High ≥70%, Medium ≥40%, Low <40%)
+
+## Tech Stack
+
+- **React 18** + TypeScript
+- **Vite** - Build tool
+- **Tailwind CSS** + DaisyUI - Styling
+- **Recharts** - Charts
+- **TanStack Query** - Data fetching
+- **date-fns** - Date manipulation
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── FiltersPanel.tsx      # Query inputs
+│   ├── SummaryCards.tsx      # Top-level KPIs
+│   ├── VenueOverview.tsx     # Venue configuration
+│   ├── MonthlyTable.tsx      # Monthly performance
+│   ├── DemandPatterns.tsx    # Time slot analysis
+│   ├── CapacityUtilisation.tsx # Capacity charts
+│   ├── RevenueSection.tsx    # Revenue analysis
+│   └── DataStatus.tsx        # Loading/error states
+├── config/
+│   └── api.ts                # API configuration
+├── hooks/
+│   └── useSessions.ts        # Data fetching hook
+├── lib/
+│   ├── momenceClient.ts      # API client
+│   ├── metricsCalculator.ts  # Metric computation
+│   └── mockData.ts           # Mock data generator
+├── types/
+│   └── momence.ts            # TypeScript types
+└── pages/
+    └── Index.tsx             # Main dashboard
+```

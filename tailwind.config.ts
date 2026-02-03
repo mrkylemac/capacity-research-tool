@@ -47,6 +47,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        sauna: {
+          DEFAULT: "hsl(var(--sauna))",
+          foreground: "hsl(var(--sauna-foreground))",
+        },
+        ice: {
+          DEFAULT: "hsl(var(--ice))",
+          foreground: "hsl(var(--ice-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -65,27 +73,46 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-slow": "pulse-slow 2s ease-in-out infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        saunaice: {
+          "primary": "#ea580c",
+          "primary-content": "#ffffff",
+          "secondary": "#0ea5e9",
+          "secondary-content": "#ffffff",
+          "accent": "#f97316",
+          "neutral": "#1e293b",
+          "base-100": "#0f172a",
+          "base-200": "#1e293b",
+          "base-300": "#334155",
+          "base-content": "#f1f5f9",
+          "info": "#38bdf8",
+          "success": "#22c55e",
+          "warning": "#fbbf24",
+          "error": "#ef4444",
+        },
+      },
+    ],
+  },
 } satisfies Config;
