@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { Flame, Snowflake } from 'lucide-react';
+import { useState } from 'react';
 import { FiltersPanel } from '@/components/FiltersPanel';
 import { SummaryCards } from '@/components/SummaryCards';
 import { VenueOverview } from '@/components/VenueOverview';
@@ -9,6 +8,7 @@ import { CapacityUtilisation } from '@/components/CapacityUtilisation';
 import { RevenueSection } from '@/components/RevenueSection';
 import { DataStatus } from '@/components/DataStatus';
 import { useSessions } from '@/hooks/useSessions';
+import { Separator } from '@/components/ui/separator';
 
 const Index = () => {
   const {
@@ -38,25 +38,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background" data-theme="saunaice">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Flame className="w-6 h-6 text-primary" />
-              <Snowflake className="w-6 h-6 text-secondary" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Momence Explorer</h1>
-              <p className="text-xs text-muted-foreground">Sauna & Ice Session Analytics</p>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      <div className="notion-page">
+        {/* Header */}
+        <header className="mb-8">
+          <h1 className="notion-title">Momence Explorer</h1>
+          <p className="notion-subtitle">Sauna & Ice Session Analytics Dashboard</p>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
         {/* Filters */}
         <FiltersPanel onFetchData={handleFetchData} isLoading={isLoading} />
 
@@ -72,42 +61,60 @@ const Index = () => {
         {/* Dashboard Content */}
         {hasQueried && !isLoading && (
           <>
+            <Separator className="my-8" />
+
             {/* Summary Cards */}
-            <SummaryCards 
-              metrics={metrics} 
-              venueConfig={venueConfig}
-              monthlyData={monthlyData}
-            />
+            <section>
+              <h2 className="notion-h1">Summary</h2>
+              <SummaryCards 
+                metrics={metrics} 
+                venueConfig={venueConfig}
+                monthlyData={monthlyData}
+              />
+            </section>
 
             {/* Venue Overview */}
-            <div className="mb-6">
+            <section>
+              <h2 className="notion-h1">Venue Configuration</h2>
               <VenueOverview config={venueConfig} />
-            </div>
+            </section>
+
+            <Separator className="my-8" />
+
+            {/* Monthly Performance */}
+            <section>
+              <h2 className="notion-h1">Monthly Performance</h2>
+              <MonthlyTable data={monthlyData} />
+            </section>
+
+            <Separator className="my-8" />
 
             {/* Two Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              {/* Monthly Performance */}
-              <MonthlyTable data={monthlyData} />
-              
-              {/* Demand Patterns */}
-              <DemandPatterns data={demandPatterns} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <section>
+                <h2 className="notion-h2">Demand Patterns</h2>
+                <DemandPatterns data={demandPatterns} />
+              </section>
+
+              <section>
+                <h2 className="notion-h2">Capacity & Utilisation</h2>
+                <CapacityUtilisation metrics={metrics} monthlyData={monthlyData} />
+              </section>
             </div>
 
-            {/* Capacity & Revenue */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <CapacityUtilisation metrics={metrics} monthlyData={monthlyData} />
+            <Separator className="my-8" />
+
+            {/* Revenue */}
+            <section>
+              <h2 className="notion-h1">Revenue Analysis</h2>
               <RevenueSection metrics={metrics} monthlyData={monthlyData} />
-            </div>
+            </section>
           </>
         )}
 
         {/* Empty State */}
         {!hasQueried && !isLoading && (
           <div className="text-center py-20">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Flame className="w-10 h-10 text-primary/50" />
-              <Snowflake className="w-10 h-10 text-secondary/50" />
-            </div>
             <h2 className="text-xl font-semibold text-foreground mb-2">
               Ready to Explore
             </h2>
@@ -116,14 +123,12 @@ const Index = () => {
             </p>
           </div>
         )}
-      </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border/50 py-4 mt-8">
-        <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
+        {/* Footer */}
+        <footer className="border-t border-border py-6 mt-12 text-center text-sm text-muted-foreground">
           Momence API Explorer • Using mock data for development
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 };
