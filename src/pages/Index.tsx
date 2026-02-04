@@ -6,6 +6,7 @@ import { MonthlyTable } from '@/components/MonthlyTable';
 import { DemandPatterns } from '@/components/DemandPatterns';
 import { CapacityUtilisation } from '@/components/CapacityUtilisation';
 import { RevenueSection } from '@/components/RevenueSection';
+import { ClassTypeAnalysis } from '@/components/ClassTypeAnalysis';
 import { DataStatus } from '@/components/DataStatus';
 import { useSessions } from '@/hooks/useSessions';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +20,7 @@ const Index = () => {
     metrics,
     monthlyData,
     demandPatterns,
+    classTypeData,
     venueConfig,
     isLoading,
     error,
@@ -85,6 +87,14 @@ const Index = () => {
             <section>
               <h2 className="notion-h1">Monthly Performance</h2>
               <MonthlyTable data={monthlyData} />
+            </section>
+
+            <Separator className="my-8" />
+
+            {/* Class Type Analysis */}
+            <section>
+              <h2 className="notion-h1">Class Type Analysis</h2>
+              <ClassTypeAnalysis data={classTypeData} />
             </section>
 
             <Separator className="my-8" />

@@ -6,7 +6,8 @@ import {
   calculateMetrics, 
   calculateMonthlyData, 
   calculateDemandPatterns, 
-  calculateVenueConfig 
+  calculateVenueConfig,
+  calculateClassTypeData 
 } from '@/lib/metricsCalculator';
 import { API_CONFIG } from '@/config/api';
 import type { MomenceSession, SessionsQueryParams } from '@/types/momence';
@@ -90,6 +91,7 @@ export function useSessions(options: UseSessionsOptions = { useMockData: true })
 
   const monthlyData = calculateMonthlyData(allSessions);
   const demandPatterns = calculateDemandPatterns(allSessions);
+  const classTypeData = calculateClassTypeData(allSessions);
   const venueConfig = queryParams ? calculateVenueConfig(
     allSessions,
     queryParams.startsAtFrom,
@@ -109,6 +111,7 @@ export function useSessions(options: UseSessionsOptions = { useMockData: true })
     metrics,
     monthlyData,
     demandPatterns,
+    classTypeData,
     venueConfig,
     
     // State

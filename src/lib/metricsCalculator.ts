@@ -4,7 +4,8 @@ import type {
   SessionMetrics, 
   MonthlyData, 
   TimeSlotData, 
-  VenueConfig 
+  VenueConfig,
+  ClassTypeData 
 } from '@/types/momence';
 
 /**
@@ -237,4 +238,42 @@ function formatHour(hour: number): string {
   const h = Math.floor(hour);
   const m = Math.round((hour - h) * 60);
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Calculate class type breakdown from sessions
+ */
+export function calculateClassTypeData(sessions: MomenceSession[]): ClassTypeData[] {
+  const classMap = new Map<string, MomenceSession[]>();
+
+  sessions.forEach(session => {
+    const className = session.sessionName || 'Unknown';
+    if (!classMap.has(className)) {
+      classMap.set(className, []);
+    }
+    classMap.get(className)!.push(session);
+  });
+
+  const results: ClassTypeData[] = [];
+
+  classMap.forEach((classSessions, className) => {
+    const sessionCount = classSessions.length;
+    const totalVisitors = classSessions.reduce((sum, s) => sum + s.ticketsSold, 0);
+    const totalCapacity = classSessions.reduce((sum, s) => sum + s.capacity, 0);
+    const avgUtilisation = totalCapacity > 0 ? (totalVisitors / totalCapacity) * 100 : 0;
+    const totalRevenue = classSessions.reduce((sum, s) => sum + (s.ticketsSold * s.fixedTicketPrice), 0);
+
+    results.push({
+      className,
+      sessionCount,
+      totalVisitors,
+      avgVisitorsPerSession: sessionCount > 0 ? totalVisitors / sessionCount : 0,
+      totalCapacity,
+      avgUtilisation,
+      totalRevenue,
+    });
+  });
+
+  // Sort by total visitors descending
+  return results.sort((a, b) => b.totalVisitors - a.totalVisitors);
 }
