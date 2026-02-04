@@ -70,3 +70,13 @@ export interface VenueConfig {
   sessionsPerDay: number;
   operatingHours: string;
 }
+
+export interface ClassTypeData {
+  className: string;
+  sessionCount: number;
+  totalVisitors: number;
+  avgVisitorsPerSession: number;
+  totalCapacity: number;
+  avgUtilisation: number;
+  totalRevenue: number;
+}
