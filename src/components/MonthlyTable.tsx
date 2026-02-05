@@ -138,6 +138,10 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
     );
   }
 
+  // Filter to only active months (those with visitors) for accurate averages
+  const activeMonths = data.filter(row => row.ticketsSold > 0);
+  const inactiveMonthCount = data.length - activeMonths.length;
+
   const totals = data.reduce(
     (acc, row) => ({
       sessions: acc.sessions + row.sessions,
@@ -147,7 +151,16 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
     { sessions: 0, visitors: 0, capacity: 0 }
   );
 
-  const avgOccupancy = totals.capacity > 0 ? (totals.visitors / totals.capacity) * 100 : 0;
+  // Calculate average occupancy from active months only
+  const activeTotals = activeMonths.reduce(
+    (acc, row) => ({
+      visitors: acc.visitors + row.ticketsSold,
+      capacity: acc.capacity + row.capacity,
+    }),
+    { visitors: 0, capacity: 0 }
+  );
+
+  const avgOccupancy = activeTotals.capacity > 0 ? (activeTotals.visitors / activeTotals.capacity) * 100 : 0;
 
   return (
     <div className="space-y-4">
@@ -369,11 +382,23 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                 </tbody>
                 <tfoot>
                   <tr className="bg-muted/50 font-semibold">
-                    <td>Total / Average</td>
+                    <td>
+                      Total / Average
+                      {inactiveMonthCount > 0 && (
+                        <span className="font-normal text-xs text-muted-foreground ml-1">
+                          ({inactiveMonthCount} inactive month{inactiveMonthCount > 1 ? 's' : ''} excluded)
+                        </span>
+                      )}
+                    </td>
                     <td className="text-right">{totals.sessions.toLocaleString()}</td>
-                    <td className="text-right">{totals.visitors.toLocaleString()}</td>
-                    <td className="text-right text-muted-foreground">{totals.capacity.toLocaleString()}</td>
-                    <td className="text-right text-muted-foreground">{(totals.capacity / totals.sessions).toFixed(0)}</td>
+                    <td className="text-right">{activeTotals.visitors.toLocaleString()}</td>
+                    <td className="text-right text-muted-foreground">{activeTotals.capacity.toLocaleString()}</td>
+                    <td className="text-right text-muted-foreground">
+                      {activeMonths.length > 0 
+                        ? (activeTotals.capacity / activeMonths.reduce((sum, m) => sum + m.sessions, 0)).toFixed(0)
+                        : '-'
+                      }
+                    </td>
                     <td className={`text-right ${getOccupancyClass(avgOccupancy)}`}>
                       {avgOccupancy.toFixed(1)}%
                     </td>

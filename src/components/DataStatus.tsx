@@ -1,11 +1,15 @@
+import { format } from 'date-fns';
+import type { DataRange } from '@/hooks/useSessions';
+
 interface DataStatusProps {
   isLoading: boolean;
   error: Error | null;
   sessionCount: number;
   pageCount: number;
+  dataRange?: DataRange;
 }
 
-export function DataStatus({ isLoading, error, sessionCount, pageCount }: DataStatusProps) {
+export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRange }: DataStatusProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center gap-2 py-4 text-muted-foreground">
@@ -23,10 +27,28 @@ export function DataStatus({ isLoading, error, sessionCount, pageCount }: DataSt
   }
 
   if (sessionCount > 0) {
+    const dateRangeText = dataRange?.from && dataRange?.to
+      ? ` from ${format(dataRange.from, 'MMM d, yyyy')} to ${format(dataRange.to, 'MMM d, yyyy')}`
+      : '';
+    
     return (
       <div className="text-sm text-muted-foreground mb-4">
         Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
         {pageCount > 1 && <> across {pageCount} API requests</>}
+        {dateRangeText}
+      </div>
+    );
+  }
+
+  // Show info about raw API data when no sessions match the filter
+  if (sessionCount === 0 && dataRange?.rawFrom && dataRange?.rawTo) {
+    return (
+      <div className="p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">
+        <p className="font-medium">No sessions found in requested date range</p>
+        <p className="text-sm mt-1">
+          API returned data from {format(dataRange.rawFrom, 'MMM d, yyyy')} to {format(dataRange.rawTo, 'MMM d, yyyy')}.
+          Try selecting a different date range or "All time".
+        </p>
       </div>
     );
   }

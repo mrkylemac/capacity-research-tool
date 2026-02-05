@@ -34,10 +34,22 @@ const Reports = () => {
 
   const benchmarkMetrics = useMemo(() => {
     if (!selectedReport) return null;
+    
+    // Filter to only sessions with visitors for accurate metrics
+    const activeSessions = selectedReport.sessions.filter(s => s.ticketsSold > 0);
+    if (activeSessions.length === 0) return null;
+    
+    // Use the actual trading period for metrics
+    const sortedActive = [...activeSessions].sort((a, b) => 
+      new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+    );
+    const firstActiveDate = sortedActive[0].startsAt;
+    const lastActiveDate = sortedActive[sortedActive.length - 1].startsAt;
+    
     return calculateBenchmarkMetrics(
-      selectedReport.sessions,
-      new Date(selectedReport.dateRange.from).toISOString(),
-      new Date(selectedReport.dateRange.to).toISOString()
+      activeSessions,
+      firstActiveDate,
+      lastActiveDate
     );
   }, [selectedReport]);
 

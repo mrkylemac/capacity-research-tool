@@ -19,6 +19,7 @@ const Index = () => {
     monthlyData,
     venueConfig,
     hostInfo,
+    dataRange: fetchedDataRange,
     isLoading,
     error,
     fetchData,
@@ -39,10 +40,22 @@ const Index = () => {
 
   const benchmarkMetrics = useMemo(() => {
     if (allSessions.length === 0 || !dateRange.from || !dateRange.to) return null;
+    
+    // Filter to only sessions with visitors for accurate metrics
+    const activeSessions = allSessions.filter(s => s.ticketsSold > 0);
+    if (activeSessions.length === 0) return null;
+    
+    // Use the actual trading period for metrics
+    const sortedActive = [...activeSessions].sort((a, b) => 
+      new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+    );
+    const firstActiveDate = sortedActive[0].startsAt;
+    const lastActiveDate = sortedActive[sortedActive.length - 1].startsAt;
+    
     return calculateBenchmarkMetrics(
-      allSessions,
-      new Date(dateRange.from).toISOString(),
-      new Date(dateRange.to).toISOString()
+      activeSessions,
+      firstActiveDate,
+      lastActiveDate
     );
   }, [allSessions, dateRange]);
 
@@ -84,6 +97,7 @@ const Index = () => {
           error={error as Error | null}
           sessionCount={allSessions.length}
           pageCount={totalPages}
+          dataRange={fetchedDataRange}
         />
 
         {/* Dashboard Content */}

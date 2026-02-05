@@ -20,6 +20,13 @@ function filterByDateRange(sessions: MomenceSession[], fromDate: string, toDate:
   });
 }
 
+export interface DataRange {
+  from: Date | null;
+  to: Date | null;
+  rawFrom: Date | null;  // Before filtering
+  rawTo: Date | null;
+}
+
 export function useSessions() {
   const [allSessions, setAllSessions] = useState<MomenceSession[]>([]);
   const [queryParams, setQueryParams] = useState<SessionsQueryParams | null>(null);
@@ -28,6 +35,7 @@ export function useSessions() {
   const [error, setError] = useState<Error | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [dataRange, setDataRange] = useState<DataRange>({ from: null, to: null, rawFrom: null, rawTo: null });
 
   const fetchData = useCallback(async (params: Omit<SessionsQueryParams, 'page' | 'pageSize'>) => {
     setIsLoading(true);
@@ -69,12 +77,15 @@ export function useSessions() {
       const fetchedHostInfo = await hostInfoPromise;
       setHostInfo(fetchedHostInfo);
 
-      // Log date range of raw API data
+      // Calculate date range of raw API data
+      let rawMinDate: Date | null = null;
+      let rawMaxDate: Date | null = null;
+      
       if (allData.length > 0) {
         const dates = allData.map(s => new Date(s.startsAt).getTime());
-        const minDate = new Date(Math.min(...dates));
-        const maxDate = new Date(Math.max(...dates));
-        console.log('API returned data range:', minDate.toISOString(), 'to', maxDate.toISOString());
+        rawMinDate = new Date(Math.min(...dates));
+        rawMaxDate = new Date(Math.max(...dates));
+        console.log('API returned data range:', rawMinDate.toISOString(), 'to', rawMaxDate.toISOString());
       }
 
       // Apply client-side date filtering since API ignores date params
@@ -82,6 +93,22 @@ export function useSessions() {
       
       console.log(`Filtered: ${allData.length} → ${filteredData.length} sessions within requested range`);
 
+      // Calculate date range of filtered data
+      let filteredMinDate: Date | null = null;
+      let filteredMaxDate: Date | null = null;
+      
+      if (filteredData.length > 0) {
+        const dates = filteredData.map(s => new Date(s.startsAt).getTime());
+        filteredMinDate = new Date(Math.min(...dates));
+        filteredMaxDate = new Date(Math.max(...dates));
+      }
+
+      setDataRange({
+        from: filteredMinDate,
+        to: filteredMaxDate,
+        rawFrom: rawMinDate,
+        rawTo: rawMaxDate,
+      });
       setTotalCount(filteredData.length);
       setTotalPages(pagesLoaded);
       setAllSessions(filteredData);
@@ -119,6 +146,7 @@ export function useSessions() {
     classTypeData,
     venueConfig,
     hostInfo,
+    dataRange,
     isLoading,
     error,
     fetchData,
