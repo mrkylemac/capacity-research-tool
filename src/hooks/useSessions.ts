@@ -29,22 +29,22 @@ export function useSessions() {
   // Fetch all pages to get complete data for metrics
   const fetchAllSessions = useCallback(async (params: Omit<SessionsQueryParams, 'page'>) => {
     const allData: MomenceSession[] = [];
-    let page = 1;
+    let page = 1; // 1-indexed internally, converted to 0-indexed in client
     let hasMore = true;
 
     while (hasMore) {
       const response = await momenceClient.fetchSessions({
         ...params,
         page,
-        pageSize: 100,
+        pageSize: 100, // Fetch larger pages for efficiency
       });
 
       allData.push(...response.sessions);
-      hasMore = page < response.totalPages;
+      hasMore = response.sessions.length > 0 && page < response.totalPages;
       page++;
 
-      // Safety limit
-      if (page > 100) break;
+      // Safety limit to prevent infinite loops
+      if (page > 50) break;
     }
 
     setAllSessions(allData);

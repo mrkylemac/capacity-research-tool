@@ -16,15 +16,24 @@ class MomenceClient {
    * Fetch sessions from the Momence API
    */
   async fetchSessions(params: SessionsQueryParams): Promise<MomenceSessionsResponse> {
-    const queryParams = new URLSearchParams({
-      hostId: params.hostId,
-      startsAtFrom: params.startsAtFrom,
-      startsAtTo: params.startsAtTo,
-      page: String(params.page || 1),
-      pageSize: String(params.pageSize || API_CONFIG.defaultPageSize),
+    const queryParams = new URLSearchParams();
+    
+    // Add session types
+    API_CONFIG.sessionTypes.forEach(type => {
+      queryParams.append('sessionTypes[]', type);
     });
+    
+    // Add date range
+    queryParams.set('fromDate', params.startsAtFrom);
+    if (params.startsAtTo) {
+      queryParams.set('toDate', params.startsAtTo);
+    }
+    
+    // Pagination (0-indexed)
+    queryParams.set('page', String((params.page || 1) - 1));
+    queryParams.set('pageSize', String(params.pageSize || API_CONFIG.defaultPageSize));
 
-    const url = `${this.baseUrl}/sessions?${queryParams.toString()}`;
+    const url = `${this.baseUrl}/${params.hostId}/host-schedule/sessions?${queryParams.toString()}`;
     
     try {
       const response = await fetch(url);
@@ -43,17 +52,27 @@ class MomenceClient {
 
   /**
    * Transform API response to typed format
-   * Adjust this based on actual Momence API response structure
    */
   private transformResponse(data: any, params: SessionsQueryParams): MomenceSessionsResponse {
-    // Handle if data is already in expected format
+    // Handle paginated response with 'data' array
+    if (data.data && Array.isArray(data.data)) {
+      return {
+        sessions: data.data.map(this.transformSession),
+        totalCount: data.total || data.data.length,
+        page: (data.page || 0) + 1, // Convert 0-indexed to 1-indexed
+        pageSize: data.pageSize || params.pageSize || API_CONFIG.defaultPageSize,
+        totalPages: data.totalPages || Math.ceil((data.total || data.data.length) / (params.pageSize || API_CONFIG.defaultPageSize)),
+      };
+    }
+
+    // Handle if data has 'sessions' key
     if (data.sessions && Array.isArray(data.sessions)) {
       return {
         sessions: data.sessions.map(this.transformSession),
-        totalCount: data.totalCount || data.sessions.length,
-        page: data.page || params.page || 1,
+        totalCount: data.total || data.totalCount || data.sessions.length,
+        page: (data.page || 0) + 1,
         pageSize: data.pageSize || params.pageSize || API_CONFIG.defaultPageSize,
-        totalPages: data.totalPages || Math.ceil((data.totalCount || data.sessions.length) / (params.pageSize || API_CONFIG.defaultPageSize)),
+        totalPages: data.totalPages || Math.ceil((data.total || data.sessions.length) / (params.pageSize || API_CONFIG.defaultPageSize)),
       };
     }
 
@@ -82,18 +101,24 @@ class MomenceClient {
    * Transform a single session to typed format
    */
   private transformSession(session: any): MomenceSession {
+    // Calculate tickets sold from registrations/attendees
+    const ticketsSold = session.registrationsCount ?? session.attendeesCount ?? session.ticketsSold ?? session.bookedCount ?? 0;
+    
+    // Get price - handle various formats
+    const price = session.price ?? session.fixedTicketPrice ?? session.ticketPrice ?? 0;
+    
     return {
       id: session.id || session._id || String(Math.random()),
-      sessionName: session.sessionName || session.name || session.title || 'Sauna & Ice',
-      startsAt: session.startsAt || session.startTime || session.start,
-      endsAt: session.endsAt || session.endTime || session.end,
-      durationMinutes: session.durationMinutes || session.duration || 60,
-      capacity: session.capacity || session.maxAttendees || 12,
-      ticketsSold: session.ticketsSold || session.attendees || session.bookedCount || 0,
-      fixedTicketPrice: session.fixedTicketPrice || session.price || 35,
-      location: session.location || session.venue || 'Aalto',
+      sessionName: session.name || session.sessionName || session.title || 'Unknown',
+      startsAt: session.startDate || session.startsAt || session.startTime || session.start,
+      endsAt: session.endDate || session.endsAt || session.endTime || session.end,
+      durationMinutes: session.duration || session.durationMinutes || 60,
+      capacity: session.spotsTotal ?? session.capacity ?? session.maxAttendees ?? 0,
+      ticketsSold,
+      fixedTicketPrice: price,
+      location: session.locationName || session.location || session.venue || '',
       inPerson: session.inPerson !== false,
-      level: session.level || session.type,
+      level: session.level || session.type || session.sessionType,
     };
   }
 }
