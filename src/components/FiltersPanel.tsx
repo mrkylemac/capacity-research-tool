@@ -19,6 +19,7 @@ const SAVED_VENUES = [
   { id: '49448', name: 'Aalto Community' },
   { id: '59636', name: 'Sol Sauna' },
   { id: '37867', name: 'Inner Studio' },
+  { id: '16053', name: 'HOI' },
 ] as const;
 
 const PRESETS = [
