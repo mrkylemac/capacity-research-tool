@@ -20,11 +20,24 @@ function filterByDateRange(sessions: MomenceSession[], fromDate: string, toDate:
   });
 }
 
+function filterToLastMonths(sessions: MomenceSession[], months: number): MomenceSession[] {
+  if (sessions.length === 0) return [];
+  
+  // Find the most recent session date
+  const maxDate = Math.max(...sessions.map(s => new Date(s.startsAt).getTime()));
+  const cutoffDate = new Date(maxDate);
+  cutoffDate.setMonth(cutoffDate.getMonth() - months);
+  
+  return sessions.filter(s => new Date(s.startsAt).getTime() >= cutoffDate.getTime());
+}
+
 export interface DataRange {
   from: Date | null;
   to: Date | null;
-  rawFrom: Date | null;  // Before filtering
+  rawFrom: Date | null;
   rawTo: Date | null;
+  fallbackApplied?: boolean;  // True if we fell back to available data
+  fallbackMonths?: number;    // How many months of available data we're showing
 }
 
 export function useSessions() {
@@ -89,9 +102,26 @@ export function useSessions() {
       }
 
       // Apply client-side date filtering since API ignores date params
-      const filteredData = filterByDateRange(allData, params.startsAtFrom, params.startsAtTo);
+      let filteredData = filterByDateRange(allData, params.startsAtFrom, params.startsAtTo);
+      let fallbackApplied = false;
+      let fallbackMonths = 0;
       
       console.log(`Filtered: ${allData.length} → ${filteredData.length} sessions within requested range`);
+
+      // If no data in requested range but API has data, fall back to last available months
+      if (filteredData.length === 0 && allData.length > 0) {
+        // Try last 6 months of available data first, then 3 if still sparse
+        const last6 = filterToLastMonths(allData, 6);
+        if (last6.length >= 10) {
+          filteredData = last6;
+          fallbackMonths = 6;
+        } else {
+          filteredData = filterToLastMonths(allData, 3);
+          fallbackMonths = 3;
+        }
+        fallbackApplied = true;
+        console.log(`Fallback applied: showing last ${fallbackMonths} months of available data (${filteredData.length} sessions)`);
+      }
 
       // Calculate date range of filtered data
       let filteredMinDate: Date | null = null;
@@ -108,6 +138,8 @@ export function useSessions() {
         to: filteredMaxDate,
         rawFrom: rawMinDate,
         rawTo: rawMaxDate,
+        fallbackApplied,
+        fallbackMonths,
       });
       setTotalCount(filteredData.length);
       setTotalPages(pagesLoaded);

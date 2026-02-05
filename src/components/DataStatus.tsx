@@ -31,6 +31,24 @@ export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRang
       ? ` from ${format(dataRange.from, 'MMM d, yyyy')} to ${format(dataRange.to, 'MMM d, yyyy')}`
       : '';
     
+    // Show fallback notice if we couldn't match the requested range
+    if (dataRange?.fallbackApplied) {
+      return (
+        <div className="space-y-2 mb-4">
+          <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+            <p className="font-medium">Showing last {dataRange.fallbackMonths} months of available data</p>
+            <p className="text-xs mt-1">
+              No sessions found in requested range. Data available{dateRangeText}.
+            </p>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
+            {pageCount > 1 && <> across {pageCount} API requests</>}
+          </div>
+        </div>
+      );
+    }
+    
     return (
       <div className="text-sm text-muted-foreground mb-4">
         Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
