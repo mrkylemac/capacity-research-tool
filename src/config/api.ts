@@ -3,10 +3,19 @@
 
 export const API_CONFIG = {
   // Base URL for the Momence API
-  baseUrl: 'https://api.momence.com/v1',
+  baseUrl: 'https://readonly-api.momence.com/host-plugins/host',
   
   // Default host ID for Aalto Community
   defaultHostId: '49448',
+  
+  // Session types to fetch
+  sessionTypes: [
+    'course-class',
+    'fitness',
+    'retreat',
+    'special-event',
+    'special-event-new',
+  ] as const,
   
   // Default page size options
   pageSizeOptions: [20, 50, 100] as const,
