@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { momenceClient } from '@/lib/momenceClient';
-import { generateMockSessions } from '@/lib/mockData';
 import { 
   calculateMetrics, 
   calculateMonthlyData, 
@@ -12,11 +11,7 @@ import {
 import { API_CONFIG } from '@/config/api';
 import type { MomenceSession, SessionsQueryParams } from '@/types/momence';
 
-interface UseSessionsOptions {
-  useMockData?: boolean;
-}
-
-export function useSessions(options: UseSessionsOptions = { useMockData: true }) {
+export function useSessions() {
   const [allSessions, setAllSessions] = useState<MomenceSession[]>([]);
   const [queryParams, setQueryParams] = useState<SessionsQueryParams | null>(null);
 
@@ -25,17 +20,6 @@ export function useSessions(options: UseSessionsOptions = { useMockData: true })
     queryFn: async () => {
       if (!queryParams) return null;
 
-      if (options.useMockData) {
-        // Use mock data for development
-        return generateMockSessions(
-          queryParams.startsAtFrom,
-          queryParams.startsAtTo,
-          queryParams.page || 1,
-          queryParams.pageSize || API_CONFIG.defaultPageSize
-        );
-      }
-
-      // Use real API
       return momenceClient.fetchSessions(queryParams);
     },
     enabled: !!queryParams,
@@ -49,21 +33,11 @@ export function useSessions(options: UseSessionsOptions = { useMockData: true })
     let hasMore = true;
 
     while (hasMore) {
-      let response;
-      if (options.useMockData) {
-        response = generateMockSessions(
-          params.startsAtFrom,
-          params.startsAtTo,
-          page,
-          100 // Fetch larger pages for efficiency
-        );
-      } else {
-        response = await momenceClient.fetchSessions({
-          ...params,
-          page,
-          pageSize: 100,
-        });
-      }
+      const response = await momenceClient.fetchSessions({
+        ...params,
+        page,
+        pageSize: 100,
+      });
 
       allData.push(...response.sessions);
       hasMore = page < response.totalPages;
@@ -75,7 +49,7 @@ export function useSessions(options: UseSessionsOptions = { useMockData: true })
 
     setAllSessions(allData);
     return allData;
-  }, [options.useMockData]);
+  }, []);
 
   const fetchData = useCallback((params: SessionsQueryParams) => {
     setQueryParams(params);

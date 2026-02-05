@@ -25,7 +25,7 @@ const Index = () => {
     isLoading,
     error,
     fetchData,
-  } = useSessions({ useMockData: true });
+  } = useSessions();
 
   const [hasQueried, setHasQueried] = useState(false);
 
@@ -136,7 +136,7 @@ const Index = () => {
 
         {/* Footer */}
         <footer className="border-t border-border py-6 mt-12 text-center text-sm text-muted-foreground">
-          Momence API Explorer • Using mock data for development
+          Momence API Explorer
         </footer>
       </div>
     </div>
