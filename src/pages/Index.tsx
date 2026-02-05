@@ -42,12 +42,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="notion-page">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="notion-title">Momence Explorer</h1>
-          <p className="notion-subtitle">Sauna & Ice Session Analytics Dashboard</p>
-        </header>
-
         {/* Filters */}
         <FiltersPanel onFetchData={handleFetchData} isLoading={isLoading} />
 
@@ -77,7 +71,7 @@ const Index = () => {
 
             {/* Venue Overview */}
             <section>
-              <h2 className="notion-h1">Venue Configuration</h2>
+              <h2 className="notion-h1">Venue Summary</h2>
               <VenueOverview config={venueConfig} />
             </section>
 

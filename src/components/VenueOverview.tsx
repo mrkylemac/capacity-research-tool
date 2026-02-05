@@ -19,6 +19,7 @@ export function VenueOverview({ config }: VenueOverviewProps) {
   }
 
   const items = [
+    { label: 'Venue', value: config.venueName },
     { label: 'Session Type', value: config.sessionType },
     { label: 'Duration', value: `${config.duration} min` },
     { label: 'Price', value: `$${config.price} AUD` },
