@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { format, subMonths, subYears } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -10,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { DateRange } from 'react-day-picker';
 
 const SAVED_VENUES = [
   { id: '49448', name: 'Aalto Community' },
@@ -17,11 +21,11 @@ const SAVED_VENUES = [
   { id: '37867', name: 'Inner Studio' },
 ] as const;
 
-const DATE_RANGES = [
-  { id: '3m', label: 'Last 3 months', getFrom: () => subMonths(new Date(), 3) },
-  { id: '6m', label: 'Last 6 months', getFrom: () => subMonths(new Date(), 6) },
-  { id: '12m', label: 'Last 12 months', getFrom: () => subMonths(new Date(), 12) },
-  { id: 'all', label: 'All time', getFrom: () => subYears(new Date(), 10) },
+const PRESETS = [
+  { label: 'Last 3 months', from: () => subMonths(new Date(), 3), to: () => new Date() },
+  { label: 'Last 6 months', from: () => subMonths(new Date(), 6), to: () => new Date() },
+  { label: 'Last 12 months', from: () => subMonths(new Date(), 12), to: () => new Date() },
+  { label: 'All time', from: () => subYears(new Date(), 10), to: () => new Date() },
 ] as const;
 
 interface FiltersPanelProps {
@@ -33,7 +37,10 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
   const [selectedVenue, setSelectedVenue] = useState<string>(SAVED_VENUES[0].id);
   const [customId, setCustomId] = useState('');
   const [isCustom, setIsCustom] = useState(false);
-  const [dateRange, setDateRange] = useState<string>('3m');
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: subMonths(new Date(), 3),
+    to: new Date(),
+  });
 
   const handleVenueChange = (value: string) => {
     if (value === 'custom') {
@@ -45,17 +52,25 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
     }
   };
 
+  const handlePreset = (preset: typeof PRESETS[number]) => {
+    setDateRange({ from: preset.from(), to: preset.to() });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const hostId = isCustom ? customId : selectedVenue;
-    const range = DATE_RANGES.find(r => r.id === dateRange) || DATE_RANGES[0];
-    const fromDate = format(range.getFrom(), 'yyyy-MM-dd');
-    const toDate = format(new Date(), 'yyyy-MM-dd');
+    if (!hostId || !dateRange.from || !dateRange.to) return;
     
-    if (hostId) {
-      onFetchData(hostId, fromDate, toDate);
-    }
+    onFetchData(
+      hostId,
+      format(dateRange.from, 'yyyy-MM-dd'),
+      format(dateRange.to, 'yyyy-MM-dd')
+    );
   };
+
+  const dateLabel = dateRange.from && dateRange.to
+    ? `${format(dateRange.from, 'MMM d, yyyy')} – ${format(dateRange.to, 'MMM d, yyyy')}`
+    : 'Select dates';
 
   return (
     <form onSubmit={handleSubmit} className="notion-card mb-6">
@@ -99,21 +114,41 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
           )}
         </div>
 
-        {/* Date Range */}
+        {/* Date Range Picker with Presets */}
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">Date Range</Label>
-          <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {DATE_RANGES.map((range) => (
-                <SelectItem key={range.id} value={range.id}>
-                  {range.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-start text-left font-normal">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                <span className="truncate">{dateLabel}</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <div className="flex">
+                <div className="flex flex-col gap-1 border-r p-3">
+                  {PRESETS.map((preset) => (
+                    <Button
+                      key={preset.label}
+                      variant="ghost"
+                      size="sm"
+                      className="justify-start text-xs"
+                      onClick={() => handlePreset(preset)}
+                    >
+                      {preset.label}
+                    </Button>
+                  ))}
+                </div>
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={(range) => range && setDateRange(range)}
+                  numberOfMonths={2}
+                  defaultMonth={dateRange.from}
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Fetch Button */}
@@ -121,7 +156,7 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
           <Label className="text-xs text-muted-foreground opacity-0">Action</Label>
           <Button 
             type="submit" 
-            disabled={isLoading || (isCustom && !customId)} 
+            disabled={isLoading || (isCustom && !customId) || !dateRange.from || !dateRange.to} 
             className="w-full"
           >
             {isLoading ? 'Loading...' : 'Fetch Data'}
