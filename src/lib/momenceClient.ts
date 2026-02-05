@@ -54,6 +54,17 @@ class MomenceClient {
    * Transform API response to typed format
    */
   private transformResponse(data: any, params: SessionsQueryParams): MomenceSessionsResponse {
+    // Handle response with 'payload' array (Momence readonly API format)
+    if (data.payload && Array.isArray(data.payload)) {
+      return {
+        sessions: data.payload.map(this.transformSession),
+        totalCount: data.total || data.payload.length,
+        page: (data.page ?? 0) + 1,
+        pageSize: data.pageSize || params.pageSize || API_CONFIG.defaultPageSize,
+        totalPages: data.totalPages || Math.ceil((data.total || data.payload.length) / (params.pageSize || API_CONFIG.defaultPageSize)),
+      };
+    }
+
     // Handle paginated response with 'data' array
     if (data.data && Array.isArray(data.data)) {
       return {
