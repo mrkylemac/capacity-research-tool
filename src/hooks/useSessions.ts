@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { momenceClient } from '@/lib/momenceClient';
+import { momenceClient, type HostInfo } from '@/lib/momenceClient';
 import { 
   calculateMetrics, 
   calculateMonthlyData, 
@@ -11,52 +10,89 @@ import {
 import { API_CONFIG } from '@/config/api';
 import type { MomenceSession, SessionsQueryParams } from '@/types/momence';
 
+function filterByDateRange(sessions: MomenceSession[], fromDate: string, toDate: string): MomenceSession[] {
+  const from = new Date(fromDate).getTime();
+  const to = new Date(toDate).getTime();
+  
+  return sessions.filter(session => {
+    const sessionDate = new Date(session.startsAt).getTime();
+    return sessionDate >= from && sessionDate <= to;
+  });
+}
+
 export function useSessions() {
   const [allSessions, setAllSessions] = useState<MomenceSession[]>([]);
   const [queryParams, setQueryParams] = useState<SessionsQueryParams | null>(null);
+  const [hostInfo, setHostInfo] = useState<HostInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['sessions', queryParams],
-    queryFn: async () => {
-      if (!queryParams) return null;
+  const fetchData = useCallback(async (params: Omit<SessionsQueryParams, 'page' | 'pageSize'>) => {
+    setIsLoading(true);
+    setError(null);
+    setQueryParams({ ...params, page: 1, pageSize: API_CONFIG.pageSize });
 
-      return momenceClient.fetchSessions(queryParams);
-    },
-    enabled: !!queryParams,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+    console.log('Requested date range:', params.startsAtFrom, 'to', params.startsAtTo);
 
-  // Fetch all pages to get complete data for metrics
-  const fetchAllSessions = useCallback(async (params: Omit<SessionsQueryParams, 'page'>) => {
-    const allData: MomenceSession[] = [];
-    let page = 1; // 1-indexed internally, converted to 0-indexed in client
-    let hasMore = true;
+    try {
+      // Fetch host info in parallel with first page of sessions
+      const hostInfoPromise = momenceClient.fetchHostInfo(params.hostId);
+      
+      const allData: MomenceSession[] = [];
+      let page = 1;
+      let pagesLoaded = 0;
 
-    while (hasMore) {
-      const response = await momenceClient.fetchSessions({
-        ...params,
-        page,
-        pageSize: 100, // Fetch larger pages for efficiency
-      });
+      while (true) {
+        const response = await momenceClient.fetchSessions({
+          ...params,
+          page,
+          pageSize: API_CONFIG.pageSize,
+        });
 
-      allData.push(...response.sessions);
-      hasMore = response.sessions.length > 0 && page < response.totalPages;
-      page++;
+        const sessionCount = response.sessions.length;
+        allData.push(...response.sessions);
+        pagesLoaded++;
+        
+        console.log(`Page ${page}: fetched ${sessionCount} sessions (total so far: ${allData.length})`);
 
-      // Safety limit to prevent infinite loops
-      if (page > 50) break;
+        // Stop if: no results, less than full page (end of data), or safety limit
+        if (sessionCount === 0 || sessionCount < API_CONFIG.pageSize || pagesLoaded >= 100) {
+          break;
+        }
+
+        page++;
+      }
+
+      // Get host info result
+      const fetchedHostInfo = await hostInfoPromise;
+      setHostInfo(fetchedHostInfo);
+
+      // Log date range of raw API data
+      if (allData.length > 0) {
+        const dates = allData.map(s => new Date(s.startsAt).getTime());
+        const minDate = new Date(Math.min(...dates));
+        const maxDate = new Date(Math.max(...dates));
+        console.log('API returned data range:', minDate.toISOString(), 'to', maxDate.toISOString());
+      }
+
+      // Apply client-side date filtering since API ignores date params
+      const filteredData = filterByDateRange(allData, params.startsAtFrom, params.startsAtTo);
+      
+      console.log(`Filtered: ${allData.length} → ${filteredData.length} sessions within requested range`);
+
+      setTotalCount(filteredData.length);
+      setTotalPages(pagesLoaded);
+      setAllSessions(filteredData);
+      
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch sessions'));
+    } finally {
+      setIsLoading(false);
     }
-
-    setAllSessions(allData);
-    return allData;
   }, []);
 
-  const fetchData = useCallback((params: SessionsQueryParams) => {
-    setQueryParams(params);
-    fetchAllSessions(params);
-  }, [fetchAllSessions]);
-
-  // Calculate all metrics from complete session data
   const metrics = queryParams ? calculateMetrics(
     allSessions,
     queryParams.startsAtFrom,
@@ -73,31 +109,18 @@ export function useSessions() {
   ) : null;
 
   return {
-    // Raw data
-    sessions: data?.sessions || [],
     allSessions,
-    totalCount: data?.totalCount || 0,
-    page: data?.page || 1,
-    pageSize: data?.pageSize || API_CONFIG.defaultPageSize,
-    totalPages: data?.totalPages || 0,
-    
-    // Computed data
+    totalCount,
+    totalPages,
+    page: 1,
     metrics,
     monthlyData,
     demandPatterns,
     classTypeData,
     venueConfig,
-    
-    // State
+    hostInfo,
     isLoading,
     error,
-    
-    // Actions
     fetchData,
-    setPage: (page: number) => {
-      if (queryParams) {
-        setQueryParams({ ...queryParams, page });
-      }
-    },
   };
 }

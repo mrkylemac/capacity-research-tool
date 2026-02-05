@@ -104,18 +104,18 @@ export function calculateMonthlyData(sessions: MomenceSession[]): MonthlyData[] 
 }
 
 /**
- * Define time slots for demand analysis
+ * Define time slots for demand analysis (12-hour format)
  */
 const TIME_SLOTS = [
-  { label: '4:30 – 6:30', start: 4.5, end: 6.5 },
-  { label: '6:30 – 8:30', start: 6.5, end: 8.5 },
-  { label: '8:30 – 10:30', start: 8.5, end: 10.5 },
-  { label: '10:30 – 12:30', start: 10.5, end: 12.5 },
-  { label: '12:30 – 14:30', start: 12.5, end: 14.5 },
-  { label: '14:30 – 16:30', start: 14.5, end: 16.5 },
-  { label: '16:30 – 18:30', start: 16.5, end: 18.5 },
-  { label: '18:30 – 20:30', start: 18.5, end: 20.5 },
-  { label: '20:30 – 22:30', start: 20.5, end: 22.5 },
+  { label: '4:30 – 6:30am', start: 4.5, end: 6.5 },
+  { label: '6:30 – 8:30am', start: 6.5, end: 8.5 },
+  { label: '8:30 – 10:30am', start: 8.5, end: 10.5 },
+  { label: '10:30am – 12:30pm', start: 10.5, end: 12.5 },
+  { label: '12:30 – 2:30pm', start: 12.5, end: 14.5 },
+  { label: '2:30 – 4:30pm', start: 14.5, end: 16.5 },
+  { label: '4:30 – 6:30pm', start: 16.5, end: 18.5 },
+  { label: '6:30 – 8:30pm', start: 18.5, end: 20.5 },
+  { label: '8:30 – 10:30pm', start: 20.5, end: 22.5 },
 ];
 
 /**
@@ -243,7 +243,10 @@ function getMostCommon<T>(arr: T[]): T | undefined {
 function formatHour(hour: number): string {
   const h = Math.floor(hour);
   const m = Math.round((hour - h) * 60);
-  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+  const period = h >= 12 ? 'pm' : 'am';
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const minStr = m > 0 ? `:${m.toString().padStart(2, '0')}` : '';
+  return `${hour12}${minStr}${period}`;
 }
 
 /**

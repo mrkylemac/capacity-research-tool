@@ -73,11 +73,10 @@ export function ClassTypeAnalysis({ data }: ClassTypeAnalysisProps) {
               <TableRow>
                 <TableHead>Class Type</TableHead>
                 <TableHead className="text-right">Sessions</TableHead>
-                <TableHead className="text-right">Total Visitors</TableHead>
+                <TableHead className="text-right">Visitors</TableHead>
                 <TableHead className="text-right">Avg/Session</TableHead>
                 <TableHead className="text-right">Capacity</TableHead>
-                <TableHead className="text-right">Utilisation</TableHead>
-                <TableHead className="text-right">Revenue</TableHead>
+                <TableHead className="text-right">Occupancy</TableHead>
                 <TableHead className="text-right">Share</TableHead>
               </TableRow>
             </TableHeader>
@@ -102,7 +101,6 @@ export function ClassTypeAnalysis({ data }: ClassTypeAnalysisProps) {
                         {row.avgUtilisation.toFixed(1)}%
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">${row.totalRevenue.toLocaleString()}</TableCell>
                     <TableCell className="text-right text-muted-foreground">{sharePercent.toFixed(1)}%</TableCell>
                   </TableRow>
                 );

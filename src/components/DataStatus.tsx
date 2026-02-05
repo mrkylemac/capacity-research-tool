@@ -1,12 +1,11 @@
 interface DataStatusProps {
   isLoading: boolean;
   error: Error | null;
-  totalCount: number;
-  totalPages: number;
-  currentPage: number;
+  sessionCount: number;
+  pageCount: number;
 }
 
-export function DataStatus({ isLoading, error, totalCount, totalPages, currentPage }: DataStatusProps) {
+export function DataStatus({ isLoading, error, sessionCount, pageCount }: DataStatusProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center gap-2 py-4 text-muted-foreground">
@@ -23,13 +22,11 @@ export function DataStatus({ isLoading, error, totalCount, totalPages, currentPa
     );
   }
 
-  if (totalCount > 0) {
+  if (sessionCount > 0) {
     return (
       <div className="text-sm text-muted-foreground mb-4">
-        Loaded <strong className="text-foreground">{totalCount}</strong> sessions
-        {totalPages > 1 && (
-          <> (page {currentPage} of {totalPages})</>
-        )}
+        Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
+        {pageCount > 1 && <> across {pageCount} API requests</>}
       </div>
     );
   }

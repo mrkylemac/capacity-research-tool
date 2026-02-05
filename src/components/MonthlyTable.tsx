@@ -1,11 +1,133 @@
-import type { MonthlyData } from '@/types/momence';
+import { useState, useMemo } from 'react';
+import { parseISO, format, startOfWeek, getWeek } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import type { MonthlyData, MomenceSession } from '@/types/momence';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 interface MonthlyTableProps {
   data: MonthlyData[];
+  sessions: MomenceSession[];
 }
 
-export function MonthlyTable({ data }: MonthlyTableProps) {
+interface WeeklyDataWithSessions {
+  weekKey: string;
+  weekLabel: string;
+  weekStart: Date;
+  sessionCount: number;
+  visitors: number;
+  capacity: number;
+  occupancy: number;
+  rawSessions: MomenceSession[];
+}
+
+function calculateWeeklyDataWithSessions(sessions: MomenceSession[], month?: string, year?: number): WeeklyDataWithSessions[] {
+  const filtered = month && year
+    ? sessions.filter(s => {
+        const date = parseISO(s.startsAt);
+        return format(date, 'MMMM') === month && date.getFullYear() === year;
+      })
+    : sessions;
+
+  const weeklyMap = new Map<string, { sessions: MomenceSession[]; weekStart: Date }>();
+
+  filtered.forEach(session => {
+    const date = parseISO(session.startsAt);
+    const weekStart = startOfWeek(date, { weekStartsOn: 1 });
+    const weekKey = format(weekStart, 'yyyy-ww');
+
+    if (!weeklyMap.has(weekKey)) {
+      weeklyMap.set(weekKey, { sessions: [], weekStart });
+    }
+    weeklyMap.get(weekKey)!.sessions.push(session);
+  });
+
+  const results: WeeklyDataWithSessions[] = [];
+  weeklyMap.forEach((data, weekKey) => {
+    const visitors = data.sessions.reduce((sum, s) => sum + s.ticketsSold, 0);
+    const capacity = data.sessions.reduce((sum, s) => sum + s.capacity, 0);
+    const occupancy = capacity > 0 ? (visitors / capacity) * 100 : 0;
+
+    // Sort sessions by start time
+    const sortedSessions = [...data.sessions].sort(
+      (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+    );
+
+    results.push({
+      weekKey,
+      weekLabel: `W${getWeek(data.weekStart, { weekStartsOn: 1 })}`,
+      weekStart: data.weekStart,
+      sessionCount: data.sessions.length,
+      visitors,
+      capacity,
+      occupancy,
+      rawSessions: sortedSessions,
+    });
+  });
+
+  return results.sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime());
+}
+
+function formatSessionTime(startsAt: string, durationMinutes: number): string {
+  const start = parseISO(startsAt);
+  const endTime = new Date(start.getTime() + durationMinutes * 60000);
+  
+  const formatTime = (date: Date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    return minutes > 0 ? `${hour12}:${minutes.toString().padStart(2, '0')}${period}` : `${hour12}${period}`;
+  };
+
+  return `${formatTime(start)}–${formatTime(endTime)}`;
+}
+
+export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
+  const [selectedMonth, setSelectedMonth] = useState<{ month: string; year: number } | null>(null);
+  const [viewMode, setViewMode] = useState<'monthly' | 'weekly'>('monthly');
+  const [expandedWeeks, setExpandedWeeks] = useState<Set<string>>(new Set());
+
+  const weeklyData = useMemo(() => {
+    if (selectedMonth) {
+      return calculateWeeklyDataWithSessions(sessions, selectedMonth.month, selectedMonth.year);
+    }
+    return calculateWeeklyDataWithSessions(sessions);
+  }, [sessions, selectedMonth]);
+
+  const chartData = useMemo(() => {
+    if (viewMode === 'weekly') {
+      return weeklyData.map(w => ({
+        name: selectedMonth ? w.weekLabel : `${w.weekLabel} ${format(w.weekStart, 'MMM')}`,
+        occupancy: Math.round(w.occupancy * 10) / 10,
+        visitors: w.visitors,
+      }));
+    }
+    return data.map(m => ({
+      name: `${m.month.slice(0, 3)} ${m.year}`,
+      occupancy: Math.round(m.utilisation * 10) / 10,
+      visitors: m.ticketsSold,
+    }));
+  }, [data, weeklyData, viewMode, selectedMonth]);
+
+  const toggleWeek = (weekKey: string) => {
+    setExpandedWeeks(prev => {
+      const next = new Set(prev);
+      if (next.has(weekKey)) {
+        next.delete(weekKey);
+      } else {
+        next.add(weekKey);
+      }
+      return next;
+    });
+  };
+
   if (data.length === 0) {
     return (
       <Card>
@@ -19,73 +141,266 @@ export function MonthlyTable({ data }: MonthlyTableProps) {
   const totals = data.reduce(
     (acc, row) => ({
       sessions: acc.sessions + row.sessions,
-      ticketsSold: acc.ticketsSold + row.ticketsSold,
+      visitors: acc.visitors + row.ticketsSold,
       capacity: acc.capacity + row.capacity,
-      revenue: acc.revenue + row.revenue,
     }),
-    { sessions: 0, ticketsSold: 0, capacity: 0, revenue: 0 }
+    { sessions: 0, visitors: 0, capacity: 0 }
   );
 
-  const avgUtilisation = totals.capacity > 0 
-    ? (totals.ticketsSold / totals.capacity) * 100 
-    : 0;
+  const avgOccupancy = totals.capacity > 0 ? (totals.visitors / totals.capacity) * 100 : 0;
 
   return (
-    <Card>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <table className="notion-table min-w-full">
-            <thead>
-              <tr className="bg-muted/30">
-                <th>Month</th>
-                <th className="text-right">Sessions</th>
-                <th className="text-right">Tickets</th>
-                <th className="text-right">Capacity</th>
-                <th className="text-right">Utilisation</th>
-                <th className="text-right">Revenue</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, index) => (
-                <tr key={index}>
-                  <td className="font-medium">
-                    {row.month} {row.year}
-                  </td>
-                  <td className="text-right">{row.sessions}</td>
-                  <td className="text-right">{row.ticketsSold}</td>
-                  <td className="text-right">{row.capacity}</td>
-                  <td className={`text-right ${getUtilisationClass(row.utilisation)}`}>
-                    {row.utilisation.toFixed(1)}%
-                  </td>
-                  <td className="text-right text-green-600 font-medium">
-                    ${row.revenue.toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="bg-muted/50 font-semibold">
-                <td>Total / Average</td>
-                <td className="text-right">{totals.sessions}</td>
-                <td className="text-right">{totals.ticketsSold}</td>
-                <td className="text-right">{totals.capacity}</td>
-                <td className={`text-right ${getUtilisationClass(avgUtilisation)}`}>
-                  {avgUtilisation.toFixed(1)}%
-                </td>
-                <td className="text-right text-green-600">
-                  ${totals.revenue.toLocaleString()}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+    <div className="space-y-4">
+      {/* View Toggle and Month Filter */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex gap-1">
+          <Button
+            variant={viewMode === 'monthly' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => { setViewMode('monthly'); setSelectedMonth(null); setExpandedWeeks(new Set()); }}
+          >
+            Monthly
+          </Button>
+          <Button
+            variant={viewMode === 'weekly' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('weekly')}
+          >
+            Weekly
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+
+        {viewMode === 'weekly' && (
+          <div className="flex flex-wrap gap-1 ml-auto">
+            <Button
+              variant={selectedMonth === null ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => { setSelectedMonth(null); setExpandedWeeks(new Set()); }}
+            >
+              All
+            </Button>
+            {data.map((m, i) => (
+              <Button
+                key={i}
+                variant={selectedMonth?.month === m.month && selectedMonth?.year === m.year ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => { setSelectedMonth({ month: m.month, year: m.year }); setExpandedWeeks(new Set()); }}
+              >
+                {m.month.slice(0, 3)} {m.year.toString().slice(2)}
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Chart */}
+      <Card>
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs text-muted-foreground">
+              {viewMode === 'weekly' 
+                ? selectedMonth 
+                  ? `Weekly Occupancy – ${selectedMonth.month} ${selectedMonth.year}`
+                  : 'Weekly Occupancy (All Time)'
+                : 'Monthly Occupancy Trend'
+              }
+            </p>
+            {selectedMonth && (
+              <Badge variant="outline" className="text-xs">
+                {weeklyData.length} weeks
+              </Badge>
+            )}
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 90%)" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
+                  axisLine={{ stroke: 'hsl(0 0% 90%)' }}
+                  tickLine={{ stroke: 'hsl(0 0% 90%)' }}
+                />
+                <YAxis
+                  tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
+                  axisLine={{ stroke: 'hsl(0 0% 90%)' }}
+                  tickLine={{ stroke: 'hsl(0 0% 90%)' }}
+                  domain={[0, 100]}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'hsl(0 0% 100%)',
+                    border: '1px solid hsl(0 0% 90%)',
+                    borderRadius: '6px',
+                    color: 'hsl(0 0% 9%)',
+                  }}
+                  formatter={(value: number, name: string) => [
+                    name === 'occupancy' ? `${value}%` : value.toLocaleString(),
+                    name === 'occupancy' ? 'Occupancy' : 'Visitors'
+                  ]}
+                />
+                <ReferenceLine y={avgOccupancy} stroke="hsl(0 0% 60%)" strokeDasharray="5 5" />
+                <Line
+                  type="monotone"
+                  dataKey="occupancy"
+                  stroke="hsl(142 71% 45%)"
+                  strokeWidth={2}
+                  dot={{ fill: 'hsl(142 71% 45%)', strokeWidth: 0, r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-xs text-muted-foreground text-center mt-2">
+            Dashed line = {avgOccupancy.toFixed(1)}% average occupancy
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Data Table */}
+      <Card>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            {viewMode === 'weekly' ? (
+              <div className="divide-y">
+                {/* Header */}
+                <div className="grid grid-cols-6 gap-4 px-4 py-3 bg-muted/30 text-sm font-medium">
+                  <div>Week</div>
+                  <div className="text-right">Sessions</div>
+                  <div className="text-right">Visitors</div>
+                  <div className="text-right">Total Seats</div>
+                  <div className="text-right">Seats/Session</div>
+                  <div className="text-right">Occupancy</div>
+                </div>
+                
+                {/* Rows */}
+                {weeklyData.map((row) => {
+                  const seatsPerSession = row.sessionCount > 0 ? row.capacity / row.sessionCount : 0;
+                  const isExpanded = expandedWeeks.has(row.weekKey);
+                  
+                  return (
+                    <Collapsible key={row.weekKey} open={isExpanded} onOpenChange={() => toggleWeek(row.weekKey)}>
+                      <CollapsibleTrigger asChild>
+                        <div className="grid grid-cols-6 gap-4 px-4 py-3 text-sm cursor-pointer hover:bg-muted/20 transition-colors">
+                          <div className="font-medium flex items-center gap-2">
+                            <span className="text-muted-foreground text-xs">{isExpanded ? '▼' : '▶'}</span>
+                            {row.weekLabel} – {format(row.weekStart, 'MMM d')}
+                          </div>
+                          <div className="text-right">{row.sessionCount}</div>
+                          <div className="text-right">{row.visitors.toLocaleString()}</div>
+                          <div className="text-right text-muted-foreground">{row.capacity.toLocaleString()}</div>
+                          <div className="text-right text-muted-foreground">{seatsPerSession.toFixed(0)}</div>
+                          <div className={`text-right ${getOccupancyClass(row.occupancy)}`}>
+                            {row.occupancy.toFixed(1)}%
+                          </div>
+                        </div>
+                      </CollapsibleTrigger>
+                      
+                      <CollapsibleContent>
+                        <div className="bg-muted/10 border-t px-4 py-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                            {row.rawSessions.map((session) => {
+                              const occupancyPct = session.capacity > 0 
+                                ? (session.ticketsSold / session.capacity) * 100 
+                                : 0;
+                              return (
+                                <div 
+                                  key={session.id}
+                                  className="flex items-center justify-between text-xs bg-background rounded px-3 py-2 border"
+                                >
+                                  <div>
+                                    <span className="font-medium">
+                                      {format(parseISO(session.startsAt), 'MMM d')}
+                                    </span>
+                                    <span className="text-muted-foreground ml-2">
+                                      {formatSessionTime(session.startsAt, session.durationMinutes)}
+                                    </span>
+                                  </div>
+                                  <Badge 
+                                    variant={occupancyPct >= 70 ? 'default' : occupancyPct >= 40 ? 'secondary' : 'destructive'}
+                                    className="text-xs"
+                                  >
+                                    {session.ticketsSold}/{session.capacity}
+                                  </Badge>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
+              </div>
+            ) : (
+              <table className="notion-table min-w-full">
+                <thead>
+                  <tr className="bg-muted/30">
+                    <th>Month</th>
+                    <th className="text-right">Sessions</th>
+                    <th className="text-right">Visitors</th>
+                    <th className="text-right">Total Seats</th>
+                    <th className="text-right">Seats/Session</th>
+                    <th className="text-right">Occupancy</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((row, index) => {
+                    const seatsPerSession = row.sessions > 0 ? row.capacity / row.sessions : 0;
+                    return (
+                      <tr 
+                        key={index}
+                        className="cursor-pointer hover:bg-muted/20"
+                        onClick={() => { setViewMode('weekly'); setSelectedMonth({ month: row.month, year: row.year }); }}
+                      >
+                        <td className="font-medium">
+                          {row.month} {row.year}
+                        </td>
+                        <td className="text-right">{row.sessions}</td>
+                        <td className="text-right">{row.ticketsSold.toLocaleString()}</td>
+                        <td className="text-right text-muted-foreground">{row.capacity.toLocaleString()}</td>
+                        <td className="text-right text-muted-foreground">{seatsPerSession.toFixed(0)}</td>
+                        <td className={`text-right ${getOccupancyClass(row.utilisation)}`}>
+                          {row.utilisation.toFixed(1)}%
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="bg-muted/50 font-semibold">
+                    <td>Total / Average</td>
+                    <td className="text-right">{totals.sessions.toLocaleString()}</td>
+                    <td className="text-right">{totals.visitors.toLocaleString()}</td>
+                    <td className="text-right text-muted-foreground">{totals.capacity.toLocaleString()}</td>
+                    <td className="text-right text-muted-foreground">{(totals.capacity / totals.sessions).toFixed(0)}</td>
+                    <td className={`text-right ${getOccupancyClass(avgOccupancy)}`}>
+                      {avgOccupancy.toFixed(1)}%
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {viewMode === 'monthly' && (
+        <p className="text-xs text-muted-foreground text-center">
+          Click any month row to see weekly breakdown
+        </p>
+      )}
+      {viewMode === 'weekly' && (
+        <p className="text-xs text-muted-foreground text-center">
+          Click any week to see individual sessions
+        </p>
+      )}
+    </div>
   );
 }
 
-function getUtilisationClass(util: number): string {
-  if (util >= 70) return 'utilisation-high';
-  if (util >= 40) return 'utilisation-medium';
-  return 'utilisation-low';
+function getOccupancyClass(util: number): string {
+  if (util >= 70) return 'text-green-600 font-medium';
+  if (util >= 40) return 'text-amber-600';
+  return 'text-red-600';
 }

@@ -27,11 +27,19 @@ export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisatio
   const avgPerWeek = metrics.sessionsPerWeek;
   const avgPerMonth = avgPerWeek * 4.33;
 
+  // Calculate weekly visitation
+  const totalVisitors = monthlyData.reduce((sum, m) => sum + m.ticketsSold, 0);
+  const totalWeeks = monthlyData.length > 0 
+    ? monthlyData.reduce((sum, m) => sum + m.sessions, 0) / (avgPerWeek || 1)
+    : 1;
+  const weeklyVisitors = totalWeeks > 0 ? totalVisitors / totalWeeks : 0;
+  const dailyVisitors = weeklyVisitors / 7;
+
   return (
     <Card>
       <CardContent className="p-5">
-        {/* Session Frequency */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        {/* Frequency Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="text-center p-3 bg-muted/30 rounded-lg">
             <div className="text-xl font-semibold text-foreground">{avgPerDay.toFixed(1)}</div>
             <div className="text-xs text-muted-foreground">Sessions/Day</div>
@@ -41,8 +49,12 @@ export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisatio
             <div className="text-xs text-muted-foreground">Sessions/Week</div>
           </div>
           <div className="text-center p-3 bg-muted/30 rounded-lg">
-            <div className="text-xl font-semibold text-foreground">{avgPerMonth.toFixed(0)}</div>
-            <div className="text-xs text-muted-foreground">Sessions/Month</div>
+            <div className="text-xl font-semibold text-foreground">{Math.round(dailyVisitors)}</div>
+            <div className="text-xs text-muted-foreground">Visitors/Day</div>
+          </div>
+          <div className="text-center p-3 bg-muted/30 rounded-lg">
+            <div className="text-xl font-semibold text-foreground">{Math.round(weeklyVisitors)}</div>
+            <div className="text-xs text-muted-foreground">Visitors/Week</div>
           </div>
         </div>
 

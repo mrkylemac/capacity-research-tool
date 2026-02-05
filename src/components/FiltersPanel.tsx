@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { format, subMonths } from 'date-fns';
-import { API_CONFIG, type PageSizeOption } from '@/config/api';
+import { format, subMonths, subYears } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,71 +11,106 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+const SAVED_VENUES = [
+  { id: '49448', name: 'Aalto Community' },
+  { id: '59636', name: 'Sol Sauna' },
+  { id: '37867', name: 'Inner Studio' },
+] as const;
+
+const DATE_RANGES = [
+  { id: '3m', label: 'Last 3 months', getFrom: () => subMonths(new Date(), 3) },
+  { id: '6m', label: 'Last 6 months', getFrom: () => subMonths(new Date(), 6) },
+  { id: '12m', label: 'Last 12 months', getFrom: () => subMonths(new Date(), 12) },
+  { id: 'all', label: 'All time', getFrom: () => subYears(new Date(), 10) },
+] as const;
+
 interface FiltersPanelProps {
-  onFetchData: (hostId: string, fromDate: string, toDate: string, pageSize: number) => void;
+  onFetchData: (hostId: string, fromDate: string, toDate: string) => void;
   isLoading: boolean;
 }
 
 export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
-  const [hostId, setHostId] = useState<string>(API_CONFIG.defaultHostId);
-  const [fromDate, setFromDate] = useState(format(subMonths(new Date(), 3), 'yyyy-MM-dd'));
-  const [toDate, setToDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [pageSize, setPageSize] = useState<PageSizeOption>(API_CONFIG.defaultPageSize as PageSizeOption);
+  const [selectedVenue, setSelectedVenue] = useState<string>(SAVED_VENUES[0].id);
+  const [customId, setCustomId] = useState('');
+  const [isCustom, setIsCustom] = useState(false);
+  const [dateRange, setDateRange] = useState<string>('3m');
+
+  const handleVenueChange = (value: string) => {
+    if (value === 'custom') {
+      setIsCustom(true);
+      setCustomId('');
+    } else {
+      setIsCustom(false);
+      setSelectedVenue(value);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onFetchData(hostId, fromDate, toDate, pageSize);
+    const hostId = isCustom ? customId : selectedVenue;
+    const range = DATE_RANGES.find(r => r.id === dateRange) || DATE_RANGES[0];
+    const fromDate = format(range.getFrom(), 'yyyy-MM-dd');
+    const toDate = format(new Date(), 'yyyy-MM-dd');
+    
+    if (hostId) {
+      onFetchData(hostId, fromDate, toDate);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="notion-card mb-6">
-      <h3 className="text-sm font-medium text-foreground mb-4">Query Parameters</h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Host ID */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Venue Selection */}
         <div className="space-y-2">
-          <Label htmlFor="hostId" className="text-xs text-muted-foreground">Host ID</Label>
-          <Input
-            id="hostId"
-            type="text"
-            value={hostId}
-            onChange={(e) => setHostId(e.target.value)}
-            placeholder="49448"
-          />
+          <Label className="text-xs text-muted-foreground">Venue</Label>
+          {isCustom ? (
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={customId}
+                onChange={(e) => setCustomId(e.target.value)}
+                placeholder="Enter Host ID"
+                className="flex-1"
+              />
+              <Button 
+                type="button" 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setIsCustom(false)}
+                className="px-2"
+              >
+                ×
+              </Button>
+            </div>
+          ) : (
+            <Select value={selectedVenue} onValueChange={handleVenueChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select venue" />
+              </SelectTrigger>
+              <SelectContent>
+                {SAVED_VENUES.map((venue) => (
+                  <SelectItem key={venue.id} value={venue.id}>
+                    {venue.name}
+                  </SelectItem>
+                ))}
+                <SelectItem value="custom">+ Custom ID...</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
-        {/* From Date */}
+        {/* Date Range */}
         <div className="space-y-2">
-          <Label htmlFor="fromDate" className="text-xs text-muted-foreground">From Date</Label>
-          <Input
-            id="fromDate"
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-          />
-        </div>
-
-        {/* To Date */}
-        <div className="space-y-2">
-          <Label htmlFor="toDate" className="text-xs text-muted-foreground">To Date</Label>
-          <Input
-            id="toDate"
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-          />
-        </div>
-
-        {/* Page Size */}
-        <div className="space-y-2">
-          <Label htmlFor="pageSize" className="text-xs text-muted-foreground">Page Size</Label>
-          <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v) as PageSizeOption)}>
+          <Label className="text-xs text-muted-foreground">Date Range</Label>
+          <Select value={dateRange} onValueChange={setDateRange}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {API_CONFIG.pageSizeOptions.map(size => (
-                <SelectItem key={size} value={String(size)}>{size}</SelectItem>
+              {DATE_RANGES.map((range) => (
+                <SelectItem key={range.id} value={range.id}>
+                  {range.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -85,7 +119,11 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
         {/* Fetch Button */}
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground opacity-0">Action</Label>
-          <Button type="submit" disabled={isLoading} className="w-full">
+          <Button 
+            type="submit" 
+            disabled={isLoading || (isCustom && !customId)} 
+            className="w-full"
+          >
             {isLoading ? 'Loading...' : 'Fetch Data'}
           </Button>
         </div>

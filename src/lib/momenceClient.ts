@@ -1,6 +1,16 @@
 import { API_CONFIG } from '@/config/api';
 import type { MomenceSession, MomenceSessionsResponse, SessionsQueryParams } from '@/types/momence';
 
+export interface HostInfo {
+  id: number;
+  name: string;
+  currency: string;
+  countryCode: string;
+  timeZone: string;
+  industry: string;
+  profileImage: string | null;
+}
+
 /**
  * Momence API Client
  * Handles all API calls to the Momence readonly API
@@ -10,6 +20,41 @@ class MomenceClient {
 
   constructor(baseUrl: string = API_CONFIG.baseUrl) {
     this.baseUrl = baseUrl;
+  }
+
+  /**
+   * Fetch host info from the Momence API
+   */
+  async fetchHostInfo(hostId: string): Promise<HostInfo | null> {
+    const url = `${this.baseUrl}/${hostId}/host-schedule`;
+    
+    try {
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.warn('Could not fetch host info:', response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      
+      if (data.host) {
+        return {
+          id: data.host.id,
+          name: data.host.name || 'Unknown Venue',
+          currency: data.host.currency || 'aud',
+          countryCode: data.host.countryCode || 'AU',
+          timeZone: data.host.timeZone || 'Australia/Melbourne',
+          industry: data.host.industry?.name || 'Wellness',
+          profileImage: data.host.profileImage || data.host.logo || data.host.image || null,
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      console.warn('Error fetching host info:', error);
+      return null;
+    }
   }
 
   /**
@@ -31,9 +76,11 @@ class MomenceClient {
     
     // Pagination (0-indexed)
     queryParams.set('page', String((params.page || 1) - 1));
-    queryParams.set('pageSize', String(params.pageSize || API_CONFIG.defaultPageSize));
+    queryParams.set('pageSize', String(params.pageSize || API_CONFIG.pageSize));
 
     const url = `${this.baseUrl}/${params.hostId}/host-schedule/sessions?${queryParams.toString()}`;
+    
+    console.log('API Request URL:', url);
     
     try {
       const response = await fetch(url);
@@ -43,6 +90,12 @@ class MomenceClient {
       }
 
       const data = await response.json();
+      
+      // Log sample session for debugging
+      if (data.payload?.[0]) {
+        console.log('Sample session from API:', data.payload[0]);
+      }
+      
       return this.transformResponse(data, params);
     } catch (error) {
       console.error('Momence API Error:', error);
@@ -60,8 +113,8 @@ class MomenceClient {
         sessions: data.payload.map(this.transformSession),
         totalCount: data.total || data.payload.length,
         page: (data.page ?? 0) + 1,
-        pageSize: data.pageSize || params.pageSize || API_CONFIG.defaultPageSize,
-        totalPages: data.totalPages || Math.ceil((data.total || data.payload.length) / (params.pageSize || API_CONFIG.defaultPageSize)),
+        pageSize: data.pageSize || params.pageSize || API_CONFIG.pageSize,
+        totalPages: data.totalPages || Math.ceil((data.total || data.payload.length) / (params.pageSize || API_CONFIG.pageSize)),
       };
     }
 
@@ -71,8 +124,8 @@ class MomenceClient {
         sessions: data.data.map(this.transformSession),
         totalCount: data.total || data.data.length,
         page: (data.page || 0) + 1, // Convert 0-indexed to 1-indexed
-        pageSize: data.pageSize || params.pageSize || API_CONFIG.defaultPageSize,
-        totalPages: data.totalPages || Math.ceil((data.total || data.data.length) / (params.pageSize || API_CONFIG.defaultPageSize)),
+        pageSize: data.pageSize || params.pageSize || API_CONFIG.pageSize,
+        totalPages: data.totalPages || Math.ceil((data.total || data.data.length) / (params.pageSize || API_CONFIG.pageSize)),
       };
     }
 
@@ -82,8 +135,8 @@ class MomenceClient {
         sessions: data.sessions.map(this.transformSession),
         totalCount: data.total || data.totalCount || data.sessions.length,
         page: (data.page || 0) + 1,
-        pageSize: data.pageSize || params.pageSize || API_CONFIG.defaultPageSize,
-        totalPages: data.totalPages || Math.ceil((data.total || data.sessions.length) / (params.pageSize || API_CONFIG.defaultPageSize)),
+        pageSize: data.pageSize || params.pageSize || API_CONFIG.pageSize,
+        totalPages: data.totalPages || Math.ceil((data.total || data.sessions.length) / (params.pageSize || API_CONFIG.pageSize)),
       };
     }
 
@@ -93,7 +146,7 @@ class MomenceClient {
         sessions: data.map(this.transformSession),
         totalCount: data.length,
         page: params.page || 1,
-        pageSize: params.pageSize || API_CONFIG.defaultPageSize,
+        pageSize: params.pageSize || API_CONFIG.pageSize,
         totalPages: 1,
       };
     }
@@ -103,7 +156,7 @@ class MomenceClient {
       sessions: [],
       totalCount: 0,
       page: 1,
-      pageSize: params.pageSize || API_CONFIG.defaultPageSize,
+      pageSize: params.pageSize || API_CONFIG.pageSize,
       totalPages: 0,
     };
   }
