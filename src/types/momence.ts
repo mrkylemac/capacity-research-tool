@@ -63,6 +63,7 @@ export interface TimeSlotData {
 }
 
 export interface VenueConfig {
+  venueName: string;
   sessionType: string;
   duration: number;
   price: number;

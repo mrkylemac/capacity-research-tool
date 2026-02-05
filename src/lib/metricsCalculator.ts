@@ -174,6 +174,7 @@ export function calculateDemandPatterns(sessions: MomenceSession[]): TimeSlotDat
 export function calculateVenueConfig(sessions: MomenceSession[], fromDate: string, toDate: string): VenueConfig {
   if (sessions.length === 0) {
     return {
+      venueName: '-',
       sessionType: 'Sauna & Ice',
       duration: 60,
       price: 35,
@@ -182,6 +183,10 @@ export function calculateVenueConfig(sessions: MomenceSession[], fromDate: strin
       operatingHours: '-',
     };
   }
+
+  // Get venue name from location
+  const locations = sessions.map(s => s.location).filter(l => l);
+  const venueName = getMostCommon(locations) || 'Unknown Venue';
 
   // Get most common values
   const sessionTypes = sessions.map(s => s.sessionName);
@@ -209,6 +214,7 @@ export function calculateVenueConfig(sessions: MomenceSession[], fromDate: strin
   const operatingHours = `${formatHour(minTime)} – ${formatHour(maxTime + 1)}`;
 
   return {
+    venueName,
     sessionType,
     duration,
     price,
