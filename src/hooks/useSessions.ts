@@ -40,6 +40,11 @@ export interface DataRange {
   fallbackMonths?: number;    // How many months of available data we're showing
 }
 
+export interface FetchProgress {
+  sessionsFetched: number;
+  pagesLoaded: number;
+}
+
 export function useSessions() {
   const [allSessions, setAllSessions] = useState<MomenceSession[]>([]);
   const [queryParams, setQueryParams] = useState<SessionsQueryParams | null>(null);
@@ -49,10 +54,12 @@ export function useSessions() {
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [dataRange, setDataRange] = useState<DataRange>({ from: null, to: null, rawFrom: null, rawTo: null });
+  const [fetchProgress, setFetchProgress] = useState<FetchProgress>({ sessionsFetched: 0, pagesLoaded: 0 });
 
   const fetchData = useCallback(async (params: Omit<SessionsQueryParams, 'page' | 'pageSize'>) => {
     setIsLoading(true);
     setError(null);
+    setFetchProgress({ sessionsFetched: 0, pagesLoaded: 0 });
     setQueryParams({ ...params, page: 1, pageSize: API_CONFIG.pageSize });
 
     console.log('Requested date range:', params.startsAtFrom, 'to', params.startsAtTo);
@@ -75,6 +82,9 @@ export function useSessions() {
         const sessionCount = response.sessions.length;
         allData.push(...response.sessions);
         pagesLoaded++;
+        
+        // Update progress for UI feedback
+        setFetchProgress({ sessionsFetched: allData.length, pagesLoaded });
         
         console.log(`Page ${page}: fetched ${sessionCount} sessions (total so far: ${allData.length})`);
 
@@ -182,6 +192,7 @@ export function useSessions() {
     dataRange,
     isLoading,
     error,
+    fetchProgress,
     fetchData,
   };
 }

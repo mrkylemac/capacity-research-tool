@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import type { DataRange } from '@/hooks/useSessions';
+import type { DataRange, FetchProgress } from '@/hooks/useSessions';
 
 interface DataStatusProps {
   isLoading: boolean;
@@ -7,13 +7,26 @@ interface DataStatusProps {
   sessionCount: number;
   pageCount: number;
   dataRange?: DataRange;
+  fetchProgress?: FetchProgress;
 }
 
-export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRange }: DataStatusProps) {
+export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRange, fetchProgress }: DataStatusProps) {
   if (isLoading) {
+    const count = fetchProgress?.sessionsFetched || 0;
+    const pages = fetchProgress?.pagesLoaded || 0;
+    
     return (
       <div className="flex items-center justify-center gap-2 py-4 text-muted-foreground">
-        <span className="animate-pulse">Fetching session data...</span>
+        <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        <span>
+          Fetching session data
+          {count > 0 && (
+            <span className="text-foreground font-medium">
+              ... {count.toLocaleString()} sessions
+              {pages > 1 && <span className="text-muted-foreground font-normal"> ({pages} pages)</span>}
+            </span>
+          )}
+        </span>
       </div>
     );
   }
