@@ -79,7 +79,8 @@ export function useSessions() {
         console.log(`Page ${page}: fetched ${sessionCount} sessions (total so far: ${allData.length})`);
 
         // Stop if: no results, less than full page (end of data), or safety limit
-        if (sessionCount === 0 || sessionCount < API_CONFIG.pageSize || pagesLoaded >= 100) {
+        // Note: Inner Studio has 218+ pages, so limit needs to be high enough
+        if (sessionCount === 0 || sessionCount < API_CONFIG.pageSize || pagesLoaded >= 250) {
           break;
         }
 

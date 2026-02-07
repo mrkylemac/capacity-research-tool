@@ -10,32 +10,68 @@ import { DataStatus } from '@/components/DataStatus';
 import { SaveReportButton } from '@/components/SavedReports';
 import { useSessions } from '@/hooks/useSessions';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
+import { glofoxClient } from '@/lib/glofoxClient';
+import { GLOFOX_CONFIG, type Platform } from '@/config/api';
+import type { MomenceSession } from '@/types/momence';
 
 const Index = () => {
-  const {
-    allSessions,
-    totalPages,
-    metrics,
-    monthlyData,
-    venueConfig,
-    hostInfo,
-    dataRange: fetchedDataRange,
-    isLoading,
-    error,
-    fetchData,
-  } = useSessions();
+  const momenceHook = useSessions();
+  
+  // Glofox state (parallel to Momence hook)
+  const [glofoxSessions, setGlofoxSessions] = useState<MomenceSession[]>([]);
+  const [glofoxLoading, setGlofoxLoading] = useState(false);
+  const [glofoxError, setGlofoxError] = useState<Error | null>(null);
+  const [activePlatform, setActivePlatform] = useState<Platform>('momence');
+
+  // Unified data based on active platform
+  const allSessions = activePlatform === 'glofox' ? glofoxSessions : momenceHook.allSessions;
+  const totalPages = activePlatform === 'glofox' ? 1 : momenceHook.totalPages;
+  const metrics = momenceHook.metrics; // Reuse metrics calculation
+  const monthlyData = momenceHook.monthlyData;
+  const venueConfig = momenceHook.venueConfig;
+  const hostInfo = activePlatform === 'glofox' 
+    ? { id: 0, name: 'Lore Bathing Club', currency: 'usd', countryCode: 'US', timeZone: 'America/New_York', industry: 'Wellness', profileImage: null }
+    : momenceHook.hostInfo;
+  const fetchedDataRange = momenceHook.dataRange;
+  const isLoading = activePlatform === 'glofox' ? glofoxLoading : momenceHook.isLoading;
+  const error = activePlatform === 'glofox' ? glofoxError : momenceHook.error;
 
   const [hasQueried, setHasQueried] = useState(false);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
 
-  const handleFetchData = (hostId: string, fromDate: string, toDate: string) => {
+  const handleFetchData = async (hostId: string, fromDate: string, toDate: string, platform: Platform) => {
     setHasQueried(true);
     setDateRange({ from: fromDate, to: toDate });
-    fetchData({
-      hostId,
-      startsAtFrom: new Date(fromDate).toISOString(),
-      startsAtTo: new Date(toDate).toISOString(),
-    });
+    setActivePlatform(platform);
+
+    if (platform === 'glofox') {
+      // Use Glofox client
+      setGlofoxLoading(true);
+      setGlofoxError(null);
+      try {
+        const config = GLOFOX_CONFIG.loreBathingClub;
+        const sessions = await glofoxClient.fetchSessions({
+          branchId: config.branchId,
+          token: config.token,
+          timezone: config.timezone,
+          startDate: new Date(fromDate),
+          endDate: new Date(toDate),
+        });
+        // Transform to MomenceSession format for compatibility
+        setGlofoxSessions(sessions as unknown as MomenceSession[]);
+      } catch (err) {
+        setGlofoxError(err instanceof Error ? err : new Error('Failed to fetch Glofox data'));
+      } finally {
+        setGlofoxLoading(false);
+      }
+    } else {
+      // Use Momence client
+      momenceHook.fetchData({
+        hostId,
+        startsAtFrom: new Date(fromDate).toISOString(),
+        startsAtTo: new Date(toDate).toISOString(),
+      });
+    }
   };
 
   const benchmarkMetrics = useMemo(() => {

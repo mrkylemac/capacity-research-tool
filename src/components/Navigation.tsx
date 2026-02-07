@@ -14,7 +14,7 @@ export function Navigation() {
       <div className="notion-page !py-0">
         <div className="flex h-14 items-center gap-6">
           <Link to="/" className="font-semibold">
-            Venue Benchmark
+          ♨️
           </Link>
           <div className="flex items-center gap-1">
             {NAV_ITEMS.map((item) => (

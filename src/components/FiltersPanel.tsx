@@ -14,13 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { DateRange } from 'react-day-picker';
-
-const SAVED_VENUES = [
-  { id: '49448', name: 'Aalto Community' },
-  { id: '59636', name: 'Sol Sauna' },
-  { id: '37867', name: 'Inner Studio' },
-  { id: '16053', name: 'HOI' },
-] as const;
+import { VENUES, type Platform } from '@/config/api';
 
 const PRESETS = [
   { label: 'Last 3 months', from: () => subMonths(new Date(), 3), to: () => new Date() },
@@ -30,12 +24,12 @@ const PRESETS = [
 ] as const;
 
 interface FiltersPanelProps {
-  onFetchData: (hostId: string, fromDate: string, toDate: string) => void;
+  onFetchData: (hostId: string, fromDate: string, toDate: string, platform: Platform) => void;
   isLoading: boolean;
 }
 
 export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
-  const [selectedVenue, setSelectedVenue] = useState<string>(SAVED_VENUES[0].id);
+  const [selectedVenue, setSelectedVenue] = useState<string>(VENUES[0].id);
   const [customId, setCustomId] = useState('');
   const [isCustom, setIsCustom] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>({
@@ -62,10 +56,15 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
     const hostId = isCustom ? customId : selectedVenue;
     if (!hostId || !dateRange.from || !dateRange.to) return;
     
+    // Find platform for selected venue (default to momence for custom IDs)
+    const venue = VENUES.find(v => v.id === selectedVenue);
+    const platform: Platform = isCustom ? 'momence' : (venue?.platform || 'momence');
+    
     onFetchData(
       hostId,
       format(dateRange.from, 'yyyy-MM-dd'),
-      format(dateRange.to, 'yyyy-MM-dd')
+      format(dateRange.to, 'yyyy-MM-dd'),
+      platform
     );
   };
 
@@ -104,9 +103,14 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
                 <SelectValue placeholder="Select venue" />
               </SelectTrigger>
               <SelectContent>
-                {SAVED_VENUES.map((venue) => (
+                {VENUES.map((venue) => (
                   <SelectItem key={venue.id} value={venue.id}>
                     {venue.name}
+                    {venue.platform !== 'momence' && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        ({venue.platform})
+                      </span>
+                    )}
                   </SelectItem>
                 ))}
                 <SelectItem value="custom">+ Custom ID...</SelectItem>
