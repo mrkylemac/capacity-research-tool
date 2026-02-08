@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import type { DataRange, FetchProgress } from '@/hooks/useSessions';
+import type { DataRange } from '@/hooks/useSessions';
 
 interface DataStatusProps {
   isLoading: boolean;
@@ -7,26 +7,20 @@ interface DataStatusProps {
   sessionCount: number;
   pageCount: number;
   dataRange?: DataRange;
-  fetchProgress?: FetchProgress;
 }
 
-export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRange, fetchProgress }: DataStatusProps) {
+export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRange }: DataStatusProps) {
   if (isLoading) {
-    const count = fetchProgress?.sessionsFetched || 0;
-    const pages = fetchProgress?.pagesLoaded || 0;
-    
     return (
-      <div className="flex items-center justify-center gap-2 py-4 text-muted-foreground">
-        <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-        <span>
-          Fetching session data
-          {count > 0 && (
-            <span className="text-foreground font-medium">
-              ... {count.toLocaleString()} sessions
-              {pages > 1 && <span className="text-muted-foreground font-normal"> ({pages} pages)</span>}
-            </span>
-          )}
-        </span>
+      <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
+        <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
+        {sessionCount > 0 ? (
+          <span>
+            Loading... <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions fetched
+          </span>
+        ) : (
+          <span>Fetching session data...</span>
+        )}
       </div>
     );
   }
@@ -43,7 +37,7 @@ export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRang
     const dateRangeText = dataRange?.from && dataRange?.to
       ? ` from ${format(dataRange.from, 'MMM d, yyyy')} to ${format(dataRange.to, 'MMM d, yyyy')}`
       : '';
-    
+
     // Show fallback notice if we couldn't match the requested range
     if (dataRange?.fallbackApplied) {
       return (
@@ -56,17 +50,14 @@ export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRang
           </div>
           <div className="text-sm text-muted-foreground">
             Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
-            {pageCount > 1 && <> across {pageCount} API requests</>}
           </div>
         </div>
       );
     }
-    
+
     return (
       <div className="text-sm text-muted-foreground mb-4">
-        Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
-        {pageCount > 1 && <> across {pageCount} API requests</>}
-        {dateRangeText}
+        Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions{dateRangeText}
       </div>
     );
   }

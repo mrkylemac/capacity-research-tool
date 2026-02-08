@@ -8,6 +8,7 @@ import { CapacityUtilisation } from '@/components/CapacityUtilisation';
 import { PricingAnalysis } from '@/components/PricingAnalysis';
 import { RevenueInsights } from '@/components/RevenueInsights';
 import { DataStatus } from '@/components/DataStatus';
+import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { SaveReportButton } from '@/components/SavedReports';
 import { useSessions } from '@/hooks/useSessions';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
@@ -181,11 +182,14 @@ const Index = () => {
         <DataStatus
           isLoading={isLoading}
           error={error as Error | null}
-          sessionCount={allSessions.length}
+          sessionCount={isLoading ? momenceHook.fetchingCount : allSessions.length}
           pageCount={totalPages}
           dataRange={fetchedDataRange}
           fetchProgress={fetchProgress}
         />
+
+        {/* Skeleton Loader */}
+        {hasQueried && isLoading && <DashboardSkeleton />}
 
         {/* Dashboard Content */}
         {hasQueried && !isLoading && benchmarkMetrics && (

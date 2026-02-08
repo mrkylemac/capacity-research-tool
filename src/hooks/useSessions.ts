@@ -26,12 +26,12 @@ function filterByDateRange(sessions: MomenceSession[], fromDate: string, toDate:
 
 function filterToLastMonths(sessions: MomenceSession[], months: number): MomenceSession[] {
   if (sessions.length === 0) return [];
-  
+
   // Find the most recent session date
   const maxDate = Math.max(...sessions.map(s => new Date(s.startsAt).getTime()));
   const cutoffDate = new Date(maxDate);
   cutoffDate.setMonth(cutoffDate.getMonth() - months);
-  
+
   return sessions.filter(s => new Date(s.startsAt).getTime() >= cutoffDate.getTime());
 }
 
@@ -46,11 +46,6 @@ export interface DataRange {
   effectiveToISO: string | null;
 }
 
-export interface FetchProgress {
-  sessionsFetched: number;
-  pagesLoaded: number;
-}
-
 export function useSessions() {
   const [allSessions, setAllSessions] = useState<MomenceSession[]>([]);
   const [queryParams, setQueryParams] = useState<SessionsQueryParams | null>(null);
@@ -59,13 +54,13 @@ export function useSessions() {
   const [error, setError] = useState<Error | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [fetchingCount, setFetchingCount] = useState(0);
   const [dataRange, setDataRange] = useState<DataRange>({ from: null, to: null, rawFrom: null, rawTo: null, effectiveFromISO: null, effectiveToISO: null });
-  const [fetchProgress, setFetchProgress] = useState<FetchProgress>({ sessionsFetched: 0, pagesLoaded: 0 });
 
   const fetchData = useCallback(async (params: Omit<SessionsQueryParams, 'page' | 'pageSize'>) => {
     setIsLoading(true);
     setError(null);
-    setFetchProgress({ sessionsFetched: 0, pagesLoaded: 0 });
+    setFetchingCount(0);
     setQueryParams({ ...params, page: 1, pageSize: API_CONFIG.pageSize });
 
     console.log('Requested date range:', params.startsAtFrom, 'to', params.startsAtTo);
@@ -73,7 +68,7 @@ export function useSessions() {
     try {
       // Fetch host info in parallel with first page of sessions
       const hostInfoPromise = momenceClient.fetchHostInfo(params.hostId);
-      
+
       const allData: MomenceSession[] = [];
       let page = 1;
       let pagesLoaded = 0;
@@ -88,10 +83,8 @@ export function useSessions() {
         const sessionCount = response.sessions.length;
         allData.push(...response.sessions);
         pagesLoaded++;
-        
-        // Update progress for UI feedback
-        setFetchProgress({ sessionsFetched: allData.length, pagesLoaded });
-        
+        setFetchingCount(allData.length);
+
         console.log(`Page ${page}: fetched ${sessionCount} sessions (total so far: ${allData.length})`);
 
         // Stop if: no results, less than full page (end of data), or safety limit
@@ -110,7 +103,7 @@ export function useSessions() {
       // Calculate date range of raw API data
       let rawMinDate: Date | null = null;
       let rawMaxDate: Date | null = null;
-      
+
       if (allData.length > 0) {
         const dates = allData.map(s => new Date(s.startsAt).getTime());
         rawMinDate = new Date(Math.min(...dates));
@@ -122,7 +115,7 @@ export function useSessions() {
       let filteredData = filterByDateRange(allData, params.startsAtFrom, params.startsAtTo);
       let fallbackApplied = false;
       let fallbackMonths = 0;
-      
+
       console.log(`Filtered: ${allData.length} → ${filteredData.length} sessions within requested range`);
 
       // If no data in requested range but API has data, fall back to last available months
@@ -143,7 +136,7 @@ export function useSessions() {
       // Calculate date range of filtered data
       let filteredMinDate: Date | null = null;
       let filteredMaxDate: Date | null = null;
-      
+
       if (filteredData.length > 0) {
         const dates = filteredData.map(s => new Date(s.startsAt).getTime());
         filteredMinDate = new Date(Math.min(...dates));
@@ -172,7 +165,7 @@ export function useSessions() {
       setTotalCount(filteredData.length);
       setTotalPages(pagesLoaded);
       setAllSessions(filteredData);
-      
+
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch sessions'));
     } finally {
@@ -204,6 +197,7 @@ export function useSessions() {
     allSessions,
     totalCount,
     totalPages,
+    fetchingCount,
     page: 1,
     metrics,
     monthlyData,
@@ -214,7 +208,6 @@ export function useSessions() {
     dataRange,
     isLoading,
     error,
-    fetchProgress,
     fetchData,
   };
 }
