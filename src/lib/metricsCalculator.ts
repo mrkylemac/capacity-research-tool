@@ -204,14 +204,19 @@ export function calculateVenueConfig(sessions: MomenceSession[], fromDate: strin
   const daysDiff = differenceInDays(parseISO(toDate), parseISO(fromDate)) + 1;
   const sessionsPerDay = daysDiff > 0 ? Math.round((sessions.length / daysDiff) * 10) / 10 : 0;
 
-  // Find operating hours
-  const times = sessions.map(s => {
+  // Find operating hours using session start and end times
+  const startTimes = sessions.map(s => {
     const date = parseISO(s.startsAt);
     return getHours(date) + getMinutes(date) / 60;
   });
-  const minTime = Math.min(...times);
-  const maxTime = Math.max(...times);
-  const operatingHours = `${formatHour(minTime)} – ${formatHour(maxTime + 1)}`;
+  const endTimes = sessions.map(s => {
+    const startDate = parseISO(s.startsAt);
+    const startHour = getHours(startDate) + getMinutes(startDate) / 60;
+    return startHour + (s.durationMinutes || 60) / 60;
+  });
+  const minTime = Math.min(...startTimes);
+  const maxTime = Math.max(...endTimes);
+  const operatingHours = `${formatHour(minTime)} – ${formatHour(maxTime)}`;
 
   return {
     venueName,
