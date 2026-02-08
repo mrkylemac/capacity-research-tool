@@ -129,15 +129,15 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
                 <span className="truncate">{dateLabel}</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <div className="flex">
-                <div className="flex flex-col gap-1 border-r p-3">
+            <PopoverContent className="w-auto max-w-[calc(100vw-2rem)] p-0" align="start">
+              <div className="flex flex-col sm:flex-row">
+                <div className="flex sm:flex-col gap-1 sm:border-r border-b sm:border-b-0 p-3 overflow-x-auto">
                   {PRESETS.map((preset) => (
                     <Button
                       key={preset.label}
                       variant="ghost"
                       size="sm"
-                      className="justify-start text-xs"
+                      className="justify-start text-xs whitespace-nowrap"
                       onClick={() => handlePreset(preset)}
                     >
                       {preset.label}
@@ -148,8 +148,17 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
                   mode="range"
                   selected={dateRange}
                   onSelect={(range) => range && setDateRange(range)}
+                  numberOfMonths={1}
+                  defaultMonth={dateRange.from}
+                  className="sm:hidden"
+                />
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={(range) => range && setDateRange(range)}
                   numberOfMonths={2}
                   defaultMonth={dateRange.from}
+                  className="hidden sm:block"
                 />
               </div>
             </PopoverContent>
