@@ -6,6 +6,7 @@ import { MonthlyTable } from '@/components/MonthlyTable';
 import { DemandPatterns } from '@/components/DemandPatterns';
 import { CapacityUtilisation } from '@/components/CapacityUtilisation';
 import { PricingAnalysis } from '@/components/PricingAnalysis';
+import { RevenueInsights } from '@/components/RevenueInsights';
 import { DataStatus } from '@/components/DataStatus';
 import { SaveReportButton } from '@/components/SavedReports';
 import { useSessions } from '@/hooks/useSessions';
@@ -210,6 +211,16 @@ const Index = () => {
             <section>
               <h2 className="notion-h1">Demand Patterns</h2>
               <DemandPatterns sessions={allSessions} />
+            </section>
+
+            {/* Revenue Insights */}
+            <section>
+              <h2 className="notion-h1">Revenue Insights</h2>
+              <RevenueInsights
+                sessions={allSessions}
+                monthlyData={monthlyData}
+                benchmarkMetrics={benchmarkMetrics}
+              />
             </section>
 
             {/* Capacity Trend */}
