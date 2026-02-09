@@ -1,22 +1,26 @@
 import { useState, useCallback } from 'react';
 import { momenceClient, type HostInfo } from '@/lib/momenceClient';
-import { 
-  calculateMetrics, 
-  calculateMonthlyData, 
-  calculateDemandPatterns, 
+import {
+  calculateMetrics,
+  calculateMonthlyData,
+  calculateDemandPatterns,
   calculateVenueConfig,
-  calculateClassTypeData 
+  calculateClassTypeData
 } from '@/lib/metricsCalculator';
 import { API_CONFIG } from '@/config/api';
 import type { MomenceSession, SessionsQueryParams } from '@/types/momence';
 
 function filterByDateRange(sessions: MomenceSession[], fromDate: string, toDate: string): MomenceSession[] {
   const from = new Date(fromDate).getTime();
-  const to = new Date(toDate).getTime();
-  
+  // Parse toDate and extend to end-of-day if it resolves to midnight
+  const toParsed = new Date(toDate);
+  const toTime = toParsed.getHours() === 0 && toParsed.getMinutes() === 0 && toParsed.getSeconds() === 0
+    ? new Date(toParsed.getFullYear(), toParsed.getMonth(), toParsed.getDate(), 23, 59, 59, 999).getTime()
+    : toParsed.getTime();
+
   return sessions.filter(session => {
     const sessionDate = new Date(session.startsAt).getTime();
-    return sessionDate >= from && sessionDate <= to;
+    return sessionDate >= from && sessionDate <= toTime;
   });
 }
 
@@ -38,6 +42,8 @@ export interface DataRange {
   rawTo: Date | null;
   fallbackApplied?: boolean;  // True if we fell back to available data
   fallbackMonths?: number;    // How many months of available data we're showing
+  effectiveFromISO: string | null;  // Actual date range used for calculations
+  effectiveToISO: string | null;
 }
 
 export interface FetchProgress {
@@ -53,7 +59,7 @@ export function useSessions() {
   const [error, setError] = useState<Error | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [dataRange, setDataRange] = useState<DataRange>({ from: null, to: null, rawFrom: null, rawTo: null });
+  const [dataRange, setDataRange] = useState<DataRange>({ from: null, to: null, rawFrom: null, rawTo: null, effectiveFromISO: null, effectiveToISO: null });
   const [fetchProgress, setFetchProgress] = useState<FetchProgress>({ sessionsFetched: 0, pagesLoaded: 0 });
 
   const fetchData = useCallback(async (params: Omit<SessionsQueryParams, 'page' | 'pageSize'>) => {
@@ -144,6 +150,15 @@ export function useSessions() {
         filteredMaxDate = new Date(Math.max(...dates));
       }
 
+      // When fallback is applied, use the actual filtered data range for calculations
+      // instead of the original query dates which don't match the data
+      const effectiveFrom = fallbackApplied && filteredMinDate
+        ? filteredMinDate.toISOString()
+        : params.startsAtFrom;
+      const effectiveTo = fallbackApplied && filteredMaxDate
+        ? filteredMaxDate.toISOString()
+        : params.startsAtTo;
+
       setDataRange({
         from: filteredMinDate,
         to: filteredMaxDate,
@@ -151,6 +166,8 @@ export function useSessions() {
         rawTo: rawMaxDate,
         fallbackApplied,
         fallbackMonths,
+        effectiveFromISO: effectiveFrom,
+        effectiveToISO: effectiveTo,
       });
       setTotalCount(filteredData.length);
       setTotalPages(pagesLoaded);
@@ -163,19 +180,24 @@ export function useSessions() {
     }
   }, []);
 
-  const metrics = queryParams ? calculateMetrics(
+  // Use effective dates (actual data range) rather than raw query params
+  // This ensures calculations are accurate when fallback dates are applied
+  const effectiveFrom = dataRange.effectiveFromISO || queryParams?.startsAtFrom;
+  const effectiveTo = dataRange.effectiveToISO || queryParams?.startsAtTo;
+
+  const metrics = (queryParams && effectiveFrom && effectiveTo) ? calculateMetrics(
     allSessions,
-    queryParams.startsAtFrom,
-    queryParams.startsAtTo
+    effectiveFrom,
+    effectiveTo
   ) : null;
 
   const monthlyData = calculateMonthlyData(allSessions);
   const demandPatterns = calculateDemandPatterns(allSessions);
   const classTypeData = calculateClassTypeData(allSessions);
-  const venueConfig = queryParams ? calculateVenueConfig(
+  const venueConfig = (queryParams && effectiveFrom && effectiveTo) ? calculateVenueConfig(
     allSessions,
-    queryParams.startsAtFrom,
-    queryParams.startsAtTo
+    effectiveFrom,
+    effectiveTo
   ) : null;
 
   return {

@@ -1,4 +1,4 @@
-import { parseISO, getDay, getHours, differenceInWeeks, differenceInDays } from 'date-fns';
+import { parseISO, getDay, getHours, getMinutes, differenceInDays } from 'date-fns';
 import type { MomenceSession } from '@/types/momence';
 import { SLOW_FOLK_TARGETS } from '@/config/slowfolk';
 
@@ -56,30 +56,36 @@ export interface BenchmarkComparison {
  * Infer operating hours from session data
  */
 export function inferOperatingHours(sessions: MomenceSession[]): OperatingHours {
-  const weekdayHours: number[] = [];
-  const weekendHours: number[] = [];
+  const weekdayStartTimes: number[] = [];
+  const weekdayEndTimes: number[] = [];
+  const weekendStartTimes: number[] = [];
+  const weekendEndTimes: number[] = [];
 
   sessions.forEach(session => {
-    const date = parseISO(session.startsAt);
-    const hour = getHours(date);
-    const dayOfWeek = getDay(date);
+    const startDate = parseISO(session.startsAt);
+    const startHour = getHours(startDate) + getMinutes(startDate) / 60;
+    // Use session duration to calculate actual end time
+    const endHour = startHour + (session.durationMinutes || 60) / 60;
+    const dayOfWeek = getDay(startDate);
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     if (isWeekend) {
-      weekendHours.push(hour);
+      weekendStartTimes.push(startHour);
+      weekendEndTimes.push(endHour);
     } else {
-      weekdayHours.push(hour);
+      weekdayStartTimes.push(startHour);
+      weekdayEndTimes.push(endHour);
     }
   });
 
   const safeMin = (arr: number[]) => arr.length > 0 ? Math.min(...arr) : 6;
-  const safeMax = (arr: number[]) => arr.length > 0 ? Math.max(...arr) + 1 : 21;
+  const safeMax = (arr: number[]) => arr.length > 0 ? Math.max(...arr) : 21;
 
   return {
-    weekdayStart: safeMin(weekdayHours),
-    weekdayEnd: safeMax(weekdayHours),
-    weekendStart: safeMin(weekendHours),
-    weekendEnd: safeMax(weekendHours),
+    weekdayStart: safeMin(weekdayStartTimes),
+    weekdayEnd: safeMax(weekdayEndTimes),
+    weekendStart: safeMin(weekendStartTimes),
+    weekendEnd: safeMax(weekendEndTimes),
   };
 }
 
@@ -104,7 +110,9 @@ export function calculateBenchmarkMetrics(
   const from = parseISO(fromDate);
   const to = parseISO(toDate);
   const daysInRange = differenceInDays(to, from) + 1;
-  const weeksInRange = Math.max(1, differenceInWeeks(to, from) + 1);
+  // Use fractional weeks for accuracy instead of truncated integer
+  // e.g. 10 days = 1.43 weeks, not 2 weeks (which would halve weeklyVisits)
+  const weeksInRange = Math.max(1, daysInRange / 7);
 
   // Volume
   const totalVisits = sessions.reduce((sum, s) => sum + s.ticketsSold, 0);
