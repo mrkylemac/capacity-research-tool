@@ -13,36 +13,41 @@ interface VenueSummaryProps {
 }
 
 export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo }: VenueSummaryProps) {
-  // Calculate trends
-  const recentMonths = monthlyData.slice(-3);
-  const olderMonths = monthlyData.slice(0, -3);
-  
-  const recentAvgOccupancy = recentMonths.length > 0
-    ? recentMonths.reduce((sum, m) => sum + m.utilisation, 0) / recentMonths.length
-    : 0;
-  const olderAvgOccupancy = olderMonths.length > 0
-    ? olderMonths.reduce((sum, m) => sum + m.utilisation, 0) / olderMonths.length
-    : 0;
-  const occupancyTrend = recentAvgOccupancy - olderAvgOccupancy;
-
-  const bestMonth = monthlyData.length > 0
-    ? monthlyData.reduce((best, m) => m.utilisation > best.utilisation ? m : best)
-    : null;
-  const worstMonth = monthlyData.length > 0
-    ? monthlyData.reduce((worst, m) => m.utilisation < worst.utilisation ? m : worst)
-    : null;
-
   const venueName = hostInfo?.name || venueConfig?.venueName || 'Venue';
   const initials = venueName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
+  // Derived metrics
+  const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
+  const weeklyRevenue = metrics.weeklyVisits * metrics.impliedArpv;
+  const theoreticalMaxWeekly = Math.round(
+    sessionsPerWeek * metrics.avgCapacityPerSession
+  );
+
+  // Visitor trend (recent 3mo vs earlier)
+  const recentMonths = monthlyData.slice(-3);
+  const olderMonths = monthlyData.slice(0, -3);
+  const recentAvgVisitors = recentMonths.length > 0
+    ? recentMonths.reduce((sum, m) => sum + m.ticketsSold, 0) / recentMonths.length
+    : 0;
+  const olderAvgVisitors = olderMonths.length > 0
+    ? olderMonths.reduce((sum, m) => sum + m.ticketsSold, 0) / olderMonths.length
+    : 0;
+  const visitorTrendPct = olderAvgVisitors > 0
+    ? ((recentAvgVisitors - olderAvgVisitors) / olderAvgVisitors) * 100
+    : 0;
+
+  // Best month by visitors not occupancy
+  const bestMonth = monthlyData.length > 0
+    ? monthlyData.reduce((best, m) => m.ticketsSold > best.ticketsSold ? m : best)
+    : null;
+
   return (
     <div className="space-y-6">
-      {/* Venue Profile - Featured Card */}
+      {/* Venue Profile */}
       {venueConfig && (
         <Card className="border-2 bg-gradient-to-br from-background to-muted/30">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-6">
-              {/* Profile Image */}
               <div className="flex-shrink-0">
                 <Avatar className="h-20 w-20 rounded-xl">
                   {hostInfo?.profileImage && (
@@ -53,8 +58,6 @@ export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo }: Ve
                   </AvatarFallback>
                 </Avatar>
               </div>
-
-              {/* Profile Info */}
               <div className="flex-1 space-y-4">
                 <div>
                   <h3 className="text-xl font-semibold">{venueName}</h3>
@@ -62,8 +65,6 @@ export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo }: Ve
                     <p className="text-sm text-muted-foreground">{hostInfo.industry}</p>
                   )}
                 </div>
-
-                {/* Profile Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Duration</p>
@@ -88,182 +89,163 @@ export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo }: Ve
         </Card>
       )}
 
-      {/* Key Metrics Grid - 3 per row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <MetricCard
-          label="Total Visitors"
-          value={metrics.totalVisits.toLocaleString()}
-          sublabel={`${metrics.weeksInRange} weeks`}
-        />
-        <MetricCard
-          label="Weekly Average"
-          value={Math.round(metrics.weeklyVisits).toLocaleString()}
-          sublabel={`${Math.round(metrics.dailyVisits)} daily`}
-        />
-        <MetricCard
-          label="Occupancy Rate"
-          value={`${(metrics.occupancyRate * 100).toFixed(1)}%`}
-          sublabel={getOccupancyLabel(metrics.occupancyRate)}
-          highlight={getOccupancyHighlight(metrics.occupancyRate)}
-        />
-        <MetricCard
-          label="Visitors/Session"
-          value={metrics.avgVisitorsPerSession.toFixed(1)}
-          sublabel={`of ${metrics.avgCapacityPerSession.toFixed(0)} capacity`}
-        />
-        <MetricCard
-          label="Total Sessions"
-          value={metrics.totalSessions.toLocaleString()}
-          sublabel={`${(metrics.totalSessions / metrics.weeksInRange).toFixed(1)}/week`}
-        />
-        <MetricCard
-          label="Visits/Hour"
-          value={metrics.visitsPerOpenHour.toFixed(1)}
-          sublabel={`${metrics.weeklyOpenHours.toFixed(0)} hrs/week open`}
-        />
+      {/* Primary Performance — the numbers that matter */}
+      <div>
+        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+          Primary Performance
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <MetricCard
+            label="Weekly Visitors"
+            value={Math.round(metrics.weeklyVisits).toLocaleString()}
+            sublabel={`${metrics.totalVisits.toLocaleString()} total over ${Math.round(metrics.weeksInRange)} weeks`}
+            size="large"
+          />
+          <MetricCard
+            label="Weekly Revenue"
+            value={metrics.impliedArpv > 0 ? `$${Math.round(weeklyRevenue).toLocaleString()}` : '-'}
+            sublabel={metrics.impliedArpv > 0 ? `$${metrics.impliedArpv.toFixed(2)} ARPV` : 'No pricing data'}
+            size="large"
+          />
+          <MetricCard
+            label="Avg Group Size"
+            value={metrics.avgVisitorsPerSession.toFixed(1)}
+            sublabel={`of ${metrics.avgCapacityPerSession.toFixed(0)} capacity per session`}
+            size="large"
+          />
+          <MetricCard
+            label="Sessions / Week"
+            value={sessionsPerWeek.toFixed(1)}
+            sublabel={`${(sessionsPerWeek / 7).toFixed(1)}/day`}
+            size="large"
+          />
+        </div>
       </div>
 
-      {/* Insights Row - max 3 per row */}
+      {/* Operational Context — how you're getting there */}
+      <div>
+        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+          Operational Context
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <MetricCard
+            label="Operating Hours"
+            value={`${metrics.weeklyOpenHours.toFixed(0)}/week`}
+            sublabel={formatOperatingHours(metrics.operatingHours)}
+          />
+          <MetricCard
+            label="Capacity"
+            value={`${metrics.avgCapacityPerSession.toFixed(0)} guests`}
+            sublabel="per session"
+          />
+          <MetricCard
+            label="Theoretical Max"
+            value={`${theoreticalMaxWeekly.toLocaleString()}/week`}
+            sublabel={`${sessionsPerWeek.toFixed(0)} sessions × ${metrics.avgCapacityPerSession.toFixed(0)} seats`}
+          />
+          <MetricCard
+            label="Current Utilisation"
+            value={`${(metrics.occupancyRate * 100).toFixed(1)}%`}
+            sublabel={`${Math.round(metrics.weeklyVisits)} of ${theoreticalMaxWeekly.toLocaleString()} weekly slots`}
+          />
+        </div>
+      </div>
+
+      {/* Signals — trends and distribution */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Weekday vs Weekend */}
         <Card>
           <CardContent className="p-4">
             <h4 className="text-xs text-muted-foreground mb-2">Weekly Distribution</h4>
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Weekday</span>
-                  <span className="font-medium">{(metrics.weekdayShare * 100).toFixed(0)}%</span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full"
-                    style={{ width: `${metrics.weekdayShare * 100}%` }}
-                  />
-                </div>
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Weekend</span>
-                  <span className="font-medium">{(metrics.weekendShare * 100).toFixed(0)}%</span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full"
-                    style={{ width: `${metrics.weekendShare * 100}%` }}
-                  />
-                </div>
-              </div>
+            <div className="space-y-2">
+              <DemandBar label="Weekday" value={metrics.weekdayShare} visitors={metrics.weekdayVisits} />
+              <DemandBar label="Weekend" value={metrics.weekendShare} visitors={metrics.weekendVisits} />
             </div>
           </CardContent>
         </Card>
 
-        {/* Trend - only show if 4+ months */}
+        {/* Visitor Trend */}
         {monthlyData.length >= 4 && (
           <Card>
             <CardContent className="p-4">
-              <h4 className="text-xs text-muted-foreground mb-2">Occupancy Trend</h4>
+              <h4 className="text-xs text-muted-foreground mb-2">Visitor Trend</h4>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className={`text-xl font-semibold ${occupancyTrend >= 0 ? 'text-green-600' : 'text-amber-600'}`}>
-                    {occupancyTrend >= 0 ? '↑' : '↓'} {Math.abs(occupancyTrend).toFixed(1)}%
+                  <span className={`text-xl font-semibold ${visitorTrendPct >= 0 ? 'text-green-600' : 'text-amber-600'}`}>
+                    {visitorTrendPct >= 0 ? '↑' : '↓'} {Math.abs(visitorTrendPct).toFixed(0)}%
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    vs earlier months
+                    recent 3 months
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Recent 3mo: {recentAvgOccupancy.toFixed(1)}% avg
+                  {Math.round(recentAvgVisitors).toLocaleString()} avg visitors/mo vs {Math.round(olderAvgVisitors).toLocaleString()} earlier
                 </p>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Best/Worst */}
-        {bestMonth && worstMonth && (
+        {/* Best month by visitors */}
+        {bestMonth && (
           <Card>
             <CardContent className="p-4">
-              <h4 className="text-xs text-muted-foreground mb-2">Performance Range</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Best:</span>
-                  <span className="font-medium text-green-600">
-                    {bestMonth.month} {bestMonth.year} ({bestMonth.utilisation.toFixed(1)}%)
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Lowest:</span>
-                  <span className="font-medium text-amber-600">
-                    {worstMonth.month} {worstMonth.year} ({worstMonth.utilisation.toFixed(1)}%)
-                  </span>
-                </div>
+              <h4 className="text-xs text-muted-foreground mb-2">Strongest Month</h4>
+              <div className="space-y-1">
+                <p className="text-xl font-semibold text-green-600">
+                  {bestMonth.ticketsSold.toLocaleString()} visitors
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {bestMonth.month} {bestMonth.year}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {bestMonth.sessions} sessions, {bestMonth.utilisation.toFixed(0)}% utilisation
+                </p>
               </div>
             </CardContent>
           </Card>
         )}
       </div>
-
-      {/* Additional Stats */}
-      {(venueConfig?.sessionsPerDay > 0 || metrics.impliedArpv > 0) && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex flex-wrap items-center gap-6 text-sm">
-              {venueConfig && venueConfig.sessionsPerDay > 0 && (
-                <div>
-                  <span className="text-muted-foreground">Sessions/Day: </span>
-                  <span className="font-semibold">{venueConfig.sessionsPerDay.toFixed(1)}</span>
-                </div>
-              )}
-              {metrics.impliedArpv > 0 && (
-                <div>
-                  <span className="text-muted-foreground">Blended ARPV: </span>
-                  <span className="font-semibold">${metrics.impliedArpv.toFixed(2)}</span>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
 
-function MetricCard({ 
-  label, 
-  value, 
-  sublabel, 
-  highlight 
-}: { 
-  label: string; 
-  value: string; 
+function MetricCard({
+  label,
+  value,
+  sublabel,
+  size = 'default',
+}: {
+  label: string;
+  value: string;
   sublabel: string;
-  highlight?: 'good' | 'medium' | 'low';
+  size?: 'default' | 'large';
 }) {
-  const highlightClass = highlight === 'good' ? 'text-green-600' :
-                         highlight === 'medium' ? 'text-amber-600' :
-                         highlight === 'low' ? 'text-red-600' : '';
-
   return (
     <Card>
       <CardContent className="p-4">
         <p className="text-xs text-muted-foreground mb-1">{label}</p>
-        <p className={`text-xl font-semibold ${highlightClass}`}>{value}</p>
+        <p className={`font-semibold ${size === 'large' ? 'text-2xl' : 'text-xl'}`}>{value}</p>
         <p className="text-xs text-muted-foreground mt-1">{sublabel}</p>
       </CardContent>
     </Card>
   );
 }
 
-function getOccupancyLabel(rate: number): string {
-  if (rate >= 0.7) return 'High demand';
-  if (rate >= 0.5) return 'Healthy';
-  if (rate >= 0.3) return 'Moderate';
-  return 'Low utilisation';
-}
-
-function getOccupancyHighlight(rate: number): 'good' | 'medium' | 'low' {
-  if (rate >= 0.6) return 'good';
-  if (rate >= 0.4) return 'medium';
-  return 'low';
+function DemandBar({ label, value, visitors }: { label: string; value: number; visitors: number }) {
+  return (
+    <div>
+      <div className="flex justify-between text-sm mb-1">
+        <span>{label}</span>
+        <span className="font-medium">{(value * 100).toFixed(0)}%</span>
+      </div>
+      <div className="h-2 bg-muted rounded-full overflow-hidden">
+        <div
+          className="h-full bg-primary rounded-full"
+          style={{ width: `${value * 100}%` }}
+        />
+      </div>
+      <p className="text-xs text-muted-foreground mt-0.5">{visitors.toLocaleString()} visitors</p>
+    </div>
+  );
 }
