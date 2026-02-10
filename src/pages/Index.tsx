@@ -49,67 +49,20 @@ const Index = () => {
     setActivePlatform(platform);
 
     if (platform === 'glofox') {
-      // Use Glofox client
       setGlofoxLoading(true);
       setGlofoxError(null);
       setGlofoxProgress({ sessionsFetched: 0, pagesLoaded: 0 });
       try {
         const config = GLOFOX_CONFIG.loreBathingClub;
-        // Fetch with progress callback
-        const allEvents: MomenceSession[] = [];
-        let page = 1;
-        const limit = 100;
-        
-        while (true) {
-          const url = new URL('https://api.glofox.com/2.0/events');
-          url.searchParams.set('start', Math.floor(new Date(fromDate).getTime() / 1000).toString());
-          url.searchParams.set('end', Math.floor(new Date(toDate).getTime() / 1000).toString());
-          url.searchParams.set('include', 'trainers,facility,program');
-          url.searchParams.set('page', page.toString());
-          url.searchParams.set('limit', limit.toString());
-          url.searchParams.set('private', 'false');
-          url.searchParams.set('sort_by', 'time_start');
-          
-          const response = await fetch(url.toString(), {
-            headers: {
-              'accept': 'application/json',
-              'authorization': `Bearer ${config.token}`,
-              'x-glofox-branch-id': config.branchId,
-              'x-glofox-branch-timezone': config.timezone,
-            },
-          });
-          
-          if (!response.ok) throw new Error(`Glofox API Error: ${response.status}`);
-          
-          const data = await response.json();
-          const events = data.data || [];
-          
-          // Transform to session format
-          events.forEach((e: { _id: string; name: string; time_start: number; duration: number; size: number; booked: number; facility?: { name: string }; level?: string }) => {
-            const startDate = new Date(e.time_start * 1000);
-            const endDate = new Date(startDate.getTime() + e.duration * 60000);
-            allEvents.push({
-              id: e._id,
-              sessionName: e.name,
-              startsAt: startDate.toISOString(),
-              endsAt: endDate.toISOString(),
-              durationMinutes: e.duration,
-              capacity: e.size,
-              ticketsSold: e.booked,
-              fixedTicketPrice: 0,
-              location: e.facility?.name || '',
-              inPerson: true,
-              level: e.level,
-            } as MomenceSession);
-          });
-          
-          setGlofoxProgress({ sessionsFetched: allEvents.length, pagesLoaded: page });
-          
-          if (!data.has_more || page >= 100) break;
-          page++;
-        }
-        
-        setGlofoxSessions(allEvents);
+        const sessions = await glofoxClient.fetchSessions({
+          startDate: new Date(fromDate),
+          endDate: new Date(toDate),
+          token: config.token,
+          branchId: config.branchId,
+          timezone: config.timezone,
+        });
+        setGlofoxProgress({ sessionsFetched: sessions.length, pagesLoaded: 1 });
+        setGlofoxSessions(sessions as MomenceSession[]);
       } catch (err) {
         setGlofoxError(err instanceof Error ? err : new Error('Failed to fetch Glofox data'));
       } finally {
