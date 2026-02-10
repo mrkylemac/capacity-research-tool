@@ -44,7 +44,7 @@ export const VENUES: VenueConfig[] = [
   { id: '59636', name: 'Sol Sauna, Prahran', platform: 'momence' },
   { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence' },
   { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence' },
-  // { id: '16053', name: 'HOI', platform: 'momence' },
+  { id: '16053', name: 'HOI', platform: 'momence' },
   { id: '46052', name: 'Fjord, San Francisco', platform: 'momence' },
   { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox' },
 ];
