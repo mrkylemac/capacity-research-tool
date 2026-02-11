@@ -30,20 +30,34 @@ https://docs.google.com/spreadsheets/d/[SPREADSHEET_ID]/edit
 
 ### Sheet Format
 
-**Pricing & Breakeven / Venue Capacity:**
-- Column A: Metric names
-- Column B: Numeric values
+Based on your Slow Folk pricing model, the script expects:
 
-Expected metrics:
-- `Total Revenue`
-- `Avg Ticket Price`
-- `Target Utilization`
-- `Sessions Per Week`
+**Sheet: "Pricing & Breakeven"**
+Column A (Metric Name) | Column B (Value)
+- `Operating Only` → $27,738 (monthly)
+- `Combined` → $39,251 (monthly)  
+- `Combined + Profit` → $45,138 (monthly)
+- `ARPV` → $34.81
+- `Weekly Visits` → 345
+- `Monthly Revenue` → $51,993.83
 
-**Cash Flow (Monthly):**
-- Row 1: Headers
-- Must include columns: `Month`, `Forecast` (or `Projected` or `Revenue`)
-- Rows 2+: Monthly data
+**Sheet: "Venue Capacity"**
+Column A (Metric Name) | Column B (Value)
+- `Venue Occupancy %` → 35%
+- `Peak Occupancy %` → 59%
+- `Weekly Visits` → 345
+- `Sessions Per Week` → (calculated from your sessions/week)
+
+**Sheet: "Cash Flow (Monthly)"**
+- Row 1: Headers with `Month` and `Revenue` (or `Forecast`)
+- Rows 2+: Your monthly revenue projections
+
+### Mapping Your Spreadsheet
+
+The script will look for these exact row names (case-insensitive):
+- **Breakeven targets**: "Operating Only", "Combined", "Combined + Profit"
+- **Pricing**: "ARPV", "Weekly Visits"  
+- **Capacity**: "Venue Occupancy %", "Peak Occupancy %"
 
 ### Output
 

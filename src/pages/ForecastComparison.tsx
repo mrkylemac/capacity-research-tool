@@ -185,11 +185,22 @@ const ForecastComparison = () => {
     ? allSessions.reduce((sum, s) => sum + s.capacity, 0) / benchmarkTotalSessions 
     : 0;
   
-  // Extract forecast values
-  const forecastRevenue = forecastData?.pricingBreakeven?.['Total Revenue'] || 0;
-  const forecastCapacity = forecastData?.venueCapacity?.['Target Utilization'] || 0;
-  const forecastAvgPrice = forecastData?.pricingBreakeven?.['Avg Ticket Price'] || 0;
-  const forecastSessions = forecastData?.venueCapacity?.['Sessions Per Week'] || 0;
+  // Extract Slow Folk forecast values from spreadsheet
+  const forecastMonthlyRevenue = Number(forecastData?.pricingBreakeven?.['Monthly Revenue']) || 
+                                 Number(forecastData?.pricingBreakeven?.['Total Revenue']) || 0;
+  const forecastVenueOccupancy = Number(forecastData?.venueCapacity?.['Venue Occupancy %']) || 
+                                 Number(forecastData?.venueCapacity?.['Target Utilization']) || 0;
+  const forecastPeakOccupancy = Number(forecastData?.venueCapacity?.['Peak Occupancy %']) || 0;
+  const forecastWeeklyVisits = Number(forecastData?.pricingBreakeven?.['Weekly Visits']) ||
+                               Number(forecastData?.venueCapacity?.['Weekly Visits']) || 0;
+  const forecastARPV = Number(forecastData?.pricingBreakeven?.['ARPV']) ||
+                       Number(forecastData?.pricingBreakeven?.['Avg Ticket Price']) || 0;
+  const forecastSessions = Number(forecastData?.venueCapacity?.['Sessions Per Week']) || 0;
+  
+  // Breakeven targets (monthly)
+  const forecastOperatingOnly = Number(forecastData?.pricingBreakeven?.['Operating Only']) || 0;
+  const forecastCombined = Number(forecastData?.pricingBreakeven?.['Combined']) || 0;
+  const forecastCombinedProfit = Number(forecastData?.pricingBreakeven?.['Combined + Profit']) || 0;
 
   const hasForecastData = forecastData.cashFlow.length > 0 || 
     Object.keys(forecastData.pricingBreakeven).length > 0 ||
@@ -334,47 +345,49 @@ const ForecastComparison = () => {
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-semibold text-muted-foreground">
-                          {(forecastData?.venueCapacity?.['Weekly Visitors'] || '-').toLocaleString()}
+                          {forecastWeeklyVisits ? forecastWeeklyVisits.toLocaleString() : '-'}
                         </div>
                         <div className="text-xs text-muted-foreground">Slow Folk Target</div>
                       </div>
                     </div>
 
-                    {/* Sessions Per Week */}
+                    {/* Capacity Utilization (Venue Occupancy) */}
                     <div className="grid grid-cols-3 gap-4 py-3 border-b">
-                      <div className="font-medium">Sessions Per Week</div>
-                      <div className="text-right">
-                        <div className="text-lg font-semibold">{benchmarkSessionsPerWeek.toFixed(1)}</div>
-                        <div className="text-xs text-muted-foreground">{venueName} Actual</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-semibold text-muted-foreground">{forecastSessions.toFixed(1)}</div>
-                        <div className="text-xs text-muted-foreground">Slow Folk Target</div>
-                      </div>
-                    </div>
-
-                    {/* Capacity Utilization */}
-                    <div className="grid grid-cols-3 gap-4 py-3 border-b">
-                      <div className="font-medium">Capacity Utilization</div>
+                      <div className="font-medium">Venue Occupancy</div>
                       <div className="text-right">
                         <div className="text-lg font-semibold">{benchmarkCapacityUtilization.toFixed(1)}%</div>
                         <div className="text-xs text-muted-foreground">{venueName} Actual</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-semibold text-muted-foreground">{forecastCapacity.toFixed(1)}%</div>
+                        <div className="text-lg font-semibold text-muted-foreground">{forecastVenueOccupancy.toFixed(1)}%</div>
                         <div className="text-xs text-muted-foreground">Slow Folk Target</div>
                       </div>
                     </div>
 
-                    {/* ARPV / Avg Price */}
+                    {/* Peak Occupancy (if available) */}
+                    {forecastPeakOccupancy > 0 && (
+                      <div className="grid grid-cols-3 gap-4 py-3 border-b">
+                        <div className="font-medium">Peak Occupancy</div>
+                        <div className="text-right">
+                          <div className="text-lg font-semibold">-</div>
+                          <div className="text-xs text-muted-foreground">N/A</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-semibold text-muted-foreground">{forecastPeakOccupancy.toFixed(1)}%</div>
+                          <div className="text-xs text-muted-foreground">Slow Folk Target</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ARPV */}
                     <div className="grid grid-cols-3 gap-4 py-3 border-b">
                       <div className="font-medium">ARPV (Avg Price)</div>
                       <div className="text-right">
-                        <div className="text-lg font-semibold">${benchmarkAvgTicketPrice.toFixed(0)}</div>
+                        <div className="text-lg font-semibold">${benchmarkAvgTicketPrice.toFixed(2)}</div>
                         <div className="text-xs text-muted-foreground">{venueName} Actual</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-semibold text-muted-foreground">${forecastAvgPrice.toFixed(0)}</div>
+                        <div className="text-lg font-semibold text-muted-foreground">${forecastARPV.toFixed(2)}</div>
                         <div className="text-xs text-muted-foreground">Slow Folk Target</div>
                       </div>
                     </div>
@@ -390,7 +403,7 @@ const ForecastComparison = () => {
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-semibold text-muted-foreground">
-                          ${(forecastRevenue / 12).toFixed(0).toLocaleString()}
+                          ${forecastMonthlyRevenue.toFixed(0).toLocaleString()}
                         </div>
                         <div className="text-xs text-muted-foreground">Slow Folk Target</div>
                       </div>
@@ -406,23 +419,23 @@ const ForecastComparison = () => {
                 <AlertDescription>
                   <div className="font-medium mb-2">Key Takeaway</div>
                   <p className="text-sm leading-relaxed">
-                    {benchmarkCapacityUtilization < forecastCapacity * 1.2 && benchmarkCapacityUtilization > forecastCapacity * 0.8 ? (
+                    {benchmarkCapacityUtilization < forecastVenueOccupancy * 1.2 && benchmarkCapacityUtilization > forecastVenueOccupancy * 0.8 ? (
                       <>
-                        Slow Folk's utilization target ({forecastCapacity.toFixed(0)}%) aligns closely with {venueName}'s actual performance ({benchmarkCapacityUtilization.toFixed(0)}%), 
-                        demonstrating that our assumptions are grounded in real market conditions. Even at this conservative occupancy, 
-                        the business model delivers meaningful revenue.
+                        Slow Folk's venue occupancy target ({forecastVenueOccupancy.toFixed(0)}%) aligns closely with {venueName}'s actual performance ({benchmarkCapacityUtilization.toFixed(0)}%), 
+                        demonstrating that our assumptions are grounded in real market conditions. At {forecastWeeklyVisits} weekly visits and ${forecastARPV.toFixed(2)} ARPV,
+                        Slow Folk projects ${forecastMonthlyRevenue.toLocaleString()}/month in revenue.
                       </>
-                    ) : benchmarkCapacityUtilization > forecastCapacity * 1.2 ? (
+                    ) : benchmarkCapacityUtilization > forecastVenueOccupancy * 1.2 ? (
                       <>
-                        {venueName} achieves {benchmarkCapacityUtilization.toFixed(0)}% utilization vs our {forecastCapacity.toFixed(0)}% target, 
+                        {venueName} achieves {benchmarkCapacityUtilization.toFixed(0)}% utilization vs our {forecastVenueOccupancy.toFixed(0)}% target, 
                         suggesting Slow Folk's projections are <strong>conservative</strong>. This provides significant upside potential 
-                        while maintaining credible downside protection.
+                        while maintaining credible downside protection for our ${forecastCombinedProfit.toLocaleString()}/month profit target.
                       </>
                     ) : (
                       <>
-                        Slow Folk targets {forecastCapacity.toFixed(0)}% utilization compared to {venueName}'s {benchmarkCapacityUtilization.toFixed(0)}%. 
-                        Our projections assume improved operational efficiency and positioning, with {venueName}'s data providing 
-                        a realistic floor for stress-testing scenarios.
+                        Slow Folk targets {forecastVenueOccupancy.toFixed(0)}% venue occupancy compared to {venueName}'s {benchmarkCapacityUtilization.toFixed(0)}%. 
+                        Our projections assume {forecastWeeklyVisits} weekly visits at ${forecastARPV.toFixed(2)} ARPV, with {venueName}'s data providing 
+                        a realistic floor for stress-testing our ${forecastCombined.toLocaleString()}/month breakeven scenario.
                       </>
                     )}
                   </p>
@@ -431,24 +444,22 @@ const ForecastComparison = () => {
             </section>
 
             {/* Breakeven Validation */}
-            {(forecastData?.pricingBreakeven?.['Breakeven Revenue'] || 
-              forecastData?.pricingBreakeven?.['Breakeven + Loan'] ||
-              forecastData?.pricingBreakeven?.['Breakeven + Profit']) && (
+            {(forecastOperatingOnly > 0 || forecastCombined > 0 || forecastCombinedProfit > 0) && (
               <section>
                 <h2 className="notion-h1">Breakeven Validation</h2>
                 <p className="text-sm text-muted-foreground mb-4">
                   Can {venueName}'s performance support your breakeven scenarios?
                 </p>
                 <div className="grid gap-4 md:grid-cols-3">
-                  {forecastData?.pricingBreakeven?.['Breakeven Revenue'] && (
+                  {forecastOperatingOnly > 0 && (
                     <Card>
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium">Base Breakeven</CardTitle>
+                        <CardTitle className="text-sm font-medium">Operating Only</CardTitle>
                         <CardDescription className="text-xs">Operating costs only</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="text-lg font-semibold text-muted-foreground">
-                          ${Number(forecastData.pricingBreakeven['Breakeven Revenue']).toLocaleString()}/mo
+                          ${forecastOperatingOnly.toLocaleString()}/mo
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">Slow Folk requirement</div>
                         <div className="mt-3 pt-3 border-t">
@@ -456,7 +467,7 @@ const ForecastComparison = () => {
                           <div className="text-2xl font-bold">
                             ${(benchmarkTotalRevenue / (monthlyData.length || 1)).toFixed(0).toLocaleString()}/mo
                           </div>
-                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > Number(forecastData.pricingBreakeven['Breakeven Revenue']) ? (
+                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > forecastOperatingOnly ? (
                             <div className="text-xs text-green-600 mt-1 font-medium">✓ Exceeds breakeven</div>
                           ) : (
                             <div className="text-xs text-amber-600 mt-1 font-medium">Below breakeven target</div>
@@ -466,15 +477,15 @@ const ForecastComparison = () => {
                     </Card>
                   )}
 
-                  {forecastData?.pricingBreakeven?.['Breakeven + Loan'] && (
+                  {forecastCombined > 0 && (
                     <Card>
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium">Breakeven + Loan Servicing</CardTitle>
-                        <CardDescription className="text-xs">Operating + debt service</CardDescription>
+                        <CardTitle className="text-sm font-medium">Combined (Operating + Debt)</CardTitle>
+                        <CardDescription className="text-xs">Operating + loan servicing</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="text-lg font-semibold text-muted-foreground">
-                          ${Number(forecastData.pricingBreakeven['Breakeven + Loan']).toLocaleString()}/mo
+                          ${forecastCombined.toLocaleString()}/mo
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">Slow Folk requirement</div>
                         <div className="mt-3 pt-3 border-t">
@@ -482,7 +493,7 @@ const ForecastComparison = () => {
                           <div className="text-2xl font-bold">
                             ${(benchmarkTotalRevenue / (monthlyData.length || 1)).toFixed(0).toLocaleString()}/mo
                           </div>
-                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > Number(forecastData.pricingBreakeven['Breakeven + Loan']) ? (
+                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > forecastCombined ? (
                             <div className="text-xs text-green-600 mt-1 font-medium">✓ Covers loan servicing</div>
                           ) : (
                             <div className="text-xs text-amber-600 mt-1 font-medium">Below loan threshold</div>
@@ -492,15 +503,15 @@ const ForecastComparison = () => {
                     </Card>
                   )}
 
-                  {forecastData?.pricingBreakeven?.['Breakeven + Profit'] && (
+                  {forecastCombinedProfit > 0 && (
                     <Card>
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium">Breakeven + Profit Target</CardTitle>
-                        <CardDescription className="text-xs">Operating + debt + margin</CardDescription>
+                        <CardTitle className="text-sm font-medium">Combined + Profit</CardTitle>
+                        <CardDescription className="text-xs">Operating + debt + 15% margin</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="text-lg font-semibold text-muted-foreground">
-                          ${Number(forecastData.pricingBreakeven['Breakeven + Profit']).toLocaleString()}/mo
+                          ${forecastCombinedProfit.toLocaleString()}/mo
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">Slow Folk target</div>
                         <div className="mt-3 pt-3 border-t">
@@ -508,7 +519,7 @@ const ForecastComparison = () => {
                           <div className="text-2xl font-bold">
                             ${(benchmarkTotalRevenue / (monthlyData.length || 1)).toFixed(0).toLocaleString()}/mo
                           </div>
-                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > Number(forecastData.pricingBreakeven['Breakeven + Profit']) ? (
+                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > forecastCombinedProfit ? (
                             <div className="text-xs text-green-600 mt-1 font-medium">✓ Achieves profit target</div>
                           ) : (
                             <div className="text-xs text-amber-600 mt-1 font-medium">Below profit target</div>
@@ -551,7 +562,7 @@ const ForecastComparison = () => {
                     <div className="mt-2 pt-2 border-t text-sm">
                       <div className="text-muted-foreground">Slow Folk target:</div>
                       <div className="font-semibold text-muted-foreground">
-                        ${((forecastRevenue / 12) / (forecastSessions * 52 / 12) || 0).toFixed(0)}
+                        ${(forecastMonthlyRevenue / (forecastSessions * 52 / 12) || 0).toFixed(0)}
                       </div>
                     </div>
                   </CardContent>
