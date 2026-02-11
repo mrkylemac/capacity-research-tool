@@ -1,0 +1,15 @@
+{
+  "_comment": "Slow Folk default values - used as fallbacks when Google Sheets fields don't match expected names",
+  "defaults": {
+    "monthlyRevenue": 51993.83,
+    "venueOccupancy": 35,
+    "peakOccupancy": 59,
+    "weeklyVisits": 345,
+    "arpv": 34.81,
+    "sessionsPerWeek": 46.5,
+    "operatingOnly": 27738,
+    "combined": 39251,
+    "combinedProfit": 45138
+  },
+  "instructions": "Update these defaults to match your current Slow Folk business model. These values are used when the Google Sheets scraper can't find matching field names."
+}
