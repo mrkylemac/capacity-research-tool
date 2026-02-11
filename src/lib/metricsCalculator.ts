@@ -7,6 +7,7 @@ import type {
   VenueConfig,
   ClassTypeData 
 } from '@/types/momence';
+import { formatDecimalHour } from '@/lib/utils';
 
 /**
  * Calculate core metrics from sessions data
@@ -216,7 +217,7 @@ export function calculateVenueConfig(sessions: MomenceSession[], fromDate: strin
   });
   const minTime = Math.min(...startTimes);
   const maxTime = Math.max(...endTimes);
-  const operatingHours = `${formatHour(minTime)} – ${formatHour(maxTime)}`;
+  const operatingHours = `${formatDecimalHour(minTime)} – ${formatDecimalHour(maxTime)}`;
 
   return {
     venueName,
@@ -243,15 +244,6 @@ function getMostCommon<T>(arr: T[]): T | undefined {
     }
   });
   return maxItem;
-}
-
-function formatHour(hour: number): string {
-  const h = Math.floor(hour);
-  const m = Math.round((hour - h) * 60);
-  const period = h >= 12 ? 'pm' : 'am';
-  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-  const minStr = m > 0 ? `:${m.toString().padStart(2, '0')}` : '';
-  return `${hour12}${minStr}${period}`;
 }
 
 /**

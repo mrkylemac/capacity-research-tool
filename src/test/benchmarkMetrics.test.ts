@@ -333,4 +333,14 @@ describe('formatOperatingHours', () => {
     };
     expect(formatOperatingHours(hours)).toBe('12am–12pm');
   });
+
+  it('formats decimal hours as readable time (no raw decimals in UI)', () => {
+    const hours: OperatingHours = {
+      weekdayStart: 4,
+      weekdayEnd: 18.083333333333332,
+      weekendStart: 6,
+      weekendEnd: 15.833333333333334,
+    };
+    expect(formatOperatingHours(hours)).toBe('Weekdays 4am–6:05pm, Weekends 6am–3:50pm');
+  });
 });

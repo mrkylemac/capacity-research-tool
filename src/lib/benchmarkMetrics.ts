@@ -1,6 +1,7 @@
 import { parseISO, getDay, getHours, getMinutes, differenceInDays } from 'date-fns';
 import type { MomenceSession } from '@/types/momence';
 import { SLOW_FOLK_TARGETS } from '@/config/slowfolk';
+import { formatDecimalHour } from '@/lib/utils';
 
 export interface OperatingHours {
   weekdayStart: number;  // e.g., 6 for 6am
@@ -270,17 +271,11 @@ export function compareToSlowFolk(metrics: BenchmarkMetrics): BenchmarkCompariso
 }
 
 /**
- * Format operating hours for display
+ * Format operating hours for display. Uses formatDecimalHour so decimal hours (e.g. inferred 18.083…) render as "6:05pm".
  */
 export function formatOperatingHours(hours: OperatingHours): string {
-  const formatHour = (h: number) => {
-    const period = h >= 12 ? 'pm' : 'am';
-    const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-    return `${hour12}${period}`;
-  };
-
-  const weekday = `${formatHour(hours.weekdayStart)}–${formatHour(hours.weekdayEnd)}`;
-  const weekend = `${formatHour(hours.weekendStart)}–${formatHour(hours.weekendEnd)}`;
+  const weekday = `${formatDecimalHour(hours.weekdayStart)}–${formatDecimalHour(hours.weekdayEnd)}`;
+  const weekend = `${formatDecimalHour(hours.weekendStart)}–${formatDecimalHour(hours.weekendEnd)}`;
 
   if (weekday === weekend) {
     return weekday;

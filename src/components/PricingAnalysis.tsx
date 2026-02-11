@@ -25,15 +25,7 @@ interface Offering {
 }
 
 export function PricingAnalysis({ sessions }: PricingAnalysisProps) {
-  if (sessions.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-5 text-center text-muted-foreground">
-          No data available. Fetch sessions to see pricing analysis.
-        </CardContent>
-      </Card>
-    );
-  }
+  if (sessions.length === 0 || !sessions.some(s => s.fixedTicketPrice > 0)) return null;
 
   // Analyze price points
   const priceMap = new Map<number, MomenceSession[]>();

@@ -7,9 +7,11 @@ interface DataStatusProps {
   sessionCount: number;
   pageCount: number;
   dataRange?: DataRange;
+  /** Shown when loading and sessionCount is 0 (e.g. "Fetching Project Mood data...") */
+  loadingLabel?: string;
 }
 
-export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRange }: DataStatusProps) {
+export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRange, loadingLabel }: DataStatusProps) {
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
@@ -19,7 +21,7 @@ export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRang
             Loading... <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions fetched
           </span>
         ) : (
-          <span>Fetching session data...</span>
+          <span>{loadingLabel ?? 'Fetching session data...'}</span>
         )}
       </div>
     );

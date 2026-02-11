@@ -216,25 +216,7 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
     return { monthlyRevenue, dayRevenue, highlights, totalRevenue, totalVisitors };
   }, [sessions, benchmarkMetrics]);
 
-  if (sessions.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-5 text-center text-muted-foreground">
-          No data available. Fetch sessions to see revenue insights.
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!hasPricing) {
-    return (
-      <Card>
-        <CardContent className="p-5 text-center text-muted-foreground">
-          Revenue data not available for this venue (no pricing in API response).
-        </CardContent>
-      </Card>
-    );
-  }
+  if (sessions.length === 0 || !hasPricing) return null;
 
   const avgMonthlyRevenue = monthlyRevenue.length > 0
     ? monthlyRevenue.reduce((s, m) => s + m.revenue, 0) / monthlyRevenue.length

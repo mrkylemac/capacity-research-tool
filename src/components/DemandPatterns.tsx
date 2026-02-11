@@ -95,15 +95,7 @@ export function DemandPatterns({ sessions }: DemandPatternsProps) {
     };
   }, [sessions]);
 
-  if (sessions.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-5 text-center text-muted-foreground">
-          No data available. Fetch sessions to see demand patterns.
-        </CardContent>
-      </Card>
-    );
-  }
+  if (sessions.length === 0) return null;
 
   return (
     <div className="space-y-6">

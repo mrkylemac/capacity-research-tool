@@ -101,12 +101,14 @@ export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo }: Ve
             sublabel={`${metrics.totalVisits.toLocaleString()} total over ${Math.round(metrics.weeksInRange)} weeks`}
             size="large"
           />
-          <MetricCard
-            label="Weekly Revenue"
-            value={metrics.impliedArpv > 0 ? `$${Math.round(weeklyRevenue).toLocaleString()}` : '-'}
-            sublabel={metrics.impliedArpv > 0 ? `$${metrics.impliedArpv.toFixed(2)} ARPV` : 'No pricing data'}
-            size="large"
-          />
+          {metrics.impliedArpv > 0 && (
+            <MetricCard
+              label="Weekly Revenue"
+              value={`$${Math.round(weeklyRevenue).toLocaleString()}`}
+              sublabel={`$${metrics.impliedArpv.toFixed(2)} ARPV`}
+              size="large"
+            />
+          )}
           <MetricCard
             label="Avg Group Size"
             value={metrics.avgVisitorsPerSession.toFixed(1)}

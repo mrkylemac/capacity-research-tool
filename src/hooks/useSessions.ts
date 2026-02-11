@@ -7,6 +7,7 @@ import {
   calculateVenueConfig,
   calculateClassTypeData
 } from '@/lib/metricsCalculator';
+import { sanitizeSessions, logDataQuality } from '@/lib/utils';
 import { API_CONFIG } from '@/config/api';
 import type { MomenceSession, SessionsQueryParams } from '@/types/momence';
 
@@ -152,6 +153,10 @@ export function useSessions() {
         ? filteredMaxDate.toISOString()
         : params.startsAtTo;
 
+      // Sanitize: drop invalid dates, zero-capacity sessions; clamp tickets > capacity
+      const { sessions: cleanData, report } = sanitizeSessions(filteredData);
+      logDataQuality('Momence', report);
+
       setDataRange({
         from: filteredMinDate,
         to: filteredMaxDate,
@@ -162,9 +167,9 @@ export function useSessions() {
         effectiveFromISO: effectiveFrom,
         effectiveToISO: effectiveTo,
       });
-      setTotalCount(filteredData.length);
+      setTotalCount(cleanData.length);
       setTotalPages(pagesLoaded);
-      setAllSessions(filteredData);
+      setAllSessions(cleanData);
 
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch sessions'));

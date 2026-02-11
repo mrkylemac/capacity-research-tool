@@ -29,8 +29,19 @@ export const GLOFOX_CONFIG = {
   },
 } as const;
 
+// Mariana Tek API Configuration (customer classes endpoint)
+export const MARIANATEK_CONFIG = {
+  projectMood: {
+    baseUrl: 'https://projectmood.marianatek.com/api/customer/v1',
+    locationId: '48717',
+    regionId: '48541',
+    name: 'Project Mood',
+    timezone: 'Australia/Melbourne',
+  },
+} as const;
+
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox';
+export type Platform = 'momence' | 'glofox' | 'marianatek';
 
 export interface VenueConfig {
   id: string;
@@ -47,4 +58,5 @@ export const VENUES: VenueConfig[] = [
   { id: '16053', name: 'HOI', platform: 'momence' },
   { id: '46052', name: 'Fjord, San Francisco', platform: 'momence' },
   { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox' },
+  { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek' },
 ];

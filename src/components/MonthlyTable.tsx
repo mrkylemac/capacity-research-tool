@@ -128,15 +128,7 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
     });
   };
 
-  if (data.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-5 text-center text-muted-foreground">
-          No data available. Fetch sessions to see monthly performance.
-        </CardContent>
-      </Card>
-    );
-  }
+  if (data.length === 0) return null;
 
   // Filter to only active months (those with visitors) for accurate averages
   const activeMonths = data.filter(row => row.ticketsSold > 0);

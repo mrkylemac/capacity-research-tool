@@ -8,15 +8,7 @@ interface CapacityUtilisationProps {
 }
 
 export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisationProps) {
-  if (!metrics || monthlyData.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-5 text-center text-muted-foreground">
-          No data available. Fetch sessions to see capacity metrics.
-        </CardContent>
-      </Card>
-    );
-  }
+  if (!metrics || monthlyData.length === 0) return null;
 
   // Monthly visitors chart data (demand-first)
   const visitorsChartData = monthlyData.map(m => ({

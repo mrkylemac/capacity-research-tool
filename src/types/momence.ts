@@ -12,6 +12,7 @@ export interface MomenceSession {
   location: string;
   inPerson: boolean;
   level?: string;
+  isCancelled?: boolean;
 }
 
 export interface MomenceSessionsResponse {

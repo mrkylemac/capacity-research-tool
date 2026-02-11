@@ -104,7 +104,9 @@ class MomenceClient {
   }
 
   /**
-   * Transform API response to typed format
+   * Transform API response to typed format.
+   * Note: cancelled sessions are kept here to preserve page counts for pagination.
+   * They are filtered out by sanitizeSessions() after all pages are fetched.
    */
   private transformResponse(data: any, params: SessionsQueryParams): MomenceSessionsResponse {
     // Handle response with 'payload' array (Momence readonly API format)
@@ -123,7 +125,7 @@ class MomenceClient {
       return {
         sessions: data.data.map(this.transformSession),
         totalCount: data.total || data.data.length,
-        page: (data.page || 0) + 1, // Convert 0-indexed to 1-indexed
+        page: (data.page || 0) + 1,
         pageSize: data.pageSize || params.pageSize || API_CONFIG.pageSize,
         totalPages: data.totalPages || Math.ceil((data.total || data.data.length) / (params.pageSize || API_CONFIG.pageSize)),
       };
@@ -165,24 +167,26 @@ class MomenceClient {
    * Transform a single session to typed format
    */
   private transformSession(session: any): MomenceSession {
-    // Calculate tickets sold from registrations/attendees
-    const ticketsSold = session.registrationsCount ?? session.attendeesCount ?? session.ticketsSold ?? session.bookedCount ?? 0;
-    
-    // Get price - handle various formats
-    const price = session.price ?? session.fixedTicketPrice ?? session.ticketPrice ?? 0;
-    
+    // Prefer API's own ticketsSold (actual sales) over registrationsCount (may include cancellations/no-shows)
+    const ticketsSold = session.ticketsSold ?? session.registrationsCount ?? session.attendeesCount ?? session.bookedCount ?? 0;
+
+    // Prefer fixedTicketPrice (API returns this reliably alongside price: null)
+    const price = session.fixedTicketPrice ?? session.price ?? session.ticketPrice ?? 0;
+    const capacity = session.spotsTotal ?? session.capacity ?? session.maxAttendees ?? 0;
+
     return {
       id: session.id || session._id || String(Math.random()),
       sessionName: session.name || session.sessionName || session.title || 'Unknown',
       startsAt: session.startDate || session.startsAt || session.startTime || session.start,
       endsAt: session.endDate || session.endsAt || session.endTime || session.end,
       durationMinutes: session.duration || session.durationMinutes || 60,
-      capacity: session.spotsTotal ?? session.capacity ?? session.maxAttendees ?? 0,
+      capacity,
       ticketsSold,
       fixedTicketPrice: price,
       location: session.locationName || session.location || session.venue || '',
       inPerson: session.inPerson !== false,
       level: session.level || session.type || session.sessionType,
+      isCancelled: session.isCancelled === true,
     };
   }
 }
