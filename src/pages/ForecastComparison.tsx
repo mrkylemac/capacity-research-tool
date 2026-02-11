@@ -1,11 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Navigation } from '@/components/Navigation';
+import { FiltersPanel } from '@/components/FiltersPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSessions } from '@/hooks/useSessions';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { calculateMetrics, calculateMonthlyData, calculateVenueConfig } from '@/lib/metricsCalculator';
+import { glofoxClient } from '@/lib/glofoxClient';
+import { fetchMarianaTekSessions } from '@/lib/marianatekClient';
+import { VENUES, GLOFOX_CONFIG, MARIANATEK_CONFIG, type Platform } from '@/config/api';
+import { TrendingUp, TrendingDown, Minus, Calendar, Building2 } from 'lucide-react';
 import forecastData from '@/data/forecast.json';
+import type { MomenceSession } from '@/types/momence';
 
 interface ForecastData {
   pricingBreakeven: Record<string, number | string>;
@@ -66,33 +73,99 @@ function ComparisonCard({
 }
 
 const ForecastComparison = () => {
-  const { allSessions, metrics, monthlyData, isLoading, fetchData } = useSessions();
-  const [hasLoadedData, setHasLoadedData] = useState(false);
+  const momenceHook = useSessions();
+  
+  // Glofox state
+  const [glofoxSessions, setGlofoxSessions] = useState<MomenceSession[]>([]);
+  const [glofoxLoading, setGlofoxLoading] = useState(false);
+  const [glofoxError, setGlofoxError] = useState<Error | null>(null);
+  
+  // Mariana Tek state
+  const [marianatekSessions, setMarianatekSessions] = useState<MomenceSession[]>([]);
+  const [marianatekLoading, setMarianatekLoading] = useState(false);
+  const [marianatekError, setMarianatekError] = useState<Error | null>(null);
+  
+  const [activePlatform, setActivePlatform] = useState<Platform>('momence');
+  const [hasQueried, setHasQueried] = useState(false);
+  const [dateRange, setDateRange] = useState({ from: '', to: '' });
+  const [currentVenue, setCurrentVenue] = useState<string>('');
 
-  useEffect(() => {
-    if (!hasLoadedData) {
-      // Load last 6 months of actual data
-      const to = new Date();
-      const from = new Date();
-      from.setMonth(from.getMonth() - 6);
-      
-      fetchData({
-        hostId: '60', // Default to Slow Folk
-        startsAtFrom: from.toISOString(),
-        startsAtTo: to.toISOString(),
+  const platformSessions = activePlatform === 'glofox' ? glofoxSessions : activePlatform === 'marianatek' ? marianatekSessions : momenceHook.allSessions;
+  const allSessions = platformSessions;
+
+  const isNonMomence = activePlatform === 'glofox' || activePlatform === 'marianatek';
+  const derivedMetrics = useMemo(() => 
+    isNonMomence && dateRange.from && dateRange.to && allSessions.length
+      ? calculateMetrics(allSessions, dateRange.from, dateRange.to)
+      : null
+  , [isNonMomence, dateRange.from, dateRange.to, allSessions]);
+  const derivedMonthlyData = useMemo(() => (isNonMomence ? calculateMonthlyData(allSessions) : []), [isNonMomence, allSessions]);
+
+  const metrics = isNonMomence ? derivedMetrics : momenceHook.metrics;
+  const monthlyData = isNonMomence ? derivedMonthlyData : momenceHook.monthlyData;
+  const isLoading = activePlatform === 'glofox' ? glofoxLoading : activePlatform === 'marianatek' ? marianatekLoading : momenceHook.isLoading;
+  const error = activePlatform === 'glofox' ? glofoxError : activePlatform === 'marianatek' ? marianatekError : momenceHook.error;
+
+  const handleFetchData = async (hostId: string, fromDate: string, toDate: string, platform: Platform) => {
+    setHasQueried(true);
+    setDateRange({ from: fromDate, to: toDate });
+    setActivePlatform(platform);
+    setCurrentVenue(hostId);
+
+    if (platform === 'glofox') {
+      setGlofoxLoading(true);
+      setGlofoxError(null);
+      try {
+        const config = GLOFOX_CONFIG.loreBathingClub;
+        const sessions = await glofoxClient.fetchSessions({
+          startDate: new Date(fromDate),
+          endDate: new Date(toDate),
+          token: config.token,
+          branchId: config.branchId,
+          timezone: config.timezone,
+        });
+        setGlofoxSessions(sessions as MomenceSession[]);
+      } catch (err) {
+        setGlofoxError(err instanceof Error ? err : new Error('Failed to fetch Glofox data'));
+      } finally {
+        setGlofoxLoading(false);
+      }
+    } else if (platform === 'marianatek') {
+      setMarianatekLoading(true);
+      setMarianatekError(null);
+      try {
+        const config = MARIANATEK_CONFIG.projectMood;
+        const sessions = await fetchMarianaTekSessions({
+          baseUrl: config.baseUrl,
+          locationId: config.locationId,
+          regionId: config.regionId,
+          fromDate,
+          toDate,
+          onProgress: () => {},
+        });
+        setMarianatekSessions(sessions);
+      } catch (err) {
+        setMarianatekError(err instanceof Error ? err : new Error('Failed to fetch Mariana Tek data'));
+      } finally {
+        setMarianatekLoading(false);
+      }
+    } else {
+      momenceHook.fetchData({
+        hostId,
+        startsAtFrom: new Date(fromDate).toISOString(),
+        startsAtTo: new Date(toDate).toISOString(),
       });
-      
-      setHasLoadedData(true);
     }
-  }, [hasLoadedData, fetchData]);
+  };
 
-  const isLoaded = !isLoading && metrics && forecastData;
+  const venueName = VENUES.find(v => v.id === currentVenue)?.name || `Host ${currentVenue}`;
+  const isLoaded = !isLoading && metrics && forecastData && hasQueried;
   
   // Calculate actual values from data
   const actualRevenue = monthlyData.reduce((sum, m) => sum + m.revenue, 0);
-  const actualCapacityUtilization = metrics?.capacityUtilization || 0;
-  const actualAvgTicketPrice = metrics?.avgTicketPrice || 0;
-  const actualSessionsPerWeek = (allSessions.length / 26) || 0; // Assuming 6 months
+  const actualCapacityUtilization = metrics?.avgUtilisation || 0;
+  const actualAvgTicketPrice = metrics?.avgRevenuePerVisit || 0;
+  const actualSessionsPerWeek = metrics?.sessionsPerWeek || 0;
   
   // Extract forecast values
   const forecastRevenue = forecastData?.pricingBreakeven?.['Total Revenue'] || 0;
@@ -131,6 +204,37 @@ const ForecastComparison = () => {
           </Alert>
         )}
 
+        {/* Filters */}
+        <FiltersPanel onFetchData={handleFetchData} isLoading={isLoading} />
+
+        {/* Current Comparison Info */}
+        {hasQueried && (
+          <div className="notion-card mb-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-sm text-muted-foreground">Comparing:</span>
+              <Badge variant="secondary" className="gap-1.5">
+                <Building2 className="h-3 w-3" />
+                {venueName}
+              </Badge>
+              <Badge variant="secondary" className="gap-1.5">
+                <Calendar className="h-3 w-3" />
+                {dateRange.from} to {dateRange.to}
+              </Badge>
+              <Badge variant="outline" className="gap-1.5">
+                {allSessions.length} sessions
+              </Badge>
+            </div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>{error.message}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Loading State */}
         {isLoading && (
           <div className="space-y-4">
             <Skeleton className="h-32 w-full" />
@@ -222,6 +326,18 @@ const ForecastComparison = () => {
                 </Card>
               </section>
             )}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!hasQueried && !isLoading && (
+          <div className="text-center py-20">
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              Ready to Compare
+            </h2>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Select a venue and date range to compare actual performance against your forecast.
+            </p>
           </div>
         )}
       </div>
