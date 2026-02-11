@@ -616,15 +616,6 @@ const ForecastComparison = () => {
         {/* Empty State */}
         {!hasQueried && !isLoading && (
           <div className="text-center py-20">
-            <h2 className="text-xl font-semibold text-foreground mb-2">
-              Validate Your Assumptions
-            </h2>
-            <p className="text-muted-foreground max-w-md mx-auto mb-4">
-              Select a successful venue to use as a validation benchmark for your Slow Folk business plan.
-            </p>
-            <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-              Choose venues with similar models (e.g., Inner Studio, Lore Bathing Club) to see if their actual performance validates your revenue estimates, capacity assumptions, and breakeven targets.
-            </p>
           </div>
         )}
       </div>
