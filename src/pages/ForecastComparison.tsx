@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { differenceInDays, parseISO } from 'date-fns';
 import { Navigation } from '@/components/Navigation';
 import { FiltersPanel } from '@/components/FiltersPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -304,187 +305,275 @@ const ForecastComparison = () => {
 
         {isLoaded && (
           <div className="space-y-8">
-            {/* Per-Visitor Economics (Normalized) */}
+            {/* Executive Summary / Narrative */}
             <section>
-              <h2 className="notion-h1">Per-Visitor Economics</h2>
-              <p className="text-sm text-muted-foreground mb-4">
-                Normalized per-visitor metrics — comparable regardless of venue size
-              </p>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <ComparisonCard
-                  title="Revenue Per Visitor"
-                  benchmarkValue={benchmarkRevenuePerVisitor}
-                  slowFolkEstimate={forecastAvgPrice}
-                  format="currency"
-                  benchmarkLabel={venueName}
-                />
-                <ComparisonCard
-                  title="Avg Ticket Price"
-                  benchmarkValue={benchmarkAvgTicketPrice}
-                  slowFolkEstimate={forecastAvgPrice}
-                  format="currency"
-                  benchmarkLabel={venueName}
-                />
-              </div>
+              <Card className="border-2">
+                <CardHeader>
+                  <CardTitle>Benchmark Validation: Slow Folk vs Live Market Data</CardTitle>
+                  <CardDescription className="text-sm leading-relaxed mt-2">
+                    We've benchmarked Slow Folk's visitation and pricing assumptions against <strong>{venueName}</strong>, 
+                    an operating venue with real market data. This analysis validates that our projections are grounded 
+                    in proven economics, not wishful thinking.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
             </section>
 
-            {/* Per-Session Economics (Normalized) */}
+            {/* Core Comparison Table */}
             <section>
-              <h2 className="notion-h1">Per-Session Economics</h2>
-              <p className="text-sm text-muted-foreground mb-4">
-                How much revenue per session? Accounts for different session sizes
-              </p>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <ComparisonCard
-                  title="Revenue Per Session"
-                  benchmarkValue={benchmarkRevenuePerSession}
-                  slowFolkEstimate={(forecastRevenue / (forecastSessions * 52 / 12)) || 0}
-                  format="currency"
-                  benchmarkLabel={venueName}
-                />
-              </div>
-            </section>
-
-            {/* Operational Efficiency */}
-            <section>
-              <h2 className="notion-h1">Operational Efficiency</h2>
-              <p className="text-sm text-muted-foreground mb-4">
-                These rates are naturally comparable across venues
-              </p>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <ComparisonCard
-                  title="Capacity Utilization"
-                  benchmarkValue={benchmarkCapacityUtilization}
-                  slowFolkEstimate={forecastCapacity}
-                  format="percent"
-                  benchmarkLabel={venueName}
-                />
-                <ComparisonCard
-                  title="Sessions Per Week"
-                  benchmarkValue={benchmarkSessionsPerWeek}
-                  slowFolkEstimate={forecastSessions}
-                  format="number"
-                  benchmarkLabel={venueName}
-                />
-              </div>
-            </section>
-
-            {/* Scale Context (Raw Numbers) */}
-            <section>
-              <h2 className="notion-h1">Scale Context</h2>
-              <p className="text-sm text-muted-foreground mb-4">
-                Raw numbers for context — not directly comparable due to different venue sizes
-              </p>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="text-xs text-muted-foreground">{venueName}</div>
-                        <div className="text-2xl font-bold">${benchmarkTotalRevenue.toLocaleString(undefined, { minimumFractionDigits: 0 })}</div>
+              <h2 className="notion-h1">Key Performance Metrics</h2>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    {/* Weekly Visitors */}
+                    <div className="grid grid-cols-3 gap-4 py-3 border-b">
+                      <div className="font-medium">Weekly Visitors</div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold">{((benchmarkTotalVisitors / (differenceInDays(parseISO(dateRange.to), parseISO(dateRange.from)) || 1)) * 7).toFixed(0)}</div>
+                        <div className="text-xs text-muted-foreground">{venueName} Actual</div>
                       </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Slow Folk Est.</div>
-                        <div className="text-lg font-semibold text-muted-foreground">${forecastRevenue.toLocaleString(undefined, { minimumFractionDigits: 0 })}</div>
-                      </div>
-                      <div className="text-xs text-muted-foreground pt-1 border-t">
-                        ⚠️ Not comparable - different venue scales
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-muted-foreground">
+                          {(forecastData?.venueCapacity?.['Weekly Visitors'] || '-').toLocaleString()}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Slow Folk Target</div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium">Total Visitors</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="text-xs text-muted-foreground">{venueName}</div>
-                        <div className="text-2xl font-bold">{benchmarkTotalVisitors.toLocaleString()}</div>
+
+                    {/* Sessions Per Week */}
+                    <div className="grid grid-cols-3 gap-4 py-3 border-b">
+                      <div className="font-medium">Sessions Per Week</div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold">{benchmarkSessionsPerWeek.toFixed(1)}</div>
+                        <div className="text-xs text-muted-foreground">{venueName} Actual</div>
                       </div>
-                      <div className="text-xs text-muted-foreground pt-1 border-t">
-                        Use "per-visitor" metrics above for comparison
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-muted-foreground">{forecastSessions.toFixed(1)}</div>
+                        <div className="text-xs text-muted-foreground">Slow Folk Target</div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+
+                    {/* Capacity Utilization */}
+                    <div className="grid grid-cols-3 gap-4 py-3 border-b">
+                      <div className="font-medium">Capacity Utilization</div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold">{benchmarkCapacityUtilization.toFixed(1)}%</div>
+                        <div className="text-xs text-muted-foreground">{venueName} Actual</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-muted-foreground">{forecastCapacity.toFixed(1)}%</div>
+                        <div className="text-xs text-muted-foreground">Slow Folk Target</div>
+                      </div>
+                    </div>
+
+                    {/* ARPV / Avg Price */}
+                    <div className="grid grid-cols-3 gap-4 py-3 border-b">
+                      <div className="font-medium">ARPV (Avg Price)</div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold">${benchmarkAvgTicketPrice.toFixed(0)}</div>
+                        <div className="text-xs text-muted-foreground">{venueName} Actual</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-muted-foreground">${forecastAvgPrice.toFixed(0)}</div>
+                        <div className="text-xs text-muted-foreground">Slow Folk Target</div>
+                      </div>
+                    </div>
+
+                    {/* Monthly Revenue */}
+                    <div className="grid grid-cols-3 gap-4 py-3">
+                      <div className="font-medium">Monthly Revenue</div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold">
+                          ${(benchmarkTotalRevenue / (monthlyData.length || 1)).toFixed(0).toLocaleString()}
+                        </div>
+                        <div className="text-xs text-muted-foreground">{venueName} Actual</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-muted-foreground">
+                          ${(forecastRevenue / 12).toFixed(0).toLocaleString()}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Slow Folk Target</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </section>
 
-            {/* Monthly Revenue Pattern */}
-            {forecastData?.cashFlow?.length > 0 && monthlyData.length > 0 && (
+            {/* Key Takeaway */}
+            <section>
+              <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+                <AlertDescription>
+                  <div className="font-medium mb-2">Key Takeaway</div>
+                  <p className="text-sm leading-relaxed">
+                    {benchmarkCapacityUtilization < forecastCapacity * 1.2 && benchmarkCapacityUtilization > forecastCapacity * 0.8 ? (
+                      <>
+                        Slow Folk's utilization target ({forecastCapacity.toFixed(0)}%) aligns closely with {venueName}'s actual performance ({benchmarkCapacityUtilization.toFixed(0)}%), 
+                        demonstrating that our assumptions are grounded in real market conditions. Even at this conservative occupancy, 
+                        the business model delivers meaningful revenue.
+                      </>
+                    ) : benchmarkCapacityUtilization > forecastCapacity * 1.2 ? (
+                      <>
+                        {venueName} achieves {benchmarkCapacityUtilization.toFixed(0)}% utilization vs our {forecastCapacity.toFixed(0)}% target, 
+                        suggesting Slow Folk's projections are <strong>conservative</strong>. This provides significant upside potential 
+                        while maintaining credible downside protection.
+                      </>
+                    ) : (
+                      <>
+                        Slow Folk targets {forecastCapacity.toFixed(0)}% utilization compared to {venueName}'s {benchmarkCapacityUtilization.toFixed(0)}%. 
+                        Our projections assume improved operational efficiency and positioning, with {venueName}'s data providing 
+                        a realistic floor for stress-testing scenarios.
+                      </>
+                    )}
+                  </p>
+                </AlertDescription>
+              </Alert>
+            </section>
+
+            {/* Breakeven Validation */}
+            {(forecastData?.pricingBreakeven?.['Breakeven Revenue'] || 
+              forecastData?.pricingBreakeven?.['Breakeven + Loan'] ||
+              forecastData?.pricingBreakeven?.['Breakeven + Profit']) && (
               <section>
-                <h2 className="notion-h1">Monthly Revenue Pattern</h2>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Monthly Cash Flow Comparison</CardTitle>
-                    <CardDescription>
-                      Pattern analysis — absolute numbers vary due to scale, but trends are comparable
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="mb-3 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                      💡 Use this to validate if your monthly projections show realistic growth/seasonality patterns, not absolute values
-                    </div>
-                    <div className="space-y-3">
-                      {monthlyData.slice(-6).map((actualMonth, idx) => {
-                        const monthName = actualMonth.month;
-                        const forecastMonth = forecastData.cashFlow.find(f => 
-                          f.month.toLowerCase().includes(monthName.toLowerCase().slice(0, 3))
-                        );
-                        const slowFolkEstimate = forecastMonth?.forecast || 0;
-                        const benchmarkActual = actualMonth.revenue;
-                        
-                        // Calculate per-session revenue for fair comparison
-                        const benchmarkSessionsThisMonth = actualMonth.sessions;
-                        const benchmarkRevenuePerSession = benchmarkSessionsThisMonth > 0 
-                          ? benchmarkActual / benchmarkSessionsThisMonth 
-                          : 0;
-                        
-                        const variance = benchmarkActual - slowFolkEstimate;
-                        const percentDiff = slowFolkEstimate !== 0 ? (variance / slowFolkEstimate) * 100 : 0;
-                        
-                        return (
-                          <div key={idx} className="border-b pb-3 last:border-0">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="font-medium">{monthName}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {benchmarkSessionsThisMonth} sessions
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <div className="text-sm">
-                                <div className="text-muted-foreground text-xs">{venueName}</div>
-                                <div className="font-semibold">${benchmarkActual.toLocaleString()}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  ${benchmarkRevenuePerSession.toFixed(0)}/session
-                                </div>
-                              </div>
-                              <div className="text-sm">
-                                <div className="text-muted-foreground text-xs">Slow Folk</div>
-                                <div className="font-semibold text-muted-foreground">${slowFolkEstimate.toLocaleString()}</div>
-                              </div>
-                              <div className="text-sm text-right">
-                                <div className={`font-medium ${Math.abs(percentDiff) < 20 ? 'text-gray-500' : percentDiff > 0 ? 'text-green-600' : 'text-amber-600'}`}>
-                                  {percentDiff > 0 ? '+' : ''}{percentDiff.toFixed(0)}%
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  {Math.abs(percentDiff) < 20 ? 'Similar' : percentDiff > 0 ? 'Higher' : 'Lower'}
-                                </div>
-                              </div>
-                            </div>
+                <h2 className="notion-h1">Breakeven Validation</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Can {venueName}'s performance support your breakeven scenarios?
+                </p>
+                <div className="grid gap-4 md:grid-cols-3">
+                  {forecastData?.pricingBreakeven?.['Breakeven Revenue'] && (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium">Base Breakeven</CardTitle>
+                        <CardDescription className="text-xs">Operating costs only</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-lg font-semibold text-muted-foreground">
+                          ${Number(forecastData.pricingBreakeven['Breakeven Revenue']).toLocaleString()}/mo
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">Slow Folk requirement</div>
+                        <div className="mt-3 pt-3 border-t">
+                          <div className="text-xs text-muted-foreground">Benchmark achieves:</div>
+                          <div className="text-2xl font-bold">
+                            ${(benchmarkTotalRevenue / (monthlyData.length || 1)).toFixed(0).toLocaleString()}/mo
                           </div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
+                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > Number(forecastData.pricingBreakeven['Breakeven Revenue']) ? (
+                            <div className="text-xs text-green-600 mt-1 font-medium">✓ Exceeds breakeven</div>
+                          ) : (
+                            <div className="text-xs text-amber-600 mt-1 font-medium">Below breakeven target</div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {forecastData?.pricingBreakeven?.['Breakeven + Loan'] && (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium">Breakeven + Loan Servicing</CardTitle>
+                        <CardDescription className="text-xs">Operating + debt service</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-lg font-semibold text-muted-foreground">
+                          ${Number(forecastData.pricingBreakeven['Breakeven + Loan']).toLocaleString()}/mo
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">Slow Folk requirement</div>
+                        <div className="mt-3 pt-3 border-t">
+                          <div className="text-xs text-muted-foreground">Benchmark achieves:</div>
+                          <div className="text-2xl font-bold">
+                            ${(benchmarkTotalRevenue / (monthlyData.length || 1)).toFixed(0).toLocaleString()}/mo
+                          </div>
+                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > Number(forecastData.pricingBreakeven['Breakeven + Loan']) ? (
+                            <div className="text-xs text-green-600 mt-1 font-medium">✓ Covers loan servicing</div>
+                          ) : (
+                            <div className="text-xs text-amber-600 mt-1 font-medium">Below loan threshold</div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {forecastData?.pricingBreakeven?.['Breakeven + Profit'] && (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium">Breakeven + Profit Target</CardTitle>
+                        <CardDescription className="text-xs">Operating + debt + margin</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-lg font-semibold text-muted-foreground">
+                          ${Number(forecastData.pricingBreakeven['Breakeven + Profit']).toLocaleString()}/mo
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">Slow Folk target</div>
+                        <div className="mt-3 pt-3 border-t">
+                          <div className="text-xs text-muted-foreground">Benchmark achieves:</div>
+                          <div className="text-2xl font-bold">
+                            ${(benchmarkTotalRevenue / (monthlyData.length || 1)).toFixed(0).toLocaleString()}/mo
+                          </div>
+                          {(benchmarkTotalRevenue / (monthlyData.length || 1)) > Number(forecastData.pricingBreakeven['Breakeven + Profit']) ? (
+                            <div className="text-xs text-green-600 mt-1 font-medium">✓ Achieves profit target</div>
+                          ) : (
+                            <div className="text-xs text-amber-600 mt-1 font-medium">Below profit target</div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
               </section>
             )}
+
+            {/* Detailed Operational Metrics */}
+            <section>
+              <h2 className="notion-h1">Detailed Operational Metrics</h2>
+              <div className="grid gap-4 md:grid-cols-3">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium">Session Capacity</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{benchmarkAvgCapacity.toFixed(0)} guests</div>
+                    <div className="text-xs text-muted-foreground mt-1">{venueName} avg</div>
+                    <div className="mt-2 pt-2 border-t text-sm">
+                      <div className="text-muted-foreground">Theoretical/week:</div>
+                      <div className="font-semibold">
+                        {(benchmarkAvgCapacity * benchmarkSessionsPerWeek).toFixed(0)} seats
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium">Revenue Per Session</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">${benchmarkRevenuePerSession.toFixed(0)}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{venueName} actual</div>
+                    <div className="mt-2 pt-2 border-t text-sm">
+                      <div className="text-muted-foreground">Slow Folk target:</div>
+                      <div className="font-semibold text-muted-foreground">
+                        ${((forecastRevenue / 12) / (forecastSessions * 52 / 12) || 0).toFixed(0)}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium">Daily Sessions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{(benchmarkSessionsPerWeek / 7).toFixed(1)}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{venueName} actual</div>
+                    <div className="mt-2 pt-2 border-t text-sm">
+                      <div className="text-muted-foreground">Slow Folk target:</div>
+                      <div className="font-semibold text-muted-foreground">
+                        {(forecastSessions / 7).toFixed(1)}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </section>
           </div>
         )}
 
