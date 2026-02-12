@@ -9,7 +9,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -103,17 +106,31 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
                 <SelectValue placeholder="Select venue" />
               </SelectTrigger>
               <SelectContent>
-                {VENUES.map((venue) => (
-                  <SelectItem key={venue.id} value={venue.id}>
-                    {venue.name}
-                    {venue.platform !== 'momence' && (
-                      <span className="ml-2 text-xs text-muted-foreground">
-                        ({venue.platform})
-                      </span>
-                    )}
-                  </SelectItem>
+                <SelectItem value="custom">Enter Host ID</SelectItem>
+                <SelectSeparator />
+                {Object.entries(
+                  VENUES.reduce<Record<string, typeof VENUES>>((acc, v) => {
+                    (acc[v.location] ??= []).push(v);
+                    return acc;
+                  }, {})
+                ).map(([location, venues], i) => (
+                  <SelectGroup key={location}>
+                    {i > 0 && <SelectSeparator />}
+                    <SelectLabel className="pl-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      {location}
+                    </SelectLabel>
+                    {venues.map((venue) => (
+                      <SelectItem key={venue.id} value={venue.id}>
+                        {venue.name}
+                        {venue.platform !== 'momence' && (
+                          <span className="ml-2 text-xs text-muted-foreground">
+                            ({venue.platform})
+                          </span>
+                        )}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 ))}
-                <SelectItem value="custom">+ Custom ID...</SelectItem>
               </SelectContent>
             </Select>
           )}

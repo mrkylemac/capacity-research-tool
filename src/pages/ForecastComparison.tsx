@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { differenceInDays, parseISO } from 'date-fns';
-import { Navigation } from '@/components/Navigation';
 import { FiltersPanel } from '@/components/FiltersPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSessions } from '@/hooks/useSessions';
@@ -11,7 +12,7 @@ import { calculateMetrics, calculateMonthlyData, calculateVenueConfig } from '@/
 import { glofoxClient } from '@/lib/glofoxClient';
 import { fetchMarianaTekSessions } from '@/lib/marianatekClient';
 import { VENUES, GLOFOX_CONFIG, MARIANATEK_CONFIG, type Platform } from '@/config/api';
-import { TrendingUp, TrendingDown, Minus, Calendar, Building2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Calendar, Building2, FileText } from 'lucide-react';
 import forecastData from '@/data/forecast.json';
 import type { MomenceSession } from '@/types/momence';
 
@@ -82,6 +83,7 @@ function ComparisonCard({
 }
 
 const ForecastComparison = () => {
+  const navigate = useNavigate();
   const momenceHook = useSessions();
   
   // Glofox state
@@ -233,21 +235,43 @@ const ForecastComparison = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
       <div className="notion-page">
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Forecast Validation</h1>
+            <h1 className="text-2xl font-bold">Forecasts</h1>
             <p className="text-sm text-muted-foreground">
               Validate Slow Folk estimates against real venue performance
             </p>
           </div>
-          {forecastData.lastUpdated && (
-            <div className="text-xs text-muted-foreground">
-              Slow Folk estimates: {new Date(forecastData.lastUpdated).toLocaleDateString()}
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {isLoaded && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  navigate('/investor-report', {
+                    state: {
+                      benchmark: {
+                        venueName,
+                        hostId: currentVenue,
+                        platform: activePlatform,
+                        dateRange,
+                        sessions: allSessions,
+                      },
+                    },
+                  })
+                }
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Report
+              </Button>
+            )}
+            {forecastData.lastUpdated && (
+              <span className="text-xs text-muted-foreground">
+                Slow Folk: {new Date(forecastData.lastUpdated).toLocaleDateString()}
+              </span>
+            )}
+          </div>
         </div>
 
         {!hasForecastData && (

@@ -3,10 +3,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Navigation } from "@/components/Navigation";
 import Index from "./pages/Index";
-import Reports from "./pages/Reports";
+import Report from "./pages/Report";
 import ForecastComparison from "./pages/ForecastComparison";
+import InvestorReport from "./pages/InvestorReport";
 import NotFound from "./pages/NotFound";
+import { PasswordGate } from "./components/PasswordGate";
 
 const queryClient = new QueryClient();
 
@@ -16,10 +19,12 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <Navigation />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/forecast-comparison" element={<ForecastComparison />} />
+          <Route path="/report" element={<Report />} />
+          <Route path="/forecast-comparison" element={<PasswordGate><ForecastComparison /></PasswordGate>} />
+          <Route path="/investor-report" element={<PasswordGate><InvestorReport /></PasswordGate>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

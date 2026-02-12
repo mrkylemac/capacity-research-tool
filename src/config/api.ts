@@ -47,16 +47,17 @@ export interface VenueConfig {
   id: string;
   name: string;
   platform: Platform;
+  location: string;
 }
 
-// Unified venue list
+// Unified venue list, grouped by location
 export const VENUES: VenueConfig[] = [
-  { id: '49448', name: 'Aalto, Adelaide', platform: 'momence' },
-  { id: '59636', name: 'Sol Sauna, Prahran', platform: 'momence' },
-  { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence' },
-  { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence' },
-  { id: '16053', name: 'HOI', platform: 'momence' },
-  { id: '46052', name: 'Fjord, San Francisco', platform: 'momence' },
-  { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox' },
-  { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek' },
+  { id: '49448', name: 'Aalto, Adelaide', platform: 'momence', location: 'Adelaide' },
+  { id: '59636', name: 'Sol Sauna, Prahran', platform: 'momence', location: 'Melbourne' },
+  { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence', location: 'Melbourne' },
+  { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence', location: 'Melbourne' },
+  { id: '16053', name: 'HOI', platform: 'momence', location: 'Melbourne' },
+  { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek', location: 'Melbourne' },
+  { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco' },
+  { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox', location: 'New York' },
 ];

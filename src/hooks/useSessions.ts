@@ -198,6 +198,26 @@ export function useSessions() {
     effectiveTo
   ) : null;
 
+  const hydrateFromCache = useCallback((sessions: MomenceSession[], hostId: string, fromDate: string, toDate: string, cachedHostInfo: HostInfo | null) => {
+    setAllSessions(sessions);
+    setQueryParams({ hostId, startsAtFrom: fromDate, startsAtTo: toDate, page: 1, pageSize: API_CONFIG.pageSize });
+    setHostInfo(cachedHostInfo);
+    setError(null);
+    setTotalCount(sessions.length);
+    setTotalPages(1);
+    setFetchingCount(sessions.length);
+    const from = sessions.length > 0 ? new Date(Math.min(...sessions.map(s => new Date(s.startsAt).getTime()))) : null;
+    const to = sessions.length > 0 ? new Date(Math.max(...sessions.map(s => new Date(s.startsAt).getTime()))) : null;
+    setDataRange({
+      from,
+      to,
+      rawFrom: from,
+      rawTo: to,
+      effectiveFromISO: fromDate,
+      effectiveToISO: toDate,
+    });
+  }, []);
+
   return {
     allSessions,
     totalCount,
@@ -214,5 +234,6 @@ export function useSessions() {
     isLoading,
     error,
     fetchData,
+    hydrateFromCache,
   };
 }

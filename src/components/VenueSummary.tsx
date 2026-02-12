@@ -1,3 +1,4 @@
+import { format, parseISO } from 'date-fns';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import type { VenueConfig, MonthlyData } from '@/types/momence';
 import type { HostInfo } from '@/lib/momenceClient';
@@ -10,9 +11,18 @@ interface VenueSummaryProps {
   venueConfig: VenueConfig | null;
   monthlyData: MonthlyData[];
   hostInfo: HostInfo | null;
+  dateRange?: { from: string; to: string };
 }
 
-export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo }: VenueSummaryProps) {
+function formatDateRange(from: string, to: string): string {
+  try {
+    return `${format(parseISO(from), 'MMM d, yyyy')} – ${format(parseISO(to), 'MMM d, yyyy')}`;
+  } catch {
+    return `${from} – ${to}`;
+  }
+}
+
+export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo, dateRange }: VenueSummaryProps) {
   const venueName = hostInfo?.name || venueConfig?.venueName || 'Venue';
   const initials = venueName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
@@ -61,9 +71,10 @@ export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo }: Ve
               <div className="flex-1 space-y-4">
                 <div>
                   <h3 className="text-xl font-semibold">{venueName}</h3>
-                  {hostInfo?.industry && (
-                    <p className="text-sm text-muted-foreground">{hostInfo.industry}</p>
-                  )}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                    {dateRange && <span>{formatDateRange(dateRange.from, dateRange.to)}</span>}
+                    {hostInfo?.industry && <span>{hostInfo.industry}</span>}
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="space-y-1">

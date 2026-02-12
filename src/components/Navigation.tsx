@@ -2,8 +2,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
-  { path: '/', label: 'Benchmark' },
-  { path: '/reports', label: 'Saved Reports' },
+  { path: '/', label: 'Numbers' },
+  { path: '/forecast-comparison', label: 'Forecasts' },
+  { path: '/investor-report', label: 'Report' },
 ] as const;
 
 export function Navigation() {

@@ -1,17 +1,12 @@
-import { useState, useMemo } from 'react';
-import { Navigation } from '@/components/Navigation';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiltersPanel } from '@/components/FiltersPanel';
-import { VenueSummary } from '@/components/VenueSummary';
-import { MonthlyTable } from '@/components/MonthlyTable';
-import { DemandPatterns } from '@/components/DemandPatterns';
-import { CapacityUtilisation } from '@/components/CapacityUtilisation';
-import { PricingAnalysis } from '@/components/PricingAnalysis';
-import { RevenueInsights } from '@/components/RevenueInsights';
+import { RecentSearches } from '@/components/RecentSearches';
 import { DataStatus } from '@/components/DataStatus';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
-import { SaveReportButton } from '@/components/SavedReports';
 import { useSessions } from '@/hooks/useSessions';
-import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
+import { getRecentSearches, setCachedEntry, type CachedVenueEntry } from '@/lib/venueCache';
+import { VENUES } from '@/config/api';
 import { calculateMetrics, calculateMonthlyData, calculateVenueConfig } from '@/lib/metricsCalculator';
 import { glofoxClient } from '@/lib/glofoxClient';
 import { fetchMarianaTekSessions } from '@/lib/marianatekClient';
@@ -19,8 +14,12 @@ import { GLOFOX_CONFIG, MARIANATEK_CONFIG, type Platform } from '@/config/api';
 import type { MomenceSession } from '@/types/momence';
 
 const Index = () => {
+  const navigate = useNavigate();
   const momenceHook = useSessions();
-  
+  const [recentSearches, setRecentSearches] = useState<CachedVenueEntry[]>(() => getRecentSearches());
+  const [refreshingKey, setRefreshingKey] = useState<string | null>(null);
+  const [lastLoadSource, setLastLoadSource] = useState<'fetch' | 'cache' | null>(null);
+
   // Glofox state (parallel to Momence hook)
   const [glofoxSessions, setGlofoxSessions] = useState<MomenceSession[]>([]);
   const [glofoxLoading, setGlofoxLoading] = useState(false);
@@ -32,6 +31,7 @@ const Index = () => {
   const [marianatekError, setMarianatekError] = useState<Error | null>(null);
   const [marianatekProgress, setMarianatekProgress] = useState({ sessionsFetched: 0, pagesLoaded: 0 });
   const [activePlatform, setActivePlatform] = useState<Platform>('momence');
+  const [currentHostId, setCurrentHostId] = useState('');
   const [hasQueried, setHasQueried] = useState(false);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
 
@@ -63,10 +63,34 @@ const Index = () => {
   const fetchedDataRange = momenceHook.dataRange;
   const isLoading = activePlatform === 'glofox' ? glofoxLoading : activePlatform === 'marianatek' ? marianatekLoading : momenceHook.isLoading;
   const error = activePlatform === 'glofox' ? glofoxError : activePlatform === 'marianatek' ? marianatekError : momenceHook.error;
-  const fetchProgress = activePlatform === 'glofox' ? glofoxProgress : activePlatform === 'marianatek' ? marianatekProgress : momenceHook.fetchingCount;
+
+  useEffect(() => {
+    if (lastLoadSource !== 'fetch' || !hasQueried || isLoading || allSessions.length === 0 || !currentHostId || !dateRange.from || !dateRange.to) return;
+    const venueName = VENUES.find(v => v.id === currentHostId)?.name || hostInfo?.name || `Host ${currentHostId}`;
+    const entry = setCachedEntry({
+      hostId: currentHostId,
+      platform: activePlatform,
+      venueName,
+      dateRange,
+      sessions: allSessions,
+      metrics,
+      monthlyData,
+      venueConfig,
+      hostInfo,
+    });
+    setRecentSearches(getRecentSearches());
+    navigate(`/report?hostId=${currentHostId}&from=${dateRange.from}&to=${dateRange.to}&platform=${activePlatform}`, { state: { entry } });
+  }, [lastLoadSource, hasQueried, isLoading, allSessions.length, currentHostId, dateRange.from, dateRange.to, activePlatform, navigate]);
+
+  const handleLoadFromCache = (entry: CachedVenueEntry) => {
+    setLastLoadSource('cache');
+    navigate(`/report?hostId=${entry.hostId}&from=${entry.dateRange.from}&to=${entry.dateRange.to}&platform=${entry.platform}`, { state: { entry } });
+  };
 
   const handleFetchData = async (hostId: string, fromDate: string, toDate: string, platform: Platform) => {
+    setLastLoadSource('fetch');
     setHasQueried(true);
+    setCurrentHostId(hostId);
     setDateRange({ from: fromDate, to: toDate });
     setActivePlatform(platform);
 
@@ -117,8 +141,7 @@ const Index = () => {
         setMarianatekLoading(false);
       }
     } else {
-      // Use Momence client
-      momenceHook.fetchData({
+      await momenceHook.fetchData({
         hostId,
         startsAtFrom: new Date(fromDate).toISOString(),
         startsAtTo: new Date(toDate).toISOString(),
@@ -126,140 +149,40 @@ const Index = () => {
     }
   };
 
-  const benchmarkMetrics = useMemo(() => {
-    if (allSessions.length === 0 || !dateRange.from || !dateRange.to) return null;
-    
-    // Filter to only sessions with visitors for accurate metrics
-    const activeSessions = allSessions.filter(s => s.ticketsSold > 0);
-    if (activeSessions.length === 0) return null;
-    
-    // Use the actual trading period for metrics
-    const sortedActive = [...activeSessions].sort((a, b) => 
-      new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
-    );
-    const firstActiveDate = sortedActive[0].startsAt;
-    const lastActiveDate = sortedActive[sortedActive.length - 1].startsAt;
-    
-    return calculateBenchmarkMetrics(
-      activeSessions,
-      firstActiveDate,
-      lastActiveDate
-    );
-  }, [allSessions, dateRange]);
-
-  const canSaveReport = hasQueried && !isLoading && allSessions.length > 0;
+  const handleRefresh = async (entry: CachedVenueEntry) => {
+    setRefreshingKey(entry.key);
+    await handleFetchData(entry.hostId, entry.dateRange.from, entry.dateRange.to, entry.platform);
+    setRefreshingKey(null);
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
       <div className="notion-page">
-        {/* Header with Save Button */}
-        <div className="flex items-start justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Benchmark</h1>
-            <p className="text-sm text-muted-foreground">
-              Analyse booking data and performance metrics
-            </p>
-          </div>
-          {canSaveReport && (
-            <SaveReportButton
-              currentData={{
-                sessions: allSessions,
-                metrics,
-                monthlyData,
-                venueConfig,
-                hostInfo,
-                dateRange,
-              }}
-            />
-          )}
-        </div>
-
-        {/* Filters */}
         <FiltersPanel onFetchData={handleFetchData} isLoading={isLoading} />
 
-        {/* Data Status */}
-        <DataStatus
-          isLoading={isLoading}
-          error={error as Error | null}
-          sessionCount={isLoading
-            ? (activePlatform === 'glofox' ? glofoxProgress.sessionsFetched : activePlatform === 'marianatek' ? marianatekProgress.sessionsFetched : momenceHook.fetchingCount)
-            : allSessions.length}
-          pageCount={totalPages}
-          dataRange={fetchedDataRange}
-          fetchProgress={fetchProgress}
-          loadingLabel={activePlatform === 'marianatek' && isLoading ? 'Fetching Project Mood data...' : undefined}
-        />
+        {/* Recent Searches */}
+        <div className="mb-6">
+          <RecentSearches
+            entries={recentSearches}
+            onSelect={handleLoadFromCache}
+            onRefresh={handleRefresh}
+            refreshingKey={refreshingKey}
+          />
+        </div>
 
-        {/* Skeleton Loader */}
-        {hasQueried && isLoading && <DashboardSkeleton />}
-
-        {/* Dashboard Content — hide sections with no data */}
-        {hasQueried && !isLoading && benchmarkMetrics && (
-          <div className="space-y-10 mt-8">
-            {/* Venue Summary */}
-            <section>
-              <h2 className="notion-h1">Venue Summary</h2>
-              <VenueSummary
-                metrics={benchmarkMetrics}
-                venueConfig={venueConfig}
-                monthlyData={monthlyData}
-                hostInfo={hostInfo}
-              />
-            </section>
-
-            {monthlyData.length > 0 && (
-              <section>
-                <h2 className="notion-h1">Monthly Performance</h2>
-                <MonthlyTable data={monthlyData} sessions={allSessions} />
-              </section>
-            )}
-
-            {allSessions.length > 0 && (
-              <section>
-                <h2 className="notion-h1">Demand Patterns</h2>
-                <DemandPatterns sessions={allSessions} />
-              </section>
-            )}
-
-            {allSessions.some(s => s.fixedTicketPrice > 0) && (
-              <section>
-                <h2 className="notion-h1">Revenue Insights</h2>
-                <RevenueInsights
-                  sessions={allSessions}
-                  monthlyData={monthlyData}
-                  benchmarkMetrics={benchmarkMetrics}
-                />
-              </section>
-            )}
-
-            {metrics && monthlyData.length > 0 && (
-              <section>
-                <h2 className="notion-h1">Capacity Trend</h2>
-                <CapacityUtilisation metrics={metrics} monthlyData={monthlyData} />
-              </section>
-            )}
-
-            {allSessions.length > 0 && allSessions.some(s => s.fixedTicketPrice > 0) && (
-              <section>
-                <h2 className="notion-h1">Pricing & Offerings</h2>
-                <PricingAnalysis sessions={allSessions} />
-              </section>
-            )}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!hasQueried && !isLoading && (
-          <div className="text-center py-20">
-            <h2 className="text-xl font-semibold text-foreground mb-2">
-              Ready to Analyse
-            </h2>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              Select a venue and date range to load data and view performance metrics.
-            </p>
-          </div>
+        {/* Data Status & Skeleton when loading */}
+        {hasQueried && isLoading && (
+          <>
+            <DataStatus
+              isLoading={isLoading}
+              error={error as Error | null}
+              sessionCount={activePlatform === 'glofox' ? glofoxProgress.sessionsFetched : activePlatform === 'marianatek' ? marianatekProgress.sessionsFetched : momenceHook.fetchingCount}
+              pageCount={totalPages}
+              dataRange={fetchedDataRange}
+              loadingLabel={activePlatform === 'marianatek' ? 'Fetching Project Mood data...' : undefined}
+            />
+            <DashboardSkeleton />
+          </>
         )}
       </div>
     </div>
