@@ -1,13 +1,20 @@
 import { format, parseISO, differenceInDays, startOfMonth, getHours, getMinutes } from 'date-fns';
-import type { 
-  MomenceSession, 
-  SessionMetrics, 
-  MonthlyData, 
-  TimeSlotData, 
+import type {
+  MomenceSession,
+  SessionMetrics,
+  MonthlyData,
+  TimeSlotData,
   VenueConfig,
-  ClassTypeData 
+  ClassTypeData
 } from '@/types/momence';
+import type { OperatingHours } from '@/lib/benchmarkMetrics';
 import { formatDecimalHour } from '@/lib/utils';
+
+export interface TimeSlot {
+  label: string;
+  start: number;  // Decimal hour (e.g., 6.5 for 6:30am)
+  end: number;    // Decimal hour (e.g., 8.5 for 8:30am)
+}
 
 /**
  * Calculate core metrics from sessions data
@@ -105,9 +112,9 @@ export function calculateMonthlyData(sessions: MomenceSession[]): MonthlyData[] 
 }
 
 /**
- * Define time slots for demand analysis (12-hour format)
+ * Default time slots for demand analysis (used as fallback)
  */
-const TIME_SLOTS = [
+const DEFAULT_TIME_SLOTS: TimeSlot[] = [
   { label: '4:30 – 6:30am', start: 4.5, end: 6.5 },
   { label: '6:30 – 8:30am', start: 6.5, end: 8.5 },
   { label: '8:30 – 10:30am', start: 8.5, end: 10.5 },
@@ -120,12 +127,46 @@ const TIME_SLOTS = [
 ];
 
 /**
- * Calculate demand patterns by time slot
+ * Generate time slots dynamically based on operating hours.
+ * Creates 2-hour slots covering the venue's actual operating window.
+ *
+ * @param operatingHours - The venue's operating hours (weekday/weekend)
+ * @param slotDuration - Duration of each slot in hours (default 2)
+ * @returns Array of time slots
  */
-export function calculateDemandPatterns(sessions: MomenceSession[]): TimeSlotData[] {
+export function generateTimeSlots(operatingHours: OperatingHours, slotDuration = 2): TimeSlot[] {
+  // Use the earlier start and later end across weekday/weekend
+  const earliestStart = Math.min(operatingHours.weekdayStart, operatingHours.weekendStart);
+  const latestEnd = Math.max(operatingHours.weekdayEnd, operatingHours.weekendEnd);
+
+  // Round down start to nearest half hour, round up end to nearest half hour
+  const start = Math.floor(earliestStart * 2) / 2;
+  const end = Math.ceil(latestEnd * 2) / 2;
+
+  const slots: TimeSlot[] = [];
+  for (let slotStart = start; slotStart < end; slotStart += slotDuration) {
+    const slotEnd = Math.min(slotStart + slotDuration, end);
+    const label = `${formatDecimalHour(slotStart)} – ${formatDecimalHour(slotEnd)}`;
+    slots.push({ label, start: slotStart, end: slotEnd });
+  }
+
+  return slots.length > 0 ? slots : DEFAULT_TIME_SLOTS;
+}
+
+/**
+ * Calculate demand patterns by time slot
+ *
+ * @param sessions - Array of sessions to analyze
+ * @param timeSlots - Optional custom time slots (if not provided, uses default)
+ */
+export function calculateDemandPatterns(
+  sessions: MomenceSession[],
+  timeSlots?: TimeSlot[]
+): TimeSlotData[] {
+  const slots = timeSlots || DEFAULT_TIME_SLOTS;
   const slotData: Map<string, { tickets: number[]; capacities: number[] }> = new Map();
 
-  TIME_SLOTS.forEach(slot => {
+  slots.forEach(slot => {
     slotData.set(slot.label, { tickets: [], capacities: [] });
   });
 
@@ -133,7 +174,7 @@ export function calculateDemandPatterns(sessions: MomenceSession[]): TimeSlotDat
     const date = parseISO(session.startsAt);
     const hours = getHours(date) + getMinutes(date) / 60;
 
-    for (const slot of TIME_SLOTS) {
+    for (const slot of slots) {
       if (hours >= slot.start && hours < slot.end) {
         const data = slotData.get(slot.label)!;
         data.tickets.push(session.ticketsSold);
@@ -150,7 +191,7 @@ export function calculateDemandPatterns(sessions: MomenceSession[]): TimeSlotDat
       const avgTickets = data.tickets.reduce((a, b) => a + b, 0) / data.tickets.length;
       const avgCapacity = data.capacities.reduce((a, b) => a + b, 0) / data.capacities.length;
       const utilisation = avgCapacity > 0 ? (avgTickets / avgCapacity) * 100 : 0;
-      
+
       let utilisationBand: 'High' | 'Medium' | 'Low';
       if (utilisation >= 70) utilisationBand = 'High';
       else if (utilisation >= 40) utilisationBand = 'Medium';

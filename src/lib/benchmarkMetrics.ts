@@ -54,7 +54,27 @@ export interface BenchmarkComparison {
 }
 
 /**
- * Infer operating hours from session data
+ * Calculate percentile value from sorted array
+ */
+function percentile(arr: number[], p: number): number {
+  if (arr.length === 0) return 0;
+  const sorted = [...arr].sort((a, b) => a - b);
+  const index = Math.max(0, Math.min(sorted.length - 1, Math.floor(sorted.length * p)));
+  return sorted[index];
+}
+
+/**
+ * Round to nearest half hour for clean display
+ */
+function roundToHalfHour(hour: number, roundUp: boolean): number {
+  const rounded = roundUp ? Math.ceil(hour * 2) / 2 : Math.floor(hour * 2) / 2;
+  return rounded;
+}
+
+/**
+ * Infer operating hours from session data using percentile-based bounds
+ * to eliminate outliers (e.g., test sessions, timezone glitches).
+ * Uses 5th/95th percentile instead of absolute min/max.
  */
 export function inferOperatingHours(sessions: MomenceSession[]): OperatingHours {
   const weekdayStartTimes: number[] = [];
@@ -79,14 +99,24 @@ export function inferOperatingHours(sessions: MomenceSession[]): OperatingHours 
     }
   });
 
-  const safeMin = (arr: number[]) => arr.length > 0 ? Math.min(...arr) : 6;
-  const safeMax = (arr: number[]) => arr.length > 0 ? Math.max(...arr) : 21;
+  // Use percentile-based bounds (5th/95th) to drop outliers, then round to half-hour
+  const safePercentileMin = (arr: number[], defaultHour = 6) => {
+    if (arr.length === 0) return defaultHour;
+    const p5 = percentile(arr, 0.05);
+    return roundToHalfHour(p5, false); // Round down for start times
+  };
+
+  const safePercentileMax = (arr: number[], defaultHour = 21) => {
+    if (arr.length === 0) return defaultHour;
+    const p95 = percentile(arr, 0.95);
+    return roundToHalfHour(p95, true); // Round up for end times
+  };
 
   return {
-    weekdayStart: safeMin(weekdayStartTimes),
-    weekdayEnd: safeMax(weekdayEndTimes),
-    weekendStart: safeMin(weekendStartTimes),
-    weekendEnd: safeMax(weekendEndTimes),
+    weekdayStart: safePercentileMin(weekdayStartTimes, 6),
+    weekdayEnd: safePercentileMax(weekdayEndTimes, 21),
+    weekendStart: safePercentileMin(weekendStartTimes, 6),
+    weekendEnd: safePercentileMax(weekendEndTimes, 21),
   };
 }
 

@@ -1,11 +1,14 @@
 import { useMemo } from 'react';
 import { parseISO, getHours, getMinutes, getDay } from 'date-fns';
 import type { MomenceSession } from '@/types/momence';
+import type { OperatingHours } from '@/lib/benchmarkMetrics';
+import { generateTimeSlots, type TimeSlot } from '@/lib/metricsCalculator';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 interface DemandPatternsProps {
   sessions: MomenceSession[];
+  operatingHours?: OperatingHours;
 }
 
 interface TimeSlotAnalysis {
@@ -17,27 +20,15 @@ interface TimeSlotAnalysis {
   utilisationBand: 'High' | 'Medium' | 'Low';
 }
 
-const TIME_SLOTS = [
-  { label: '4:30 – 6:30am', start: 4.5, end: 6.5 },
-  { label: '6:30 – 8:30am', start: 6.5, end: 8.5 },
-  { label: '8:30 – 10:30am', start: 8.5, end: 10.5 },
-  { label: '10:30am – 12:30pm', start: 10.5, end: 12.5 },
-  { label: '12:30 – 2:30pm', start: 12.5, end: 14.5 },
-  { label: '2:30 – 4:30pm', start: 14.5, end: 16.5 },
-  { label: '4:30 – 6:30pm', start: 16.5, end: 18.5 },
-  { label: '6:30 – 8:30pm', start: 18.5, end: 20.5 },
-  { label: '8:30 – 10:30pm', start: 20.5, end: 22.5 },
-];
-
-function calculateSlotData(sessions: MomenceSession[]): TimeSlotAnalysis[] {
+function calculateSlotData(sessions: MomenceSession[], timeSlots: TimeSlot[]): TimeSlotAnalysis[] {
   const slotData = new Map<string, { tickets: number[]; capacities: number[] }>();
-  TIME_SLOTS.forEach(slot => slotData.set(slot.label, { tickets: [], capacities: [] }));
+  timeSlots.forEach(slot => slotData.set(slot.label, { tickets: [], capacities: [] }));
 
   sessions.forEach(session => {
     const date = parseISO(session.startsAt);
     const hours = getHours(date) + getMinutes(date) / 60;
 
-    for (const slot of TIME_SLOTS) {
+    for (const slot of timeSlots) {
       if (hours >= slot.start && hours < slot.end) {
         const data = slotData.get(slot.label)!;
         data.tickets.push(session.ticketsSold);
@@ -72,8 +63,12 @@ function findPeakSlots(data: TimeSlotAnalysis[], count = 2): TimeSlotAnalysis[] 
   return [...data].sort((a, b) => b.utilisation - a.utilisation).slice(0, count);
 }
 
-export function DemandPatterns({ sessions }: DemandPatternsProps) {
+export function DemandPatterns({ sessions, operatingHours }: DemandPatternsProps) {
   const { weekdayData, weekendData, weekdayPeaks, weekendPeaks } = useMemo(() => {
+    // Generate time slots based on operating hours if provided, otherwise use default
+    const defaultHours = { weekdayStart: 4.5, weekdayEnd: 22.5, weekendStart: 4.5, weekendEnd: 22.5 };
+    const timeSlots = generateTimeSlots(operatingHours || defaultHours);
+
     // Split sessions by weekday vs weekend
     const weekdaySessions = sessions.filter(s => {
       const day = getDay(parseISO(s.startsAt));
@@ -84,8 +79,8 @@ export function DemandPatterns({ sessions }: DemandPatternsProps) {
       return day === 0 || day === 6; // Sat-Sun
     });
 
-    const weekdayData = calculateSlotData(weekdaySessions);
-    const weekendData = calculateSlotData(weekendSessions);
+    const weekdayData = calculateSlotData(weekdaySessions, timeSlots);
+    const weekendData = calculateSlotData(weekendSessions, timeSlots);
 
     return {
       weekdayData,
@@ -93,7 +88,7 @@ export function DemandPatterns({ sessions }: DemandPatternsProps) {
       weekdayPeaks: findPeakSlots(weekdayData),
       weekendPeaks: findPeakSlots(weekendData),
     };
-  }, [sessions]);
+  }, [sessions, operatingHours]);
 
   if (sessions.length === 0) return null;
 

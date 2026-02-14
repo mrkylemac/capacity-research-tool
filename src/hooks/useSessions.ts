@@ -5,9 +5,11 @@ import {
   calculateMonthlyData,
   calculateDemandPatterns,
   calculateVenueConfig,
-  calculateClassTypeData
+  calculateClassTypeData,
+  generateTimeSlots
 } from '@/lib/metricsCalculator';
-import { sanitizeSessions, logDataQuality } from '@/lib/utils';
+import { sanitizeSessions, logDataQuality, normalizeCapacity, type OperatingHoursBounds } from '@/lib/utils';
+import { inferOperatingHours, calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import { API_CONFIG } from '@/config/api';
 import type { MomenceSession, SessionsQueryParams } from '@/types/momence';
 
@@ -153,9 +155,32 @@ export function useSessions() {
         ? filteredMaxDate.toISOString()
         : params.startsAtTo;
 
-      // Sanitize: drop invalid dates, zero-capacity sessions; clamp tickets > capacity
-      const { sessions: cleanData, report } = sanitizeSessions(filteredData);
-      logDataQuality('Momence', report);
+      // Sanitization pipeline:
+      // 1. Basic sanitization (cancelled, invalid dates, zero capacity)
+      const { sessions: basicClean, report: basicReport } = sanitizeSessions(filteredData);
+      logDataQuality('Basic sanitization', basicReport);
+
+      // 2. Infer operating hours using percentile-based bounds (eliminates outliers)
+      const operatingHours = inferOperatingHours(basicClean);
+      const earliestStart = Math.min(operatingHours.weekdayStart, operatingHours.weekendStart);
+      const latestEnd = Math.max(operatingHours.weekdayEnd, operatingHours.weekendEnd);
+      console.log(`Inferred operating hours: ${earliestStart.toFixed(1)}–${latestEnd.toFixed(1)}`);
+
+      // 3. Filter sessions outside operating hours (prevents phantom time slots)
+      const hoursBounds: OperatingHoursBounds = {
+        earliestStart,
+        latestEnd
+      };
+      const { sessions: hoursFiltered, report: hoursReport } = sanitizeSessions(basicClean, hoursBounds);
+      if (hoursReport.dropped.outsideOperatingHours > 0) {
+        logDataQuality('Operating hours filter', hoursReport);
+      }
+
+      // 4. Normalize capacity to modal value (reduces variance from special events)
+      const { sessions: cleanData, normalizedCount, modalCapacity } = normalizeCapacity(hoursFiltered, 0.5, true);
+      if (normalizedCount > 0) {
+        console.log(`Normalized ${normalizedCount} sessions to modal capacity ${modalCapacity}`);
+      }
 
       setDataRange({
         from: filteredMinDate,
@@ -189,8 +214,17 @@ export function useSessions() {
     effectiveTo
   ) : null;
 
+  // Calculate benchmark metrics with inferred operating hours
+  const benchmarkMetrics = (queryParams && effectiveFrom && effectiveTo && allSessions.length > 0)
+    ? calculateBenchmarkMetrics(allSessions, effectiveFrom, effectiveTo)
+    : null;
+
   const monthlyData = calculateMonthlyData(allSessions);
-  const demandPatterns = calculateDemandPatterns(allSessions);
+
+  // Generate dynamic time slots based on operating hours
+  const timeSlots = benchmarkMetrics ? generateTimeSlots(benchmarkMetrics.operatingHours) : undefined;
+  const demandPatterns = calculateDemandPatterns(allSessions, timeSlots);
+
   const classTypeData = calculateClassTypeData(allSessions);
   const venueConfig = (queryParams && effectiveFrom && effectiveTo) ? calculateVenueConfig(
     allSessions,
@@ -225,6 +259,7 @@ export function useSessions() {
     fetchingCount,
     page: 1,
     metrics,
+    benchmarkMetrics,
     monthlyData,
     demandPatterns,
     classTypeData,

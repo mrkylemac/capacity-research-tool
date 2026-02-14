@@ -100,7 +100,10 @@ const Report = () => {
           {entry.sessions.length > 0 && (
             <section>
               <h2 className="notion-h1">Demand Patterns</h2>
-              <DemandPatterns sessions={entry.sessions} />
+              <DemandPatterns
+                sessions={entry.sessions}
+                operatingHours={benchmarkMetrics.operatingHours}
+              />
             </section>
           )}
 

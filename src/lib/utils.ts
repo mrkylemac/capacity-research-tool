@@ -25,22 +25,35 @@ export interface DataQualityReport {
     cancelled: number;
     invalidDate: number;
     zeroCapacity: number;
+    outsideOperatingHours: number;
   };
   clamped: {
     ticketsExceededCapacity: number;
+    capacityNormalized: number;
   };
+}
+
+export interface OperatingHoursBounds {
+  earliestStart: number; // Decimal hour (e.g., 6.0 for 6am)
+  latestEnd: number;     // Decimal hour (e.g., 21.0 for 9pm)
 }
 
 /**
  * Sanitize sessions from any platform. Drops cancelled/invalid records, clamps values.
  * Call this once after all pages are fetched and date-filtered.
+ *
+ * @param sessions - Array of sessions to sanitize
+ * @param operatingHoursBounds - Optional bounds to filter sessions outside operating hours
  */
-export function sanitizeSessions(sessions: MomenceSession[]): { sessions: MomenceSession[]; report: DataQualityReport } {
+export function sanitizeSessions(
+  sessions: MomenceSession[],
+  operatingHoursBounds?: OperatingHoursBounds
+): { sessions: MomenceSession[]; report: DataQualityReport } {
   const report: DataQualityReport = {
     inputCount: sessions.length,
     outputCount: 0,
-    dropped: { cancelled: 0, invalidDate: 0, zeroCapacity: 0 },
-    clamped: { ticketsExceededCapacity: 0 },
+    dropped: { cancelled: 0, invalidDate: 0, zeroCapacity: 0, outsideOperatingHours: 0 },
+    clamped: { ticketsExceededCapacity: 0, capacityNormalized: 0 },
   };
 
   const clean = sessions.reduce<MomenceSession[]>((acc, s) => {
@@ -59,6 +72,17 @@ export function sanitizeSessions(sessions: MomenceSession[]): { sessions: Momenc
       report.dropped.zeroCapacity++;
       return acc;
     }
+
+    // Drop sessions outside operating hours (if bounds provided)
+    if (operatingHoursBounds) {
+      const startDate = new Date(s.startsAt);
+      const startHour = startDate.getHours() + startDate.getMinutes() / 60;
+      if (startHour < operatingHoursBounds.earliestStart || startHour > operatingHoursBounds.latestEnd) {
+        report.dropped.outsideOperatingHours++;
+        return acc;
+      }
+    }
+
     // Clamp ticketsSold to capacity (waitlist overflow / data quirk)
     if (s.ticketsSold > s.capacity) {
       report.clamped.ticketsExceededCapacity++;
@@ -72,10 +96,66 @@ export function sanitizeSessions(sessions: MomenceSession[]): { sessions: Momenc
   return { sessions: clean, report };
 }
 
+/**
+ * Normalize capacity values to the modal (most common) capacity.
+ * Detects outlier capacities and optionally clamps them to the mode.
+ *
+ * @param sessions - Array of sessions to normalize
+ * @param deviationThreshold - Maximum allowed deviation from mode (0-1, default 0.5 = 50%)
+ * @param applyNormalization - Whether to actually modify capacity values (default true)
+ * @returns Normalized sessions and counts of normalized sessions
+ */
+export function normalizeCapacity(
+  sessions: MomenceSession[],
+  deviationThreshold = 0.5,
+  applyNormalization = true
+): { sessions: MomenceSession[]; normalizedCount: number; modalCapacity: number } {
+  if (sessions.length === 0) {
+    return { sessions, normalizedCount: 0, modalCapacity: 0 };
+  }
+
+  // Find modal capacity (most common value)
+  const capacityCounts = new Map<number, number>();
+  sessions.forEach(s => {
+    capacityCounts.set(s.capacity, (capacityCounts.get(s.capacity) || 0) + 1);
+  });
+
+  let modalCapacity = 0;
+  let maxCount = 0;
+  capacityCounts.forEach((count, capacity) => {
+    if (count > maxCount) {
+      maxCount = count;
+      modalCapacity = capacity;
+    }
+  });
+
+  // Normalize sessions that deviate significantly from modal capacity
+  let normalizedCount = 0;
+  const normalized = sessions.map(s => {
+    const deviation = Math.abs(s.capacity - modalCapacity) / modalCapacity;
+    if (deviation > deviationThreshold) {
+      normalizedCount++;
+      if (applyNormalization) {
+        return { ...s, capacity: modalCapacity };
+      }
+    }
+    return s;
+  });
+
+  return { sessions: normalized, normalizedCount, modalCapacity };
+}
+
 /** Log a data quality report to console. Only logs detail lines when something was dropped/clamped. */
 export function logDataQuality(label: string, report: DataQualityReport): void {
   const { dropped, clamped } = report;
-  const issues = dropped.cancelled + dropped.invalidDate + dropped.zeroCapacity + clamped.ticketsExceededCapacity;
+  const issues =
+    dropped.cancelled +
+    dropped.invalidDate +
+    dropped.zeroCapacity +
+    dropped.outsideOperatingHours +
+    clamped.ticketsExceededCapacity +
+    clamped.capacityNormalized;
+
   if (issues === 0) {
     console.log(`[${label}] ${report.outputCount} sessions — no data quality issues`);
     return;
@@ -85,6 +165,8 @@ export function logDataQuality(label: string, report: DataQualityReport): void {
     (dropped.cancelled ? ` | ${dropped.cancelled} dropped (cancelled)` : '') +
     (dropped.invalidDate ? ` | ${dropped.invalidDate} dropped (invalid date)` : '') +
     (dropped.zeroCapacity ? ` | ${dropped.zeroCapacity} dropped (zero capacity)` : '') +
-    (clamped.ticketsExceededCapacity ? ` | ${clamped.ticketsExceededCapacity} clamped (tickets > capacity)` : '')
+    (dropped.outsideOperatingHours ? ` | ${dropped.outsideOperatingHours} dropped (outside hours)` : '') +
+    (clamped.ticketsExceededCapacity ? ` | ${clamped.ticketsExceededCapacity} clamped (tickets > capacity)` : '') +
+    (clamped.capacityNormalized ? ` | ${clamped.capacityNormalized} normalized (capacity variance)` : '')
   );
 }
