@@ -118,20 +118,24 @@ const Index = () => {
       setMarianatekLoading(true);
       setMarianatekError(null);
       setMarianatekProgress({ sessionsFetched: 0, pagesLoaded: 0 });
-      console.log('[Project Mood] Index: fetch started', { fromDate, toDate });
+      // Map hostId to MarianaTek config
+      const configKey = hostId === 'aerth' ? 'aerthSaunas' : 'projectMood';
+      const config = MARIANATEK_CONFIG[configKey];
+      console.log(`[${config.name}] Index: fetch started`, { fromDate, toDate });
       try {
-        const config = MARIANATEK_CONFIG.projectMood;
         const sessions = await fetchMarianaTekSessions({
           baseUrl: config.baseUrl,
           locationId: config.locationId,
           regionId: config.regionId,
           fromDate,
           toDate,
+          venueName: config.name,
+          classTypeFilter: config.classTypeFilter,
           onProgress: (sessionsFetched, pagesLoaded) => {
             setMarianatekProgress({ sessionsFetched, pagesLoaded });
           },
         });
-        console.log('[Project Mood] Index: fetch complete', sessions.length, 'sessions');
+        console.log(`[${config.name}] Index: fetch complete`, sessions.length, 'sessions');
         setMarianatekProgress({ sessionsFetched: sessions.length, pagesLoaded: 1 });
         setMarianatekSessions(sessions);
       } catch (err) {

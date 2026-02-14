@@ -37,6 +37,15 @@ export const MARIANATEK_CONFIG = {
     regionId: '48541',
     name: 'Project Mood',
     timezone: 'Australia/Melbourne',
+    classTypeFilter: 'Open Bathhouse', // Only include this class type
+  },
+  aerthSaunas: {
+    baseUrl: 'https://aerthsaunas.marianatek.com/api/customer/v1',
+    locationId: '48717',
+    regionId: '48541',
+    name: 'Ærth Saunas',
+    timezone: 'America/Vancouver',
+    classTypeFilter: 'Ærth Cycle (90 min)', // Only include this class type
   },
 } as const;
 
@@ -60,4 +69,5 @@ export const VENUES: VenueConfig[] = [
   { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek', location: 'Melbourne' },
   { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco' },
   { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox', location: 'New York' },
+  { id: 'aerth', name: 'Ærth Saunas, Victoria', platform: 'marianatek', location: 'Victoria' },
 ];

@@ -167,13 +167,17 @@ const ForecastComparison = () => {
       setMarianatekLoading(true);
       setMarianatekError(null);
       try {
-        const config = MARIANATEK_CONFIG.projectMood;
+        // Map hostId to MarianaTek config
+        const configKey = hostId === 'aerth' ? 'aerthSaunas' : 'projectMood';
+        const config = MARIANATEK_CONFIG[configKey];
         const sessions = await fetchMarianaTekSessions({
           baseUrl: config.baseUrl,
           locationId: config.locationId,
           regionId: config.regionId,
           fromDate,
           toDate,
+          venueName: config.name,
+          classTypeFilter: config.classTypeFilter,
           onProgress: () => {},
         });
         setMarianatekSessions(sessions);

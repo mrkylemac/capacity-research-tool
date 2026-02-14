@@ -13,6 +13,7 @@ async function fetchClasses(
   regionId: string,
   minStartDate: string,
   maxStartDate: string,
+  venueName: string,
   page = 1,
   pageSize = 500
 ): Promise<MarianaTekClassesResponse> {
@@ -25,15 +26,15 @@ async function fetchClasses(
   url.searchParams.set('region', regionId);
 
   const urlString = url.toString();
-  console.log('[Project Mood] Fetching page', page, ':', urlString);
+  console.log(`[${venueName}] Fetching page`, page, ':', urlString);
 
   const res = await fetch(urlString, { method: 'GET', headers: { accept: 'application/json' } });
 
-  console.log('[Project Mood] Response:', res.status, res.statusText, 'Content-Type:', res.headers.get('content-type'));
+  console.log(`[${venueName}] Response:`, res.status, res.statusText, 'Content-Type:', res.headers.get('content-type'));
 
   if (!res.ok) {
     const text = await res.text();
-    console.error('[Project Mood] Error response body:', text.slice(0, 500));
+    console.error(`[${venueName}] Error response body:`, text.slice(0, 500));
     throw new Error(`Mariana Tek API: ${res.status} ${res.statusText}`);
   }
   const data = await res.json();
@@ -67,6 +68,8 @@ export interface MarianaTekFetchParams {
   regionId: string;
   fromDate: string; // YYYY-MM-DD
   toDate: string;
+  venueName: string;
+  classTypeFilter: string;
   onProgress?: (sessionsFetched: number, pagesLoaded: number) => void;
 }
 
@@ -75,39 +78,37 @@ export interface MarianaTekFetchParams {
  * Calls onProgress after each page so the UI can show loading activity.
  */
 export async function fetchMarianaTekSessions(params: MarianaTekFetchParams): Promise<MomenceSession[]> {
-  const { baseUrl, locationId, regionId, fromDate, toDate, onProgress } = params;
+  const { baseUrl, locationId, regionId, fromDate, toDate, venueName, classTypeFilter, onProgress } = params;
 
-  console.log('[Project Mood] Starting fetch', { baseUrl, locationId, regionId, fromDate, toDate });
+  console.log(`[${venueName}] Starting fetch`, { baseUrl, locationId, regionId, fromDate, toDate, classTypeFilter });
 
   const all: MomenceSession[] = [];
   let page = 1;
   const pageSize = 500;
 
-  const OPEN_BATHHOUSE_CLASS_TYPE = 'Open Bathhouse';
-
   try {
     while (true) {
-      const data = await fetchClasses(baseUrl, locationId, regionId, fromDate, toDate, page, pageSize);
+      const data = await fetchClasses(baseUrl, locationId, regionId, fromDate, toDate, venueName, page, pageSize);
       const rawResults = data.results || [];
-      const openBathhouseOnly = rawResults.filter(
-        (c) => c.class_type?.name === OPEN_BATHHOUSE_CLASS_TYPE
+      const filteredClasses = rawResults.filter(
+        (c) => c.class_type?.name === classTypeFilter
       );
-      const sessions = openBathhouseOnly.map(classToSession);
+      const sessions = filteredClasses.map(classToSession);
       all.push(...sessions);
 
       const pagination = data.meta?.pagination;
-      console.log('[Project Mood] Page', page, ':', rawResults.length, 'classes →', openBathhouseOnly.length, 'Open Bathhouse (total:', all.length + ')', pagination ? `| pagination: ${JSON.stringify(pagination)}` : '| no meta.pagination');
+      console.log(`[${venueName}] Page`, page, ':', rawResults.length, 'classes →', filteredClasses.length, classTypeFilter, '(total:', all.length + ')', pagination ? `| pagination: ${JSON.stringify(pagination)}` : '| no meta.pagination');
 
       onProgress?.(all.length, page);
 
       if (!pagination || page >= pagination.pages || sessions.length === 0) {
-        console.log('[Project Mood] Done. Total sessions:', all.length);
+        console.log(`[${venueName}] Done. Total sessions:`, all.length);
         break;
       }
       page++;
     }
   } catch (err) {
-    console.error('[Project Mood] Fetch failed:', err);
+    console.error(`[${venueName}] Fetch failed:`, err);
     throw err;
   }
 
