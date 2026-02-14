@@ -12,8 +12,9 @@ import { calculateMetrics, calculateMonthlyData, calculateVenueConfig } from '@/
 import { glofoxClient } from '@/lib/glofoxClient';
 import { fetchMarianaTekSessions } from '@/lib/marianatekClient';
 import { VENUES, GLOFOX_CONFIG, MARIANATEK_CONFIG, type Platform } from '@/config/api';
-import { TrendingUp, TrendingDown, Minus, Calendar, Building2, FileText } from 'lucide-react';
-import forecastData from '@/data/forecast.json';
+import { TrendingUp, TrendingDown, Minus, Calendar, Building2, FileText, RefreshCw } from 'lucide-react';
+import { fetchForecastFromSheets } from '@/lib/forecastFetcher';
+import staticForecastData from '@/data/forecast.json';
 import type { MomenceSession } from '@/types/momence';
 
 interface ForecastData {
@@ -22,6 +23,8 @@ interface ForecastData {
   cashFlow: Array<{ month: string; forecast: number }>;
   lastUpdated: string;
 }
+
+const SPREADSHEET_ID = '1L0W-XIC3t7RonUpdgcCXdhR6UcfCIc234BzY_4vr5u4';
 
 function ComparisonCard({ 
   title, 
@@ -100,6 +103,11 @@ const ForecastComparison = () => {
   const [hasQueried, setHasQueried] = useState(false);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [currentVenue, setCurrentVenue] = useState<string>('');
+  
+  // Forecast data state
+  const [forecastData, setForecastData] = useState<ForecastData>(staticForecastData);
+  const [forecastLoading, setForecastLoading] = useState(false);
+  const [forecastError, setForecastError] = useState<string | null>(null);
 
   const platformSessions = activePlatform === 'glofox' ? glofoxSessions : activePlatform === 'marianatek' ? marianatekSessions : momenceHook.allSessions;
   const allSessions = platformSessions;
@@ -116,6 +124,20 @@ const ForecastComparison = () => {
   const monthlyData = isNonMomence ? derivedMonthlyData : momenceHook.monthlyData;
   const isLoading = activePlatform === 'glofox' ? glofoxLoading : activePlatform === 'marianatek' ? marianatekLoading : momenceHook.isLoading;
   const error = activePlatform === 'glofox' ? glofoxError : activePlatform === 'marianatek' ? marianatekError : momenceHook.error;
+
+  const handleRefreshForecast = async () => {
+    setForecastLoading(true);
+    setForecastError(null);
+    try {
+      const data = await fetchForecastFromSheets(SPREADSHEET_ID);
+      setForecastData(data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch forecast data';
+      setForecastError(message);
+    } finally {
+      setForecastLoading(false);
+    }
+  };
 
   const handleFetchData = async (hostId: string, fromDate: string, toDate: string, platform: Platform) => {
     setHasQueried(true);
@@ -266,6 +288,15 @@ const ForecastComparison = () => {
                 Report
               </Button>
             )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefreshForecast}
+              disabled={forecastLoading}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${forecastLoading ? 'animate-spin' : ''}`} />
+              {forecastLoading ? 'Fetching...' : 'Refresh Forecast'}
+            </Button>
             {forecastData.lastUpdated && (
               <span className="text-xs text-muted-foreground">
                 Slow Folk: {new Date(forecastData.lastUpdated).toLocaleDateString()}
@@ -278,6 +309,14 @@ const ForecastComparison = () => {
           <Alert className="mb-6">
             <AlertDescription>
               No Slow Folk estimates found. Run <code className="text-xs bg-muted px-1 py-0.5 rounded">yarn fetch-forecast [SPREADSHEET_ID]</code> to import your business plan from Google Sheets.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {forecastError && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>
+              Failed to refresh forecast data: {forecastError}
             </AlertDescription>
           </Alert>
         )}

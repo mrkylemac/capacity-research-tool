@@ -34,7 +34,7 @@
     "Capital Recovery Window": 60,
     "Top membership spas": 55,
     "High achievers operate at": 49,
-    "Slow Folk currently sitting at": 43.73,
+    "Slow Folk currently sitting at": 40.82,
     "Constrained spaces (hard ceilings)": 55
   },
   "venueCapacity": {
@@ -50,5 +50,5 @@
     "Peak Hours": 4
   },
   "cashFlow": [],
-  "lastUpdated": "2026-02-14T07:38:49.637Z"
+  "lastUpdated": "2026-02-14T07:43:42.499Z"
 }
