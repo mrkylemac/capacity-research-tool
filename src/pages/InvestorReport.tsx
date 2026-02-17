@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { differenceInDays, parseISO } from 'date-fns';
 import { ArrowLeft, FileDown } from 'lucide-react';
@@ -22,6 +22,7 @@ const InvestorReport = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const hostId = searchParams.get('hostId');
   const from = searchParams.get('from');
   const to = searchParams.get('to');
@@ -68,6 +69,13 @@ const InvestorReport = () => {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleRefresh = () => {
+    if (!hostId || !from || !to) return;
+    setIsRefreshing(true);
+    // Navigate back to home with parameters to trigger refresh
+    navigate(`/?refresh=true&hostId=${hostId}&from=${from}&to=${to}&platform=${platform || 'momence'}`, { replace: true });
   };
 
   if (!hasForecastData()) {
@@ -134,10 +142,14 @@ const InvestorReport = () => {
               Benchmark validation: {benchmark.venueName} • {benchmark.dateRange.from} to {benchmark.dateRange.to}
             </p>
           </div>
-          <Button variant="outline" size="sm" className="print:hidden" onClick={handlePrint}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Download PDF
-          </Button>
+          <div className="flex items-center gap-2 print:hidden">
+            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing}>
+              Refresh Data
+            </Button>
+            <Button variant="outline" size="sm" onClick={handlePrint}>
+              Download PDF
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-8">

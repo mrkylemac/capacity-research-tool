@@ -5,7 +5,7 @@ import { RecentSearches } from '@/components/RecentSearches';
 import { DataStatus } from '@/components/DataStatus';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { useSessions } from '@/hooks/useSessions';
-import { getRecentSearches, setCachedEntry, type CachedVenueEntry } from '@/lib/venueCache';
+import { getRecentSearches, setCachedEntry, removeFromRecent, type CachedVenueEntry } from '@/lib/venueCache';
 import { VENUES } from '@/config/api';
 import { calculateMetrics, calculateMonthlyData, calculateVenueConfig } from '@/lib/metricsCalculator';
 import { glofoxClient } from '@/lib/glofoxClient';
@@ -159,6 +159,11 @@ const Index = () => {
     setRefreshingKey(null);
   };
 
+  const handleDelete = (key: string) => {
+    removeFromRecent(key);
+    setRecentSearches(getRecentSearches());
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="notion-page">
@@ -170,6 +175,7 @@ const Index = () => {
             entries={recentSearches}
             onSelect={handleLoadFromCache}
             onRefresh={handleRefresh}
+            onDelete={handleDelete}
             refreshingKey={refreshingKey}
           />
         </div>

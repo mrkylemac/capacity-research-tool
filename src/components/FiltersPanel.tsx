@@ -20,6 +20,7 @@ import type { DateRange } from 'react-day-picker';
 import { VENUES, type Platform } from '@/config/api';
 
 const PRESETS = [
+  { label: 'Last 1 month', from: () => subMonths(new Date(), 1), to: () => new Date() },
   { label: 'Last 3 months', from: () => subMonths(new Date(), 3), to: () => new Date() },
   { label: 'Last 6 months', from: () => subMonths(new Date(), 6), to: () => new Date() },
   { label: 'Last 12 months', from: () => subMonths(new Date(), 12), to: () => new Date() },
