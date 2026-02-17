@@ -1,11 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VenueSummary } from '@/components/VenueSummary';
 import { MonthlyTable } from '@/components/MonthlyTable';
 import { DemandPatterns } from '@/components/DemandPatterns';
 import { CapacityUtilisation } from '@/components/CapacityUtilisation';
+import { CapacityEconomics } from '@/components/CapacityEconomics';
 import { PricingAnalysis } from '@/components/PricingAnalysis';
 import { RevenueInsights } from '@/components/RevenueInsights';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
@@ -16,6 +17,7 @@ const Report = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const hostId = searchParams.get('hostId');
   const from = searchParams.get('from');
   const to = searchParams.get('to');
@@ -54,19 +56,54 @@ const Report = () => {
 
   if (!benchmarkMetrics) return null;
 
+  const handleRefresh = () => {
+    if (!hostId || !from || !to) return;
+    setIsRefreshing(true);
+    // Navigate back to home with parameters to trigger refresh
+    navigate(`/?refresh=true&hostId=${hostId}&from=${from}&to=${to}&platform=${platform || 'momence'}`, { replace: true });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="notion-page">
         <div className="mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="-ml-2"
-            onClick={() => navigate('/')}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+          <div className="flex items-center justify-between gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="-ml-2"
+              onClick={() => navigate('/')}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/investor-report', { state: { entry } })}
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Report
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/slow-folk-research', { state: { entry } })}
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Research
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+              >
+                Refresh Data
+              </Button>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-10">
@@ -104,6 +141,16 @@ const Report = () => {
                 sessions={entry.sessions}
                 monthlyData={entry.monthlyData}
                 benchmarkMetrics={benchmarkMetrics}
+              />
+            </section>
+          )}
+
+          {entry.sessions.some(s => s.fixedTicketPrice > 0) && (
+            <section>
+              <h2 className="notion-h1">Capacity Economics</h2>
+              <CapacityEconomics
+                sessions={entry.sessions}
+                operatingHoursPerWeek={benchmarkMetrics.weeklyOpenHours}
               />
             </section>
           )}

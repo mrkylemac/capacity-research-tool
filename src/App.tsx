@@ -6,7 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import Index from "./pages/Index";
 import Report from "./pages/Report";
+import ForecastComparison from "./pages/ForecastComparison";
+import InvestorReport from "./pages/InvestorReport";
+import SlowFolkResearch from "./pages/SlowFolkResearch";
 import NotFound from "./pages/NotFound";
+import { PasswordGate } from "./components/PasswordGate";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +24,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/report" element={<Report />} />
+          <Route path="/forecast-comparison" element={<PasswordGate><ForecastComparison /></PasswordGate>} />
+          <Route path="/investor-report" element={<PasswordGate><InvestorReport /></PasswordGate>} />
+          <Route path="/slow-folk-research" element={<PasswordGate><SlowFolkResearch /></PasswordGate>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

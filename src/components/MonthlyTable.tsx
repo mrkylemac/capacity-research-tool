@@ -27,6 +27,90 @@ interface WeeklyDataWithSessions {
   rawSessions: MomenceSession[];
 }
 
+interface SeasonalPattern {
+  season: string;
+  months: string[];
+  avgVisitors: number;
+  trend: 'high' | 'medium' | 'low';
+}
+
+function analyzeSeasonalPatterns(monthlyData: MonthlyData[]): {
+  patterns: SeasonalPattern[];
+  peakSeason: string;
+  growthRate: number;
+  rampUpMonths: number;
+} {
+  if (monthlyData.length === 0) {
+    return {
+      patterns: [],
+      peakSeason: '',
+      growthRate: 0,
+      rampUpMonths: 0,
+    };
+  }
+
+  // Group by season (by month name, across years)
+  const seasonMap = new Map<string, number[]>();
+  
+  monthlyData.forEach(m => {
+    const monthName = m.month;
+    if (!seasonMap.has(monthName)) {
+      seasonMap.set(monthName, []);
+    }
+    seasonMap.get(monthName)!.push(m.ticketsSold);
+  });
+
+  // Calculate average visitors per calendar month
+  const monthAverages: Array<{ month: string; avg: number }> = [];
+  seasonMap.forEach((visitors, month) => {
+    const avg = visitors.reduce((sum, v) => sum + v, 0) / visitors.length;
+    monthAverages.push({ month, avg });
+  });
+
+  // Sort by average visitors
+  monthAverages.sort((a, b) => b.avg - a.avg);
+  const overallAvg = monthAverages.reduce((sum, m) => sum + m.avg, 0) / monthAverages.length;
+
+  // Identify peak season
+  const peakSeason = monthAverages[0]?.month || '';
+
+  // Calculate growth rate (first 3 months vs last 3 months)
+  const sortedByDate = [...monthlyData].sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return new Date(`${a.month} 1, ${a.year}`).getMonth() - new Date(`${b.month} 1, ${b.year}`).getMonth();
+  });
+  
+  const firstThree = sortedByDate.slice(0, Math.min(3, sortedByDate.length));
+  const lastThree = sortedByDate.slice(-Math.min(3, sortedByDate.length));
+  const firstAvg = firstThree.reduce((sum, m) => sum + m.ticketsSold, 0) / firstThree.length;
+  const lastAvg = lastThree.reduce((sum, m) => sum + m.ticketsSold, 0) / lastThree.length;
+  const growthRate = firstAvg > 0 ? ((lastAvg - firstAvg) / firstAvg) * 100 : 0;
+
+  // Count ramp-up months (months before hitting 80% of peak)
+  const peakVisitors = Math.max(...monthlyData.map(m => m.ticketsSold));
+  const threshold = peakVisitors * 0.8;
+  let rampUpMonths = 0;
+  for (const month of sortedByDate) {
+    if (month.ticketsSold >= threshold) break;
+    rampUpMonths++;
+  }
+
+  // Create seasonal patterns
+  const patterns: SeasonalPattern[] = monthAverages.map(m => ({
+    season: m.month,
+    months: monthlyData.filter(d => d.month === m.month).map(d => `${d.month} ${d.year}`),
+    avgVisitors: Math.round(m.avg),
+    trend: m.avg >= overallAvg * 1.15 ? 'high' : m.avg <= overallAvg * 0.85 ? 'low' : 'medium',
+  }));
+
+  return {
+    patterns,
+    peakSeason,
+    growthRate,
+    rampUpMonths,
+  };
+}
+
 function calculateWeeklyDataWithSessions(sessions: MomenceSession[], month?: string, year?: number): WeeklyDataWithSessions[] {
   const filtered = month && year
     ? sessions.filter(s => {
@@ -91,8 +175,10 @@ function formatSessionTime(startsAt: string, durationMinutes: number): string {
 
 export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
   const [selectedMonth, setSelectedMonth] = useState<{ month: string; year: number } | null>(null);
-  const [viewMode, setViewMode] = useState<'monthly' | 'weekly'>('monthly');
+  const [viewMode, setViewMode] = useState<'timeline' | 'monthly' | 'weekly'>('timeline');
   const [expandedWeeks, setExpandedWeeks] = useState<Set<string>>(new Set());
+
+  const seasonalAnalysis = useMemo(() => analyzeSeasonalPatterns(data), [data]);
 
   const weeklyData = useMemo(() => {
     if (selectedMonth) {
@@ -102,6 +188,14 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
   }, [sessions, selectedMonth]);
 
   const chartData = useMemo(() => {
+    if (viewMode === 'timeline') {
+      // Show all months in chronological order
+      return data.map(m => ({
+        name: `${m.month.slice(0, 3)} '${m.year.toString().slice(-2)}`,
+        occupancy: Math.round(m.utilisation * 10) / 10,
+        visitors: m.ticketsSold,
+      }));
+    }
     if (viewMode === 'weekly') {
       return weeklyData.map(w => ({
         name: selectedMonth ? w.weekLabel : `${w.weekLabel} ${format(w.weekStart, 'MMM')}`,
@@ -160,6 +254,13 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex gap-1">
           <Button
+            variant={viewMode === 'timeline' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => { setViewMode('timeline'); setSelectedMonth(null); setExpandedWeeks(new Set()); }}
+          >
+            Timeline
+          </Button>
+          <Button
             variant={viewMode === 'monthly' ? 'default' : 'outline'}
             size="sm"
             onClick={() => { setViewMode('monthly'); setSelectedMonth(null); setExpandedWeeks(new Set()); }}
@@ -203,13 +304,20 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
         <CardContent className="p-5">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs text-muted-foreground">
-              {viewMode === 'weekly' 
-                ? selectedMonth 
-                  ? `Weekly Occupancy – ${selectedMonth.month} ${selectedMonth.year}`
-                  : 'Weekly Occupancy (All Time)'
-                : 'Monthly Occupancy Trend'
+              {viewMode === 'timeline' 
+                ? 'Visitor Growth & Seasonal Patterns'
+                : viewMode === 'weekly' 
+                  ? selectedMonth 
+                    ? `Weekly Occupancy – ${selectedMonth.month} ${selectedMonth.year}`
+                    : 'Weekly Occupancy (All Time)'
+                  : 'Monthly Occupancy Trend'
               }
             </p>
+            {viewMode === 'timeline' && data.length > 1 && (
+              <Badge variant="outline" className="text-xs">
+                {data.length} months tracked
+              </Badge>
+            )}
             {selectedMonth && (
               <Badge variant="outline" className="text-xs">
                 {weeklyData.length} weeks
@@ -266,7 +374,67 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            {viewMode === 'weekly' ? (
+            {viewMode === 'timeline' ? (
+              <table className="notion-table min-w-full">
+                <thead>
+                  <tr className="bg-muted/30">
+                    <th>Month</th>
+                    <th className="text-right">Visitors</th>
+                    <th className="text-right">vs Prev Month</th>
+                    <th className="text-right">Occupancy</th>
+                    <th>Trend</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((row, index) => {
+                    const prevMonth = index > 0 ? data[index - 1] : null;
+                    const growth = prevMonth && prevMonth.ticketsSold > 0
+                      ? ((row.ticketsSold - prevMonth.ticketsSold) / prevMonth.ticketsSold) * 100
+                      : null;
+                    
+                    const pattern = seasonalAnalysis.patterns.find(p => 
+                      p.months.includes(`${row.month} ${row.year}`)
+                    );
+                    
+                    return (
+                      <tr 
+                        key={index}
+                        className="cursor-pointer hover:bg-muted/20"
+                        onClick={() => { setViewMode('weekly'); setSelectedMonth({ month: row.month, year: row.year }); }}
+                      >
+                        <td className="font-medium">
+                          {row.month} {row.year}
+                          {pattern?.trend === 'high' && (
+                            <Badge variant="default" className="ml-2 text-xs">Peak Season</Badge>
+                          )}
+                          {pattern?.trend === 'low' && (
+                            <Badge variant="outline" className="ml-2 text-xs">Off Season</Badge>
+                          )}
+                        </td>
+                        <td className="text-right font-medium">{row.ticketsSold.toLocaleString()}</td>
+                        <td className="text-right">
+                          {growth !== null ? (
+                            <span className={growth > 0 ? 'text-green-600' : growth < 0 ? 'text-red-600' : 'text-muted-foreground'}>
+                              {growth > 0 ? '+' : ''}{growth.toFixed(0)}%
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </td>
+                        <td className={`text-right ${getOccupancyClass(row.utilisation)}`}>
+                          {row.utilisation.toFixed(1)}%
+                        </td>
+                        <td className="text-xs text-muted-foreground">
+                          {index === 0 && 'Launch'}
+                          {index > 0 && index < seasonalAnalysis.rampUpMonths && 'Ramp-up'}
+                          {index >= seasonalAnalysis.rampUpMonths && 'Established'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : viewMode === 'weekly' ? (
               <div className="divide-y">
                 {/* Header */}
                 <div className="grid grid-cols-6 gap-4 px-4 py-3 bg-muted/30 text-sm font-medium">
@@ -402,6 +570,48 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
         </CardContent>
       </Card>
 
+      {viewMode === 'timeline' && data.length > 1 && (
+        <div className="space-y-2">
+          <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground">Peak Season</p>
+                <p className="text-sm font-semibold">{seasonalAnalysis.peakSeason || '-'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Growth Rate</p>
+                <p className={`text-sm font-semibold ${seasonalAnalysis.growthRate > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {seasonalAnalysis.growthRate > 0 ? '+' : ''}{seasonalAnalysis.growthRate.toFixed(0)}%
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Ramp-up Period</p>
+                <p className="text-sm font-semibold">{seasonalAnalysis.rampUpMonths} months</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Total Tracked</p>
+                <p className="text-sm font-semibold">{data.length} months</p>
+              </div>
+            </div>
+            <div className="pt-3 border-t space-y-1">
+              <p className="text-xs font-medium">Insights:</p>
+              <p className="text-xs text-muted-foreground">
+                • <span className="font-medium">{seasonalAnalysis.peakSeason}</span> shows strongest visitation patterns
+              </p>
+              {seasonalAnalysis.growthRate > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  • <span className="font-medium">Positive momentum:</span> visitors growing {seasonalAnalysis.growthRate.toFixed(0)}% from early to recent months
+                </p>
+              )}
+              {seasonalAnalysis.rampUpMonths > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  • <span className="font-medium">Launch phase:</span> took {seasonalAnalysis.rampUpMonths} months to reach 80% of peak performance
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {viewMode === 'monthly' && (
         <p className="text-xs text-muted-foreground text-center">
           Click any month row to see weekly breakdown
