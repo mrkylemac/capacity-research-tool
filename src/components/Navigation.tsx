@@ -3,8 +3,6 @@ import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Numbers' },
-  { path: '/forecast-comparison', label: 'Forecasts' },
-  { path: '/investor-report', label: 'Report' },
 ] as const;
 
 export function Navigation() {

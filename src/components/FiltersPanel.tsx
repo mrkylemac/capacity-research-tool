@@ -2,17 +2,13 @@ import { useState } from 'react';
 import { format, subMonths, subYears } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -33,21 +29,13 @@ interface FiltersPanelProps {
 
 export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
   const [selectedVenue, setSelectedVenue] = useState<string>(VENUES[0].id);
-  const [customId, setCustomId] = useState('');
-  const [isCustom, setIsCustom] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>({
     from: subMonths(new Date(), 3),
     to: new Date(),
   });
 
   const handleVenueChange = (value: string) => {
-    if (value === 'custom') {
-      setIsCustom(true);
-      setCustomId('');
-    } else {
-      setIsCustom(false);
-      setSelectedVenue(value);
-    }
+    setSelectedVenue(value);
   };
 
   const handlePreset = (preset: typeof PRESETS[number]) => {
@@ -56,18 +44,13 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const hostId = isCustom ? customId : selectedVenue;
-    if (!hostId || !dateRange.from || !dateRange.to) return;
-    
-    // Find platform for selected venue (default to momence for custom IDs)
-    const venue = VENUES.find(v => v.id === selectedVenue);
-    const platform: Platform = isCustom ? 'momence' : (venue?.platform || 'momence');
-    
+    if (!selectedVenue || !dateRange.from || !dateRange.to) return;
+
     onFetchData(
-      hostId,
+      selectedVenue,
       format(dateRange.from, 'yyyy-MM-dd'),
       format(dateRange.to, 'yyyy-MM-dd'),
-      platform
+      'momence'
     );
   };
 
@@ -81,59 +64,18 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
         {/* Venue Selection */}
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">Venue</Label>
-          {isCustom ? (
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                value={customId}
-                onChange={(e) => setCustomId(e.target.value)}
-                placeholder="Enter Host ID"
-                className="flex-1"
-              />
-              <Button 
-                type="button" 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setIsCustom(false)}
-                className="px-2"
-              >
-                ×
-              </Button>
-            </div>
-          ) : (
-            <Select value={selectedVenue} onValueChange={handleVenueChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select venue" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="custom">Enter Host ID</SelectItem>
-                <SelectSeparator />
-                {Object.entries(
-                  VENUES.reduce<Record<string, typeof VENUES>>((acc, v) => {
-                    (acc[v.location] ??= []).push(v);
-                    return acc;
-                  }, {})
-                ).map(([location, venues], i) => (
-                  <SelectGroup key={location}>
-                    {i > 0 && <SelectSeparator />}
-                    <SelectLabel className="pl-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      {location}
-                    </SelectLabel>
-                    {venues.map((venue) => (
-                      <SelectItem key={venue.id} value={venue.id}>
-                        {venue.name}
-                        {venue.platform !== 'momence' && (
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            ({venue.platform})
-                          </span>
-                        )}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+          <Select value={selectedVenue} onValueChange={handleVenueChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select venue" />
+            </SelectTrigger>
+            <SelectContent>
+              {VENUES.map((venue) => (
+                <SelectItem key={venue.id} value={venue.id}>
+                  {venue.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Date Range Picker with Presets */}
@@ -185,9 +127,9 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
         {/* Fetch Button */}
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground opacity-0">Action</Label>
-          <Button 
-            type="submit" 
-            disabled={isLoading || (isCustom && !customId) || !dateRange.from || !dateRange.to} 
+          <Button
+            type="submit"
+            disabled={isLoading || !dateRange.from || !dateRange.to}
             className="w-full"
           >
             {isLoading ? 'Loading...' : 'Fetch Data'}

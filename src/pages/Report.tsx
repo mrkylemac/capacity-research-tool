@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VenueSummary } from '@/components/VenueSummary';
 import { MonthlyTable } from '@/components/MonthlyTable';
@@ -58,7 +58,6 @@ const Report = () => {
     <div className="min-h-screen bg-background">
       <div className="notion-page">
         <div className="mb-6">
-          <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
@@ -68,15 +67,6 @@ const Report = () => {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate('/investor-report', { state: { entry } })}
-          >
-            <FileText className="mr-2 h-4 w-4" />
-            Report
-          </Button>
-        </div>
         </div>
 
         <div className="space-y-10">
