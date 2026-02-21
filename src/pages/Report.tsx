@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VenueSummary } from '@/components/VenueSummary';
 import { VisitationSection } from '@/components/VisitationSection';
@@ -75,33 +75,14 @@ const Report = () => {
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/investor-report', { state: { entry } })}
-              >
-                <FileText className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Report</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/slow-folk-research', { state: { entry } })}
-              >
-                <FileText className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Research</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-              >
-                <span className="sm:hidden">Refresh</span>
-                <span className="hidden sm:inline">Refresh Data</span>
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+            >
+              Refresh
+            </Button>
           </div>
         </div>
 

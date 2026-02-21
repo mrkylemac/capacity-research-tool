@@ -174,8 +174,6 @@ function TimeSlotTable({ data }: { data: TimeSlotAnalysis[] }) {
     return <p className="text-sm text-muted-foreground text-center py-4">No sessions in this period</p>;
   }
 
-  const maxUtil = Math.max(...data.map(d => d.utilisation));
-
   return (
     <div className="space-y-2">
       {data.map((row, index) => (
@@ -184,7 +182,7 @@ function TimeSlotTable({ data }: { data: TimeSlotAnalysis[] }) {
           <div className="flex-1 bg-muted rounded-full h-3 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${getBarClass(row.utilisationBand)}`}
-              style={{ width: `${(row.utilisation / maxUtil) * 100}%` }}
+              style={{ width: `${row.utilisation}%` }}
             />
           </div>
           <div className="w-12 text-xs text-right text-muted-foreground">
