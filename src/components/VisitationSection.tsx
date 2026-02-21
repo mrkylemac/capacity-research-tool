@@ -168,14 +168,14 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
           <SectionLabel>By Week</SectionLabel>
           <Card>
             <CardContent className="p-5">
-              <p className="text-xs text-muted-foreground mb-4">
-                Visitors per week — bars coloured by occupancy rate
-                <span className="ml-3 inline-flex gap-2">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4">
+                <p className="text-xs text-muted-foreground">Visitors per week</p>
+                <span className="flex gap-2 text-xs text-muted-foreground">
                   <ColorDot color="bg-green-500" label="≥70%" />
                   <ColorDot color="bg-amber-500" label="40–69%" />
                   <ColorDot color="bg-red-500" label="<40%" />
                 </span>
-              </p>
+              </div>
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={weeklySummary} margin={{ top: 4, right: 8, left: -20, bottom: 0 }} barCategoryGap="20%">
@@ -214,17 +214,20 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                       <th>Week</th>
                       <th className="text-right">Sessions</th>
                       <th className="text-right">Visitors</th>
-                      <th className="text-right">Seats</th>
+                      <th className="hidden sm:table-cell text-right">Seats</th>
                       <th className="text-right">Occupancy</th>
                     </tr>
                   </thead>
                   <tbody>
                     {weeklySummary.map((row, i) => (
                       <tr key={i}>
-                        <td className="text-sm font-medium">{row.weekLabel}</td>
+                        <td className="text-sm font-medium">
+                          <span className="hidden sm:inline">{row.weekLabel}</span>
+                          <span className="sm:hidden">{format(row.weekStart, 'MMM d')}</span>
+                        </td>
                         <td className="text-right text-sm">{row.sessions}</td>
                         <td className="text-right text-sm font-medium">{row.visitors.toLocaleString()}</td>
-                        <td className="text-right text-sm text-muted-foreground">{row.capacity.toLocaleString()}</td>
+                        <td className="hidden sm:table-cell text-right text-sm text-muted-foreground">{row.capacity.toLocaleString()}</td>
                         <td className={`text-right text-sm ${occupancyClass(row.occupancy)}`}>
                           {row.occupancy.toFixed(1)}%
                         </td>
@@ -243,63 +246,59 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
         <SectionLabel>By Day of Week</SectionLabel>
         <Card>
           <CardContent className="p-5">
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {dayOfWeekData.map((row, i) => {
                 const barWidth = row.visitors > 0 ? (row.visitors / maxDayVisitors) * 100 : 0;
                 const hasData = row.sessions > 0;
                 return (
-                  <div key={i} className="flex items-center gap-3">
-                    {/* Day label */}
-                    <div className="w-24 flex-shrink-0">
-                      <span className={`text-sm font-medium ${row.isWeekend ? 'text-violet-600' : ''}`}>
-                        {row.dayShort}
+                  <div key={i} className="flex items-center gap-2 sm:gap-3">
+                    {/* Day label — narrower on mobile */}
+                    <div className="w-8 sm:w-10 flex-shrink-0 text-center">
+                      <span className={`text-xs sm:text-sm font-medium ${row.isWeekend ? 'text-violet-600' : ''}`}>
+                        {row.dayShort.slice(0, 2)}
                       </span>
-                      {row.isWeekend && (
-                        <span className="ml-1 text-[10px] text-muted-foreground">wknd</span>
-                      )}
                     </div>
 
                     {/* Bar */}
-                    <div className="flex-1 h-7 bg-muted rounded-md overflow-hidden relative">
-                      {hasData && (
+                    <div className="flex-1 h-6 sm:h-7 bg-muted rounded-md overflow-hidden relative">
+                      {hasData ? (
                         <div
-                          className="h-full rounded-md transition-all duration-500 flex items-center px-2"
+                          className="h-full rounded-md transition-all duration-500"
                           style={{
                             width: `${barWidth}%`,
                             backgroundColor: occupancyFill(row.occupancy),
                             opacity: 0.85,
                           }}
                         />
-                      )}
-                      {!hasData && (
-                        <div className="absolute inset-0 flex items-center px-3">
-                          <span className="text-xs text-muted-foreground">No sessions</span>
+                      ) : (
+                        <div className="absolute inset-0 flex items-center px-2">
+                          <span className="text-[10px] text-muted-foreground">—</span>
                         </div>
                       )}
                     </div>
 
-                    {/* Stats */}
+                    {/* Stats — visitors always shown; avg/session hidden on mobile */}
                     {hasData ? (
-                      <div className="flex items-center gap-3 w-56 flex-shrink-0 justify-end">
-                        <span className="text-sm font-medium tabular-nums w-16 text-right">
+                      <div className="flex items-center gap-2 flex-shrink-0 justify-end">
+                        <span className="text-xs sm:text-sm font-medium tabular-nums w-12 sm:w-16 text-right">
                           {row.visitors.toLocaleString()}
                         </span>
-                        <span className="text-xs text-muted-foreground w-20 text-right">
+                        <span className="hidden sm:inline text-xs text-muted-foreground w-24 text-right">
                           avg {row.avgVisitorsPerSession.toFixed(1)}/session
                         </span>
-                        <Badge variant={occupancyBadgeVariant(row.occupancy)} className="text-[10px] w-14 justify-center">
+                        <Badge variant={occupancyBadgeVariant(row.occupancy)} className="text-[10px] w-11 justify-center flex-shrink-0">
                           {row.occupancy.toFixed(0)}%
                         </Badge>
                       </div>
                     ) : (
-                      <div className="w-56 flex-shrink-0" />
+                      <div className="w-24 flex-shrink-0" />
                     )}
                   </div>
                 );
               })}
             </div>
-            <p className="text-xs text-muted-foreground mt-4 pt-3 border-t">
-              Bar width = relative visitor volume · Badge = occupancy rate · All figures are cumulative totals from Momence session data.
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-3 pt-3 border-t">
+              Bar width = relative visitor volume · Badge = occupancy · Cumulative totals from Momence session data.
             </p>
           </CardContent>
         </Card>

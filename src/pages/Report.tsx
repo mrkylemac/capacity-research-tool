@@ -81,16 +81,16 @@ const Report = () => {
                 size="sm"
                 onClick={() => navigate('/investor-report', { state: { entry } })}
               >
-                <FileText className="mr-2 h-4 w-4" />
-                Report
+                <FileText className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Report</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/slow-folk-research', { state: { entry } })}
               >
-                <FileText className="mr-2 h-4 w-4" />
-                Research
+                <FileText className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Research</span>
               </Button>
               <Button
                 variant="outline"
@@ -98,7 +98,8 @@ const Report = () => {
                 onClick={handleRefresh}
                 disabled={isRefreshing}
               >
-                Refresh Data
+                <span className="sm:hidden">Refresh</span>
+                <span className="hidden sm:inline">Refresh Data</span>
               </Button>
             </div>
           </div>
