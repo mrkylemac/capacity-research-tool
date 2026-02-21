@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { format, subMonths, subYears } from 'date-fns';
+import { format, subMonths, subYears, startOfMonth } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -16,11 +16,11 @@ import type { DateRange } from 'react-day-picker';
 import { VENUES, type Platform } from '@/config/api';
 
 const PRESETS = [
-  { label: 'Last 1 month', from: () => subMonths(new Date(), 1), to: () => new Date() },
-  { label: 'Last 3 months', from: () => subMonths(new Date(), 3), to: () => new Date() },
-  { label: 'Last 6 months', from: () => subMonths(new Date(), 6), to: () => new Date() },
-  { label: 'Last 12 months', from: () => subMonths(new Date(), 12), to: () => new Date() },
-  { label: 'All time', from: () => subYears(new Date(), 10), to: () => new Date() },
+  { label: 'Last 1 month',  from: () => startOfMonth(new Date()),              to: () => new Date() },
+  { label: 'Last 3 months', from: () => startOfMonth(subMonths(new Date(), 2)), to: () => new Date() },
+  { label: 'Last 6 months', from: () => startOfMonth(subMonths(new Date(), 5)), to: () => new Date() },
+  { label: 'Last 12 months',from: () => startOfMonth(subMonths(new Date(), 11)),to: () => new Date() },
+  { label: 'All time',      from: () => subYears(new Date(), 10),               to: () => new Date() },
 ] as const;
 
 interface FiltersPanelProps {
@@ -31,7 +31,7 @@ interface FiltersPanelProps {
 export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
   const [selectedVenue, setSelectedVenue] = useState<string>(VENUES[0].id);
   const [dateRange, setDateRange] = useState<DateRange>({
-    from: subMonths(new Date(), 3),
+    from: startOfMonth(subMonths(new Date(), 2)),
     to: new Date(),
   });
 
