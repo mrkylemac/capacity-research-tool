@@ -144,8 +144,6 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
   const dayOfWeekData = useMemo(() => buildDayOfWeekData(sessions), [sessions]);
   const weeklySummary = useMemo(() => buildWeeklySummary(sessions), [sessions]);
 
-  const maxDayVisitors = Math.max(...dayOfWeekData.map(d => d.visitors), 1);
-
   // For weekly chart: only show every Nth label when there are many weeks
   const tickInterval = weeklySummary.length > 26 ? Math.ceil(weeklySummary.length / 26) - 1 : 0;
 
@@ -248,7 +246,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
           <CardContent className="p-5">
             <div className="space-y-2.5">
               {dayOfWeekData.map((row, i) => {
-                const barWidth = row.visitors > 0 ? (row.visitors / maxDayVisitors) * 100 : 0;
+                const barWidth = row.occupancy;
                 const hasData = row.sessions > 0;
                 return (
                   <div key={i} className="flex items-center gap-2 sm:gap-3">
@@ -298,7 +296,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
               })}
             </div>
             <p className="text-[10px] sm:text-xs text-muted-foreground mt-3 pt-3 border-t">
-              Bar width = relative visitor volume · Badge = occupancy · Cumulative totals from Momence session data.
+              Bar width = occupancy % · Badge = occupancy · Cumulative totals from Momence session data.
             </p>
           </CardContent>
         </Card>
