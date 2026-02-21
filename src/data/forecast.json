@@ -1,0 +1,20 @@
+{
+  "pricingBreakeven": {
+    "Operating Only": 27738,
+    "Combined": 39251,
+    "Combined + Profit": 45138,
+    "ARPV": 34.81,
+    "Weekly Visits": 345,
+    "Monthly Revenue": 51993.83,
+    "Healthy Breakeven Target": 35,
+    "Slow Folk currently sitting at": 45
+  },
+  "venueCapacity": {
+    "Venue Occupancy %": 35,
+    "Peak Occupancy %": 59,
+    "Weekly Visits": 345,
+    "Sessions Per Week": 46.5
+  },
+  "cashFlow": [],
+  "lastUpdated": ""
+}
