@@ -3,12 +3,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VenueSummary } from '@/components/VenueSummary';
-import { MonthlyTable } from '@/components/MonthlyTable';
-import { DemandPatterns } from '@/components/DemandPatterns';
-import { CapacityUtilisation } from '@/components/CapacityUtilisation';
-import { CapacityEconomics } from '@/components/CapacityEconomics';
-import { PricingAnalysis } from '@/components/PricingAnalysis';
-import { RevenueInsights } from '@/components/RevenueInsights';
+import { VisitationSection } from '@/components/VisitationSection';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import { getCachedEntry, getCacheKey } from '@/lib/venueCache';
 import type { CachedVenueEntry } from '@/lib/venueCache';
@@ -59,13 +54,16 @@ const Report = () => {
   const handleRefresh = () => {
     if (!hostId || !from || !to) return;
     setIsRefreshing(true);
-    // Navigate back to home with parameters to trigger refresh
     navigate(`/?refresh=true&hostId=${hostId}&from=${from}&to=${to}&platform=${platform || 'momence'}`, { replace: true });
   };
+
+  // Active sessions only (those with at least one visitor) for the visitation section
+  const activeSessions = entry.sessions.filter(s => s.ticketsSold > 0);
 
   return (
     <div className="min-h-screen bg-background">
       <div className="notion-page">
+        {/* Navigation */}
         <div className="mb-6">
           <div className="flex items-center justify-between gap-2">
             <Button
@@ -106,7 +104,8 @@ const Report = () => {
           </div>
         </div>
 
-        <div className="space-y-10">
+        <div className="space-y-12">
+          {/* Section 1: Venue profile + 6 insight cards */}
           <section>
             <VenueSummary
               metrics={benchmarkMetrics}
@@ -117,55 +116,21 @@ const Report = () => {
             />
           </section>
 
-          {entry.monthlyData.length > 0 && (
+          {/* Section 2: Visitation data — raw aggregates from Momence */}
+          {activeSessions.length > 0 && (
             <section>
-              <h2 className="notion-h1">Monthly Performance</h2>
-              <MonthlyTable data={entry.monthlyData} sessions={entry.sessions} />
-            </section>
-          )}
-
-          {entry.sessions.length > 0 && (
-            <section>
-              <h2 className="notion-h1">Demand Patterns</h2>
-              <DemandPatterns
-                sessions={entry.sessions}
+              <div className="mb-6">
+                <h2 className="notion-h1">Visitation</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  All figures are sourced directly from Momence session records with no augmentation.
+                  Visitors = tickets sold per session. Occupancy = tickets sold ÷ capacity.
+                </p>
+              </div>
+              <VisitationSection
+                sessions={activeSessions}
+                monthlyData={entry.monthlyData}
                 operatingHours={benchmarkMetrics.operatingHours}
               />
-            </section>
-          )}
-
-          {entry.sessions.some(s => s.fixedTicketPrice > 0) && (
-            <section>
-              <h2 className="notion-h1">Revenue Insights</h2>
-              <RevenueInsights
-                sessions={entry.sessions}
-                monthlyData={entry.monthlyData}
-                benchmarkMetrics={benchmarkMetrics}
-              />
-            </section>
-          )}
-
-          {entry.sessions.some(s => s.fixedTicketPrice > 0) && (
-            <section>
-              <h2 className="notion-h1">Capacity Economics</h2>
-              <CapacityEconomics
-                sessions={entry.sessions}
-                operatingHoursPerWeek={benchmarkMetrics.weeklyOpenHours}
-              />
-            </section>
-          )}
-
-          {entry.metrics && entry.monthlyData.length > 0 && (
-            <section>
-              <h2 className="notion-h1">Capacity Trend</h2>
-              <CapacityUtilisation metrics={entry.metrics} monthlyData={entry.monthlyData} />
-            </section>
-          )}
-
-          {entry.sessions.length > 0 && entry.sessions.some(s => s.fixedTicketPrice > 0) && (
-            <section>
-              <h2 className="notion-h1">Pricing & Offerings</h2>
-              <PricingAnalysis sessions={entry.sessions} />
             </section>
           )}
         </div>
