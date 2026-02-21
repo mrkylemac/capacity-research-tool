@@ -1,6 +1,9 @@
 import { useState, useMemo } from 'react';
 import { parseISO, format, startOfWeek, getWeek } from 'date-fns';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import {
+  ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, ReferenceLine, Cell,
+} from 'recharts';
 import type { MonthlyData, MomenceSession } from '@/types/momence';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -251,7 +254,7 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
   return (
     <div className="space-y-4">
       {/* View Toggle and Month Filter */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="space-y-2">
         <div className="flex gap-1">
           <Button
             variant={viewMode === 'timeline' ? 'default' : 'outline'}
@@ -276,11 +279,13 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
           </Button>
         </div>
 
+        {/* Month filter: horizontally scrollable strip, sits below toggles */}
         {viewMode === 'weekly' && (
-          <div className="flex flex-wrap gap-1 ml-auto">
+          <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1">
             <Button
               variant={selectedMonth === null ? 'secondary' : 'ghost'}
               size="sm"
+              className="flex-shrink-0"
               onClick={() => { setSelectedMonth(null); setExpandedWeeks(new Set()); }}
             >
               All
@@ -290,6 +295,7 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                 key={i}
                 variant={selectedMonth?.month === m.month && selectedMonth?.year === m.year ? 'secondary' : 'ghost'}
                 size="sm"
+                className="flex-shrink-0"
                 onClick={() => { setSelectedMonth({ month: m.month, year: m.year }); setExpandedWeeks(new Set()); }}
               >
                 {m.month.slice(0, 3)} {m.year.toString().slice(2)}
@@ -326,47 +332,80 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 90%)" />
+              <ComposedChart data={chartData} margin={{ top: 10, right: 40, left: -20, bottom: 0 }} barCategoryGap="25%">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 90%)" vertical={false} />
                 <XAxis
                   dataKey="name"
                   tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
-                  axisLine={{ stroke: 'hsl(0 0% 90%)' }}
-                  tickLine={{ stroke: 'hsl(0 0% 90%)' }}
+                  axisLine={false}
+                  tickLine={false}
                 />
+                {/* Left axis — visitor counts */}
                 <YAxis
+                  yAxisId="left"
                   tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
-                  axisLine={{ stroke: 'hsl(0 0% 90%)' }}
-                  tickLine={{ stroke: 'hsl(0 0% 90%)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                {/* Right axis — occupancy % */}
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
                   domain={[0, 100]}
+                  tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v: number) => `${v}%`}
                 />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: 'hsl(0 0% 100%)',
                     border: '1px solid hsl(0 0% 90%)',
                     borderRadius: '6px',
+                    fontSize: 12,
                     color: 'hsl(0 0% 9%)',
                   }}
                   formatter={(value: number, name: string) => [
                     name === 'occupancy' ? `${value}%` : value.toLocaleString(),
-                    name === 'occupancy' ? 'Occupancy' : 'Visitors'
+                    name === 'occupancy' ? 'Occupancy' : 'Visitors',
                   ]}
                 />
-                <ReferenceLine y={avgOccupancy} stroke="hsl(0 0% 60%)" strokeDasharray="5 5" />
+                <ReferenceLine yAxisId="right" y={70} stroke="hsl(142 71% 45%)" strokeDasharray="4 4" strokeOpacity={0.6} />
+                <ReferenceLine yAxisId="right" y={avgOccupancy} stroke="hsl(0 0% 60%)" strokeDasharray="5 5" />
+                {/* Visitor bars, coloured by occupancy band */}
+                <Bar yAxisId="left" dataKey="visitors" radius={[4, 4, 0, 0]} maxBarSize={40}>
+                  {chartData.map((d, i) => {
+                    const fill = d.occupancy >= 70 ? '#22c55e' : d.occupancy >= 40 ? '#f59e0b' : '#ef4444';
+                    return <Cell key={i} fill={fill} fillOpacity={0.85} />;
+                  })}
+                </Bar>
+                {/* Occupancy line */}
                 <Line
+                  yAxisId="right"
                   type="monotone"
                   dataKey="occupancy"
-                  stroke="hsl(142 71% 45%)"
-                  strokeWidth={2}
-                  dot={{ fill: 'hsl(142 71% 45%)', strokeWidth: 0, r: 4 }}
-                  activeDot={{ r: 6 }}
+                  stroke="hsl(0 0% 35%)"
+                  strokeWidth={1.5}
+                  dot={{ fill: 'hsl(0 0% 35%)', strokeWidth: 0, r: 3 }}
+                  activeDot={{ r: 5 }}
                 />
-              </LineChart>
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-xs text-muted-foreground text-center mt-2">
-            Dashed line = {avgOccupancy.toFixed(1)}% average occupancy
-          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-2">
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm bg-green-500 opacity-85" /> ≥70% occupancy
+            </span>
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm bg-amber-500 opacity-85" /> 40–69%
+            </span>
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm bg-red-500 opacity-85" /> &lt;40%
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              — — avg {avgOccupancy.toFixed(1)}% &nbsp;·&nbsp; green dashed = 70% threshold
+            </span>
+          </div>
         </CardContent>
       </Card>
 
@@ -380,9 +419,9 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                   <tr className="bg-muted/30">
                     <th>Month</th>
                     <th className="text-right">Visitors</th>
-                    <th className="text-right">vs Prev Month</th>
+                    <th className="hidden sm:table-cell text-right">vs Prev</th>
                     <th className="text-right">Occupancy</th>
-                    <th>Trend</th>
+                    <th className="hidden sm:table-cell">Phase</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -391,28 +430,29 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                     const growth = prevMonth && prevMonth.ticketsSold > 0
                       ? ((row.ticketsSold - prevMonth.ticketsSold) / prevMonth.ticketsSold) * 100
                       : null;
-                    
-                    const pattern = seasonalAnalysis.patterns.find(p => 
+
+                    const pattern = seasonalAnalysis.patterns.find(p =>
                       p.months.includes(`${row.month} ${row.year}`)
                     );
-                    
+
                     return (
-                      <tr 
+                      <tr
                         key={index}
                         className="cursor-pointer hover:bg-muted/20"
                         onClick={() => { setViewMode('weekly'); setSelectedMonth({ month: row.month, year: row.year }); }}
                       >
                         <td className="font-medium">
-                          {row.month} {row.year}
+                          <span className="hidden sm:inline">{row.month} {row.year}</span>
+                          <span className="sm:hidden">{row.month.slice(0, 3)} {row.year.toString().slice(2)}</span>
                           {pattern?.trend === 'high' && (
-                            <Badge variant="default" className="ml-2 text-xs">Peak Season</Badge>
+                            <Badge variant="default" className="ml-2 text-[10px] hidden sm:inline-flex">Peak</Badge>
                           )}
                           {pattern?.trend === 'low' && (
-                            <Badge variant="outline" className="ml-2 text-xs">Off Season</Badge>
+                            <Badge variant="outline" className="ml-2 text-[10px] hidden sm:inline-flex">Off</Badge>
                           )}
                         </td>
                         <td className="text-right font-medium">{row.ticketsSold.toLocaleString()}</td>
-                        <td className="text-right">
+                        <td className="hidden sm:table-cell text-right">
                           {growth !== null ? (
                             <span className={growth > 0 ? 'text-green-600' : growth < 0 ? 'text-red-600' : 'text-muted-foreground'}>
                               {growth > 0 ? '+' : ''}{growth.toFixed(0)}%
@@ -424,7 +464,7 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                         <td className={`text-right ${getOccupancyClass(row.utilisation)}`}>
                           {row.utilisation.toFixed(1)}%
                         </td>
-                        <td className="text-xs text-muted-foreground">
+                        <td className="hidden sm:table-cell text-xs text-muted-foreground">
                           {index === 0 && 'Launch'}
                           {index > 0 && index < seasonalAnalysis.rampUpMonths && 'Ramp-up'}
                           {index >= seasonalAnalysis.rampUpMonths && 'Established'}
@@ -436,48 +476,51 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
               </table>
             ) : viewMode === 'weekly' ? (
               <div className="divide-y">
-                {/* Header */}
-                <div className="grid grid-cols-6 gap-4 px-4 py-3 bg-muted/30 text-sm font-medium">
+                {/* Header — 3 cols on mobile, 6 on sm+ */}
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-3 sm:px-4 py-3 bg-muted/30 text-xs sm:text-sm font-medium">
                   <div>Week</div>
-                  <div className="text-right">Sessions</div>
+                  <div className="hidden sm:block text-right">Sessions</div>
                   <div className="text-right">Visitors</div>
-                  <div className="text-right">Total Seats</div>
-                  <div className="text-right">Seats/Session</div>
+                  <div className="hidden sm:block text-right">Total Seats</div>
+                  <div className="hidden sm:block text-right">Seats/Session</div>
                   <div className="text-right">Occupancy</div>
                 </div>
-                
+
                 {/* Rows */}
                 {weeklyData.map((row) => {
                   const seatsPerSession = row.sessionCount > 0 ? row.capacity / row.sessionCount : 0;
                   const isExpanded = expandedWeeks.has(row.weekKey);
-                  
+
                   return (
                     <Collapsible key={row.weekKey} open={isExpanded} onOpenChange={() => toggleWeek(row.weekKey)}>
                       <CollapsibleTrigger asChild>
-                        <div className="grid grid-cols-6 gap-4 px-4 py-3 text-sm cursor-pointer hover:bg-muted/20 transition-colors">
-                          <div className="font-medium flex items-center gap-2">
-                            <span className="text-muted-foreground text-xs">{isExpanded ? '▼' : '▶'}</span>
-                            {row.weekLabel} – {format(row.weekStart, 'MMM d')}
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-3 sm:px-4 py-3 text-sm cursor-pointer hover:bg-muted/20 transition-colors">
+                          <div className="font-medium flex items-center gap-1.5 min-w-0">
+                            <span className="text-muted-foreground text-xs flex-shrink-0">{isExpanded ? '▼' : '▶'}</span>
+                            <span className="truncate">
+                              <span className="hidden sm:inline">{row.weekLabel} – </span>
+                              {format(row.weekStart, 'MMM d')}
+                            </span>
                           </div>
-                          <div className="text-right">{row.sessionCount}</div>
+                          <div className="hidden sm:block text-right">{row.sessionCount}</div>
                           <div className="text-right">{row.visitors.toLocaleString()}</div>
-                          <div className="text-right text-muted-foreground">{row.capacity.toLocaleString()}</div>
-                          <div className="text-right text-muted-foreground">{seatsPerSession.toFixed(0)}</div>
+                          <div className="hidden sm:block text-right text-muted-foreground">{row.capacity.toLocaleString()}</div>
+                          <div className="hidden sm:block text-right text-muted-foreground">{seatsPerSession.toFixed(0)}</div>
                           <div className={`text-right ${getOccupancyClass(row.occupancy)}`}>
                             {row.occupancy.toFixed(1)}%
                           </div>
                         </div>
                       </CollapsibleTrigger>
-                      
+
                       <CollapsibleContent>
-                        <div className="bg-muted/10 border-t px-4 py-3">
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <div className="bg-muted/10 border-t px-3 sm:px-4 py-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                             {row.rawSessions.map((session) => {
-                              const occupancyPct = session.capacity > 0 
-                                ? (session.ticketsSold / session.capacity) * 100 
+                              const occupancyPct = session.capacity > 0
+                                ? (session.ticketsSold / session.capacity) * 100
                                 : 0;
                               return (
-                                <div 
+                                <div
                                   key={session.id}
                                   className="flex items-center justify-between text-xs bg-background rounded px-3 py-2 border"
                                 >
@@ -489,9 +532,9 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                                       {formatSessionTime(session.startsAt, session.durationMinutes)}
                                     </span>
                                   </div>
-                                  <Badge 
+                                  <Badge
                                     variant={occupancyPct >= 70 ? 'default' : occupancyPct >= 40 ? 'secondary' : 'destructive'}
-                                    className="text-xs"
+                                    className="text-xs ml-2 flex-shrink-0"
                                   >
                                     {session.ticketsSold}/{session.capacity}
                                   </Badge>
@@ -512,8 +555,8 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                     <th>Month</th>
                     <th className="text-right">Sessions</th>
                     <th className="text-right">Visitors</th>
-                    <th className="text-right">Total Seats</th>
-                    <th className="text-right">Seats/Session</th>
+                    <th className="hidden sm:table-cell text-right">Total Seats</th>
+                    <th className="hidden sm:table-cell text-right">Seats/Session</th>
                     <th className="text-right">Occupancy</th>
                   </tr>
                 </thead>
@@ -521,18 +564,19 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                   {data.map((row, index) => {
                     const seatsPerSession = row.sessions > 0 ? row.capacity / row.sessions : 0;
                     return (
-                      <tr 
+                      <tr
                         key={index}
                         className="cursor-pointer hover:bg-muted/20"
                         onClick={() => { setViewMode('weekly'); setSelectedMonth({ month: row.month, year: row.year }); }}
                       >
                         <td className="font-medium">
-                          {row.month} {row.year}
+                          <span className="hidden sm:inline">{row.month} {row.year}</span>
+                          <span className="sm:hidden">{row.month.slice(0, 3)} {row.year.toString().slice(2)}</span>
                         </td>
                         <td className="text-right">{row.sessions}</td>
                         <td className="text-right">{row.ticketsSold.toLocaleString()}</td>
-                        <td className="text-right text-muted-foreground">{row.capacity.toLocaleString()}</td>
-                        <td className="text-right text-muted-foreground">{seatsPerSession.toFixed(0)}</td>
+                        <td className="hidden sm:table-cell text-right text-muted-foreground">{row.capacity.toLocaleString()}</td>
+                        <td className="hidden sm:table-cell text-right text-muted-foreground">{seatsPerSession.toFixed(0)}</td>
                         <td className={`text-right ${getOccupancyClass(row.utilisation)}`}>
                           {row.utilisation.toFixed(1)}%
                         </td>
@@ -542,19 +586,12 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                 </tbody>
                 <tfoot>
                   <tr className="bg-muted/50 font-semibold">
-                    <td>
-                      Total / Average
-                      {inactiveMonthCount > 0 && (
-                        <span className="font-normal text-xs text-muted-foreground ml-1">
-                          ({inactiveMonthCount} inactive month{inactiveMonthCount > 1 ? 's' : ''} excluded)
-                        </span>
-                      )}
-                    </td>
+                    <td>Total</td>
                     <td className="text-right">{totals.sessions.toLocaleString()}</td>
                     <td className="text-right">{activeTotals.visitors.toLocaleString()}</td>
-                    <td className="text-right text-muted-foreground">{activeTotals.capacity.toLocaleString()}</td>
-                    <td className="text-right text-muted-foreground">
-                      {activeMonths.length > 0 
+                    <td className="hidden sm:table-cell text-right text-muted-foreground">{activeTotals.capacity.toLocaleString()}</td>
+                    <td className="hidden sm:table-cell text-right text-muted-foreground">
+                      {activeMonths.length > 0
                         ? (activeTotals.capacity / activeMonths.reduce((sum, m) => sum + m.sessions, 0)).toFixed(0)
                         : '-'
                       }

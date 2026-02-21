@@ -3,6 +3,7 @@ import type { DataRange } from '@/hooks/useSessions';
 
 interface DataStatusProps {
   isLoading: boolean;
+  fetchPhase?: 'idle' | 'fetching' | 'processing';
   error: Error | null;
   sessionCount: number;
   pageCount: number;
@@ -11,17 +12,20 @@ interface DataStatusProps {
   loadingLabel?: string;
 }
 
-export function DataStatus({ isLoading, error, sessionCount, pageCount, dataRange, loadingLabel }: DataStatusProps) {
+export function DataStatus({ isLoading, fetchPhase, error, sessionCount, pageCount, dataRange, loadingLabel }: DataStatusProps) {
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
         <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
-        {sessionCount > 0 ? (
+        {fetchPhase === 'processing' ? (
+          <span>Filtering to your date range…</span>
+        ) : sessionCount > 0 ? (
           <span>
-            Loading... <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions fetched
+            Downloading session history…{' '}
+            <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
           </span>
         ) : (
-          <span>{loadingLabel ?? 'Fetching session data...'}</span>
+          <span>{loadingLabel ?? 'Fetching session data…'}</span>
         )}
       </div>
     );

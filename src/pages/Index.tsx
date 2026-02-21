@@ -19,7 +19,7 @@ const Index = () => {
   const [hasQueried, setHasQueried] = useState(false);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
 
-  const { allSessions, metrics, monthlyData, venueConfig, hostInfo, dataRange: fetchedDataRange, isLoading, error, totalPages } = momenceHook;
+  const { allSessions, metrics, monthlyData, venueConfig, hostInfo, dataRange: fetchedDataRange, isLoading, fetchPhase, error, totalPages } = momenceHook;
 
   useEffect(() => {
     if (lastLoadSource !== 'fetch' || !hasQueried || isLoading || allSessions.length === 0 || !currentHostId || !dateRange.from || !dateRange.to) return;
@@ -89,6 +89,7 @@ const Index = () => {
           <>
             <DataStatus
               isLoading={isLoading}
+              fetchPhase={fetchPhase}
               error={error as Error | null}
               sessionCount={momenceHook.fetchingCount}
               pageCount={totalPages}
