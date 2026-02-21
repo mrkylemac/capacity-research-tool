@@ -1,8 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Cell,
+} from 'recharts';
 import { parseISO, getDay, format, startOfWeek, getWeek } from 'date-fns';
 import type { MomenceSession, MonthlyData } from '@/types/momence';
 import type { OperatingHours } from '@/lib/benchmarkMetrics';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { MonthlyTable } from '@/components/MonthlyTable';
 import { DemandPatterns } from '@/components/DemandPatterns';
 
@@ -12,12 +17,15 @@ interface VisitationSectionProps {
   operatingHours: OperatingHours;
 }
 
+// ─── Data builders ───────────────────────────────────────────────────────────
+
 const DAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-// Ordered Mon → Sun for display
-const ORDERED_DAYS = [1, 2, 3, 4, 5, 6, 0];
+const DAY_SHORT  = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const ORDERED_DAYS = [1, 2, 3, 4, 5, 6, 0]; // Mon → Sun
 
 interface DayOfWeekRow {
   day: string;
+  dayShort: string;
   isWeekend: boolean;
   sessions: number;
   visitors: number;
@@ -27,7 +35,6 @@ interface DayOfWeekRow {
 }
 
 function buildDayOfWeekData(sessions: MomenceSession[]): DayOfWeekRow[] {
-  // Aggregate raw counts by day of week
   const map = new Map<number, { sessions: number; visitors: number; capacity: number }>();
   ORDERED_DAYS.forEach(d => map.set(d, { sessions: 0, visitors: 0, capacity: 0 }));
 
@@ -45,6 +52,7 @@ function buildDayOfWeekData(sessions: MomenceSession[]): DayOfWeekRow[] {
     const avgVisitorsPerSession = row.sessions > 0 ? row.visitors / row.sessions : 0;
     return {
       day: DAY_LABELS[dow],
+      dayShort: DAY_SHORT[dow],
       isWeekend: dow === 0 || dow === 6,
       sessions: row.sessions,
       visitors: row.visitors,
@@ -55,9 +63,9 @@ function buildDayOfWeekData(sessions: MomenceSession[]): DayOfWeekRow[] {
   });
 }
 
-// Build weekly summary: each calendar week → total visitors + sessions
 interface WeeklyRow {
   weekLabel: string;
+  chartLabel: string;
   weekStart: Date;
   sessions: number;
   visitors: number;
@@ -72,19 +80,18 @@ function buildWeeklySummary(sessions: MomenceSession[]): WeeklyRow[] {
     const date = parseISO(s.startsAt);
     const weekStart = startOfWeek(date, { weekStartsOn: 1 });
     const key = format(weekStart, 'yyyy-ww');
-    if (!map.has(key)) {
-      map.set(key, { weekStart, sessions: [] });
-    }
+    if (!map.has(key)) map.set(key, { weekStart, sessions: [] });
     map.get(key)!.sessions.push(s);
   });
 
   const rows: WeeklyRow[] = [];
-  map.forEach((data, _key) => {
-    const visitors = data.sessions.reduce((sum, s) => sum + s.ticketsSold, 0);
-    const capacity = data.sessions.reduce((sum, s) => sum + s.capacity, 0);
+  map.forEach(data => {
+    const visitors = data.sessions.reduce((s, x) => s + x.ticketsSold, 0);
+    const capacity = data.sessions.reduce((s, x) => s + x.capacity, 0);
     const occupancy = capacity > 0 ? (visitors / capacity) * 100 : 0;
     rows.push({
       weekLabel: `W${getWeek(data.weekStart, { weekStartsOn: 1 })} – ${format(data.weekStart, 'MMM d, yyyy')}`,
+      chartLabel: format(data.weekStart, 'MMM d'),
       weekStart: data.weekStart,
       sessions: data.sessions.length,
       visitors,
@@ -96,40 +103,109 @@ function buildWeeklySummary(sessions: MomenceSession[]): WeeklyRow[] {
   return rows.sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime());
 }
 
-function getOccupancyClass(pct: number) {
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function occupancyFill(pct: number) {
+  if (pct >= 70) return '#22c55e';
+  if (pct >= 40) return '#f59e0b';
+  return '#ef4444';
+}
+
+function occupancyClass(pct: number) {
   if (pct >= 70) return 'text-green-600 font-medium';
   if (pct >= 40) return 'text-amber-600';
   return 'text-red-600';
 }
 
+function occupancyBadgeVariant(pct: number): 'default' | 'secondary' | 'destructive' {
+  if (pct >= 70) return 'default';
+  if (pct >= 40) return 'secondary';
+  return 'destructive';
+}
+
+// ─── Custom tooltip for weekly chart ─────────────────────────────────────────
+
+function WeeklyTooltip({ active, payload, label }: { active?: boolean; payload?: { payload: WeeklyRow }[]; label?: string }) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <div className="rounded-lg border bg-background p-3 shadow-md text-xs space-y-1">
+      <p className="font-medium">{d.weekLabel}</p>
+      <p><span className="text-muted-foreground">Visitors:</span> <span className="font-medium">{d.visitors.toLocaleString()}</span></p>
+      <p><span className="text-muted-foreground">Sessions:</span> {d.sessions}</p>
+      <p><span className="text-muted-foreground">Occupancy:</span> <span className={occupancyClass(d.occupancy)}>{d.occupancy.toFixed(1)}%</span></p>
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export function VisitationSection({ sessions, monthlyData, operatingHours }: VisitationSectionProps) {
   const dayOfWeekData = useMemo(() => buildDayOfWeekData(sessions), [sessions]);
   const weeklySummary = useMemo(() => buildWeeklySummary(sessions), [sessions]);
 
-  const totalVisitors = sessions.reduce((sum, s) => sum + s.ticketsSold, 0);
-  const totalCapacity = sessions.reduce((sum, s) => sum + s.capacity, 0);
+  const maxDayVisitors = Math.max(...dayOfWeekData.map(d => d.visitors), 1);
+
+  // For weekly chart: only show every Nth label when there are many weeks
+  const tickInterval = weeklySummary.length > 26 ? Math.ceil(weeklySummary.length / 26) - 1 : 0;
 
   if (sessions.length === 0) return null;
 
   return (
-    <div className="space-y-10">
-      {/* Monthly */}
+    <div className="space-y-12">
+
+      {/* ── By Month ─────────────────────────────────────────────────────── */}
       {monthlyData.length > 0 && (
         <div>
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-            By Month
-          </h3>
+          <SectionLabel>By Month</SectionLabel>
           <MonthlyTable data={monthlyData} sessions={sessions} />
         </div>
       )}
 
-      {/* Weekly summary */}
+      {/* ── By Week ──────────────────────────────────────────────────────── */}
       {weeklySummary.length > 0 && (
         <div>
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-            By Week
-          </h3>
+          <SectionLabel>By Week</SectionLabel>
           <Card>
+            <CardContent className="p-5">
+              <p className="text-xs text-muted-foreground mb-4">
+                Visitors per week — bars coloured by occupancy rate
+                <span className="ml-3 inline-flex gap-2">
+                  <ColorDot color="bg-green-500" label="≥70%" />
+                  <ColorDot color="bg-amber-500" label="40–69%" />
+                  <ColorDot color="bg-red-500" label="<40%" />
+                </span>
+              </p>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={weeklySummary} margin={{ top: 4, right: 8, left: -20, bottom: 0 }} barCategoryGap="20%">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 90%)" vertical={false} />
+                    <XAxis
+                      dataKey="chartLabel"
+                      tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                      interval={tickInterval}
+                    />
+                    <YAxis
+                      tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip content={<WeeklyTooltip />} cursor={{ fill: 'hsl(0 0% 95%)' }} />
+                    <Bar dataKey="visitors" radius={[4, 4, 0, 0]}>
+                      {weeklySummary.map((row, i) => (
+                        <Cell key={i} fill={occupancyFill(row.occupancy)} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Compact table for verification */}
+          <Card className="mt-3">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="notion-table min-w-full">
@@ -138,34 +214,23 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                       <th>Week</th>
                       <th className="text-right">Sessions</th>
                       <th className="text-right">Visitors</th>
-                      <th className="text-right">Total Seats</th>
+                      <th className="text-right">Seats</th>
                       <th className="text-right">Occupancy</th>
                     </tr>
                   </thead>
                   <tbody>
                     {weeklySummary.map((row, i) => (
                       <tr key={i}>
-                        <td className="font-medium text-sm">{row.weekLabel}</td>
+                        <td className="text-sm font-medium">{row.weekLabel}</td>
                         <td className="text-right text-sm">{row.sessions}</td>
                         <td className="text-right text-sm font-medium">{row.visitors.toLocaleString()}</td>
                         <td className="text-right text-sm text-muted-foreground">{row.capacity.toLocaleString()}</td>
-                        <td className={`text-right text-sm ${getOccupancyClass(row.occupancy)}`}>
+                        <td className={`text-right text-sm ${occupancyClass(row.occupancy)}`}>
                           {row.occupancy.toFixed(1)}%
                         </td>
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot>
-                    <tr className="bg-muted/50 font-semibold">
-                      <td>Total</td>
-                      <td className="text-right">{sessions.length.toLocaleString()}</td>
-                      <td className="text-right">{totalVisitors.toLocaleString()}</td>
-                      <td className="text-right text-muted-foreground">{totalCapacity.toLocaleString()}</td>
-                      <td className={`text-right ${getOccupancyClass(totalCapacity > 0 ? (totalVisitors / totalCapacity) * 100 : 0)}`}>
-                        {totalCapacity > 0 ? ((totalVisitors / totalCapacity) * 100).toFixed(1) : '—'}%
-                      </td>
-                    </tr>
-                  </tfoot>
                 </table>
               </div>
             </CardContent>
@@ -173,66 +238,98 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
         </div>
       )}
 
-      {/* Day of week */}
+      {/* ── By Day of Week ───────────────────────────────────────────────── */}
       <div>
-        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-          By Day of Week
-        </h3>
+        <SectionLabel>By Day of Week</SectionLabel>
         <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="notion-table min-w-full">
-                <thead>
-                  <tr className="bg-muted/30">
-                    <th>Day</th>
-                    <th className="text-right">Sessions</th>
-                    <th className="text-right">Total Visitors</th>
-                    <th className="text-right">Total Seats</th>
-                    <th className="text-right">Avg Visitors / Session</th>
-                    <th className="text-right">Occupancy</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dayOfWeekData.map((row, i) => (
-                    <tr key={i} className={row.isWeekend ? 'bg-muted/10' : ''}>
-                      <td className="font-medium text-sm">
-                        {row.day}
-                        {row.isWeekend && (
-                          <span className="ml-2 text-xs text-muted-foreground">Weekend</span>
-                        )}
-                      </td>
-                      <td className="text-right text-sm">{row.sessions > 0 ? row.sessions : '—'}</td>
-                      <td className="text-right text-sm font-medium">
-                        {row.visitors > 0 ? row.visitors.toLocaleString() : '—'}
-                      </td>
-                      <td className="text-right text-sm text-muted-foreground">
-                        {row.capacity > 0 ? row.capacity.toLocaleString() : '—'}
-                      </td>
-                      <td className="text-right text-sm text-muted-foreground">
-                        {row.sessions > 0 ? row.avgVisitorsPerSession.toFixed(1) : '—'}
-                      </td>
-                      <td className={`text-right text-sm ${row.sessions > 0 ? getOccupancyClass(row.occupancy) : 'text-muted-foreground'}`}>
-                        {row.sessions > 0 ? `${row.occupancy.toFixed(1)}%` : '—'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <CardContent className="p-5">
+            <div className="space-y-3">
+              {dayOfWeekData.map((row, i) => {
+                const barWidth = row.visitors > 0 ? (row.visitors / maxDayVisitors) * 100 : 0;
+                const hasData = row.sessions > 0;
+                return (
+                  <div key={i} className="flex items-center gap-3">
+                    {/* Day label */}
+                    <div className="w-24 flex-shrink-0">
+                      <span className={`text-sm font-medium ${row.isWeekend ? 'text-violet-600' : ''}`}>
+                        {row.dayShort}
+                      </span>
+                      {row.isWeekend && (
+                        <span className="ml-1 text-[10px] text-muted-foreground">wknd</span>
+                      )}
+                    </div>
+
+                    {/* Bar */}
+                    <div className="flex-1 h-7 bg-muted rounded-md overflow-hidden relative">
+                      {hasData && (
+                        <div
+                          className="h-full rounded-md transition-all duration-500 flex items-center px-2"
+                          style={{
+                            width: `${barWidth}%`,
+                            backgroundColor: occupancyFill(row.occupancy),
+                            opacity: 0.85,
+                          }}
+                        />
+                      )}
+                      {!hasData && (
+                        <div className="absolute inset-0 flex items-center px-3">
+                          <span className="text-xs text-muted-foreground">No sessions</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Stats */}
+                    {hasData ? (
+                      <div className="flex items-center gap-3 w-56 flex-shrink-0 justify-end">
+                        <span className="text-sm font-medium tabular-nums w-16 text-right">
+                          {row.visitors.toLocaleString()}
+                        </span>
+                        <span className="text-xs text-muted-foreground w-20 text-right">
+                          avg {row.avgVisitorsPerSession.toFixed(1)}/session
+                        </span>
+                        <Badge variant={occupancyBadgeVariant(row.occupancy)} className="text-[10px] w-14 justify-center">
+                          {row.occupancy.toFixed(0)}%
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="w-56 flex-shrink-0" />
+                    )}
+                  </div>
+                );
+              })}
             </div>
+            <p className="text-xs text-muted-foreground mt-4 pt-3 border-t">
+              Bar width = relative visitor volume · Badge = occupancy rate · All figures are cumulative totals from Momence session data.
+            </p>
           </CardContent>
         </Card>
-        <p className="text-xs text-muted-foreground mt-2">
-          All figures are cumulative totals for the selected date range, sourced directly from Momence session data.
-        </p>
       </div>
 
-      {/* Time slots */}
+      {/* ── By Time Slot ─────────────────────────────────────────────────── */}
       <div>
-        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-          By Time Slot
-        </h3>
+        <SectionLabel>By Time Slot</SectionLabel>
         <DemandPatterns sessions={sessions} operatingHours={operatingHours} />
       </div>
+
     </div>
+  );
+}
+
+// ─── Small helpers ────────────────────────────────────────────────────────────
+
+function SectionLabel({ children }: { children: ReactNode }) {
+  return (
+    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+      {children}
+    </h3>
+  );
+}
+
+function ColorDot({ color, label }: { color: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className={`inline-block w-2.5 h-2.5 rounded-sm ${color}`} />
+      <span>{label}</span>
+    </span>
   );
 }
