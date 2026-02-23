@@ -1,0 +1,25 @@
+{
+  "devFiles": [],
+  "ampDevFiles": [],
+  "polyfillFiles": [],
+  "lowPriorityFiles": [],
+  "rootMainFiles": [],
+  "pages": {
+    "/_app": [
+      "static/chunks/32b23_next_dist_compiled_3ebc9c33._.js",
+      "static/chunks/32b23_next_dist_shared_lib_d023745c._.js",
+      "static/chunks/32b23_next_dist_client_e5fcee61._.js",
+      "static/chunks/32b23_next_dist_f17b1d64._.js",
+      "static/chunks/32b23_next_app_82f51696.js",
+      "static/chunks/[next]_entry_page-loader_ts_839b0886._.js",
+      "static/chunks/32b23_react_c58112ac._.js",
+      "static/chunks/32b23_react-dom_cjs_react-dom_development_a1124088.js",
+      "static/chunks/32b23_react-dom_ed805c85._.js",
+      "static/chunks/32b23_d4a278e1._.js",
+      "static/chunks/[root-of-the-server]__25f1c46d._.js",
+      "static/chunks/Documents_Sites_Slow Folk_Untitled_sauna-session-stats_src_pages__app_2da965e7._.js",
+      "static/chunks/358b3_Sites_Slow Folk_Untitled_sauna-session-stats_src_pages__app_7ed04d05._.js"
+    ]
+  },
+  "ampFirstPages": []
+}

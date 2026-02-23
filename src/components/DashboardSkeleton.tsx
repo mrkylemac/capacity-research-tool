@@ -1,5 +1,5 @@
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/untitled/skeleton';
+import { Card, CardContent } from '@/components/untitled/card';
 
 function SkeletonCard({ lines = 2 }: { lines?: number }) {
   return (
@@ -71,7 +71,7 @@ export function DashboardSkeleton() {
         <Card className="mb-4">
           <CardContent className="p-6">
             <div className="flex gap-6">
-              <Skeleton className="h-20 w-20 rounded-xl flex-shrink-0" />
+              <Skeleton className="h-20 w-20 rounded-xl shrink-0" />
               <div className="flex-1 space-y-4">
                 <div>
                   <Skeleton className="h-5 w-48 mb-2" />

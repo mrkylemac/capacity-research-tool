@@ -46,7 +46,10 @@ async function fetchAllSessions() {
 }
 
 describe('HOI vs Momence dashboard comparison', () => {
-  it('fetches same period (6 Nov 2025 – 6 Feb 2026) and compares metrics', async () => {
+  const runLive = process.env.RUN_LIVE_API_TESTS === 'true';
+  const testFn = runLive ? it : it.skip;
+
+  testFn('fetches same period (6 Nov 2025 – 6 Feb 2026) and compares metrics', async () => {
     const sessions = await fetchAllSessions();
     const fromStr = FROM.slice(0, 10);
     const toStr = TO.slice(0, 10);

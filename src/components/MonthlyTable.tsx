@@ -2,18 +2,16 @@ import { useState, useMemo } from 'react';
 import { parseISO, format, startOfWeek, getWeek } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import type { MonthlyData, MomenceSession } from '@/types/momence';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Card, CardContent } from '@/components/untitled/card';
+import { Button } from '@/components/untitled/button';
+import { Badge } from '@/components/untitled/badge';
+import { ChevronDown } from 'lucide-react';
+import { Disclosure } from '@/components/untitled/disclosure';
 
 interface MonthlyTableProps {
   data: MonthlyData[];
   sessions: MomenceSession[];
+  collapsible?: boolean;
 }
 
 interface WeeklyDataWithSessions {
@@ -173,10 +171,9 @@ function formatSessionTime(startsAt: string, durationMinutes: number): string {
   return `${formatTime(start)}–${formatTime(endTime)}`;
 }
 
-export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
+export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTableProps) {
   const [selectedMonth, setSelectedMonth] = useState<{ month: string; year: number } | null>(null);
   const [viewMode, setViewMode] = useState<'timeline' | 'monthly' | 'weekly'>('timeline');
-  const [expandedWeeks, setExpandedWeeks] = useState<Set<string>>(new Set());
 
   const seasonalAnalysis = useMemo(() => analyzeSeasonalPatterns(data), [data]);
 
@@ -210,18 +207,6 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
     }));
   }, [data, weeklyData, viewMode, selectedMonth]);
 
-  const toggleWeek = (weekKey: string) => {
-    setExpandedWeeks(prev => {
-      const next = new Set(prev);
-      if (next.has(weekKey)) {
-        next.delete(weekKey);
-      } else {
-        next.add(weekKey);
-      }
-      return next;
-    });
-  };
-
   if (data.length === 0) return null;
 
   // Filter to only active months (those with visitors) for accurate averages
@@ -248,27 +233,27 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
 
   const avgOccupancy = activeTotals.capacity > 0 ? (activeTotals.visitors / activeTotals.capacity) * 100 : 0;
 
-  return (
+  const inner = (
     <div className="space-y-4">
       {/* View Toggle and Month Filter */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex gap-1">
           <Button
-            variant={viewMode === 'timeline' ? 'default' : 'outline'}
+            variant={viewMode === 'timeline' ? 'primary' : 'outline'}
             size="sm"
-            onClick={() => { setViewMode('timeline'); setSelectedMonth(null); setExpandedWeeks(new Set()); }}
+            onClick={() => { setViewMode('timeline'); setSelectedMonth(null); }}
           >
             Timeline
           </Button>
           <Button
-            variant={viewMode === 'monthly' ? 'default' : 'outline'}
+            variant={viewMode === 'monthly' ? 'primary' : 'outline'}
             size="sm"
-            onClick={() => { setViewMode('monthly'); setSelectedMonth(null); setExpandedWeeks(new Set()); }}
+            onClick={() => { setViewMode('monthly'); setSelectedMonth(null); }}
           >
             Monthly
           </Button>
           <Button
-            variant={viewMode === 'weekly' ? 'default' : 'outline'}
+            variant={viewMode === 'weekly' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => setViewMode('weekly')}
           >
@@ -281,7 +266,7 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
             <Button
               variant={selectedMonth === null ? 'secondary' : 'ghost'}
               size="sm"
-              onClick={() => { setSelectedMonth(null); setExpandedWeeks(new Set()); }}
+              onClick={() => { setSelectedMonth(null); }}
             >
               All
             </Button>
@@ -290,7 +275,7 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                 key={i}
                 variant={selectedMonth?.month === m.month && selectedMonth?.year === m.year ? 'secondary' : 'ghost'}
                 size="sm"
-                onClick={() => { setSelectedMonth({ month: m.month, year: m.year }); setExpandedWeeks(new Set()); }}
+                onClick={() => { setSelectedMonth({ month: m.month, year: m.year }); }}
               >
                 {m.month.slice(0, 3)} {m.year.toString().slice(2)}
               </Button>
@@ -314,12 +299,12 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
               }
             </p>
             {viewMode === 'timeline' && data.length > 1 && (
-              <Badge variant="outline" className="text-xs">
+              <Badge className="text-xs">
                 {data.length} months tracked
               </Badge>
             )}
             {selectedMonth && (
-              <Badge variant="outline" className="text-xs">
+              <Badge className="text-xs">
                 {weeklyData.length} weeks
               </Badge>
             )}
@@ -379,9 +364,9 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                 <thead>
                   <tr className="bg-muted/30">
                     <th>Month</th>
-                    <th className="text-right">Visitors</th>
-                    <th className="text-right">vs Prev Month</th>
-                    <th className="text-right">Occupancy</th>
+                    <th>Visitors</th>
+                    <th>vs Prev Month</th>
+                    <th>Occupancy</th>
                     <th>Trend</th>
                   </tr>
                 </thead>
@@ -405,14 +390,14 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                         <td className="font-medium">
                           {row.month} {row.year}
                           {pattern?.trend === 'high' && (
-                            <Badge variant="default" className="ml-2 text-xs">Peak Season</Badge>
+                            <Badge variant="success" className="ml-2 text-xs">Peak</Badge>
                           )}
                           {pattern?.trend === 'low' && (
-                            <Badge variant="outline" className="ml-2 text-xs">Off Season</Badge>
+                            <Badge variant="warning" className="ml-2 text-xs">Off</Badge>
                           )}
                         </td>
-                        <td className="text-right font-medium">{row.ticketsSold.toLocaleString()}</td>
-                        <td className="text-right">
+                        <td className="font-medium">{row.ticketsSold.toLocaleString()}</td>
+                        <td>
                           {growth !== null ? (
                             <span className={growth > 0 ? 'text-green-600' : growth < 0 ? 'text-red-600' : 'text-muted-foreground'}>
                               {growth > 0 ? '+' : ''}{growth.toFixed(0)}%
@@ -421,7 +406,7 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                             <span className="text-muted-foreground">-</span>
                           )}
                         </td>
-                        <td className={`text-right ${getOccupancyClass(row.utilisation)}`}>
+                        <td className={getOccupancyClass(row.utilisation)}>
                           {row.utilisation.toFixed(1)}%
                         </td>
                         <td className="text-xs text-muted-foreground">
@@ -449,14 +434,14 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                 {/* Rows */}
                 {weeklyData.map((row) => {
                   const seatsPerSession = row.sessionCount > 0 ? row.capacity / row.sessionCount : 0;
-                  const isExpanded = expandedWeeks.has(row.weekKey);
                   
                   return (
-                    <Collapsible key={row.weekKey} open={isExpanded} onOpenChange={() => toggleWeek(row.weekKey)}>
-                      <CollapsibleTrigger asChild>
-                        <div className="grid grid-cols-6 gap-4 px-4 py-3 text-sm cursor-pointer hover:bg-muted/20 transition-colors">
+                    <Disclosure
+                      key={row.weekKey}
+                      summary={(
+                        <div className="grid grid-cols-6 gap-4 px-4 py-3 text-sm hover:bg-muted/20 transition-colors">
                           <div className="font-medium flex items-center gap-2">
-                            <span className="text-muted-foreground text-xs">{isExpanded ? '▼' : '▶'}</span>
+                            <ChevronDown className="h-3 w-3 text-muted-foreground transition-transform group-open:rotate-180" />
                             {row.weekLabel} – {format(row.weekStart, 'MMM d')}
                           </div>
                           <div className="text-right">{row.sessionCount}</div>
@@ -467,41 +452,39 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
                             {row.occupancy.toFixed(1)}%
                           </div>
                         </div>
-                      </CollapsibleTrigger>
-                      
-                      <CollapsibleContent>
-                        <div className="bg-muted/10 border-t px-4 py-3">
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                            {row.rawSessions.map((session) => {
-                              const occupancyPct = session.capacity > 0 
-                                ? (session.ticketsSold / session.capacity) * 100 
-                                : 0;
-                              return (
-                                <div 
-                                  key={session.id}
-                                  className="flex items-center justify-between text-xs bg-background rounded px-3 py-2 border"
-                                >
-                                  <div>
-                                    <span className="font-medium">
-                                      {format(parseISO(session.startsAt), 'MMM d')}
-                                    </span>
-                                    <span className="text-muted-foreground ml-2">
-                                      {formatSessionTime(session.startsAt, session.durationMinutes)}
-                                    </span>
-                                  </div>
-                                  <Badge 
-                                    variant={occupancyPct >= 70 ? 'default' : occupancyPct >= 40 ? 'secondary' : 'destructive'}
-                                    className="text-xs"
-                                  >
-                                    {session.ticketsSold}/{session.capacity}
-                                  </Badge>
+                      )}
+                    >
+                      <div className="bg-muted/10 border-t px-4 py-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {row.rawSessions.map((session) => {
+                            const occupancyPct = session.capacity > 0
+                              ? (session.ticketsSold / session.capacity) * 100
+                              : 0;
+                            return (
+                              <div
+                                key={session.id}
+                                className="flex items-center justify-between text-xs bg-background rounded px-3 py-2 border"
+                              >
+                                <div>
+                                  <span className="font-medium">
+                                    {format(parseISO(session.startsAt), 'MMM d')}
+                                  </span>
+                                  <span className="text-muted-foreground ml-2">
+                                    {formatSessionTime(session.startsAt, session.durationMinutes)}
+                                  </span>
                                 </div>
-                              );
-                            })}
-                          </div>
+                                <Badge
+                                  variant={occupancyPct >= 70 ? 'success' : occupancyPct >= 40 ? 'warning' : 'neutral'}
+                                  className="text-xs"
+                                >
+                                  {session.ticketsSold}/{session.capacity}
+                                </Badge>
+                              </div>
+                            );
+                          })}
                         </div>
-                      </CollapsibleContent>
-                    </Collapsible>
+                      </div>
+                    </Disclosure>
                   );
                 })}
               </div>
@@ -623,6 +606,22 @@ export function MonthlyTable({ data, sessions }: MonthlyTableProps) {
         </p>
       )}
     </div>
+  );
+
+  if (!collapsible) return inner;
+
+  return (
+    <Disclosure
+      summary={(
+        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+          <span>Show session data</span>
+          <span className="text-xs font-normal">({data.length} months · {sessions.length} sessions)</span>
+        </div>
+      )}
+    >
+      {inner}
+    </Disclosure>
   );
 }
 

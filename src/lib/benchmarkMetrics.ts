@@ -1,4 +1,4 @@
-import { parseISO, getDay, getHours, getMinutes, differenceInDays } from 'date-fns';
+import { parseISO, differenceInDays } from 'date-fns';
 import type { MomenceSession } from '@/types/momence';
 import { formatDecimalHour } from '@/lib/utils';
 
@@ -42,6 +42,16 @@ export interface BenchmarkMetrics {
   impliedArpv: number;
 }
 
+export interface SlowFolkComparisonMetric {
+  metric: string;
+  value: number;
+  target: number;
+  unit: string;
+  status: 'above' | 'below' | 'on-target';
+  delta: number;
+  deltaPercent: number;
+}
+
 /**
  * Calculate percentile value from sorted array
  */
@@ -72,11 +82,11 @@ export function inferOperatingHours(sessions: MomenceSession[]): OperatingHours 
   const weekendEndTimes: number[] = [];
 
   sessions.forEach(session => {
-    const startDate = parseISO(session.startsAt);
-    const startHour = getHours(startDate) + getMinutes(startDate) / 60;
+    const startDate = new Date(session.startsAt);
+    const startHour = startDate.getUTCHours() + startDate.getUTCMinutes() / 60;
     // Use session duration to calculate actual end time
     const endHour = startHour + (session.durationMinutes || 60) / 60;
-    const dayOfWeek = getDay(startDate);
+    const dayOfWeek = startDate.getUTCDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     if (isWeekend) {
@@ -156,8 +166,8 @@ export function calculateBenchmarkMetrics(
   let weekendVisits = 0;
 
   sessions.forEach(session => {
-    const date = parseISO(session.startsAt);
-    const dayOfWeek = getDay(date);
+    const date = new Date(session.startsAt);
+    const dayOfWeek = date.getUTCDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     if (isWeekend) {
@@ -203,6 +213,40 @@ export function calculateBenchmarkMetrics(
     avgPrice,
     impliedArpv,
   };
+}
+
+function statusFromDeltaPercent(deltaPercent: number): 'above' | 'below' | 'on-target' {
+  if (Math.abs(deltaPercent) <= 5) return 'on-target';
+  return deltaPercent > 0 ? 'above' : 'below';
+}
+
+/**
+ * Compare venue performance vs Slow Folk targets.
+ * Values are kept in their natural units (e.g. occupancyRate is a ratio 0–1).
+ */
+export function compareToSlowFolk(metrics: BenchmarkMetrics): SlowFolkComparisonMetric[] {
+  const targets = [
+    { metric: 'Weekly Visits', value: metrics.weeklyVisits, target: 686, unit: 'visits/wk' },
+    { metric: 'Occupancy Rate', value: metrics.occupancyRate, target: 0.6, unit: 'ratio' },
+    { metric: 'Weekday Share', value: metrics.weekdayShare, target: 0.63, unit: 'ratio' },
+    { metric: 'Visits Per Open Hour', value: metrics.visitsPerOpenHour, target: 686 / 60.5, unit: 'visits/hr' },
+    { metric: 'ARPV', value: metrics.impliedArpv, target: 34.81, unit: 'currency' },
+    { metric: 'Avg Visitors Per Session', value: metrics.avgVisitorsPerSession, target: 15 * 0.6, unit: 'visits/session' },
+  ];
+
+  return targets.map(t => {
+    const delta = t.value - t.target;
+    const deltaPercent = t.target !== 0 ? (delta / t.target) * 100 : 0;
+    return {
+      metric: t.metric,
+      value: t.value,
+      target: t.target,
+      unit: t.unit,
+      status: statusFromDeltaPercent(deltaPercent),
+      delta,
+      deltaPercent,
+    };
+  });
 }
 
 /**
