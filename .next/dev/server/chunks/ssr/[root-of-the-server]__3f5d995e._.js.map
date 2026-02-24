@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":["file:///Users/mrkylemac/Documents/Sites/Slow%20Folk/Untitled/sauna-session-stats/src/app/providers.tsx"],"sourcesContent":["\"use client\";\n\nimport type { PropsWithChildren } from 'react';\nimport { useRouter } from 'next/navigation';\nimport { RouterProvider } from 'react-aria-components';\nimport { ThemeProvider as NextThemeProvider } from 'next-themes';\n\ndeclare module 'react-aria-components' {\n  interface RouterConfig {\n    routerOptions: NonNullable<Parameters<ReturnType<typeof useRouter>['push']>[1]>;\n  }\n}\n\nexport function Providers({ children }: PropsWithChildren) {\n  const router = useRouter();\n\n  return (\n    <RouterProvider navigate={router.push}>\n      <NextThemeProvider\n        attribute=\"class\"\n        value={{ light: 'light-mode', dark: 'dark-mode' }}\n        disableTransitionOnChange\n      >\n        {children}\n      </NextThemeProvider>\n    </RouterProvider>\n  );\n}\n\n"],"names":[],"mappings":";;;;;AAGA;AACA;AACA;AALA;;;;;AAaO,SAAS,UAAU,EAAE,QAAQ,EAAqB;IACvD,MAAM,SAAS,IAAA,4NAAS;IAExB,qBACE,2TAAC,4PAAc;QAAC,UAAU,OAAO,IAAI;kBACnC,cAAA,2TAAC,8OAAiB;YAChB,WAAU;YACV,OAAO;gBAAE,OAAO;gBAAc,MAAM;YAAY;YAChD,yBAAyB;sBAExB;;;;;;;;;;;AAIT"}}]
-}
