@@ -1,12 +1,13 @@
 import { format, parseISO } from 'date-fns';
-import { Users, TrendingUp, CalendarDays, Clock, BarChart3, Target, DollarSign } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Users, CalendarDays, Flame, Activity, BarChart3, SplitSquareHorizontal } from 'lucide-react';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import type { VenueConfig, MonthlyData } from '@/types/momence';
 import type { HostInfo } from '@/lib/momenceClient';
 import { formatOperatingHours } from '@/lib/benchmarkMetrics';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 
 interface VenueSummaryProps {
   metrics: BenchmarkMetrics;
@@ -28,234 +29,222 @@ export function VenueSummary({ metrics, venueConfig, monthlyData, hostInfo, date
   const venueName = hostInfo?.name || venueConfig?.venueName || 'Venue';
   const initials = venueName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
-  const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
-  const weeklyRevenue = metrics.weeklyVisits * metrics.impliedArpv;
-  const theoreticalMaxWeekly = Math.round(sessionsPerWeek * metrics.avgCapacityPerSession);
+  const totalVisitors = metrics.totalVisits;
+  const avgWeekly = Math.round(metrics.weeklyVisits);
 
-  const recentMonths = monthlyData.slice(-3);
-  const olderMonths = monthlyData.slice(0, -3);
-  const recentAvgVisitors = recentMonths.length > 0
-    ? recentMonths.reduce((sum, m) => sum + m.ticketsSold, 0) / recentMonths.length : 0;
-  const olderAvgVisitors = olderMonths.length > 0
-    ? olderMonths.reduce((sum, m) => sum + m.ticketsSold, 0) / olderMonths.length : 0;
-  const visitorTrendPct = olderAvgVisitors > 0
-    ? ((recentAvgVisitors - olderAvgVisitors) / olderAvgVisitors) * 100 : 0;
+  const occupancyRate = metrics.occupancyRate;
+  const occupancyPct = (occupancyRate * 100).toFixed(1);
+  const occupancyAccent = occupancyRate >= 0.7 ? 'border-l-green-500' : occupancyRate >= 0.4 ? 'border-l-amber-500' : 'border-l-red-500';
+  const occupancyValueClass = occupancyRate >= 0.7 ? 'text-green-600' : occupancyRate >= 0.4 ? 'text-amber-600' : 'text-red-600';
 
-  const bestMonth = monthlyData.length > 0
+  const peakMonth = monthlyData.length > 0
     ? monthlyData.reduce((best, m) => m.ticketsSold > best.ticketsSold ? m : best)
     : null;
+
+  const sortedMonths = [...monthlyData].sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return new Date(`${a.month} 1`).getMonth() - new Date(`${b.month} 1`).getMonth();
+  });
+  const recentMonths = sortedMonths.slice(-3);
+  const olderMonths = sortedMonths.slice(0, -3);
+  const recentAvg = recentMonths.length > 0
+    ? recentMonths.reduce((s, m) => s + m.ticketsSold, 0) / recentMonths.length
+    : 0;
+  const olderAvg = olderMonths.length > 0
+    ? olderMonths.reduce((s, m) => s + m.ticketsSold, 0) / olderMonths.length
+    : 0;
+  const trendPct = olderAvg > 0 ? ((recentAvg - olderAvg) / olderAvg) * 100 : null;
+  const hasTrend = trendPct !== null && monthlyData.length >= 4;
+
+  const weekdayPct = Math.round(metrics.weekdayShare * 100);
+  const weekendPct = Math.round(metrics.weekendShare * 100);
+  const dominantDay = weekdayPct >= weekendPct ? 'Weekday' : 'Weekend';
+  const dominantPct = Math.max(weekdayPct, weekendPct);
 
   return (
     <div className="space-y-6">
       {/* Venue Profile */}
-      {venueConfig && (
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-12 w-12 rounded-xl shrink-0">
-                {hostInfo?.profileImage && (
-                  <AvatarImage src={hostInfo.profileImage} alt={venueName} />
-                )}
-                <AvatarFallback className="rounded-xl bg-muted text-muted-foreground font-bold">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold leading-tight">{venueName}</p>
-                {dateRange && (
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {formatDateRange(dateRange.from, dateRange.to)}
-                  </p>
-                )}
-              </div>
-              <div className="hidden md:flex items-center divide-x divide-border">
-                {[
-                  { label: 'Duration', value: `${venueConfig.duration} min` },
-                  { label: 'Capacity', value: `${venueConfig.capacity} guests` },
-                  { label: 'Price', value: `$${venueConfig.price}` },
-                  { label: 'Hours', value: formatOperatingHours(metrics.operatingHours) },
-                ].map(({ label, value }) => (
-                  <div key={label} className="px-5 first:pl-0 last:pr-0">
-                    <p className="text-xs text-muted-foreground">{label}</p>
-                    <p className="text-sm font-medium">{value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="grid grid-cols-4 gap-4 mt-4 md:hidden">
-              {[
-                { label: 'Duration', value: `${venueConfig.duration} min` },
-                { label: 'Capacity', value: `${venueConfig.capacity} guests` },
-                { label: 'Price', value: `$${venueConfig.price}` },
-                { label: 'Hours', value: formatOperatingHours(metrics.operatingHours) },
-              ].map(({ label, value }) => (
-                <div key={label}>
-                  <p className="text-xs text-muted-foreground">{label}</p>
-                  <p className="text-sm font-medium">{value}</p>
+      <Card className="border-2">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-row gap-4">
+            <Avatar className="h-14 w-14 sm:h-20 sm:w-20 rounded-xl flex-shrink-0">
+              {hostInfo?.profileImage && (
+                <AvatarImage src={hostInfo.profileImage} alt={venueName} />
+              )}
+              <AvatarFallback className="rounded-xl bg-primary/10 text-primary text-xl sm:text-2xl font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0 space-y-3">
+              <div>
+                <h3 className="text-lg sm:text-xl font-semibold leading-tight">{venueName}</h3>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:text-sm text-muted-foreground mt-0.5">
+                  {dateRange && <span>{formatDateRange(dateRange.from, dateRange.to)}</span>}
+                  {hostInfo?.industry && <><span>·</span><span>{hostInfo.industry}</span></>}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Primary Performance */}
-      <div>
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-          Primary Performance
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <MetricCard
-            label="Weekly Visitors"
-            value={Math.round(metrics.weeklyVisits).toLocaleString()}
-            sublabel={`${metrics.totalVisits.toLocaleString()} total over ${Math.round(metrics.weeksInRange)} wks`}
-            icon={Users}
-          />
-          {metrics.impliedArpv > 0 && (
-            <MetricCard
-              label="Weekly Revenue"
-              value={`$${Math.round(weeklyRevenue).toLocaleString()}`}
-              sublabel={`$${metrics.impliedArpv.toFixed(2)} per visitor`}
-              icon={DollarSign}
-            />
-          )}
-          <MetricCard
-            label="Avg Group Size"
-            value={metrics.avgVisitorsPerSession.toFixed(1)}
-            sublabel={`of ${metrics.avgCapacityPerSession.toFixed(0)} seats per session`}
-            icon={Users}
-          />
-          <MetricCard
-            label="Sessions / Week"
-            value={sessionsPerWeek.toFixed(1)}
-            sublabel={`${(sessionsPerWeek / 7).toFixed(1)} per day`}
-            icon={CalendarDays}
-          />
-        </div>
-      </div>
-
-      {/* Operational Context */}
-      <div>
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-          Operational Context
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <MetricCard
-            label="Operating Hours"
-            value={`${metrics.weeklyOpenHours.toFixed(0)}/wk`}
-            sublabel={formatOperatingHours(metrics.operatingHours)}
-            icon={Clock}
-          />
-          <MetricCard
-            label="Seats / Session"
-            value={metrics.avgCapacityPerSession.toFixed(0)}
-            sublabel="average capacity"
-            icon={Users}
-          />
-          <MetricCard
-            label="Weekly Max"
-            value={theoreticalMaxWeekly.toLocaleString()}
-            sublabel={`${sessionsPerWeek.toFixed(0)} sessions × ${metrics.avgCapacityPerSession.toFixed(0)} seats`}
-            icon={BarChart3}
-          />
-          <MetricCard
-            label="Utilisation"
-            value={`${(metrics.occupancyRate * 100).toFixed(1)}%`}
-            sublabel={`${Math.round(metrics.weeklyVisits)} of ${theoreticalMaxWeekly.toLocaleString()} weekly slots`}
-            icon={Target}
-          />
-        </div>
-      </div>
-
-      {/* Signals */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <Card>
-          <CardContent className="p-5">
-            <p className="text-sm font-semibold mb-3">Weekly Distribution</p>
-            <div className="space-y-3">
-              <DemandBar label="Weekday" value={metrics.weekdayShare} visitors={metrics.weekdayVisits} />
-              <DemandBar label="Weekend" value={metrics.weekendShare} visitors={metrics.weekendVisits} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {monthlyData.length >= 4 && (
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold">Visitor Trend</p>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </div>
-              <p className={`text-3xl font-bold tabular-nums ${visitorTrendPct >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-                {visitorTrendPct >= 0 ? '+' : ''}{Math.abs(visitorTrendPct).toFixed(0)}%
+              {venueConfig && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2">
+                  <Spec label="Duration" value={`${venueConfig.duration} min`} />
+                  <Spec label="Capacity" value={`${venueConfig.capacity} guests`} />
+                  {venueConfig.price > 0 && <Spec label="Price" value={`$${venueConfig.price}`} />}
+                  <Spec label="Hours" value={formatOperatingHours(metrics.operatingHours)} />
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 6 Insight Cards */}
+      <div>
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Key Insights</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+
+          <Card className="border-l-4 border-l-blue-500">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-start justify-between">
+                <p className="text-xs text-muted-foreground leading-tight">Total Visitors</p>
+                <Users size={13} className="text-muted-foreground/40 mt-0.5 flex-shrink-0" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold mt-1 tabular-nums">
+                {totalVisitors.toLocaleString()}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {Math.round(recentAvgVisitors).toLocaleString()} vs {Math.round(olderAvgVisitors).toLocaleString()} avg/mo
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 leading-tight">
+                {Math.round(metrics.weeksInRange)} weeks
               </p>
             </CardContent>
           </Card>
-        )}
 
-        {bestMonth && (
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold">Strongest Month</p>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          <Card className="border-l-4 border-l-blue-400">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-start justify-between">
+                <p className="text-xs text-muted-foreground leading-tight">Avg Weekly</p>
+                <Activity size={13} className="text-muted-foreground/40 mt-0.5 flex-shrink-0" />
               </div>
-              <p className="text-3xl font-bold tabular-nums">
-                {bestMonth.ticketsSold.toLocaleString()}
+              <p className="text-2xl sm:text-3xl font-bold mt-1 tabular-nums">
+                {avgWeekly.toLocaleString()}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {bestMonth.month} {bestMonth.year} · {bestMonth.sessions} sessions
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                {metrics.dailyVisits.toFixed(1)}/day
               </p>
             </CardContent>
           </Card>
-        )}
+
+          <Card className={`border-l-4 ${occupancyAccent}`}>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-start justify-between">
+                <p className="text-xs text-muted-foreground leading-tight">Occupancy</p>
+                <BarChart3 size={13} className="text-muted-foreground/40 mt-0.5 flex-shrink-0" />
+              </div>
+              <p className={`text-2xl sm:text-3xl font-bold mt-1 tabular-nums ${occupancyValueClass}`}>
+                {occupancyPct}%
+              </p>
+              <Progress
+                value={occupancyRate * 100}
+                className={`h-1.5 mt-2 mb-1 ${
+                  occupancyRate >= 0.7
+                    ? '[&>div]:bg-green-500'
+                    : occupancyRate >= 0.4
+                    ? '[&>div]:bg-amber-500'
+                    : '[&>div]:bg-red-500'
+                }`}
+              />
+              <p className="text-[10px] sm:text-xs text-muted-foreground">
+                {totalVisitors.toLocaleString()}/{metrics.totalCapacity.toLocaleString()} seats
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-green-500">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-start justify-between">
+                <p className="text-xs text-muted-foreground leading-tight">Peak Month</p>
+                <Flame size={13} className="text-muted-foreground/40 mt-0.5 flex-shrink-0" />
+              </div>
+              {peakMonth ? (
+                <>
+                  <p className="text-2xl sm:text-3xl font-bold mt-1 tabular-nums text-green-600">
+                    {peakMonth.ticketsSold.toLocaleString()}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-1 mt-1">
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                      {peakMonth.month.slice(0, 3)} {peakMonth.year}
+                    </Badge>
+                    <span className="text-[10px] sm:text-xs text-muted-foreground">{peakMonth.sessions} sessions</span>
+                  </div>
+                </>
+              ) : (
+                <p className="text-2xl sm:text-3xl font-bold mt-1 text-muted-foreground">—</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className={`border-l-4 ${hasTrend && trendPct! >= 0 ? 'border-l-green-500' : hasTrend ? 'border-l-amber-500' : 'border-l-muted'}`}>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-start justify-between">
+                <p className="text-xs text-muted-foreground leading-tight">Trend</p>
+                {hasTrend
+                  ? trendPct! >= 0
+                    ? <TrendingUp size={13} className="text-green-500 mt-0.5 flex-shrink-0" />
+                    : <TrendingDown size={13} className="text-amber-500 mt-0.5 flex-shrink-0" />
+                  : <Minus size={13} className="text-muted-foreground/40 mt-0.5 flex-shrink-0" />
+                }
+              </div>
+              {hasTrend ? (
+                <>
+                  <p className={`text-2xl sm:text-3xl font-bold mt-1 tabular-nums ${trendPct! >= 0 ? 'text-green-600' : 'text-amber-600'}`}>
+                    {trendPct! >= 0 ? '+' : ''}{trendPct!.toFixed(0)}%
+                  </p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 leading-tight">
+                    {Math.round(recentAvg).toLocaleString()} vs {Math.round(olderAvg).toLocaleString()} avg/mo
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-2xl sm:text-3xl font-bold mt-1 text-muted-foreground">—</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Need 4+ months</p>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-violet-400">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-start justify-between">
+                <p className="text-xs text-muted-foreground leading-tight">Demand Split</p>
+                <SplitSquareHorizontal size={13} className="text-muted-foreground/40 mt-0.5 flex-shrink-0" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold mt-1 tabular-nums">{dominantPct}%</p>
+              <p className="text-sm font-semibold text-muted-foreground -mt-0.5">{dominantDay}</p>
+              <div className="flex h-2 rounded-full overflow-hidden mt-2 gap-px">
+                <div className="bg-blue-400 h-full transition-all" style={{ width: `${weekdayPct}%` }} />
+                <div className="bg-violet-400 h-full transition-all" style={{ width: `${weekendPct}%` }} />
+              </div>
+              <div className="flex justify-between mt-1">
+                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                  <span className="inline-block w-2 h-2 rounded-full bg-blue-400" />
+                  {weekdayPct}% wd
+                </span>
+                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                  {weekendPct}% we
+                  <span className="inline-block w-2 h-2 rounded-full bg-violet-400" />
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+        </div>
       </div>
     </div>
   );
 }
 
-function MetricCard({
-  label,
-  value,
-  sublabel,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  sublabel: string;
-  icon: LucideIcon;
-}) {
+function Spec({ label, value }: { label: string; value: string }) {
   return (
-    <Card>
-      <CardContent className="p-5">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-semibold">{label}</p>
-          <Icon className="h-4 w-4 text-muted-foreground" />
-        </div>
-        <p className="text-3xl font-bold tabular-nums tracking-tight">{value}</p>
-        <p className="text-xs text-muted-foreground mt-1">{sublabel}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
-function DemandBar({ label, value, visitors }: { label: string; value: number; visitors: number }) {
-  return (
-    <div>
-      <div className="flex justify-between text-sm mb-1.5">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">{(value * 100).toFixed(0)}%</span>
-      </div>
-      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-        <div
-          className="h-full bg-primary rounded-full"
-          style={{ width: `${value * 100}%` }}
-        />
-      </div>
-      <p className="text-xs text-muted-foreground mt-1">{visitors.toLocaleString()} visitors</p>
+    <div className="space-y-0.5">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-sm font-medium">{value}</p>
     </div>
   );
 }

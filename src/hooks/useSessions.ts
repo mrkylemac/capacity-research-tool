@@ -54,6 +54,7 @@ export function useSessions() {
   const [queryParams, setQueryParams] = useState<SessionsQueryParams | null>(null);
   const [hostInfo, setHostInfo] = useState<HostInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [fetchPhase, setFetchPhase] = useState<'idle' | 'fetching' | 'processing'>('idle');
   const [error, setError] = useState<Error | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -62,6 +63,7 @@ export function useSessions() {
 
   const fetchData = useCallback(async (params: Omit<SessionsQueryParams, 'page' | 'pageSize'>) => {
     setIsLoading(true);
+    setFetchPhase('fetching');
     setError(null);
     setFetchingCount(0);
     setQueryParams({ ...params, page: 1, pageSize: API_CONFIG.pageSize });
@@ -98,6 +100,8 @@ export function useSessions() {
 
         page++;
       }
+
+      setFetchPhase('processing');
 
       // Get host info result
       const fetchedHostInfo = await hostInfoPromise;
@@ -200,6 +204,7 @@ export function useSessions() {
       setError(err instanceof Error ? err : new Error('Failed to fetch sessions'));
     } finally {
       setIsLoading(false);
+      setFetchPhase('idle');
     }
   }, []);
 
@@ -267,6 +272,7 @@ export function useSessions() {
     hostInfo,
     dataRange,
     isLoading,
+    fetchPhase,
     error,
     fetchData,
     hydrateFromCache,

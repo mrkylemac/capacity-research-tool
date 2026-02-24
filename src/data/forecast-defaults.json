@@ -1,6 +1,6 @@
 {
   "defaults": {
-    "weeklyVisits": 0,
-    "venueOccupancy": 0
+    "weeklyVisits": 345,
+    "venueOccupancy": 35
   }
 }
