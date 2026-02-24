@@ -425,10 +425,10 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                           <span className="hidden sm:inline">{row.month} {row.year}</span>
                           <span className="sm:hidden">{row.month.slice(0, 3)} {row.year.toString().slice(2)}</span>
                           {pattern?.trend === 'high' && (
-                            <Badge variant="default" className="ml-2 text-[10px] hidden sm:inline-flex">Peak</Badge>
+                            <Badge variant="success" className="ml-2 text-[10px] hidden sm:inline-flex">Peak</Badge>
                           )}
                           {pattern?.trend === 'low' && (
-                            <Badge variant="outline" className="ml-2 text-[10px] hidden sm:inline-flex">Off</Badge>
+                            <Badge variant="neutral" className="ml-2 text-[10px] hidden sm:inline-flex">Off</Badge>
                           )}
                         </td>
                         <td className="text-right font-medium">{row.ticketsSold.toLocaleString()}</td>
@@ -511,7 +511,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                                     </span>
                                   </div>
                                   <Badge
-                                    variant={occupancyPct >= 70 ? 'default' : occupancyPct >= 40 ? 'secondary' : 'destructive'}
+                                    variant={occupancyPct >= 70 ? 'success' : occupancyPct >= 40 ? 'warning' : 'neutral'}
                                     className="text-xs ml-2 flex-shrink-0"
                                   >
                                     {session.ticketsSold}/{session.capacity}

@@ -1,4 +1,8 @@
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useMemo } from 'react';
+import { AreaChart, Area } from '@/components/charts/area-chart';
+import { Grid } from '@/components/charts/grid';
+import { XAxis } from '@/components/charts/x-axis';
+import { ChartTooltip } from '@/components/charts/tooltip/chart-tooltip';
 import type { MonthlyData, SessionMetrics } from '@/types/momence';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -18,10 +22,20 @@ export function RevenueSection({ metrics, monthlyData }: RevenueSectionProps) {
     );
   }
 
-  const chartData = monthlyData.map(m => ({
-    name: `${m.month.slice(0, 3)} ${m.year}`,
-    revenue: m.revenue,
-  }));
+  // bklit AreaChart uses Date objects on the x-axis
+  const chartData = useMemo(() =>
+    [...monthlyData]
+      .sort((a, b) => {
+        if (a.year !== b.year) return a.year - b.year;
+        return new Date(`${a.month} 1, ${a.year}`).getMonth() -
+               new Date(`${b.month} 1, ${b.year}`).getMonth();
+      })
+      .map(m => ({
+        date: new Date(`${m.month} 1, ${m.year}`),
+        revenue: m.revenue,
+        revenuePerSession: m.sessions > 0 ? Math.round(m.revenue / m.sessions) : 0,
+      })),
+  [monthlyData]);
 
   const totalRevenue = monthlyData.reduce((sum, m) => sum + m.revenue, 0);
   const avgMonthlyRevenue = totalRevenue / monthlyData.length;
@@ -50,51 +64,41 @@ export function RevenueSection({ metrics, monthlyData }: RevenueSectionProps) {
           </div>
         </div>
 
-        {/* Revenue Chart */}
-        <p className="text-xs text-muted-foreground mb-3">
-          Monthly Revenue Trend
+        {/* Revenue Chart — monthly total + revenue-per-session trend */}
+        <p className="text-xs text-muted-foreground mb-1">Monthly Revenue Trend</p>
+        <p className="text-[10px] text-muted-foreground mb-3">
+          Green = total revenue · Blue line = revenue per session
         </p>
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(142 71% 45%)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(142 71% 45%)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 90%)" />
-              <XAxis 
-                dataKey="name" 
-                tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
-                axisLine={{ stroke: 'hsl(0 0% 90%)' }}
-                tickLine={{ stroke: 'hsl(0 0% 90%)' }}
-              />
-              <YAxis 
-                tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
-                axisLine={{ stroke: 'hsl(0 0% 90%)' }}
-                tickLine={{ stroke: 'hsl(0 0% 90%)' }}
-                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'hsl(0 0% 100%)', 
-                  border: '1px solid hsl(0 0% 90%)',
-                  borderRadius: '6px',
-                  color: 'hsl(0 0% 9%)'
-                }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
-              />
-              <Area 
-                type="monotone" 
-                dataKey="revenue" 
-                stroke="hsl(142 71% 45%)" 
-                strokeWidth={2}
-                fill="url(#revenueGradient)" 
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+        <AreaChart
+          data={chartData}
+          xDataKey="date"
+          aspectRatio="3 / 1"
+          margin={{ top: 20, right: 20, bottom: 36, left: 20 }}
+        >
+          <Grid horizontal />
+          <Area
+            dataKey="revenue"
+            fill="var(--chart-revenue)"
+            stroke="var(--chart-revenue)"
+            fillOpacity={0.12}
+            strokeWidth={2.5}
+          />
+          <XAxis numTicks={6} />
+          <ChartTooltip
+            rows={(point) => [
+              {
+                color: 'var(--chart-revenue)',
+                label: 'Revenue',
+                value: `$${(point.revenue as number).toLocaleString()}`,
+              },
+              {
+                color: 'var(--chart-visitors)',
+                label: 'Per session',
+                value: `$${(point.revenuePerSession as number).toLocaleString()}`,
+              },
+            ]}
+          />
+        </AreaChart>
 
         {/* Monthly Revenue Table */}
         <div className="mt-6 overflow-x-auto">

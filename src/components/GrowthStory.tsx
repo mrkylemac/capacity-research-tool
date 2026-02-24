@@ -1,14 +1,8 @@
 import { useMemo } from 'react';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from 'recharts';
+import { AreaChart, Area } from '@/components/charts/area-chart';
+import { Grid } from '@/components/charts/grid';
+import { XAxis } from '@/components/charts/x-axis';
+import { ChartTooltip } from '@/components/charts/tooltip/chart-tooltip';
 import type { MonthlyData } from '@/types/momence';
 import { Card, CardContent } from '@/components/untitled/card';
 
@@ -53,18 +47,25 @@ function analyzeGrowth(data: MonthlyData[]): SeasonalSummary {
 export function GrowthStory({ monthlyData }: GrowthStoryProps) {
   const analysis = useMemo(() => analyzeGrowth(monthlyData), [monthlyData]);
 
+  // bklit AreaChart uses Date objects on the x-axis
   const chartData = useMemo(() =>
-    monthlyData.map(m => ({
-      name: `${m.month.slice(0, 3)} '${m.year.toString().slice(-2)}`,
-      visitors: m.ticketsSold,
-    })),
+    [...monthlyData]
+      .sort((a, b) => {
+        if (a.year !== b.year) return a.year - b.year;
+        return new Date(`${a.month} 1, ${a.year}`).getMonth() -
+               new Date(`${b.month} 1, ${b.year}`).getMonth();
+      })
+      .map(m => ({
+        date: new Date(`${m.month} 1, ${m.year}`),
+        visitors: m.ticketsSold,
+      })),
   [monthlyData]);
 
   if (monthlyData.length < 2) return null;
 
   const activeMonths = monthlyData.filter(m => m.ticketsSold > 0);
   const avgVisitors = activeMonths.length > 0
-    ? activeMonths.reduce((s, m) => s + m.ticketsSold, 0) / activeMonths.length
+    ? Math.round(activeMonths.reduce((s, m) => s + m.ticketsSold, 0) / activeMonths.length)
     : 0;
 
   const { peakMonth, growthRate, rampUpMonths } = analysis;
@@ -73,53 +74,37 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
     <div className="space-y-4">
       <Card>
         <CardContent className="p-5">
-          <p className="text-xs text-muted-foreground mb-4">Visitors per month</p>
-          <div className="h-52">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="growthVisitorsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 90%)" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
-                  axisLine={{ stroke: 'hsl(0 0% 90%)' }}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'hsl(0 0% 100%)',
-                    border: '1px solid hsl(0 0% 90%)',
-                    borderRadius: '6px',
-                    fontSize: 12,
-                  }}
-                  formatter={(v: number) => [v.toLocaleString(), 'Visitors']}
-                />
-                <ReferenceLine
-                  y={avgVisitors}
-                  stroke="hsl(0 0% 60%)"
-                  strokeDasharray="5 5"
-                  label={{ value: 'avg', position: 'right', fontSize: 10, fill: 'hsl(0 0% 60%)' }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="visitors"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={2}
-                  fill="url(#growthVisitorsGradient)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-xs text-muted-foreground">Visitors per month</p>
+            <p className="text-xs text-muted-foreground">
+              avg <span className="font-semibold text-foreground">{avgVisitors.toLocaleString()}</span>/mo
+            </p>
           </div>
+          <AreaChart
+            data={chartData}
+            xDataKey="date"
+            aspectRatio="3 / 1"
+            margin={{ top: 20, right: 20, bottom: 36, left: 20 }}
+          >
+            <Grid horizontal />
+            <Area
+              dataKey="visitors"
+              fill="var(--chart-visitors)"
+              stroke="var(--chart-visitors)"
+              fillOpacity={0.12}
+              strokeWidth={2.5}
+            />
+            <XAxis numTicks={6} />
+            <ChartTooltip
+              rows={(point) => [
+                {
+                  color: 'var(--chart-visitors)',
+                  label: 'Visitors',
+                  value: (point.visitors as number).toLocaleString(),
+                },
+              ]}
+            />
+          </AreaChart>
         </CardContent>
       </Card>
 
