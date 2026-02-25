@@ -1,4 +1,4 @@
-import { format, parseISO, differenceInDays, startOfMonth, getHours, getMinutes } from 'date-fns';
+import { format, parseISO, differenceInDays, getHours, getMinutes } from 'date-fns';
 import type {
   MomenceSession,
   SessionMetrics,
@@ -14,6 +14,16 @@ export interface TimeSlot {
   label: string;
   start: number;  // Decimal hour (e.g., 6.5 for 6:30am)
   end: number;    // Decimal hour (e.g., 8.5 for 8:30am)
+}
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+] as const;
+
+function utcDecimalHour(iso: string): number {
+  const d = new Date(iso);
+  return d.getUTCHours() + d.getUTCMinutes() / 60;
 }
 
 /**
@@ -72,14 +82,16 @@ export function calculateMetrics(sessions: MomenceSession[], fromDate: string, t
  * Group sessions by month and calculate monthly metrics
  */
 export function calculateMonthlyData(sessions: MomenceSession[]): MonthlyData[] {
-  const monthlyMap = new Map<string, { sessions: MomenceSession[] }>();
+  const monthlyMap = new Map<string, { year: number; monthIndex: number; sessions: MomenceSession[] }>();
 
   sessions.forEach(session => {
-    const date = parseISO(session.startsAt);
-    const monthKey = format(startOfMonth(date), 'yyyy-MM');
+    const date = new Date(session.startsAt);
+    const year = date.getUTCFullYear();
+    const monthIndex = date.getUTCMonth();
+    const monthKey = `${year}-${String(monthIndex).padStart(2, '0')}`;
     
     if (!monthlyMap.has(monthKey)) {
-      monthlyMap.set(monthKey, { sessions: [] });
+      monthlyMap.set(monthKey, { year, monthIndex, sessions: [] });
     }
     monthlyMap.get(monthKey)!.sessions.push(session);
   });
@@ -87,7 +99,6 @@ export function calculateMonthlyData(sessions: MomenceSession[]): MonthlyData[] 
   const monthlyData: MonthlyData[] = [];
   
   monthlyMap.forEach((data, key) => {
-    const date = parseISO(key + '-01');
     const sessionsCount = data.sessions.length;
     const ticketsSold = data.sessions.reduce((sum, s) => sum + s.ticketsSold, 0);
     const capacity = data.sessions.reduce((sum, s) => sum + s.capacity, 0);
@@ -95,8 +106,8 @@ export function calculateMonthlyData(sessions: MomenceSession[]): MonthlyData[] 
     const revenue = data.sessions.reduce((sum, s) => sum + (s.ticketsSold * s.fixedTicketPrice), 0);
 
     monthlyData.push({
-      month: format(date, 'MMMM'),
-      year: date.getFullYear(),
+      month: MONTH_NAMES[data.monthIndex],
+      year: data.year,
       sessions: sessionsCount,
       ticketsSold,
       capacity,
@@ -107,7 +118,7 @@ export function calculateMonthlyData(sessions: MomenceSession[]): MonthlyData[] 
 
   return monthlyData.sort((a, b) => {
     if (a.year !== b.year) return a.year - b.year;
-    return new Date(`${a.month} 1, ${a.year}`).getMonth() - new Date(`${b.month} 1, ${b.year}`).getMonth();
+    return MONTH_NAMES.indexOf(a.month as (typeof MONTH_NAMES)[number]) - MONTH_NAMES.indexOf(b.month as (typeof MONTH_NAMES)[number]);
   });
 }
 
@@ -171,8 +182,7 @@ export function calculateDemandPatterns(
   });
 
   sessions.forEach(session => {
-    const date = parseISO(session.startsAt);
-    const hours = getHours(date) + getMinutes(date) / 60;
+    const hours = utcDecimalHour(session.startsAt);
 
     for (const slot of slots) {
       if (hours >= slot.start && hours < slot.end) {
@@ -248,12 +258,10 @@ export function calculateVenueConfig(sessions: MomenceSession[], fromDate: strin
 
   // Find operating hours using session start and end times
   const startTimes = sessions.map(s => {
-    const date = parseISO(s.startsAt);
-    return getHours(date) + getMinutes(date) / 60;
+    return utcDecimalHour(s.startsAt);
   });
   const endTimes = sessions.map(s => {
-    const startDate = parseISO(s.startsAt);
-    const startHour = getHours(startDate) + getMinutes(startDate) / 60;
+    const startHour = utcDecimalHour(s.startsAt);
     return startHour + (s.durationMinutes || 60) / 60;
   });
   const minTime = Math.min(...startTimes);

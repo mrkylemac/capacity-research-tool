@@ -6,6 +6,10 @@ const CACHE_KEY = 'venue-cache';
 const RECENT_KEY = 'venue-recent';
 const MAX_RECENT = 9;
 
+function canUseStorage(): boolean {
+  return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+}
+
 export interface CachedVenueEntry {
   key: string;
   hostId: string;
@@ -25,6 +29,7 @@ export function getCacheKey(hostId: string, platform: Platform, from: string, to
 }
 
 function getCache(): Record<string, CachedVenueEntry> {
+  if (!canUseStorage()) return {};
   try {
     const stored = localStorage.getItem(CACHE_KEY);
     return stored ? JSON.parse(stored) : {};
@@ -34,6 +39,7 @@ function getCache(): Record<string, CachedVenueEntry> {
 }
 
 function getRecentKeys(): string[] {
+  if (!canUseStorage()) return [];
   try {
     const stored = localStorage.getItem(RECENT_KEY);
     return stored ? JSON.parse(stored) : [];
@@ -48,6 +54,10 @@ export function getCachedEntry(key: string): CachedVenueEntry | null {
 }
 
 export function setCachedEntry(entry: Omit<CachedVenueEntry, 'key' | 'cachedAt'>): CachedVenueEntry {
+  if (!canUseStorage()) {
+    const key = getCacheKey(entry.hostId, entry.platform, entry.dateRange.from, entry.dateRange.to);
+    return { ...entry, key, cachedAt: new Date().toISOString() };
+  }
   const key = getCacheKey(entry.hostId, entry.platform, entry.dateRange.from, entry.dateRange.to);
   const full: CachedVenueEntry = { ...entry, key, cachedAt: new Date().toISOString() };
   const cache = getCache();
@@ -69,6 +79,7 @@ export function getRecentSearches(): CachedVenueEntry[] {
 }
 
 export function removeFromRecent(key: string): void {
+  if (!canUseStorage()) return;
   const updated = getRecentKeys().filter(k => k !== key);
   localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
 }

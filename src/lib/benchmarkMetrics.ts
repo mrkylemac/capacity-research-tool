@@ -1,6 +1,5 @@
-import { parseISO, getDay, getHours, getMinutes, differenceInDays } from 'date-fns';
+import { parseISO, differenceInDays } from 'date-fns';
 import type { MomenceSession } from '@/types/momence';
-import { SLOW_FOLK_TARGETS } from '@/config/slowfolk';
 import { formatDecimalHour } from '@/lib/utils';
 
 export interface OperatingHours {
@@ -43,14 +42,14 @@ export interface BenchmarkMetrics {
   impliedArpv: number;
 }
 
-export interface BenchmarkComparison {
+export interface SlowFolkComparisonMetric {
   metric: string;
   value: number;
   target: number;
   unit: string;
   status: 'above' | 'below' | 'on-target';
-  delta: number;       // Absolute difference
-  deltaPercent: number; // Percentage difference
+  delta: number;
+  deltaPercent: number;
 }
 
 /**
@@ -83,11 +82,11 @@ export function inferOperatingHours(sessions: MomenceSession[]): OperatingHours 
   const weekendEndTimes: number[] = [];
 
   sessions.forEach(session => {
-    const startDate = parseISO(session.startsAt);
-    const startHour = getHours(startDate) + getMinutes(startDate) / 60;
+    const startDate = new Date(session.startsAt);
+    const startHour = startDate.getUTCHours() + startDate.getUTCMinutes() / 60;
     // Use session duration to calculate actual end time
     const endHour = startHour + (session.durationMinutes || 60) / 60;
-    const dayOfWeek = getDay(startDate);
+    const dayOfWeek = startDate.getUTCDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     if (isWeekend) {
@@ -167,8 +166,8 @@ export function calculateBenchmarkMetrics(
   let weekendVisits = 0;
 
   sessions.forEach(session => {
-    const date = parseISO(session.startsAt);
-    const dayOfWeek = getDay(date);
+    const date = new Date(session.startsAt);
+    const dayOfWeek = date.getUTCDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     if (isWeekend) {
@@ -216,88 +215,38 @@ export function calculateBenchmarkMetrics(
   };
 }
 
+function statusFromDeltaPercent(deltaPercent: number): 'above' | 'below' | 'on-target' {
+  if (Math.abs(deltaPercent) <= 5) return 'on-target';
+  return deltaPercent > 0 ? 'above' : 'below';
+}
+
 /**
- * Compare benchmark metrics to Slow Folk targets
+ * Compare venue performance vs Slow Folk targets.
+ * Values are kept in their natural units (e.g. occupancyRate is a ratio 0–1).
  */
-export function compareToSlowFolk(metrics: BenchmarkMetrics): BenchmarkComparison[] {
-  const comparisons: BenchmarkComparison[] = [];
+export function compareToSlowFolk(metrics: BenchmarkMetrics): SlowFolkComparisonMetric[] {
+  const targets = [
+    { metric: 'Weekly Visits', value: metrics.weeklyVisits, target: 686, unit: 'visits/wk' },
+    { metric: 'Occupancy Rate', value: metrics.occupancyRate, target: 0.6, unit: 'ratio' },
+    { metric: 'Weekday Share', value: metrics.weekdayShare, target: 0.63, unit: 'ratio' },
+    { metric: 'Visits Per Open Hour', value: metrics.visitsPerOpenHour, target: 686 / 60.5, unit: 'visits/hr' },
+    { metric: 'ARPV', value: metrics.impliedArpv, target: 34.81, unit: 'currency' },
+    { metric: 'Avg Visitors Per Session', value: metrics.avgVisitorsPerSession, target: 15 * 0.6, unit: 'visits/session' },
+  ];
 
-  const addComparison = (
-    metric: string,
-    value: number,
-    target: number,
-    unit: string,
-    higherIsBetter = true
-  ) => {
-    const delta = value - target;
-    const deltaPercent = target !== 0 ? (delta / target) * 100 : 0;
-    const tolerance = 0.05; // 5% tolerance for "on-target"
-
-    let status: 'above' | 'below' | 'on-target';
-    if (Math.abs(deltaPercent) <= tolerance * 100) {
-      status = 'on-target';
-    } else if (higherIsBetter) {
-      status = delta > 0 ? 'above' : 'below';
-    } else {
-      status = delta < 0 ? 'above' : 'below';
-    }
-
-    comparisons.push({ metric, value, target, unit, status, delta, deltaPercent });
-  };
-
-  // Weekly visits vs target
-  addComparison(
-    'Weekly Visits',
-    Math.round(metrics.weeklyVisits),
-    SLOW_FOLK_TARGETS.weeklyVisits,
-    'visits/week'
-  );
-
-  // Occupancy vs target
-  addComparison(
-    'Occupancy Rate',
-    metrics.occupancyRate * 100,
-    SLOW_FOLK_TARGETS.occupancy.target * 100,
-    '%'
-  );
-
-  // Weekday/weekend split
-  addComparison(
-    'Weekday Share',
-    metrics.weekdayShare * 100,
-    SLOW_FOLK_TARGETS.weekdayShare * 100,
-    '%'
-  );
-
-  // Visits per open hour (normalised efficiency)
-  const targetVisitsPerHour = SLOW_FOLK_TARGETS.weeklyVisits / SLOW_FOLK_TARGETS.weeklyHours.total;
-  addComparison(
-    'Visits/Open Hour',
-    metrics.visitsPerOpenHour,
-    targetVisitsPerHour,
-    'visits/hr'
-  );
-
-  // ARPV if we have pricing data
-  if (metrics.impliedArpv > 0) {
-    addComparison(
-      'ARPV',
-      metrics.impliedArpv,
-      SLOW_FOLK_TARGETS.arpv,
-      '$'
-    );
-  }
-
-  // Visitors per session (fill rate)
-  const targetFillRate = SLOW_FOLK_TARGETS.concurrentSeats * SLOW_FOLK_TARGETS.occupancy.target;
-  addComparison(
-    'Visitors/Session',
-    metrics.avgVisitorsPerSession,
-    targetFillRate,
-    'visitors'
-  );
-
-  return comparisons;
+  return targets.map(t => {
+    const delta = t.value - t.target;
+    const deltaPercent = t.target !== 0 ? (delta / t.target) * 100 : 0;
+    return {
+      metric: t.metric,
+      value: t.value,
+      target: t.target,
+      unit: t.unit,
+      status: statusFromDeltaPercent(deltaPercent),
+      delta,
+      deltaPercent,
+    };
+  });
 }
 
 /**
