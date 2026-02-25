@@ -104,3 +104,8 @@ const Index = () => {
 };
 
 export default Index;
+
+// Opt out of static pre-rendering — page uses browser APIs and router hooks
+export async function getServerSideProps() {
+  return { props: {} };
+}
