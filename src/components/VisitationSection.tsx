@@ -1,8 +1,4 @@
 import { useMemo, type ReactNode } from 'react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Cell,
-} from 'recharts';
 import { parseISO, getDay, format, startOfWeek, getWeek } from 'date-fns';
 import type { MomenceSession, MonthlyData } from '@/types/momence';
 import type { OperatingHours } from '@/lib/benchmarkMetrics';
@@ -10,6 +6,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MonthlyTable } from '@/components/MonthlyTable';
 import { DemandPatterns } from '@/components/DemandPatterns';
+import { BarChart } from '@/components/charts/bar-chart';
+import { Bar } from '@/components/charts/bar';
+import { BarXAxis } from '@/components/charts/bar-x-axis';
+import { Grid } from '@/components/charts/grid';
+import { ChartTooltip } from '@/components/charts/tooltip/chart-tooltip';
 
 interface VisitationSectionProps {
   sessions: MomenceSession[];
@@ -69,6 +70,8 @@ interface WeeklyRow {
   weekStart: Date;
   sessions: number;
   visitors: number;
+  weekdayVisitors: number;
+  weekendVisitors: number;
   capacity: number;
   occupancy: number;
 }
@@ -89,12 +92,20 @@ function buildWeeklySummary(sessions: MomenceSession[]): WeeklyRow[] {
     const visitors = data.sessions.reduce((s, x) => s + x.ticketsSold, 0);
     const capacity = data.sessions.reduce((s, x) => s + x.capacity, 0);
     const occupancy = capacity > 0 ? (visitors / capacity) * 100 : 0;
+
+    const weekdayVisitors = data.sessions
+      .filter(s => { const d = getDay(parseISO(s.startsAt)); return d >= 1 && d <= 5; })
+      .reduce((s, x) => s + x.ticketsSold, 0);
+    const weekendVisitors = visitors - weekdayVisitors;
+
     rows.push({
       weekLabel: `W${getWeek(data.weekStart, { weekStartsOn: 1 })} – ${format(data.weekStart, 'MMM d, yyyy')}`,
       chartLabel: format(data.weekStart, 'MMM d'),
       weekStart: data.weekStart,
       sessions: data.sessions.length,
       visitors,
+      weekdayVisitors,
+      weekendVisitors,
       capacity,
       occupancy,
     });
@@ -123,29 +134,11 @@ function occupancyBadgeVariant(pct: number): 'default' | 'secondary' | 'destruct
   return 'destructive';
 }
 
-// ─── Custom tooltip for weekly chart ─────────────────────────────────────────
-
-function WeeklyTooltip({ active, payload, label }: { active?: boolean; payload?: { payload: WeeklyRow }[]; label?: string }) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div className="rounded-lg border bg-background p-3 shadow-md text-xs space-y-1">
-      <p className="font-medium">{d.weekLabel}</p>
-      <p><span className="text-muted-foreground">Visitors:</span> <span className="font-medium">{d.visitors.toLocaleString()}</span></p>
-      <p><span className="text-muted-foreground">Sessions:</span> {d.sessions}</p>
-      <p><span className="text-muted-foreground">Occupancy:</span> <span className={occupancyClass(d.occupancy)}>{d.occupancy.toFixed(1)}%</span></p>
-    </div>
-  );
-}
-
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function VisitationSection({ sessions, monthlyData, operatingHours }: VisitationSectionProps) {
   const dayOfWeekData = useMemo(() => buildDayOfWeekData(sessions), [sessions]);
   const weeklySummary = useMemo(() => buildWeeklySummary(sessions), [sessions]);
-
-  // For weekly chart: only show every Nth label when there are many weeks
-  const tickInterval = weeklySummary.length > 26 ? Math.ceil(weeklySummary.length / 26) - 1 : 0;
 
   if (sessions.length === 0) return null;
 
@@ -166,43 +159,58 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
           <SectionLabel>By Week</SectionLabel>
           <Card>
             <CardContent className="p-5">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4">
                 <p className="text-xs text-muted-foreground">Visitors per week</p>
-                <span className="flex gap-2 text-xs text-muted-foreground">
-                  <ColorDot color="bg-green-500" label="≥70%" />
-                  <ColorDot color="bg-amber-500" label="40–69%" />
-                  <ColorDot color="bg-red-500" label="<40%" />
+                <span className="flex gap-3 text-xs text-muted-foreground">
+                  <ColorDot color="bg-primary/70" label="Weekday" />
+                  <ColorDot color="bg-violet-500" label="Weekend" />
                 </span>
               </div>
-              <div className="h-56">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={weeklySummary} margin={{ top: 4, right: 8, left: -20, bottom: 0 }} barCategoryGap="20%">
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 90%)" vertical={false} />
-                    <XAxis
-                      dataKey="chartLabel"
-                      tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
-                      axisLine={false}
-                      tickLine={false}
-                      interval={tickInterval}
-                    />
-                    <YAxis
-                      tick={{ fill: 'hsl(0 0% 45%)', fontSize: 11 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <Tooltip content={<WeeklyTooltip />} cursor={{ fill: 'hsl(0 0% 95%)' }} />
-                    <Bar dataKey="visitors" radius={[4, 4, 0, 0]}>
-                      {weeklySummary.map((row, i) => (
-                        <Cell key={i} fill={occupancyFill(row.occupancy)} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <BarChart
+                data={weeklySummary as unknown as Record<string, unknown>[]}
+                xDataKey="chartLabel"
+                stacked
+                aspectRatio="3 / 1"
+                margin={{ top: 16, right: 16, bottom: 36, left: 16 }}
+                barGap={0.15}
+              >
+                <Grid horizontal />
+                <Bar
+                  dataKey="weekdayVisitors"
+                  fill="var(--chart-visitors)"
+                  stroke="var(--chart-visitors)"
+                  lineCap={3}
+                />
+                <Bar
+                  dataKey="weekendVisitors"
+                  fill="var(--chart-weekend)"
+                  stroke="var(--chart-weekend)"
+                  lineCap={3}
+                />
+                <BarXAxis />
+                <ChartTooltip
+                  rows={(point) => {
+                    const wd = point.weekdayVisitors as number;
+                    const we = point.weekendVisitors as number;
+                    const total = wd + we;
+                    const occ = point.occupancy as number;
+                    return [
+                      { color: 'var(--chart-visitors)', label: 'Weekday', value: wd.toLocaleString() },
+                      { color: 'var(--chart-weekend)', label: 'Weekend', value: we.toLocaleString() },
+                      { color: 'var(--chart-foreground)', label: 'Total', value: total.toLocaleString() },
+                      {
+                        color: occ >= 70 ? 'var(--chart-high)' : occ >= 40 ? 'var(--chart-medium)' : 'var(--chart-low)',
+                        label: 'Occupancy',
+                        value: `${(occ).toFixed(1)}%`,
+                      },
+                    ];
+                  }}
+                />
+              </BarChart>
             </CardContent>
           </Card>
 
-          {/* Compact table for verification */}
+          {/* Compact table */}
           <Card className="mt-3">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
@@ -250,7 +258,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                 const hasData = row.sessions > 0;
                 return (
                   <div key={i} className="flex items-center gap-2 sm:gap-3">
-                    {/* Day label — narrower on mobile */}
+                    {/* Day label */}
                     <div className="w-8 sm:w-10 flex-shrink-0 text-center">
                       <span className={`text-xs sm:text-sm font-medium ${row.isWeekend ? 'text-violet-600' : ''}`}>
                         {row.dayShort.slice(0, 2)}
@@ -275,7 +283,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                       )}
                     </div>
 
-                    {/* Stats — visitors always shown; avg/session hidden on mobile */}
+                    {/* Stats */}
                     {hasData ? (
                       <div className="flex items-center gap-2 flex-shrink-0 justify-end">
                         <span className="text-xs sm:text-sm font-medium tabular-nums w-12 sm:w-16 text-right">

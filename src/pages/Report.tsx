@@ -122,3 +122,8 @@ const Report = () => {
 };
 
 export default Report;
+
+// Opt out of static pre-rendering — page relies on browser APIs via chart components
+export async function getServerSideProps() {
+  return { props: {} };
+}

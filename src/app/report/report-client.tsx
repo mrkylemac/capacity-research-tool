@@ -7,6 +7,9 @@ import { PerformanceScorecard } from '@/components/PerformanceScorecard';
 import { OperationalBlueprint } from '@/components/OperationalBlueprint';
 import { DemandIntelligence } from '@/components/DemandIntelligence';
 import { GrowthStory } from '@/components/GrowthStory';
+import { UtilisationTrend } from '@/components/UtilisationTrend';
+import { RevenueSection } from '@/components/RevenueSection';
+import { CapacityUtilisation } from '@/components/CapacityUtilisation';
 import { MonthlyTable } from '@/components/MonthlyTable';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import { getCachedEntry, getCacheKey, getRecentSearches } from '@/lib/venueCache';
@@ -129,6 +132,17 @@ export function ReportClient() {
             />
           )}
 
+          {/* Capacity & Visitors */}
+          {entry.monthlyData.length > 0 && entry.metrics && (
+            <section>
+              <p className="notion-section-h1">Capacity &amp; Visitors</p>
+              <CapacityUtilisation
+                metrics={entry.metrics}
+                monthlyData={entry.monthlyData}
+              />
+            </section>
+          )}
+
           {entry.sessions.length > 0 && (
             <section>
               <p className="notion-section-h1">Demand</p>
@@ -136,10 +150,25 @@ export function ReportClient() {
             </section>
           )}
 
+          {/* Growth & Utilisation Trend */}
           {entry.monthlyData.length >= 2 && (
             <section>
               <p className="notion-section-h1">Growth</p>
-              <GrowthStory monthlyData={entry.monthlyData} />
+              <div className="space-y-6">
+                <GrowthStory monthlyData={entry.monthlyData} />
+                <UtilisationTrend monthlyData={entry.monthlyData} />
+              </div>
+            </section>
+          )}
+
+          {/* Revenue */}
+          {entry.monthlyData.length > 0 && entry.metrics && (
+            <section>
+              <p className="notion-section-h1">Revenue</p>
+              <RevenueSection
+                metrics={entry.metrics}
+                monthlyData={entry.monthlyData}
+              />
             </section>
           )}
 
@@ -153,4 +182,3 @@ export function ReportClient() {
     </div>
   );
 }
-

@@ -1,4 +1,6 @@
 @tailwind base;
+
+@custom-variant dark (&:is(.dark *));
 @tailwind components;
 @tailwind utilities;
 
@@ -162,4 +164,80 @@
   .utilisation-low {
     @apply text-red-600 font-medium;
   }
+}
+
+:root {
+  /* Semantic chart palette */
+  --chart-1: oklch(0.623 0.214 255);    /* Blue – visitors / primary trend */
+  --chart-2: oklch(0.55 0.17 162);     /* Green – revenue / high utilisation */
+  --chart-3: oklch(0.68 0.17 80);      /* Amber – medium utilisation */
+  --chart-4: oklch(0.63 0.22 22);      /* Red – low utilisation */
+  --chart-5: oklch(0.58 0.19 290);     /* Purple – weekend / secondary */
+
+  /* Chart-specific semantic aliases */
+  --chart-visitors: var(--chart-1);
+  --chart-revenue: var(--chart-2);
+  --chart-high: var(--chart-2);
+  --chart-medium: var(--chart-3);
+  --chart-low: var(--chart-4);
+  --chart-weekend: var(--chart-5);
+
+  /* Surface & text */
+  --chart-background: oklch(1 0 0);
+  --chart-foreground: oklch(0.145 0.004 285);
+  --chart-foreground-muted: oklch(0.55 0.014 260);
+  --chart-line-primary: var(--chart-1);
+  --chart-line-secondary: var(--chart-2);
+  --chart-crosshair: oklch(0.4 0.1828 274.34);
+  --chart-grid: oklch(0.93 0 0);
+  --chart-tooltip-background: oklch(0.18 0.006 285 / 0.85);
+  --chart-tooltip-foreground: oklch(0.985 0 0);
+  --chart-tooltip-muted: oklch(0.65 0.01 260);
+  --chart-marker-background: oklch(0.97 0.005 260);
+  --chart-marker-border: oklch(0.85 0.01 260);
+  --chart-marker-foreground: oklch(0.3 0.01 260);
+  --chart-ring-background: oklch(0.9 0.005 260 / 0.25);
+  --chart-label: oklch(0.45 0.01 260);
+}
+
+.dark {
+  --chart-1: oklch(0.68 0.18 255);
+  --chart-2: oklch(0.65 0.17 162);
+  --chart-3: oklch(0.72 0.17 80);
+  --chart-4: oklch(0.68 0.22 22);
+  --chart-5: oklch(0.70 0.18 290);
+
+  --chart-background: oklch(0.145 0 0);
+  --chart-foreground: oklch(0.45 0 0);
+  --chart-foreground-muted: oklch(0.65 0.01 260);
+  --chart-crosshair: oklch(0.55 0.14 255);
+  --chart-grid: oklch(0.22 0 0);
+  --chart-marker-background: oklch(0.25 0.01 260);
+  --chart-marker-border: oklch(0.4 0.01 260);
+  --chart-marker-foreground: oklch(0.9 0 0);
+  --chart-ring-background: oklch(0.35 0.01 260 / 0.25);
+  --chart-label: oklch(0.75 0.01 260);
+}
+
+@theme inline {
+  --color-chart-1: var(----chart-1);
+  --color-chart-2: var(----chart-2);
+  --color-chart-3: var(----chart-3);
+  --color-chart-4: var(----chart-4);
+  --color-chart-5: var(----chart-5);
+  --color-chart-background: var(----chart-background);
+  --color-chart-foreground: var(----chart-foreground);
+  --color-chart-foreground-muted: var(----chart-foreground-muted);
+  --chart-line-primary: var(----chart-line-primary);
+  --chart-line-secondary: var(----chart-line-secondary);
+  --color-chart-crosshair: var(----chart-crosshair);
+  --color-chart-grid: var(----chart-grid);
+  --color-chart-tooltip-background: var(----chart-tooltip-background);
+  --color-chart-tooltip-foreground: var(----chart-tooltip-foreground);
+  --color-chart-tooltip-muted: var(----chart-tooltip-muted);
+  --color-chart-marker-background: var(----chart-marker-background);
+  --color-chart-marker-border: var(----chart-marker-border);
+  --color-chart-marker-foreground: var(----chart-marker-foreground);
+  --color-chart-ring-background: var(----chart-ring-background);
+  --color-chart-label: var(----chart-label);
 }
