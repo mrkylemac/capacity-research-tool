@@ -31,7 +31,11 @@ function filterToLastMonths(sessions: MomenceSession[], months: number): Momence
   if (sessions.length === 0) return [];
 
   // Find the most recent session date
-  const maxDate = Math.max(...sessions.map(s => new Date(s.startsAt).getTime()));
+  let maxDate = -Infinity;
+  for (const s of sessions) {
+    const t = new Date(s.startsAt).getTime();
+    if (t > maxDate) maxDate = t;
+  }
   const cutoffDate = new Date(maxDate);
   cutoffDate.setMonth(cutoffDate.getMonth() - months);
 
@@ -68,62 +72,69 @@ export function useSessions() {
     setFetchingCount(0);
     setQueryParams({ ...params, page: 1, pageSize: API_CONFIG.pageSize });
 
-    console.log('Requested date range:', params.startsAtFrom, 'to', params.startsAtTo);
-
     try {
-      // Fetch host info in parallel with first page of sessions
-      const hostInfoPromise = momenceClient.fetchHostInfo(params.hostId);
+      // Fetch host info and page 1 in parallel
+      const [fetchedHostInfo, firstResponse] = await Promise.all([
+        momenceClient.fetchHostInfo(params.hostId),
+        momenceClient.fetchSessions({ ...params, page: 1, pageSize: API_CONFIG.pageSize }),
+      ]);
 
-      const allData: MomenceSession[] = [];
-      let page = 1;
-      let pagesLoaded = 0;
+      setHostInfo(fetchedHostInfo);
 
-      while (true) {
-        const response = await momenceClient.fetchSessions({
-          ...params,
-          page,
-          pageSize: API_CONFIG.pageSize,
-        });
+      const allData: MomenceSession[] = [...firstResponse.sessions];
+      setFetchingCount(allData.length);
 
-        const sessionCount = response.sessions.length;
-        allData.push(...response.sessions);
-        pagesLoaded++;
-        setFetchingCount(allData.length);
+      // Fetch remaining pages in parallel batches of 10
+      const MAX_PAGES = 250;
+      const BATCH_SIZE = 10;
+      const totalPagesFromAPI = Math.min(firstResponse.totalPages || 1, MAX_PAGES);
 
-        console.log(`Page ${page}: fetched ${sessionCount} sessions (total so far: ${allData.length})`);
+      if (firstResponse.sessions.length === API_CONFIG.pageSize && totalPagesFromAPI > 1) {
+        for (let batchStart = 2; batchStart <= totalPagesFromAPI; batchStart += BATCH_SIZE) {
+          const batchEnd = Math.min(batchStart + BATCH_SIZE - 1, totalPagesFromAPI);
+          const pageNumbers = Array.from({ length: batchEnd - batchStart + 1 }, (_, i) => batchStart + i);
 
-        // Stop if: no results, less than full page (end of data), or safety limit
-        // Note: Inner Studio has 218+ pages, so limit needs to be high enough
-        if (sessionCount === 0 || sessionCount < API_CONFIG.pageSize || pagesLoaded >= 250) {
-          break;
+          const batchResults = await Promise.all(
+            pageNumbers.map(p => momenceClient.fetchSessions({ ...params, page: p, pageSize: API_CONFIG.pageSize }))
+          );
+
+          let reachedEnd = false;
+          for (const result of batchResults) {
+            allData.push(...result.sessions);
+            if (result.sessions.length < API_CONFIG.pageSize) {
+              reachedEnd = true;
+              break;
+            }
+          }
+
+          setFetchingCount(allData.length);
+          if (reachedEnd) break;
         }
-
-        page++;
       }
 
-      setFetchPhase('processing');
+      const pagesLoaded = Math.ceil(allData.length / API_CONFIG.pageSize);
 
-      // Get host info result
-      const fetchedHostInfo = await hostInfoPromise;
-      setHostInfo(fetchedHostInfo);
+      setFetchPhase('processing');
 
       // Calculate date range of raw API data
       let rawMinDate: Date | null = null;
       let rawMaxDate: Date | null = null;
 
       if (allData.length > 0) {
-        const dates = allData.map(s => new Date(s.startsAt).getTime());
-        rawMinDate = new Date(Math.min(...dates));
-        rawMaxDate = new Date(Math.max(...dates));
-        console.log('API returned data range:', rawMinDate.toISOString(), 'to', rawMaxDate.toISOString());
+        let minTs = Infinity, maxTs = -Infinity;
+        for (const s of allData) {
+          const t = new Date(s.startsAt).getTime();
+          if (t < minTs) minTs = t;
+          if (t > maxTs) maxTs = t;
+        }
+        rawMinDate = new Date(minTs);
+        rawMaxDate = new Date(maxTs);
       }
 
       // Apply client-side date filtering since API ignores date params
       let filteredData = filterByDateRange(allData, params.startsAtFrom, params.startsAtTo);
       let fallbackApplied = false;
       let fallbackMonths = 0;
-
-      console.log(`Filtered: ${allData.length} → ${filteredData.length} sessions within requested range`);
 
       // If no data in requested range but API has data, fall back to last available months
       if (filteredData.length === 0 && allData.length > 0) {
@@ -137,7 +148,6 @@ export function useSessions() {
           fallbackMonths = 3;
         }
         fallbackApplied = true;
-        console.log(`Fallback applied: showing last ${fallbackMonths} months of available data (${filteredData.length} sessions)`);
       }
 
       // Calculate date range of filtered data
@@ -145,9 +155,14 @@ export function useSessions() {
       let filteredMaxDate: Date | null = null;
 
       if (filteredData.length > 0) {
-        const dates = filteredData.map(s => new Date(s.startsAt).getTime());
-        filteredMinDate = new Date(Math.min(...dates));
-        filteredMaxDate = new Date(Math.max(...dates));
+        let minTs = Infinity, maxTs = -Infinity;
+        for (const s of filteredData) {
+          const t = new Date(s.startsAt).getTime();
+          if (t < minTs) minTs = t;
+          if (t > maxTs) maxTs = t;
+        }
+        filteredMinDate = new Date(minTs);
+        filteredMaxDate = new Date(maxTs);
       }
 
       // When fallback is applied, use the actual filtered data range for calculations
@@ -168,7 +183,6 @@ export function useSessions() {
       const operatingHours = inferOperatingHours(basicClean);
       const earliestStart = Math.min(operatingHours.weekdayStart, operatingHours.weekendStart);
       const latestEnd = Math.max(operatingHours.weekdayEnd, operatingHours.weekendEnd);
-      console.log(`Inferred operating hours: ${earliestStart.toFixed(1)}–${latestEnd.toFixed(1)}`);
 
       // 3. Filter sessions outside operating hours (prevents phantom time slots)
       const hoursBounds: OperatingHoursBounds = {
@@ -181,10 +195,7 @@ export function useSessions() {
       }
 
       // 4. Normalize capacity to modal value (reduces variance from special events)
-      const { sessions: cleanData, normalizedCount, modalCapacity } = normalizeCapacity(hoursFiltered, 0.5, true);
-      if (normalizedCount > 0) {
-        console.log(`Normalized ${normalizedCount} sessions to modal capacity ${modalCapacity}`);
-      }
+      const { sessions: cleanData } = normalizeCapacity(hoursFiltered, 0.5, true);
 
       setDataRange({
         from: filteredMinDate,
@@ -245,8 +256,18 @@ export function useSessions() {
     setTotalCount(sessions.length);
     setTotalPages(1);
     setFetchingCount(sessions.length);
-    const from = sessions.length > 0 ? new Date(Math.min(...sessions.map(s => new Date(s.startsAt).getTime()))) : null;
-    const to = sessions.length > 0 ? new Date(Math.max(...sessions.map(s => new Date(s.startsAt).getTime()))) : null;
+    let from: Date | null = null;
+    let to: Date | null = null;
+    if (sessions.length > 0) {
+      let minTs = Infinity, maxTs = -Infinity;
+      for (const s of sessions) {
+        const t = new Date(s.startsAt).getTime();
+        if (t < minTs) minTs = t;
+        if (t > maxTs) maxTs = t;
+      }
+      from = new Date(minTs);
+      to = new Date(maxTs);
+    }
     setDataRange({
       from,
       to,

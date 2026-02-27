@@ -79,23 +79,15 @@ class MomenceClient {
     queryParams.set('pageSize', String(params.pageSize || API_CONFIG.pageSize));
 
     const url = `${this.baseUrl}/${params.hostId}/host-schedule/sessions?${queryParams.toString()}`;
-    
-    console.log('API Request URL:', url);
-    
+
     try {
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      
-      // Log sample session for debugging
-      if (data.payload?.[0]) {
-        console.log('Sample session from API:', data.payload[0]);
-      }
-      
       return this.transformResponse(data, params);
     } catch (error) {
       console.error('Momence API Error:', error);
