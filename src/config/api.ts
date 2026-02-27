@@ -30,7 +30,7 @@ export interface VenueConfig {
 export const VENUES: VenueConfig[] = [
   { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence', location: 'Collingwood', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
   { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence', location: 'South Yarra', mapsQuery: 'Inner Studio South Yarra Melbourne', timezone: 'Australia/Melbourne' },
-  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Fitzroy', mapsQuery: 'Sol Sauna Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne' },
 ];
 
 // Glofox configuration
