@@ -1,10 +1,8 @@
 import { useMemo } from 'react';
-import { AreaChart, Area } from '@/components/charts/area-chart';
-import { Grid } from '@/components/charts/grid';
-import { XAxis } from '@/components/charts/x-axis';
-import { ChartTooltip } from '@/components/charts/tooltip/chart-tooltip';
+import { format } from 'date-fns';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import type { MonthlyData } from '@/types/momence';
-import { Card, CardContent } from '@/components/untitled/card';
+import { Card, CardContent, CardHeader, CardDescription } from '@/components/ui/card';
 
 interface GrowthStoryProps {
   monthlyData: MonthlyData[];
@@ -47,7 +45,6 @@ function analyzeGrowth(data: MonthlyData[]): SeasonalSummary {
 export function GrowthStory({ monthlyData }: GrowthStoryProps) {
   const analysis = useMemo(() => analyzeGrowth(monthlyData), [monthlyData]);
 
-  // bklit AreaChart uses Date objects on the x-axis
   const chartData = useMemo(() =>
     [...monthlyData]
       .sort((a, b) => {
@@ -56,7 +53,7 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
                new Date(`${b.month} 1, ${b.year}`).getMonth();
       })
       .map(m => ({
-        date: new Date(`${m.month} 1, ${m.year}`),
+        month: format(new Date(`${m.month} 1, ${m.year}`), 'MMM yy'),
         visitors: m.ticketsSold,
       })),
   [monthlyData]);
@@ -71,61 +68,84 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
   const { peakMonth, growthRate, rampUpMonths } = analysis;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <Card>
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-muted-foreground">Visitors per month</p>
-            <p className="text-xs text-muted-foreground">
+        <CardHeader className="pb-2 px-5 pt-5">
+          <div className="flex items-center justify-between">
+            <CardDescription className="text-sm font-medium">Visitors per month</CardDescription>
+            <span className="text-sm text-muted-foreground">
               avg <span className="font-semibold text-foreground">{avgVisitors.toLocaleString()}</span>/mo
-            </p>
+            </span>
           </div>
-          <AreaChart
-            data={chartData}
-            xDataKey="date"
-            aspectRatio="3 / 1"
-            margin={{ top: 20, right: 20, bottom: 36, left: 20 }}
-          >
-            <Grid horizontal />
-            <Area
-              dataKey="visitors"
-              fill="var(--chart-visitors)"
-              stroke="var(--chart-visitors)"
-              fillOpacity={0.12}
-              strokeWidth={2.5}
-            />
-            <XAxis numTicks={6} />
-            <ChartTooltip
-              rows={(point) => [
-                {
-                  color: 'var(--chart-visitors)',
-                  label: 'Visitors',
-                  value: (point.visitors as number).toLocaleString(),
-                },
-              ]}
-            />
-          </AreaChart>
+        </CardHeader>
+        <CardContent className="px-5 pb-5 pt-0">
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+              <defs>
+                <linearGradient id="visitorsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.02} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
+              <XAxis
+                dataKey="month"
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                interval="preserveStartEnd"
+              />
+              <YAxis hide />
+              <Tooltip
+                contentStyle={{
+                  background: 'hsl(var(--popover))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '0.5rem',
+                  fontSize: 13,
+                  color: 'hsl(var(--popover-foreground))',
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
+                }}
+                labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}
+                formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
+              />
+              <Area
+                type="monotone"
+                dataKey="visitors"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                fill="url(#visitorsGradient)"
+                dot={false}
+                activeDot={{ r: 4, fill: 'hsl(var(--primary))' }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Annotation pills */}
+      {/* Annotation stats */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="border border-border rounded-lg px-4 py-3 text-center">
-          <p className="text-xs text-muted-foreground">Strongest month</p>
-          <p className="text-sm font-semibold mt-1">{peakMonth || '—'}</p>
-        </div>
-        <div className="border border-border rounded-lg px-4 py-3 text-center">
-          <p className="text-xs text-muted-foreground">Visitor growth</p>
-          <p className={`text-sm font-semibold mt-1 ${growthRate >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-            {growthRate >= 0 ? '+' : ''}{growthRate.toFixed(0)}%
-          </p>
-        </div>
-        <div className="border border-border rounded-lg px-4 py-3 text-center">
-          <p className="text-xs text-muted-foreground">Time to peak</p>
-          <p className="text-sm font-semibold mt-1">
-            {rampUpMonths === 0 ? 'From launch' : `${rampUpMonths} months`}
-          </p>
-        </div>
+        <Card className="bg-muted/30">
+          <CardContent className="px-4 py-3 text-center">
+            <p className="text-sm text-muted-foreground mb-1">Strongest month</p>
+            <p className="text-sm font-semibold">{peakMonth || '—'}</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-muted/30">
+          <CardContent className="px-4 py-3 text-center">
+            <p className="text-sm text-muted-foreground mb-1">Visitor growth</p>
+            <p className={`text-sm font-semibold ${growthRate >= 0 ? 'text-emerald-600' : 'text-foreground'}`}>
+              {growthRate >= 0 ? '+' : ''}{growthRate.toFixed(0)}%
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="bg-muted/30">
+          <CardContent className="px-4 py-3 text-center">
+            <p className="text-sm text-muted-foreground mb-1">Time to peak</p>
+            <p className="text-sm font-semibold">
+              {rampUpMonths === 0 ? 'From launch' : `${rampUpMonths} months`}
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

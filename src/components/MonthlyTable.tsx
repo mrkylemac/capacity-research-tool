@@ -5,11 +5,10 @@ import {
   ResponsiveContainer, ReferenceLine, Cell,
 } from 'recharts';
 import type { MonthlyData, MomenceSession } from '@/types/momence';
-import { Card, CardContent } from '@/components/untitled/card';
-import { Button } from '@/components/untitled/button';
-import { Badge } from '@/components/untitled/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ChevronDown } from 'lucide-react';
-import { Disclosure } from '@/components/untitled/disclosure';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 
 interface MonthlyTableProps {
@@ -242,21 +241,21 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
       <div className="space-y-2">
         <div className="flex gap-1">
           <Button
-            variant={viewMode === 'timeline' ? 'primary' : 'outline'}
+            variant={viewMode === 'timeline' ? 'default' : 'outline'}
             size="sm"
             onClick={() => { setViewMode('timeline'); setSelectedMonth(null); }}
           >
             Timeline
           </Button>
           <Button
-            variant={viewMode === 'monthly' ? 'primary' : 'outline'}
+            variant={viewMode === 'monthly' ? 'default' : 'outline'}
             size="sm"
             onClick={() => { setViewMode('monthly'); setSelectedMonth(null); }}
           >
             Monthly
           </Button>
           <Button
-            variant={viewMode === 'weekly' ? 'primary' : 'outline'}
+            variant={viewMode === 'weekly' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('weekly')}
           >
@@ -425,10 +424,10 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                           <span className="hidden sm:inline">{row.month} {row.year}</span>
                           <span className="sm:hidden">{row.month.slice(0, 3)} {row.year.toString().slice(2)}</span>
                           {pattern?.trend === 'high' && (
-                            <Badge variant="success" className="ml-2 text-[10px] hidden sm:inline-flex">Peak</Badge>
+                            <Badge variant="secondary" className="ml-2 text-[10px] hidden sm:inline-flex">Peak</Badge>
                           )}
                           {pattern?.trend === 'low' && (
-                            <Badge variant="neutral" className="ml-2 text-[10px] hidden sm:inline-flex">Off</Badge>
+                            <Badge variant="outline" className="ml-2 text-[10px] hidden sm:inline-flex">Off</Badge>
                           )}
                         </td>
                         <td className="text-right font-medium">{row.ticketsSold.toLocaleString()}</td>
@@ -643,17 +642,18 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
   if (!collapsible) return inner;
 
   return (
-    <Disclosure
-      summary={(
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-          <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+    <Collapsible>
+      <CollapsibleTrigger asChild>
+        <button type="button" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
+          <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
           <span>Show session data</span>
           <span className="text-xs font-normal">({data.length} months · {sessions.length} sessions)</span>
-        </div>
-      )}
-    >
-      {inner}
-    </Disclosure>
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        {inner}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 

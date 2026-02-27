@@ -17,17 +17,20 @@ export const API_CONFIG = {
 export type Platform = 'momence' | 'glofox' | 'marianatek';
 
 export interface VenueConfig {
+  mapsQuery?: string;
   id: string;
   name: string;
   platform: Platform;
   location: string;
+  /** IANA timezone name, e.g. 'Australia/Melbourne'. Used to localise operating hours. */
+  timezone?: string;
 }
 
 // Venue list
 export const VENUES: VenueConfig[] = [
-  { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence', location: 'Melbourne' },
-  { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence', location: 'Melbourne' },
-  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Melbourne' },
+  { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence', location: 'Collingwood', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence', location: 'South Yarra', mapsQuery: 'Inner Studio South Yarra Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Fitzroy', mapsQuery: 'Sol Sauna Melbourne', timezone: 'Australia/Melbourne' },
 ];
 
 // Glofox configuration

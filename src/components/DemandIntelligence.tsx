@@ -1,11 +1,14 @@
-import { useMemo } from 'react';
+"use client";
+
+import { useMemo, useState } from 'react';
 import { parseISO, getHours, getMinutes, getDay } from 'date-fns';
+import {
+  BarChart, Bar, Cell, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
+} from 'recharts';
 import type { MomenceSession } from '@/types/momence';
 import type { BenchmarkMetrics, OperatingHours } from '@/lib/benchmarkMetrics';
 import { generateTimeSlots } from '@/lib/metricsCalculator';
-import { Card, CardContent } from '@/components/untitled/card';
-import { Badge } from '@/components/untitled/badge';
-import { Disclosure } from '@/components/untitled/disclosure';
+import { Card, CardContent, CardDescription } from '@/components/ui/card';
 import { ChevronDown } from 'lucide-react';
 
 interface DemandIntelligenceProps {
@@ -17,9 +20,14 @@ interface SlotSummary {
   slot: string;
   utilisation: number;
   sessionCount: number;
+  avgVisitors: number;
 }
 
-function buildSlotSummaries(sessions: MomenceSession[], hours: OperatingHours, weekend: boolean): SlotSummary[] {
+function buildSlotSummaries(
+  sessions: MomenceSession[],
+  hours: OperatingHours,
+  weekend: boolean,
+): SlotSummary[] {
   const timeSlots = generateTimeSlots(hours);
   const slotMap = new Map<string, { tickets: number[]; capacities: number[] }>();
   timeSlots.forEach(s => slotMap.set(s.label, { tickets: [], capacities: [] }));
@@ -51,49 +59,52 @@ function buildSlotSummaries(sessions: MomenceSession[], hours: OperatingHours, w
       slot,
       utilisation: avgCap > 0 ? (avgTickets / avgCap) * 100 : 0,
       sessionCount: data.tickets.length,
+      avgVisitors: Math.round(avgTickets * 10) / 10,
     });
   });
 
   return results.sort((a, b) => b.utilisation - a.utilisation);
 }
 
-function DaySplitBar({
-  label,
-  share,
-  visitors,
-  isWeekend,
-}: {
-  label: string;
-  share: number;
-  visitors: number;
-  isWeekend: boolean;
-}) {
-  return (
-    <div>
-      <div className="flex justify-between text-sm mb-1.5">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">{(share * 100).toFixed(0)}%</span>
-      </div>
-      <div className="h-2 bg-muted rounded-full overflow-hidden">
-        <div
-          className={`h-full rounded-full ${isWeekend ? 'bg-blue-500' : 'bg-primary'}`}
-          style={{ width: `${share * 100}%` }}
-        />
-      </div>
-      <p className="text-xs text-muted-foreground mt-1">{visitors.toLocaleString()} visitors</p>
-    </div>
-  );
+/** Build visitors + sessions totals per day-of-week (Mon–Sun order) */
+function buildDayOfWeekData(sessions: MomenceSession[]) {
+  const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+  const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  const totals = new Map<number, { visitors: number; sessions: number }>();
+  DAY_ORDER.forEach(d => totals.set(d, { visitors: 0, sessions: 0 }));
+
+  sessions.forEach(s => {
+    const day = getDay(parseISO(s.startsAt));
+    const entry = totals.get(day)!;
+    entry.visitors += s.ticketsSold;
+    entry.sessions += 1;
+  });
+
+  const maxVisitors = Math.max(...DAY_ORDER.map(d => totals.get(d)!.visitors));
+
+  return DAY_ORDER.map((d, i) => {
+    const data = totals.get(d)!;
+    return {
+      name: DAY_NAMES[i],
+      visitors: data.visitors,
+      sessions: data.sessions,
+      isWeekend: d === 0 || d === 6,
+      pctOfPeak: maxVisitors > 0 ? (data.visitors / maxVisitors) * 100 : 0,
+    };
+  });
 }
 
 function PeakSlotList({ slots, title }: { slots: SlotSummary[]; title: string }) {
-  const top3 = slots.slice(0, 3);
-  const rest = slots.slice(3);
-  const max = top3[0]?.utilisation ?? 0;
+  const [expanded, setExpanded] = useState(false);
+  const top5 = slots.slice(0, 5);
+  const rest = slots.slice(5);
+  const max = top5[0]?.utilisation ?? 0;
 
-  if (top3.length === 0) {
+  if (top5.length === 0) {
     return (
       <div>
-        <p className="text-xs font-medium text-muted-foreground mb-2">{title}</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">{title}</p>
         <p className="text-xs text-muted-foreground">No sessions found</p>
       </div>
     );
@@ -101,122 +112,189 @@ function PeakSlotList({ slots, title }: { slots: SlotSummary[]; title: string })
 
   return (
     <div>
-      <p className="text-xs font-medium text-muted-foreground mb-3">{title}</p>
-      <div className="space-y-2">
-        {top3.map((s, i) => (
-          <div key={s.slot} className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground w-4 shrink-0">{i + 1}</span>
-            <div className="flex-1 min-w-0">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-medium truncate">{s.slot}</span>
-                <Badge
-                  variant={s.utilisation >= 70 ? 'success' : s.utilisation >= 40 ? 'warning' : 'neutral'}
-                  className="text-xs ml-2 shrink-0"
-                >
+      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">{title}</p>
+      <div className="space-y-3.5">
+        {top5.map((s, i) => (
+          <div key={s.slot} className="space-y-1.5">
+            <div className="flex items-baseline justify-between gap-2">
+              <div className="flex items-baseline gap-2">
+                <span className="text-xs text-muted-foreground w-4 shrink-0 tabular-nums">{i + 1}</span>
+                <span className="text-sm font-semibold">{s.slot}</span>
+              </div>
+              <div className="flex items-baseline gap-2 shrink-0">
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  avg {s.avgVisitors} visitors
+                </span>
+                <span className={`text-sm font-semibold tabular-nums ${
+                  s.utilisation >= 70 ? 'text-emerald-600' : 'text-foreground'
+                }`}>
                   {s.utilisation.toFixed(0)}%
-                </Badge>
+                </span>
               </div>
-              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full"
-                  style={{ width: `${max > 0 ? (s.utilisation / max) * 100 : 0}%` }}
-                />
-              </div>
+            </div>
+            <div className="h-2 bg-muted rounded-full overflow-hidden ml-6">
+              <div
+                className="h-full bg-primary rounded-full transition-all"
+                style={{ width: `${max > 0 ? (s.utilisation / max) * 100 : 0}%` }}
+              />
             </div>
           </div>
         ))}
       </div>
 
       {rest.length > 0 && (
-        <Disclosure
-          className="mt-3"
-          summary={(
-            <div className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
-              <span>+{rest.length} more</span>
-            </div>
-          )}
-        >
-          <div className="space-y-2 mt-2">
-            {rest.map(s => (
-              <div key={s.slot} className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground w-4 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-muted-foreground truncate">{s.slot}</span>
-                    <span className="text-xs text-muted-foreground ml-2 shrink-0">
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setExpanded(v => !v)}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ChevronDown className={`h-3 w-3 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+            <span>{expanded ? 'Show fewer slots' : `+${rest.length} more slots`}</span>
+          </button>
+          {expanded && (
+            <div className="space-y-3.5 mt-3">
+              {rest.map(s => (
+                <div key={s.slot} className="space-y-1.5">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-sm text-muted-foreground ml-6">{s.slot}</span>
+                    <span className="text-sm text-muted-foreground tabular-nums">
                       {s.utilisation.toFixed(0)}%
                     </span>
                   </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-muted rounded-full overflow-hidden ml-6">
                     <div
                       className="h-full bg-muted-foreground/30 rounded-full"
                       style={{ width: `${max > 0 ? (s.utilisation / max) * 100 : 0}%` }}
                     />
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </Disclosure>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
 }
 
 export function DemandIntelligence({ sessions, metrics }: DemandIntelligenceProps) {
+  const dayData = useMemo(() => buildDayOfWeekData(sessions), [sessions]);
+
   const { weekdaySlots, weekendSlots } = useMemo(() => ({
     weekdaySlots: buildSlotSummaries(sessions, metrics.operatingHours, false),
     weekendSlots: buildSlotSummaries(sessions, metrics.operatingHours, true),
   }), [sessions, metrics.operatingHours]);
 
+  const weekdayTotal = metrics.weekdayVisits;
+  const weekendTotal = metrics.weekendVisits;
+  const totalVisits = weekdayTotal + weekendTotal;
+  const weekdayPct = totalVisits > 0 ? (weekdayTotal / totalVisits) * 100 : 0;
+  const weekendPct = 100 - weekdayPct;
+
   if (sessions.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {/* Day split */}
+    <div className="space-y-4">
+      {/* Row 1: Day-of-week visitors chart */}
       <Card>
         <CardContent className="p-5">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-            Day split
-          </p>
-          <div className="space-y-4">
-            <DaySplitBar
-              label="Weekday"
-              share={metrics.weekdayShare}
-              visitors={metrics.weekdayVisits}
-              isWeekend={false}
-            />
-            <DaySplitBar
-              label="Weekend"
-              share={metrics.weekendShare}
-              visitors={metrics.weekendVisits}
-              isWeekend={true}
-            />
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <CardDescription className="text-xs font-semibold uppercase tracking-widest">
+                Visitors by day of week
+              </CardDescription>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Total across selected period
+              </p>
+            </div>
+            {/* Weekday / weekend split summary */}
+            <div className="flex gap-4 text-right">
+              <div>
+                <p className="text-sm text-muted-foreground">Weekdays</p>
+                <p className="text-lg font-semibold tabular-nums">{weekdayPct.toFixed(0)}%</p>
+                <p className="text-sm text-muted-foreground">{weekdayTotal.toLocaleString()} visitors</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Weekends</p>
+                <p className="text-lg font-semibold tabular-nums">{weekendPct.toFixed(0)}%</p>
+                <p className="text-sm text-muted-foreground">{weekendTotal.toLocaleString()} visitors</p>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-4 pt-3 border-t">
-            {metrics.weekendShare > 0.55
-              ? 'Weekend-heavy. Most visits happen Sat–Sun.'
-              : metrics.weekdayShare > 0.55
-              ? 'Weekday-heavy. Strong Mon–Fri base.'
-              : 'Balanced across the week.'}
+
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart
+              data={dayData}
+              margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
+              barCategoryGap="22%"
+            >
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
+              <XAxis
+                dataKey="name"
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis hide />
+              <Tooltip
+                contentStyle={{
+                  background: 'hsl(var(--popover))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '0.5rem',
+                  fontSize: 13,
+                  color: 'hsl(var(--popover-foreground))',
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
+                }}
+                formatter={(value: number, name: string) => {
+                  if (name === 'visitors') return [value.toLocaleString(), 'Visitors'];
+                  return [value, name];
+                }}
+                labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}
+              />
+              <Bar dataKey="visitors" radius={[4, 4, 0, 0]}>
+                {dayData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      entry.visitors === 0
+                        ? 'hsl(var(--border))'
+                        : entry.isWeekend
+                        ? 'hsl(var(--primary) / 0.55)'
+                        : 'hsl(var(--primary))'
+                    }
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+
+          <p className="text-sm text-muted-foreground mt-2 flex gap-3">
+            <span>
+              <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mr-1" />
+              Weekday
+            </span>
+            <span>
+              <span className="inline-block w-2.5 h-2 rounded-sm bg-primary/55 align-middle mr-1" />
+              Weekend
+            </span>
           </p>
         </CardContent>
       </Card>
 
-      {/* Weekday peaks */}
-      <Card>
-        <CardContent className="p-5">
-          <PeakSlotList slots={weekdaySlots} title="Top weekday slots" />
-        </CardContent>
-      </Card>
-
-      {/* Weekend peaks */}
-      <Card>
-        <CardContent className="p-5">
-          <PeakSlotList slots={weekendSlots} title="Top weekend slots" />
-        </CardContent>
-      </Card>
+      {/* Row 2: Peak slot analysis */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardContent className="p-5">
+            <PeakSlotList slots={weekdaySlots} title="Weekday peak slots" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <PeakSlotList slots={weekendSlots} title="Weekend peak slots" />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

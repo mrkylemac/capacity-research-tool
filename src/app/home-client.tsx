@@ -1,72 +1,77 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { format, subMonths, subYears } from 'date-fns';
+import { format, subYears } from 'date-fns';
+import { Loader2, RotateCcw } from 'lucide-react';
 import { useSessions } from '@/hooks/useSessions';
+import { momenceClient } from '@/lib/momenceClient';
 import { VENUES } from '@/config/api';
-import { getRecentSearches, removeFromRecent, setCachedEntry, type CachedVenueEntry } from '@/lib/venueCache';
+import {
+  getRecentSearches,
+  setCachedEntry,
+  type CachedVenueEntry,
+} from '@/lib/venueCache';
 import { DataStatus } from '@/components/DataStatus';
-import { RecentSearches } from '@/components/RecentSearches';
-import { DashboardSkeleton } from '@/components/DashboardSkeleton';
-import { Button } from '@/components/untitled/button';
-import { Card, CardContent } from '@/components/untitled/card';
-import { Input } from '@/components/untitled/input';
-import { Label } from '@/components/untitled/label';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
-const PRESETS = [
-  { label: 'Last 1 month', from: () => subMonths(new Date(), 1), to: () => new Date() },
-  { label: 'Last 3 months', from: () => subMonths(new Date(), 3), to: () => new Date() },
-  { label: 'Last 6 months', from: () => subMonths(new Date(), 6), to: () => new Date() },
-  { label: 'Last 12 months', from: () => subMonths(new Date(), 12), to: () => new Date() },
-  { label: 'All time', from: () => subYears(new Date(), 10), to: () => new Date() },
-] as const;
-
-function toDateInputValue(date: Date): string {
-  return format(date, 'yyyy-MM-dd');
-}
+// Fetch 3 years back so the report's period selector has maximum data
+const FETCH_FROM = format(subYears(new Date(), 3), 'yyyy-MM-dd');
+const FETCH_TO = format(new Date(), 'yyyy-MM-dd');
 
 export function HomeClient() {
   const router = useRouter();
-  const momenceHook = useSessions();
+  const hook = useSessions();
+  const { allSessions, metrics, monthlyData, venueConfig, hostInfo, dataRange, isLoading, error, fetchingCount, totalPages } = hook;
 
-  const [recentSearches, setRecentSearches] = useState<CachedVenueEntry[]>(() => getRecentSearches());
-  const [refreshingKey, setRefreshingKey] = useState<string | null>(null);
-  const [hasQueried, setHasQueried] = useState(false);
-  const [currentHostId, setCurrentHostId] = useState(VENUES[0]?.id ?? '');
-  const [fromDate, setFromDate] = useState(toDateInputValue(subMonths(new Date(), 3)));
-  const [toDate, setToDate] = useState(toDateInputValue(new Date()));
+  const [loadingVenueId, setLoadingVenueId] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const { allSessions, metrics, monthlyData, venueConfig, hostInfo, dataRange, isLoading, error, totalPages } = momenceHook;
+  // Initialised empty to avoid SSR/client hydration mismatch
+  const [cachedMap, setCachedMap] = useState<Record<string, CachedVenueEntry>>({});
+  // Logo images fetched for venues not yet in cache
+  const [logoMap, setLogoMap] = useState<Record<string, string | null>>({});
 
-  const canSubmit = currentHostId && fromDate && toDate;
-
+  // On mount: load cache, then pre-fetch logos for any venue missing one
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const sp = new URLSearchParams(window.location.search);
-    if (sp.get('refresh') !== 'true') return;
+    const map = Object.fromEntries(getRecentSearches().map(e => [e.hostId, e]));
+    setCachedMap(map);
 
-    const hostId = sp.get('hostId');
-    const from = sp.get('from');
-    const to = sp.get('to');
-    if (!hostId || !from || !to) return;
-
-    setCurrentHostId(hostId);
-    setFromDate(from);
-    setToDate(to);
-    void handleFetch(hostId, from, to);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    VENUES.forEach(async (venue) => {
+      if (map[venue.id]?.hostInfo?.profileImage) return; // already have logo
+      try {
+        const info = await momenceClient.fetchHostInfo(venue.id);
+        if (info?.profileImage) {
+          setLogoMap(prev => ({ ...prev, [venue.id]: info.profileImage }));
+        }
+      } catch {
+        // fail silently — initials fallback will show
+      }
+    });
   }, []);
 
+  // Once a fetch finishes: save to cache, refresh card state, then navigate
   useEffect(() => {
-    if (!hasQueried || isLoading || allSessions.length === 0) return;
-    const venueName = VENUES.find(v => v.id === currentHostId)?.name || hostInfo?.name || `Host ${currentHostId}`;
+    if (!loadingVenueId || isLoading) return;
+
+    if (allSessions.length === 0) {
+      setFetchError('No sessions found for this venue.');
+      setLoadingVenueId(null);
+      return;
+    }
+
+    const venueName =
+      VENUES.find(v => v.id === loadingVenueId)?.name ||
+      hostInfo?.name ||
+      `Host ${loadingVenueId}`;
 
     const entry = setCachedEntry({
-      hostId: currentHostId,
+      hostId: loadingVenueId,
       platform: 'momence',
       venueName,
-      dateRange: { from: fromDate, to: toDate },
+      dateRange: { from: FETCH_FROM, to: FETCH_TO },
       sessions: allSessions,
       metrics,
       monthlyData,
@@ -74,130 +79,155 @@ export function HomeClient() {
       hostInfo,
     });
 
-    setRecentSearches(getRecentSearches());
-    router.push(`/report?hostId=${entry.hostId}&from=${fromDate}&to=${toDate}&platform=${entry.platform}`);
-  }, [hasQueried, isLoading, allSessions.length, currentHostId, fromDate, toDate, router, metrics, monthlyData, venueConfig, hostInfo, allSessions]);
+    // Refresh the card map before navigating so the card shows fresh data
+    setCachedMap(Object.fromEntries(getRecentSearches().map(e => [e.hostId, e])));
 
-  async function handleFetch(hostId: string, from: string, to: string) {
-    setHasQueried(true);
-    await momenceHook.fetchData({
-      hostId,
-      startsAtFrom: new Date(from).toISOString(),
-      startsAtTo: new Date(to).toISOString(),
+    router.push(
+      `/report?hostId=${entry.hostId}&from=${FETCH_FROM}&to=${FETCH_TO}&platform=${entry.platform}`,
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadingVenueId, isLoading, allSessions.length]);
+
+  async function handleVenueClick(venueId: string) {
+    if (loadingVenueId) return;
+    setFetchError(null);
+
+    // Cached → navigate immediately without re-fetching
+    const cached = cachedMap[venueId] ?? null;
+    if (cached) {
+      router.push(
+        `/report?hostId=${cached.hostId}&from=${cached.dateRange.from}&to=${cached.dateRange.to}&platform=${cached.platform}`,
+      );
+      return;
+    }
+
+    // Not cached → fetch then navigate
+    setLoadingVenueId(venueId);
+    await hook.fetchData({
+      hostId: venueId,
+      startsAtFrom: new Date(FETCH_FROM).toISOString(),
+      startsAtTo: new Date(FETCH_TO).toISOString(),
     });
   }
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canSubmit) return;
-    await handleFetch(currentHostId, fromDate, toDate);
+  async function handleRefetch(venueId: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    if (loadingVenueId) return;
+    setFetchError(null);
+    setLoadingVenueId(venueId);
+    await hook.fetchData({
+      hostId: venueId,
+      startsAtFrom: new Date(FETCH_FROM).toISOString(),
+      startsAtTo: new Date(FETCH_TO).toISOString(),
+    });
   }
-
-  function handleLoadFromCache(entry: CachedVenueEntry) {
-    router.push(`/report?hostId=${entry.hostId}&from=${entry.dateRange.from}&to=${entry.dateRange.to}&platform=${entry.platform}`);
-  }
-
-  async function handleRefresh(entry: CachedVenueEntry) {
-    setRefreshingKey(entry.key);
-    setCurrentHostId(entry.hostId);
-    setFromDate(entry.dateRange.from);
-    setToDate(entry.dateRange.to);
-    await handleFetch(entry.hostId, entry.dateRange.from, entry.dateRange.to);
-    setRefreshingKey(null);
-  }
-
-  function handleDelete(key: string) {
-    removeFromRecent(key);
-    setRecentSearches(getRecentSearches());
-  }
-
-  const selectedVenueName = useMemo(
-    () => VENUES.find(v => v.id === currentHostId)?.name ?? 'Venue',
-    [currentHostId],
-  );
 
   return (
     <main className="min-h-screen bg-background">
       <div className="notion-page">
-        <h1 className="notion-title">Sauna session stats</h1>
-        <p className="notion-subtitle">Pick a venue and date range. We’ll build a competitor-ready report.</p>
-
-        <Card className="mb-6">
-          <CardContent>
-            <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="venue">Venue</Label>
-                <select
-                  id="venue"
-                  value={currentHostId}
-                  onChange={(e) => setCurrentHostId(e.target.value)}
-                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  {VENUES.map(v => (
-                    <option key={v.id} value={v.id}>{v.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Date range</Label>
-                <div className="flex gap-2">
-                  <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
-                  <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-                </div>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {PRESETS.map(p => (
-                    <Button
-                      key={p.label}
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setFromDate(toDateInputValue(p.from()));
-                        setToDate(toDateInputValue(p.to()));
-                      }}
-                    >
-                      {p.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="opacity-0">Action</Label>
-                <Button type="submit" disabled={isLoading || !canSubmit} className="w-full">
-                  {isLoading ? `Loading ${selectedVenueName}…` : 'Fetch data'}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-
-        <div className="mb-6">
-          <RecentSearches
-            entries={recentSearches}
-            onSelect={handleLoadFromCache}
-            onRefresh={handleRefresh}
-            onDelete={handleDelete}
-            refreshingKey={refreshingKey}
-          />
+        {/* Heading */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold tracking-tight">Venues</h1>
+          <p className="text-sm text-muted-foreground mt-1">Select a venue to open its report</p>
         </div>
 
-        {hasQueried && isLoading && (
-          <>
+        {/* Venue grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {VENUES.map(venue => {
+            const cached = cachedMap[venue.id] ?? null;
+            const isLoadingThis = loadingVenueId === venue.id;
+            const logoUrl = cached?.hostInfo?.profileImage ?? logoMap[venue.id] ?? null;
+            // Use API name from cache if available; otherwise strip ", location" suffix from config name
+            const displayName = cached?.hostInfo?.name ?? venue.name.split(',')[0].trim();
+            const initials = displayName
+              .split(' ')
+              .map((w: string) => w[0])
+              .join('')
+              .slice(0, 2)
+              .toUpperCase();
+
+            return (
+              <Card
+                key={venue.id}
+                onClick={() => handleVenueClick(venue.id)}
+                className={[
+                  'cursor-pointer transition-all bg-muted/20 border-border',
+                  'hover:border-primary/40 hover:bg-muted/40',
+                  isLoadingThis ? 'pointer-events-none opacity-75' : '',
+                ].join(' ')}
+              >
+                <CardContent className="p-5">
+                  {/* Name + avatar row */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 pt-0.5 flex-1">
+                      <p className="font-semibold text-base leading-tight truncate">{displayName}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{venue.location}</p>
+                    </div>
+
+                    <Avatar className="h-14 w-14 shrink-0 rounded-xl">
+                      {logoUrl ? (
+                        <AvatarImage
+                          src={logoUrl}
+                          alt={displayName}
+                          className="rounded-xl object-cover"
+                        />
+                      ) : (
+                        <AvatarFallback className="rounded-xl text-sm font-bold">
+                          {initials}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  </div>
+
+                  {/* Bottom row: loading indicator or refresh button */}
+                  <div className="flex items-center justify-between mt-4">
+                    {isLoadingThis ? (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
+                        <span>
+                          {fetchingCount > 0
+                            ? `${fetchingCount.toLocaleString()} sessions…`
+                            : 'Connecting…'}
+                        </span>
+                      </div>
+                    ) : (
+                      <span />
+                    )}
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground shrink-0"
+                      onClick={(e) => handleRefetch(venue.id, e)}
+                      title="Refresh data"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Inline fetch progress */}
+        {loadingVenueId && (
+          <div className="mt-6">
             <DataStatus
               isLoading={isLoading}
               error={error as Error | null}
-              sessionCount={momenceHook.fetchingCount}
+              sessionCount={fetchingCount}
               pageCount={totalPages}
               dataRange={dataRange}
-              loadingLabel={`Fetching ${selectedVenueName}…`}
+              loadingLabel={`Fetching ${VENUES.find(v => v.id === loadingVenueId)?.name ?? 'venue'}…`}
             />
-            <DashboardSkeleton />
-          </>
+          </div>
+        )}
+
+        {fetchError && (
+          <p className="mt-4 text-sm text-destructive">{fetchError}</p>
         )}
       </div>
     </main>
   );
 }
-

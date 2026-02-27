@@ -1,114 +1,99 @@
 import { useMemo } from 'react';
-import { BarChart } from '@/components/charts/bar-chart';
-import { Bar } from '@/components/charts/bar';
-import { BarXAxis } from '@/components/charts/bar-x-axis';
-import { Grid } from '@/components/charts/grid';
-import { ChartTooltip } from '@/components/charts/tooltip/chart-tooltip';
-import type { MonthlyData, SessionMetrics } from '@/types/momence';
+import {
+  BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
+} from 'recharts';
+import type { MonthlyData } from '@/types/momence';
+import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import { Card, CardContent } from '@/components/ui/card';
+import { StatCard } from '@/components/ui/stat-card';
 
 interface CapacityUtilisationProps {
-  metrics: SessionMetrics | null;
+  metrics: BenchmarkMetrics | null;
   monthlyData: MonthlyData[];
 }
 
 export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisationProps) {
   if (!metrics || monthlyData.length === 0) return null;
 
-  // Stacked visitors chart: booked seats vs available-but-unfilled seats
   const visitorsChartData = useMemo(() =>
     monthlyData.map(m => ({
       name: `${m.month.slice(0, 3)} ${String(m.year).slice(-2)}`,
       visitors: m.ticketsSold,
       unfilled: Math.max(0, m.capacity - m.ticketsSold),
-      utilisation: Math.round(m.utilisation),
     })),
   [monthlyData]);
 
-  const avgPerWeek = metrics.sessionsPerWeek;
-
-  const totalVisitors = monthlyData.reduce((sum, m) => sum + m.ticketsSold, 0);
-  const totalWeeks = monthlyData.length > 0
-    ? monthlyData.reduce((sum, m) => sum + m.sessions, 0) / (avgPerWeek || 1)
-    : 1;
-  const weeklyVisitors = totalWeeks > 0 ? totalVisitors / totalWeeks : 0;
+  // Derive weekly visitors and avg utilisation from BenchmarkMetrics
+  const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
+  const weeklyVisitors = Math.round(metrics.weeklyVisits);
+  const dailyVisitors = Math.round(metrics.weeklyVisits / 7);
+  const avgUtilisationPct = Math.round(metrics.occupancyRate * 100);
 
   return (
-    <Card>
-      <CardContent className="p-5">
-        {/* Demand stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
-            <div className="text-xl font-semibold text-foreground">{Math.round(weeklyVisitors)}</div>
-            <div className="text-xs text-muted-foreground">Visitors/Week</div>
-          </div>
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
-            <div className="text-xl font-semibold text-foreground">{Math.round(weeklyVisitors / 7)}</div>
-            <div className="text-xs text-muted-foreground">Visitors/Day</div>
-          </div>
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
-            <div className="text-xl font-semibold text-foreground">{avgPerWeek.toFixed(1)}</div>
-            <div className="text-xs text-muted-foreground">Sessions/Week</div>
-          </div>
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
-            <div className="text-xl font-semibold text-foreground">{metrics.avgUtilisation.toFixed(0)}%</div>
-            <div className="text-xs text-muted-foreground">Avg Utilisation</div>
-          </div>
-        </div>
+    <div className="space-y-3">
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard
+          value={weeklyVisitors.toLocaleString()}
+          label="Visitors per week"
+          note="Average weekly footfall across the period"
+        />
+        <StatCard
+          value={dailyVisitors.toLocaleString()}
+          label="Visitors per day"
+          note="Estimated daily average"
+        />
+        <StatCard
+          value={sessionsPerWeek.toFixed(1)}
+          label="Sessions per week"
+          note={`${metrics.totalSessions.toLocaleString()} sessions recorded`}
+        />
+        <StatCard
+          value={`${avgUtilisationPct}%`}
+          label="Avg utilisation"
+          note="Of total available seat capacity"
+        />
+      </div>
 
-        {/* Monthly Visitors vs Capacity Chart */}
-        <p className="text-xs text-muted-foreground mb-1">Monthly Visitors vs Capacity</p>
-        <p className="text-[10px] text-muted-foreground mb-3">
-          Blue = booked · Grey = unfilled capacity
-        </p>
-        <BarChart
-          data={visitorsChartData}
-          xDataKey="name"
-          stacked
-          aspectRatio="3 / 1"
-          margin={{ top: 16, right: 20, bottom: 36, left: 20 }}
-          barGap={0.15}
-        >
-          <Grid horizontal />
-          <Bar
-            dataKey="visitors"
-            fill="var(--chart-visitors)"
-            stroke="var(--chart-visitors)"
-            lineCap={4}
-          />
-          <Bar
-            dataKey="unfilled"
-            fill="var(--chart-grid)"
-            stroke="var(--chart-grid)"
-            lineCap={4}
-          />
-          <BarXAxis />
-          <ChartTooltip
-            rows={(point) => {
-              const visitors = point.visitors as number;
-              const unfilled = point.unfilled as number;
-              const util = point.utilisation as number;
-              return [
-                {
-                  color: 'var(--chart-visitors)',
-                  label: 'Visitors',
-                  value: visitors.toLocaleString(),
-                },
-                {
-                  color: 'var(--chart-grid)',
-                  label: 'Unfilled',
-                  value: unfilled.toLocaleString(),
-                },
-                {
-                  color: util >= 70 ? 'var(--chart-high)' : util >= 40 ? 'var(--chart-medium)' : 'var(--chart-low)',
-                  label: 'Utilisation',
-                  value: `${util}%`,
-                },
-              ];
-            }}
-          />
-        </BarChart>
-      </CardContent>
-    </Card>
+      {/* Monthly chart */}
+      <Card>
+        <CardContent className="p-5">
+          <p className="text-sm font-medium text-foreground mb-1">Monthly visitors vs capacity</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            Filled <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mx-0.5" /> ·{' '}
+            Unfilled <span className="inline-block w-2.5 h-2 rounded-sm bg-muted-foreground/30 align-middle mx-0.5" />
+          </p>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={visitorsChartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} barCategoryGap="20%">
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
+              <XAxis
+                dataKey="name"
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis hide />
+              <Tooltip
+                contentStyle={{
+                  background: 'hsl(var(--popover))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '0.5rem',
+                  fontSize: 13,
+                  color: 'hsl(var(--popover-foreground))',
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
+                }}
+                formatter={(value: number, name: string) => {
+                  if (name === 'visitors') return [value.toLocaleString(), 'Visitors'];
+                  if (name === 'unfilled') return [value.toLocaleString(), 'Unfilled'];
+                  return [value, name];
+                }}
+              />
+              <Bar dataKey="visitors" stackId="a" fill="hsl(var(--primary))" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="unfilled" stackId="a" fill="hsl(var(--muted-foreground) / 0.2)" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
