@@ -2,6 +2,49 @@ import { parseISO, differenceInDays } from 'date-fns';
 import type { MomenceSession } from '@/types/momence';
 import { formatDecimalHour } from '@/lib/utils';
 
+/**
+ * Convert an ISO timestamp to a decimal hour in the venue's local timezone.
+ * Falls back to UTC if no timezone is provided or the Intl API fails.
+ */
+function getLocalDecimalHour(isoString: string, timezone?: string): number {
+  const date = new Date(isoString);
+  if (!timezone) {
+    return date.getUTCHours() + date.getUTCMinutes() / 60;
+  }
+  try {
+    const parts = new Intl.DateTimeFormat('en-AU', {
+      timeZone: timezone,
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: false,
+    }).formatToParts(date);
+    const hour = parseInt(parts.find(p => p.type === 'hour')?.value ?? '0', 10) % 24;
+    const minute = parseInt(parts.find(p => p.type === 'minute')?.value ?? '0', 10);
+    return hour + minute / 60;
+  } catch {
+    return date.getUTCHours() + date.getUTCMinutes() / 60;
+  }
+}
+
+/**
+ * Return the day-of-week (0=Sunday … 6=Saturday) in the venue's local timezone.
+ */
+function getLocalDayOfWeek(isoString: string, timezone?: string): number {
+  const date = new Date(isoString);
+  if (!timezone) return date.getUTCDay();
+  try {
+    const dayName = new Intl.DateTimeFormat('en-AU', {
+      timeZone: timezone,
+      weekday: 'long',
+    }).format(date);
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const idx = days.indexOf(dayName);
+    return idx >= 0 ? idx : date.getUTCDay();
+  } catch {
+    return date.getUTCDay();
+  }
+}
+
 export interface OperatingHours {
   weekdayStart: number;  // e.g., 6 for 6am
   weekdayEnd: number;    // e.g., 21 for 9pm
@@ -21,6 +64,8 @@ export interface BenchmarkMetrics {
   occupancyRate: number;
   avgVisitorsPerSession: number;
   avgCapacityPerSession: number;
+  /** Most common (modal) bookable seats per session — more reliable than the average for display */
+  modalCapacity: number;
 
   // Operating structure (inferred)
   operatingHours: OperatingHours;
@@ -75,18 +120,17 @@ function roundToHalfHour(hour: number, roundUp: boolean): number {
  * to eliminate outliers (e.g., test sessions, timezone glitches).
  * Uses 5th/95th percentile instead of absolute min/max.
  */
-export function inferOperatingHours(sessions: MomenceSession[]): OperatingHours {
+export function inferOperatingHours(sessions: MomenceSession[], timezone?: string): OperatingHours {
   const weekdayStartTimes: number[] = [];
   const weekdayEndTimes: number[] = [];
   const weekendStartTimes: number[] = [];
   const weekendEndTimes: number[] = [];
 
   sessions.forEach(session => {
-    const startDate = new Date(session.startsAt);
-    const startHour = startDate.getUTCHours() + startDate.getUTCMinutes() / 60;
+    const startHour = getLocalDecimalHour(session.startsAt, timezone);
     // Use session duration to calculate actual end time
     const endHour = startHour + (session.durationMinutes || 60) / 60;
-    const dayOfWeek = startDate.getUTCDay();
+    const dayOfWeek = getLocalDayOfWeek(session.startsAt, timezone);
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     if (isWeekend) {
@@ -135,7 +179,8 @@ export function calculateBenchmarkMetrics(
   sessions: MomenceSession[],
   fromDate: string,
   toDate: string,
-  operatingHoursOverride?: OperatingHours
+  operatingHoursOverride?: OperatingHours,
+  timezone?: string,
 ): BenchmarkMetrics {
   const from = parseISO(fromDate);
   const to = parseISO(toDate);
@@ -156,18 +201,17 @@ export function calculateBenchmarkMetrics(
   const avgVisitorsPerSession = totalSessions > 0 ? totalVisits / totalSessions : 0;
   const avgCapacityPerSession = totalSessions > 0 ? totalCapacity / totalSessions : 0;
 
-  // Operating hours
-  const operatingHours = operatingHoursOverride || inferOperatingHours(sessions);
+  // Operating hours (use venue-local timezone so inferred times are meaningful)
+  const operatingHours = operatingHoursOverride || inferOperatingHours(sessions, timezone);
   const weeklyOpenHours = calculateWeeklyOpenHours(operatingHours);
   const visitsPerOpenHour = weeklyOpenHours > 0 ? weeklyVisits / weeklyOpenHours : 0;
 
-  // Weekday vs Weekend
+  // Weekday vs Weekend (timezone-aware)
   let weekdayVisits = 0;
   let weekendVisits = 0;
 
   sessions.forEach(session => {
-    const date = new Date(session.startsAt);
-    const dayOfWeek = date.getUTCDay();
+    const dayOfWeek = getLocalDayOfWeek(session.startsAt, timezone);
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     if (isWeekend) {
@@ -175,6 +219,16 @@ export function calculateBenchmarkMetrics(
     } else {
       weekdayVisits += session.ticketsSold;
     }
+  });
+
+  // Modal capacity — most common bookable seats per session
+  const capacityCounts = new Map<number, number>();
+  sessions.forEach(s => {
+    capacityCounts.set(s.capacity, (capacityCounts.get(s.capacity) ?? 0) + 1);
+  });
+  let modalCapacity = 0, maxCapCount = 0;
+  capacityCounts.forEach((count, cap) => {
+    if (count > maxCapCount) { maxCapCount = count; modalCapacity = cap; }
   });
 
   const weekdayShare = totalVisits > 0 ? weekdayVisits / totalVisits : 0;
@@ -201,6 +255,7 @@ export function calculateBenchmarkMetrics(
     occupancyRate,
     avgVisitorsPerSession,
     avgCapacityPerSession,
+    modalCapacity,
     operatingHours,
     weeklyOpenHours,
     visitsPerOpenHour,

@@ -1,5 +1,5 @@
-import { Skeleton } from '@/components/untitled/skeleton';
-import { Card, CardContent } from '@/components/untitled/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
 
 function SkeletonCard({ lines = 2 }: { lines?: number }) {
   return (

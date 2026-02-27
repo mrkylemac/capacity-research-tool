@@ -1,42 +1,70 @@
-import { format, parseISO } from 'date-fns';
-import { Card, CardContent } from '@/components/untitled/card';
-import { Label } from '@/components/untitled/label';
+import { format, parseISO, differenceInMonths, differenceInWeeks } from 'date-fns';
+import { Card, CardContent } from '@/components/ui/card';
+import { VENUES } from '@/config/api';
 import type { CachedVenueEntry } from '@/lib/venueCache';
-import { Button } from '@/components/untitled/button';
-import { RotateCw, Trash2 } from 'lucide-react';
 
 interface RecentSearchesProps {
   entries: CachedVenueEntry[];
   onSelect: (entry: CachedVenueEntry) => void;
-  onRefresh: (entry: CachedVenueEntry) => void;
   onDelete: (key: string) => void;
-  refreshingKey?: string | null;
 }
 
-function formatDateRange(from: string, to: string): string {
+function derivePeriodLabel(from: string, to: string): { duration: string; fromLabel: string } {
   try {
-    return `${format(parseISO(from), 'MMM d, yyyy')} – ${format(parseISO(to), 'MMM d, yyyy')}`;
+    const fromDate = parseISO(from);
+    const toDate = parseISO(to);
+    const months = differenceInMonths(toDate, fromDate);
+    const duration = months >= 1 ? `Last ${months} month${months !== 1 ? 's' : ''}` : 'Last 30 days';
+    const fromLabel = `From ${format(fromDate, 'd MMM')}`;
+    return { duration, fromLabel };
   } catch {
-    return `${from} – ${to}`;
+    return { duration: from, fromLabel: '' };
   }
 }
 
-export function RecentSearches({ entries, onSelect, onRefresh, onDelete, refreshingKey }: RecentSearchesProps) {
+function getWeeklyVisits(entry: CachedVenueEntry): number {
+  try {
+    const totalVisitors = entry.sessions.reduce((s, ses) => s + ses.ticketsSold, 0);
+    const from = parseISO(entry.dateRange.from);
+    const to = parseISO(entry.dateRange.to);
+    const weeks = Math.max(differenceInWeeks(to, from), 1);
+    return Math.round(totalVisitors / weeks);
+  } catch {
+    return 0;
+  }
+}
+
+function getLocation(entry: CachedVenueEntry): string {
+  const venue = VENUES.find(v => v.id === entry.hostId);
+  return venue?.location ?? entry.hostInfo?.countryCode ?? '';
+}
+
+export function RecentSearches({ entries, onSelect }: RecentSearchesProps) {
   if (entries.length === 0) return null;
 
   return (
-    <div className="space-y-2">
-      <Label className="text-xs text-muted-foreground">Recent Searches</Label>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {entries.map((entry) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {entries.map((entry) => {
+        const { duration, fromLabel } = derivePeriodLabel(entry.dateRange.from, entry.dateRange.to);
+        const weeklyVisits = getWeeklyVisits(entry);
+        const location = getLocation(entry);
+        const sessionCount = entry.sessions.length;
+
+        return (
           <Card
             key={entry.key}
-            className="cursor-pointer hover:border-primary/50 transition-colors"
+            className="cursor-pointer hover:border-primary/40 transition-colors bg-muted/30 border-muted"
             onClick={() => onSelect(entry)}
           >
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="shrink-0 w-12 h-12 rounded-xl overflow-hidden bg-muted flex items-center justify-center">
+            <CardContent className="p-5">
+              {/* Top row: name + logo */}
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="min-w-0 pt-0.5">
+                  <p className="font-semibold text-base leading-tight truncate">{entry.venueName}</p>
+                  <p className="text-sm text-muted-foreground mt-1.5 leading-snug">{duration}</p>
+                  <p className="text-sm text-muted-foreground leading-snug">({fromLabel})</p>
+                </div>
+                <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-muted flex items-center justify-center">
                   {entry.hostInfo?.profileImage ? (
                     <img
                       src={entry.hostInfo.profileImage}
@@ -44,47 +72,33 @@ export function RecentSearches({ entries, onSelect, onRefresh, onDelete, refresh
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-lg font-bold text-muted-foreground">
+                    <span className="text-xl font-bold text-muted-foreground">
                       {entry.venueName.charAt(0)}
                     </span>
                   )}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold truncate leading-tight">{entry.venueName}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {formatDateRange(entry.dateRange.from, entry.dateRange.to)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {entry.sessions.length} sessions
-                  </p>
-                </div>
+              </div>
 
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 px-0"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRefresh(entry); }}
-                    disabled={refreshingKey === entry.key}
-                    aria-label="Refresh"
-                  >
-                    <RotateCw className={`h-4 w-4 ${refreshingKey === entry.key ? 'animate-spin' : ''}`} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 px-0"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(entry.key); }}
-                    aria-label="Delete"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+              {/* Pills */}
+              <div className="flex flex-wrap gap-2">
+                {location && (
+                  <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground">
+                    {location}
+                  </span>
+                )}
+                <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground">
+                  {sessionCount.toLocaleString()} sessions
+                </span>
+                {weeklyVisits > 0 && (
+                  <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground">
+                    {weeklyVisits.toLocaleString()} weekly visits
+                  </span>
+                )}
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }
