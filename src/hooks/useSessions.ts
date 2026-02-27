@@ -84,12 +84,19 @@ export function useSessions() {
       const allData: MomenceSession[] = [...firstResponse.sessions];
       setFetchingCount(allData.length);
 
-      // Fetch remaining pages in parallel batches of 10
+      // Fetch remaining pages in parallel batches of 10.
+      // Use totalPages from the API response as an upper bound if reliable (> 1).
+      // Momence may not return an accurate totalPages, so if it resolves to 1 but
+      // the first page is full, fall back to MAX_PAGES and rely on partial-page
+      // detection (result.sessions.length < pageSize) to terminate naturally.
       const MAX_PAGES = 250;
       const BATCH_SIZE = 10;
-      const totalPagesFromAPI = Math.min(firstResponse.totalPages || 1, MAX_PAGES);
+      const apiTotalPages = firstResponse.totalPages;
+      const totalPagesFromAPI = apiTotalPages > 1
+        ? Math.min(apiTotalPages, MAX_PAGES)
+        : MAX_PAGES;
 
-      if (firstResponse.sessions.length === API_CONFIG.pageSize && totalPagesFromAPI > 1) {
+      if (firstResponse.sessions.length === API_CONFIG.pageSize) {
         for (let batchStart = 2; batchStart <= totalPagesFromAPI; batchStart += BATCH_SIZE) {
           const batchEnd = Math.min(batchStart + BATCH_SIZE - 1, totalPagesFromAPI);
           const pageNumbers = Array.from({ length: batchEnd - batchStart + 1 }, (_, i) => batchStart + i);

@@ -17,6 +17,8 @@ interface PeriodSelectorProps {
   className?: string;
   /** 'ghost' = translucent pill (default, for nav bars); 'solid' = filled primary button (for hero cards) */
   variant?: 'ghost' | 'solid';
+  /** Months of actual data available. Options requiring more data than this are hidden. */
+  availableMonths?: number | null;
 }
 
 export const PERIOD_OPTIONS: { value: PeriodOption; label: string; months: number | null }[] = [
@@ -66,11 +68,16 @@ export function inferPeriodFromDates(from: string, to: string): PeriodOption {
   }
 }
 
-export function PeriodSelector({ value, onChange, className, variant = 'ghost' }: PeriodSelectorProps) {
+export function PeriodSelector({ value, onChange, className, variant = 'ghost', availableMonths }: PeriodSelectorProps) {
   const triggerBase =
     variant === 'solid'
       ? 'h-9 w-auto text-sm font-medium bg-primary text-primary-foreground border-0 rounded-md px-4 gap-1.5 focus:ring-0 focus:ring-offset-0 hover:bg-primary/90 transition-colors'
       : 'h-8 w-auto text-sm font-medium bg-muted/60 border-0 rounded-full px-3.5 gap-1 focus:ring-0 focus:ring-offset-0 hover:bg-muted transition-colors';
+
+  // Hide options that require more data than is available (null = no filter applied)
+  const visibleOptions = availableMonths != null
+    ? PERIOD_OPTIONS.filter(opt => opt.months === null || opt.months <= availableMonths)
+    : PERIOD_OPTIONS;
 
   return (
     <Select value={value} onValueChange={(v) => onChange(v as PeriodOption)}>
@@ -78,7 +85,7 @@ export function PeriodSelector({ value, onChange, className, variant = 'ghost' }
         <SelectValue />
       </SelectTrigger>
       <SelectContent align="end" className="min-w-[168px]">
-        {PERIOD_OPTIONS.map(opt => (
+        {visibleOptions.map(opt => (
           <SelectItem key={opt.value} value={opt.value} className="text-sm">
             {opt.label}
           </SelectItem>

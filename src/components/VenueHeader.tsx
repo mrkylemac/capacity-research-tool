@@ -17,6 +17,7 @@ interface VenueHeaderProps {
   period: PeriodOption;
   onPeriodChange: (p: PeriodOption) => void;
   dateRangeLabel: string;
+  availableMonths?: number | null;
 }
 
 export function VenueHeader({
@@ -29,6 +30,7 @@ export function VenueHeader({
   period,
   onPeriodChange,
   dateRangeLabel,
+  availableMonths,
 }: VenueHeaderProps) {
   const venueName = hostInfo?.name || venueConfig?.venueName || 'Venue';
   const initials = venueName
@@ -112,6 +114,7 @@ export function VenueHeader({
               value={period}
               onChange={onPeriodChange}
               variant="solid"
+              availableMonths={availableMonths}
             />
           </div>
         </div>

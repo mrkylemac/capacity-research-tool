@@ -22,6 +22,7 @@ import {
   getPeriodRange,
   formatPeriodDateRange,
   inferPeriodFromDates,
+  PERIOD_OPTIONS,
   type PeriodOption,
 } from '@/components/ui/period-selector';
 import type { CachedVenueEntry } from '@/lib/venueCache';
@@ -131,6 +132,29 @@ export function ReportClient() {
     return earliest ?? entry?.metrics?.operatingSince ?? null;
   }, [entry?.hostId, entry?.metrics?.operatingSince]);
 
+  // --- Available data span ---
+
+  /** Months of real data available, derived from the earliest session to today. */
+  const availableMonths = useMemo<number | null>(() => {
+    if (allCachedSessions.length === 0) return null;
+    let minTs = Infinity;
+    for (const s of allCachedSessions) {
+      const t = new Date(s.startsAt).getTime();
+      if (t < minTs) minTs = t;
+    }
+    return (Date.now() - minTs) / (1000 * 60 * 60 * 24 * 30.44);
+  }, [allCachedSessions]);
+
+  // Auto-correct period if it exceeds the available data span
+  useEffect(() => {
+    if (availableMonths === null) return;
+    const opt = PERIOD_OPTIONS.find(o => o.value === period);
+    if (!opt || opt.months === null || opt.months <= availableMonths) return;
+    // Clamp to the largest valid months-based option, or 'all' as final fallback
+    const valid = PERIOD_OPTIONS.filter(o => o.months !== null && o.months <= availableMonths);
+    setPeriod(valid.length > 0 ? valid[valid.length - 1].value : 'all');
+  }, [availableMonths, period]);
+
   // --- Period-filtered data ---
 
   const periodRange = useMemo(() => getPeriodRange(period), [period]);
@@ -239,6 +263,7 @@ export function ReportClient() {
             period={period}
             onPeriodChange={setPeriod}
             dateRangeLabel={dateRangeLabel}
+            availableMonths={availableMonths}
           />
 
           {/* Performance */}
