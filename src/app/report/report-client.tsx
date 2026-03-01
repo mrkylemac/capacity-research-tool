@@ -284,11 +284,11 @@ export function ReportClient() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="min-w-0">
-              <span className="text-[13px] font-semibold text-foreground leading-none truncate block">
+              <span className="text-sm font-semibold text-foreground leading-none truncate block">
                 {venueName}
               </span>
               {venueAddress && (
-                <span className="text-[11px] text-muted-foreground leading-none truncate block mt-0.5">
+                <span className="text-sm text-muted-foreground leading-none truncate block mt-0.5">
                   {venueAddress}
                 </span>
               )}
@@ -298,7 +298,7 @@ export function ReportClient() {
           {/* Right: sync status + export CTA */}
           <div className="flex items-center gap-2 shrink-0">
             {entry.cachedAt && (
-              <span className="text-[11px] text-muted-foreground hidden sm:block">
+              <span className="text-sm text-muted-foreground hidden sm:block">
                 {formatRelativeTime(entry.cachedAt)}
               </span>
             )}
@@ -314,7 +314,7 @@ export function ReportClient() {
             <button
               type="button"
               onClick={handleExportPDF}
-              className="inline-flex items-center gap-1.5 rounded-full bg-foreground text-background text-[12px] font-medium px-3.5 py-1.5 hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-1.5 rounded-full bg-foreground text-background text-sm font-medium px-3.5 py-1.5 hover:opacity-90 transition-opacity"
             >
               <Download className="h-3 w-3" />
               Export
@@ -326,7 +326,7 @@ export function ReportClient() {
 
       {/* Print-only header */}
       <div className="hidden print:block px-8 pt-6 pb-2">
-        <p className="text-[11px] text-muted-foreground uppercase tracking-widest">
+        <p className="text-sm text-muted-foreground uppercase tracking-widest">
           Slow Folk · Competitor Intelligence
         </p>
         <h1 className="text-xl font-semibold mt-1">{venueName}</h1>
@@ -344,7 +344,7 @@ export function ReportClient() {
             onChange={setPeriod}
             availableMonths={availableMonths}
           />
-          <span className="text-[13px] text-muted-foreground tabular-nums">{dateRangeLabel}</span>
+          <span className="text-sm text-muted-foreground tabular-nums">{dateRangeLabel}</span>
         </div>
 
         {/* ── Report sections ── */}

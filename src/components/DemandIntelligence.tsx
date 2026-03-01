@@ -120,9 +120,9 @@ function PeakSlotList({
   return (
     <div>
       {/* Header: section label + avg reference callout */}
-      <div className="flex items-baseline justify-between mb-5">
-        <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">{title}</p>
-        <p className="text-xs text-muted-foreground">
+      <div className="flex items-baseline justify-between mb-6">
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <p className="text-sm text-muted-foreground">
           venue avg{' '}
           <span className="font-semibold text-foreground tabular-nums">
             {avgOccupancyPct.toFixed(0)}%
@@ -130,7 +130,7 @@ function PeakSlotList({
         </p>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-3">
         {top5.map(s => {
           const aboveAvg = s.utilisation >= avgOccupancyPct;
           return (
@@ -257,17 +257,17 @@ export function DemandIntelligence({ sessions, metrics }: DemandIntelligenceProp
       <div>
         <div className="flex items-start justify-between mb-5">
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Visitors by day</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Total across period</p>
+            <p className="text-sm font-medium">Visitors by day</p>
+            <p className="text-sm text-muted-foreground mt-0.5">Total across period</p>
           </div>
           <div className="flex gap-5 text-right shrink-0">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground mb-1">Weekdays</p>
+              <p className="text-sm font-medium mb-1">Weekdays</p>
               <p className="text-lg font-semibold tabular-nums leading-none tracking-[-0.02em]">{weekdayPct.toFixed(0)}%</p>
               <p className="text-sm text-muted-foreground mt-1">{weekdayTotal.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground mb-1">Weekends</p>
+              <p className="text-sm font-medium mb-1">Weekends</p>
               <p className="text-lg font-semibold tabular-nums leading-none tracking-[-0.02em]">{weekendPct.toFixed(0)}%</p>
               <p className="text-sm text-muted-foreground mt-1">{weekendTotal.toLocaleString()}</p>
             </div>
@@ -279,9 +279,9 @@ export function DemandIntelligence({ sessions, metrics }: DemandIntelligenceProp
           {dayData.map(d => (
             <div key={d.name} className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground w-8 shrink-0">{d.name}</span>
-              <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
+              <div className="flex-1 h-2 bg-muted overflow-hidden">
                 <div
-                  className="h-full rounded-full transition-all duration-300"
+                  className="h-full transition-all duration-300"
                   style={{
                     width: `${d.pctOfPeak}%`,
                     backgroundColor: d.visitors === 0
@@ -301,11 +301,11 @@ export function DemandIntelligence({ sessions, metrics }: DemandIntelligenceProp
 
         <p className="text-sm text-muted-foreground mt-3 flex gap-3">
           <span>
-            <span className="inline-block w-2.5 h-1.5 rounded-full align-middle mr-1" style={{ backgroundColor: 'hsl(0 0% 28%)' }} />
+            <span className="inline-block w-2.5 h-2.5 mr-1" style={{ backgroundColor: 'hsl(0 0% 28%)' }} />
             Weekday
           </span>
           <span>
-            <span className="inline-block w-2.5 h-1.5 rounded-full align-middle mr-1" style={{ backgroundColor: 'hsl(0 0% 60%)' }} />
+            <span className="inline-block w-2.5 h-2.5 mr-1" style={{ backgroundColor: 'hsl(0 0% 60%)' }} />
             Weekend
           </span>
         </p>
@@ -315,12 +315,12 @@ export function DemandIntelligence({ sessions, metrics }: DemandIntelligenceProp
       <div className="pt-4 border-t border-border grid grid-cols-2 gap-8">
         <PeakSlotList
           slots={weekdaySlots}
-          title="Weekday peak"
+          title="Weekday"
           avgOccupancyPct={avgOccupancyPct}
         />
         <PeakSlotList
           slots={weekendSlots}
-          title="Weekend peak"
+          title="Weekend"
           avgOccupancyPct={avgOccupancyPct}
         />
       </div>

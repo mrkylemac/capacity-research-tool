@@ -208,7 +208,7 @@
 
   /* Card title — sentence case, same weight/size as Visitors section labels */
   .v-card-title {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
     color: hsl(var(--foreground));
     letter-spacing: -0.01em;
@@ -216,7 +216,7 @@
 
   /* Metric strip number */
   .v-metric-value {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1;
@@ -225,14 +225,14 @@
 
   /* Metric strip label */
   .v-metric-label {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
     color: hsl(var(--muted-foreground));
   }
 
   /* Metric strip unit */
   .v-metric-unit {
-    font-size: 12px;
+    font-size: 16px;
     color: hsl(var(--muted-foreground));
   }
 

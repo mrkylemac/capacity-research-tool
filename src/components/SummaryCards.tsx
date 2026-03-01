@@ -173,7 +173,7 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
           {visitorChartData.length > 1 && (
             <div className="pt-1 border-t border-border">
               <p className="text-md text-muted-foreground mb-3">Monthly visitors</p>
-              <ResponsiveContainer width="100%" height={110}>
+              <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={visitorChartData} margin={{ top: 2, right: 2, bottom: 0, left: 0 }} barCategoryGap="20%">
                   <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
                   <XAxis

@@ -83,8 +83,8 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-[12px] text-muted-foreground">Visitors per month</p>
-        <p className="text-[12px] text-muted-foreground flex gap-3">
+        <p className="text-sm text-muted-foreground">Visitors per month</p>
+        <p className="text-sm text-muted-foreground flex gap-3">
           {peakMonth && (
             <span>Peak <span className="font-medium text-foreground">{peakMonth}</span></span>
           )}
@@ -98,7 +98,7 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
         </p>
       </div>
 
-      <ResponsiveContainer width="100%" height={140}>
+      <ResponsiveContainer width="100%" height={250}>
         <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id="visitorsGradient" x1="0" y1="0" x2="0" y2="1">
@@ -140,7 +140,7 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
       </ResponsiveContainer>
 
       {hasPartialMonths && (
-        <p className="text-[11px] text-muted-foreground mt-1.5">
+        <p className="text-sm text-muted-foreground mt-1.5">
           Faded months have insufficient data and are excluded from growth calculations.
         </p>
       )}

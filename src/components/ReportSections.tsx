@@ -44,7 +44,7 @@ function buildWeeklyTimeseries(sessions: MomenceSession[]): { week: string; visi
 
 function CardHeader({ title, right }: { title: string; right?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-14">
       <p className="v-card-title">{title}</p>
       {right}
     </div>
@@ -54,7 +54,7 @@ function CardHeader({ title, right }: { title: string; right?: React.ReactNode }
 function MetricTile({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <p className="text-[11px] font-medium text-muted-foreground mb-1.5 leading-none">{label}</p>
+      <p className="text-sm font-medium text-muted-foreground mb-1.5 leading-none">{label}</p>
       <p className="text-xl font-semibold tabular-nums leading-none tracking-[-0.02em]">{value}</p>
     </div>
   );
@@ -105,18 +105,18 @@ function SnapshotSection({
       <CardContent className="p-5">
         <CardHeader title="Snapshot" />
 
-        <p className="text-[13px] font-medium text-foreground leading-relaxed mb-5">{summary}</p>
+        <p className="text-md font-medium text-foreground mb-7 pr-20">{summary}</p>
 
         {/* Visitors per week chart */}
         {weeklyData.length > 1 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[12px] text-muted-foreground">Visitors per week</p>
-              <p className="text-[12px] text-muted-foreground tabular-nums">
+              <p className="text-sm font-medium text-muted-foreground">Visitors per week</p>
+              <p className="text-sm font-medium text-muted-foreground tabular-nums">
                 <span className="font-semibold text-foreground">{Math.round(metrics.weeklyVisits).toLocaleString()}</span> avg
               </p>
             </div>
-            <ResponsiveContainer width="100%" height={120}>
+            <ResponsiveContainer width="100%" height={320}>
               <AreaChart data={weeklyData} margin={{ top: 4, right: 2, bottom: 0, left: 0 }}>
                 <defs>
                   <linearGradient id="snapshotGradient" x1="0" y1="0" x2="0" y2="1">
@@ -153,25 +153,25 @@ function SnapshotSection({
         )}
 
         {/* Core metric tiles */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-5 mb-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-5">
           {coreMetrics.map(item => (
             <MetricTile key={item.label} value={item.value} label={item.label} />
           ))}
         </div>
 
         {/* Weekday / weekend split */}
-        <div className="pt-4 border-t border-border grid grid-cols-2 gap-4">
+        {/* <div className="pt-4 border-t border-border grid grid-cols-2 gap-4">
           <div>
-            <p className="text-[11px] font-medium text-muted-foreground mb-1.5 leading-none">Weekday</p>
+            <p className="text-sm font-medium text-muted-foreground mb-1.5 leading-none">Weekday</p>
             <p className="text-xl font-semibold tabular-nums leading-none tracking-[-0.02em]">{weekdayPct}%</p>
-            <p className="text-[11px] text-muted-foreground mt-1.5">{metrics.weekdayVisits.toLocaleString()} visitors Mon–Fri</p>
+            <p className="text-sm text-muted-foreground mt-1.5">{metrics.weekdayVisits.toLocaleString()} visitors Mon–Fri</p>
           </div>
           <div>
-            <p className="text-[11px] font-medium text-muted-foreground mb-1.5 leading-none">Weekend</p>
+            <p className="text-sm font-medium text-muted-foreground mb-1.5 leading-none">Weekend</p>
             <p className="text-xl font-semibold tabular-nums leading-none tracking-[-0.02em]">{weekendPct}%</p>
-            <p className="text-[11px] text-muted-foreground mt-1.5">{metrics.weekendVisits.toLocaleString()} visitors Sat–Sun</p>
+            <p className="text-sm text-muted-foreground mt-1.5">{metrics.weekendVisits.toLocaleString()} visitors Sat–Sun</p>
           </div>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );
@@ -238,7 +238,7 @@ function CapacitySection({
               style={{ width: `${Math.min(seatOccupancyPct, 100)}%`, backgroundColor: 'hsl(0 0% 28%)' }}
             />
           </div>
-          <p className="text-[12px] text-muted-foreground mt-1.5">{capacityString}</p>
+          <p className="text-sm text-muted-foreground mt-1.5">{capacityString}</p>
         </div>
 
         {/* Structural capacity metrics */}
@@ -252,8 +252,8 @@ function CapacitySection({
         {visitorChartData.length > 1 && (
           <div className="pt-4 mt-4 border-t border-border">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[12px] text-muted-foreground">By month</p>
-              <p className="text-[12px] text-muted-foreground flex gap-3">
+              <p className="text-sm text-muted-foreground">By month</p>
+              <p className="text-sm text-muted-foreground flex gap-3">
                 <span>
                   <span className="inline-block w-2.5 h-2 rounded-sm align-middle mr-1" style={{ backgroundColor: 'hsl(0 0% 28%)' }} />
                   Filled
@@ -264,7 +264,7 @@ function CapacitySection({
                 </span>
               </p>
             </div>
-            <ResponsiveContainer width="100%" height={100}>
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart
                 data={visitorChartData}
                 margin={{ top: 2, right: 2, bottom: 0, left: 0 }}
@@ -328,7 +328,7 @@ function TrendsSection({ monthlyData }: { monthlyData: MonthlyData[] }) {
       <CardContent className="p-5">
         <CardHeader title="Trajectory & occupancy" />
         <GrowthStory monthlyData={monthlyData} />
-        <div className="border-t border-border mt-5 pt-5">
+        <div className="mt-12 pt-5">
           <UtilisationTrend monthlyData={monthlyData} />
         </div>
       </CardContent>

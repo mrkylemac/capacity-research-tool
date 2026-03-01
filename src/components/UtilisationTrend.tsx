@@ -60,8 +60,8 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-[12px] text-muted-foreground">Monthly occupancy (%)</p>
-        <p className="text-[12px] text-muted-foreground flex gap-3">
+        <p className="text-sm text-muted-foreground">Monthly occupancy (%)</p>
+        <p className="text-sm text-muted-foreground flex gap-3">
           <span>
             Peak <span className="font-medium text-foreground tabular-nums">{peak.occupancy.toFixed(0)}%</span>
             {' '}<span className="text-muted-foreground">{peak.month}</span>
@@ -72,7 +72,7 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
         </p>
       </div>
 
-      <ResponsiveContainer width="100%" height={140}>
+      <ResponsiveContainer width="100%" height={250}>
         <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
           <XAxis
@@ -110,7 +110,7 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
       </ResponsiveContainer>
 
       {hasPartialMonths && (
-        <p className="text-[11px] text-muted-foreground mt-1.5">
+        <p className="text-sm text-muted-foreground mt-1.5">
           Faded months have insufficient data and are excluded from calculations.
         </p>
       )}

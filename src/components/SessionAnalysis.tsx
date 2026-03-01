@@ -139,7 +139,7 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
             Normalised to days where at least one session ran
             {closedDays.length > 0 && ` · ${closedDays.join(', ')} excluded`}
           </p>
-          <ResponsiveContainer width="100%" height={140}>
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart data={dayProfile} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} barCategoryGap="25%">
               <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
               <XAxis
