@@ -6,7 +6,9 @@ import type { CachedVenueEntry } from '@/lib/venueCache';
 interface RecentSearchesProps {
   entries: CachedVenueEntry[];
   onSelect: (entry: CachedVenueEntry) => void;
-  onDelete: (key: string) => void;
+  onDelete?: (key: string) => void;
+  onRefresh?: (entry: CachedVenueEntry) => Promise<void>;
+  refreshingKey?: string | null;
 }
 
 function derivePeriodLabel(from: string, to: string): { duration: string; fromLabel: string } {
@@ -61,8 +63,8 @@ export function RecentSearches({ entries, onSelect }: RecentSearchesProps) {
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="min-w-0 pt-0.5">
                   <p className="font-semibold text-base leading-tight truncate">{entry.venueName}</p>
-                  <p className="text-sm text-muted-foreground mt-1.5 leading-snug">{duration}</p>
-                  <p className="text-sm text-muted-foreground leading-snug">({fromLabel})</p>
+                  <p className="text-md text-muted-foreground mt-1.5 leading-snug">{duration}</p>
+                  <p className="text-md text-muted-foreground leading-snug">({fromLabel})</p>
                 </div>
                 <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-muted flex items-center justify-center">
                   {entry.hostInfo?.profileImage ? (
@@ -82,15 +84,15 @@ export function RecentSearches({ entries, onSelect }: RecentSearchesProps) {
               {/* Pills */}
               <div className="flex flex-wrap gap-2">
                 {location && (
-                  <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground">
+                  <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
                     {location}
                   </span>
                 )}
-                <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground">
+                <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
                   {sessionCount.toLocaleString()} sessions
                 </span>
                 {weeklyVisits > 0 && (
-                  <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground">
+                  <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
                     {weeklyVisits.toLocaleString()} weekly visits
                   </span>
                 )}

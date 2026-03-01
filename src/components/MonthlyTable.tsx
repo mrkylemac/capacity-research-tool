@@ -292,7 +292,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
       <Card>
         <CardContent className="p-5">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-md text-muted-foreground">
               {viewMode === 'timeline' 
                 ? 'Visitor Growth & Seasonal Patterns'
                 : viewMode === 'weekly' 
@@ -303,12 +303,12 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
               }
             </p>
             {viewMode === 'timeline' && data.length > 1 && (
-              <Badge className="text-xs">
+              <Badge className="text-s">
                 {data.length} months tracked
               </Badge>
             )}
             {selectedMonth && (
-              <Badge className="text-xs">
+              <Badge className="text-s">
                 {weeklyData.length} weeks
               </Badge>
             )}
@@ -372,16 +372,16 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
             </ResponsiveContainer>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-2">
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+            <span className="text-md text-muted-foreground flex items-center gap-1">
               <span className="inline-block w-3 h-3 rounded-sm bg-green-500 opacity-85" /> ≥70% occupancy
             </span>
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+            <span className="text-md text-muted-foreground flex items-center gap-1">
               <span className="inline-block w-3 h-3 rounded-sm bg-amber-500 opacity-85" /> 40–69%
             </span>
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+            <span className="text-md text-muted-foreground flex items-center gap-1">
               <span className="inline-block w-3 h-3 rounded-sm bg-red-500 opacity-85" /> &lt;40%
             </span>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-md text-muted-foreground">
               — — avg {avgOccupancy.toFixed(1)}% &nbsp;·&nbsp; green dashed = 70% threshold
             </span>
           </div>
@@ -424,10 +424,10 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                           <span className="hidden sm:inline">{row.month} {row.year}</span>
                           <span className="sm:hidden">{row.month.slice(0, 3)} {row.year.toString().slice(2)}</span>
                           {pattern?.trend === 'high' && (
-                            <Badge variant="secondary" className="ml-2 text-[10px] hidden sm:inline-flex">Peak</Badge>
+                            <Badge variant="secondary" className="ml-2 text-md hidden sm:inline-flex">Peak</Badge>
                           )}
                           {pattern?.trend === 'low' && (
-                            <Badge variant="outline" className="ml-2 text-[10px] hidden sm:inline-flex">Off</Badge>
+                            <Badge variant="outline" className="ml-2 text-md hidden sm:inline-flex">Off</Badge>
                           )}
                         </td>
                         <td className="text-right font-medium">{row.ticketsSold.toLocaleString()}</td>
@@ -443,7 +443,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                         <td className={getOccupancyClass(row.utilisation)}>
                           {row.utilisation.toFixed(1)}%
                         </td>
-                        <td className="hidden sm:table-cell text-xs text-muted-foreground">
+                        <td className="hidden sm:table-cell text-md text-muted-foreground">
                           {index === 0 && 'Launch'}
                           {index > 0 && index < seasonalAnalysis.rampUpMonths && 'Ramp-up'}
                           {index >= seasonalAnalysis.rampUpMonths && 'Established'}
@@ -455,7 +455,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
               </table>
             ) : viewMode === 'weekly' ? (
               <div className="divide-y">
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-3 sm:px-4 py-3 bg-muted/30 text-xs sm:text-sm font-medium">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-3 sm:px-4 py-3 bg-muted/30 text-md sm:text-md font-medium">
                   <div>Week</div>
                   <div className="hidden sm:block text-right">Sessions</div>
                   <div className="text-right">Visitors</div>
@@ -471,9 +471,9 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                   return (
                     <Collapsible key={row.weekKey} open={isExpanded} onOpenChange={() => toggleWeek(row.weekKey)}>
                       <CollapsibleTrigger asChild>
-                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-3 sm:px-4 py-3 text-sm cursor-pointer hover:bg-muted/20 transition-colors">
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-3 sm:px-4 py-3 text-md cursor-pointer hover:bg-muted/20 transition-colors">
                           <div className="font-medium flex items-center gap-1.5 min-w-0">
-                            <span className="text-muted-foreground text-xs flex-shrink-0">{isExpanded ? '▼' : '▶'}</span>
+                            <span className="text-muted-foreground text-md flex-shrink-0">{isExpanded ? '▼' : '▶'}</span>
                             <span className="truncate">
                               <span className="hidden sm:inline">{row.weekLabel} – </span>
                               {format(row.weekStart, 'MMM d')}
@@ -499,7 +499,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                               return (
                                 <div
                                   key={session.id}
-                                  className="flex items-center justify-between text-xs bg-background rounded px-3 py-2 border"
+                                  className="flex items-center justify-between text-md bg-background rounded px-3 py-2 border"
                                 >
                                   <div>
                                     <span className="font-medium">
@@ -510,8 +510,8 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                                     </span>
                                   </div>
                                   <Badge
-                                    variant={occupancyPct >= 70 ? 'success' : occupancyPct >= 40 ? 'warning' : 'neutral'}
-                                    className="text-xs ml-2 flex-shrink-0"
+                                    variant={occupancyPct >= 70 ? 'secondary' : 'outline'}
+                                    className="text-md ml-2 flex-shrink-0"
                                   >
                                     {session.ticketsSold}/{session.capacity}
                                   </Badge>
@@ -589,36 +589,36 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
           <div className="bg-muted/30 rounded-lg p-4 space-y-3">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-xs text-muted-foreground">Peak Season</p>
-                <p className="text-sm font-semibold">{seasonalAnalysis.peakSeason || '-'}</p>
+                <p className="text-md text-muted-foreground">Peak Season</p>
+                <p className="text-md font-semibold">{seasonalAnalysis.peakSeason || '-'}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Growth Rate</p>
-                <p className={`text-sm font-semibold ${seasonalAnalysis.growthRate > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className="text-md text-muted-foreground">Growth Rate</p>
+                <p className={`text-md font-semibold ${seasonalAnalysis.growthRate > 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {seasonalAnalysis.growthRate > 0 ? '+' : ''}{seasonalAnalysis.growthRate.toFixed(0)}%
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Ramp-up Period</p>
-                <p className="text-sm font-semibold">{seasonalAnalysis.rampUpMonths} months</p>
+                <p className="text-md text-muted-foreground">Ramp-up Period</p>
+                <p className="text-md font-semibold">{seasonalAnalysis.rampUpMonths} months</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Total Tracked</p>
-                <p className="text-sm font-semibold">{data.length} months</p>
+                <p className="text-md text-muted-foreground">Total Tracked</p>
+                <p className="text-md font-semibold">{data.length} months</p>
               </div>
             </div>
             <div className="pt-3 border-t space-y-1">
-              <p className="text-xs font-medium">Insights:</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-md font-medium">Insights:</p>
+              <p className="text-md text-muted-foreground">
                 • <span className="font-medium">{seasonalAnalysis.peakSeason}</span> shows strongest visitation patterns
               </p>
               {seasonalAnalysis.growthRate > 0 && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-md text-muted-foreground">
                   • <span className="font-medium">Positive momentum:</span> visitors growing {seasonalAnalysis.growthRate.toFixed(0)}% from early to recent months
                 </p>
               )}
               {seasonalAnalysis.rampUpMonths > 0 && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-md text-muted-foreground">
                   • <span className="font-medium">Launch phase:</span> took {seasonalAnalysis.rampUpMonths} months to reach 80% of peak performance
                 </p>
               )}
@@ -627,12 +627,12 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
         </div>
       )}
       {viewMode === 'monthly' && (
-        <p className="text-xs text-muted-foreground text-center">
+        <p className="text-md text-muted-foreground text-center">
           Click any month row to see weekly breakdown
         </p>
       )}
       {viewMode === 'weekly' && (
-        <p className="text-xs text-muted-foreground text-center">
+        <p className="text-md text-muted-foreground text-center">
           Click any week to see individual sessions
         </p>
       )}
@@ -644,10 +644,10 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
   return (
     <Collapsible>
       <CollapsibleTrigger asChild>
-        <button type="button" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
+        <button type="button" className="flex items-center gap-2 text-md font-medium text-muted-foreground hover:text-foreground transition-colors group">
           <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
           <span>Show session data</span>
-          <span className="text-xs font-normal">({data.length} months · {sessions.length} sessions)</span>
+          <span className="text-md font-normal">({data.length} months · {sessions.length} sessions)</span>
         </button>
       </CollapsibleTrigger>
       <CollapsibleContent>
