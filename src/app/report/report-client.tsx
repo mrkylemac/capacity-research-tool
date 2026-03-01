@@ -1,32 +1,46 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { X } from 'lucide-react';
-import { VenueHeader } from '@/components/VenueHeader';
-import { PerformanceScorecard } from '@/components/PerformanceScorecard';
-import { OperationalBlueprint } from '@/components/OperationalBlueprint';
-import { SessionAnalysis } from '@/components/SessionAnalysis';
-import { DemandIntelligence } from '@/components/DemandIntelligence';
-import { GrowthStory } from '@/components/GrowthStory';
-import { UtilisationTrend } from '@/components/UtilisationTrend';
-import { CapacityUtilisation } from '@/components/CapacityUtilisation';
-import { MonthlyTable } from '@/components/MonthlyTable';
+import { ArrowLeft, Download, RefreshCw } from 'lucide-react';
+import { ReportSections } from '@/components/ReportSections';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
-import { getCachedEntry, getCacheKey, getRecentSearches } from '@/lib/venueCache';
+import {
+  getCachedEntry,
+  getCacheKey,
+  getRecentSearches,
+  setCachedEntry,
+} from '@/lib/venueCache';
 import { VENUES } from '@/config/api';
 import { useVenueInfo } from '@/hooks/useVenueInfo';
+import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import {
+  PeriodSelector,
   getPeriodRange,
-  formatPeriodDateRange,
   inferPeriodFromDates,
   PERIOD_OPTIONS,
   type PeriodOption,
 } from '@/components/ui/period-selector';
+import { format, parseISO } from 'date-fns';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MonthlyData, MomenceSession } from '@/types/momence';
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Format the exact computation window, e.g. "15 Oct – 28 Feb 2026" */
+function formatComputedRange(from: string, to: string): string {
+  try {
+    const f = parseISO(from);
+    const t = parseISO(to);
+    if (f.getFullYear() === t.getFullYear()) {
+      return `${format(f, 'd MMM')} – ${format(t, 'd MMM yyyy')}`;
+    }
+    return `${format(f, 'd MMM yyyy')} – ${format(t, 'd MMM yyyy')}`;
+  } catch {
+    return `${from} – ${to}`;
+  }
+}
 
 function pickEntry({
   hostId,
@@ -47,21 +61,27 @@ function pickEntry({
   return recent[0] ?? null;
 }
 
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground shrink-0">
-        {children}
-      </h2>
-      <Separator className="flex-1" />
-    </div>
-  );
+function formatRelativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
 }
+
+// ── Main client ───────────────────────────────────────────────────────────────
 
 export function ReportClient() {
   const [entry, setEntry] = useState<CachedVenueEntry | null>(null);
   const [hostId, setHostId] = useState<string | null>(null);
   const [period, setPeriod] = useState<PeriodOption>('1m');
+  const [isSyncInProgress, setIsSyncInProgress] = useState(false);
+  const syncStarted = useRef(false);
+
+  // Hook for live re-fetching
+  const syncHook = useSessions();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -76,12 +96,52 @@ export function ReportClient() {
     if (from && to) setPeriod(inferPeriodFromDates(from, to));
   }, []);
 
+  // ── Re-fetch / Sync ──────────────────────────────────────────────────────
+  const handleSync = useCallback(async () => {
+    if (!hostId || !entry || isSyncInProgress) return;
+    setIsSyncInProgress(true);
+    syncStarted.current = true;
+    try {
+      await syncHook.fetchData({
+        hostId,
+        startsAtFrom: entry.dateRange.from,
+        startsAtTo: entry.dateRange.to,
+      });
+    } catch {
+      setIsSyncInProgress(false);
+      syncStarted.current = false;
+    }
+  }, [hostId, entry, isSyncInProgress, syncHook]);
+
+  // When sync completes, persist fresh data and update local state
+  useEffect(() => {
+    if (!syncStarted.current || syncHook.isLoading) return;
+    if (!hostId || !entry) return;
+
+    if (syncHook.allSessions.length > 0) {
+      const saved = setCachedEntry({
+        hostId,
+        platform: entry.platform,
+        venueName: syncHook.hostInfo?.name ?? entry.venueName,
+        dateRange: entry.dateRange,
+        sessions: syncHook.allSessions,
+        metrics: syncHook.metrics,
+        monthlyData: syncHook.monthlyData,
+        venueConfig: syncHook.venueConfig,
+        hostInfo: syncHook.hostInfo,
+      });
+      setEntry(saved);
+    }
+
+    setIsSyncInProgress(false);
+    syncStarted.current = false;
+  }, [syncHook.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Venue info from Google Maps ──────────────────────────────────────────
   const apiVenueConfig = VENUES.find(v => v.id === (hostId ?? entry?.hostId));
   const { info: placeInfo } = useVenueInfo(apiVenueConfig?.mapsQuery);
 
-  // --- All-time data: merge every cached search for this venue ---
-
-  /** All sessions from all cache entries for this venue, deduplicated by id. */
+  // ── All-time data: merge every cached search for this venue ─────────────
   const allCachedSessions = useMemo<MomenceSession[]>(() => {
     if (!entry?.hostId) return entry?.sessions ?? [];
     const searches = getRecentSearches().filter(s => s.hostId === entry.hostId);
@@ -89,16 +149,12 @@ export function ReportClient() {
     const result: MomenceSession[] = [];
     searches.forEach(search => {
       search.sessions.forEach(s => {
-        if (!seen.has(s.id)) {
-          seen.add(s.id);
-          result.push(s);
-        }
+        if (!seen.has(s.id)) { seen.add(s.id); result.push(s); }
       });
     });
     return result;
   }, [entry?.hostId, entry?.sessions]);
 
-  /** All monthly data merged from every cached search (highest ticketsSold wins per month). */
   const allVenueMonthlyData = useMemo<MonthlyData[]>(() => {
     if (!entry?.hostId) return entry?.monthlyData ?? [];
     const searches = getRecentSearches().filter(s => s.hostId === entry.hostId);
@@ -116,25 +172,7 @@ export function ReportClient() {
     });
   }, [entry?.hostId, entry?.monthlyData]);
 
-  /** Opening date — earliest operatingSince across all cached searches. */
-  const openingDate = useMemo(() => {
-    if (!entry?.hostId) return entry?.metrics?.operatingSince ?? null;
-    const searches = getRecentSearches().filter(s => s.hostId === entry.hostId);
-    let earliest: string | null = null;
-    searches.forEach(search => {
-      const since = search.metrics?.operatingSince;
-      if (!since || since === '-') return;
-      if (!earliest) { earliest = since; return; }
-      const a = new Date(earliest);
-      const b = new Date(since);
-      if (!isNaN(b.getTime()) && b < a) earliest = since;
-    });
-    return earliest ?? entry?.metrics?.operatingSince ?? null;
-  }, [entry?.hostId, entry?.metrics?.operatingSince]);
-
-  // --- Available data span ---
-
-  /** Months of real data available, derived from the earliest session to today. */
+  // ── Available months span ────────────────────────────────────────────────
   const availableMonths = useMemo<number | null>(() => {
     if (allCachedSessions.length === 0) return null;
     let minTs = Infinity;
@@ -145,27 +183,23 @@ export function ReportClient() {
     return (Date.now() - minTs) / (1000 * 60 * 60 * 24 * 30.44);
   }, [allCachedSessions]);
 
-  // Auto-correct period if it exceeds the available data span
+  // Auto-correct period if it exceeds available data
   useEffect(() => {
     if (availableMonths === null) return;
     const opt = PERIOD_OPTIONS.find(o => o.value === period);
     if (!opt || opt.months === null || opt.months <= availableMonths) return;
-    // Clamp to the largest valid months-based option, or 'all' as final fallback
     const valid = PERIOD_OPTIONS.filter(o => o.months !== null && o.months <= availableMonths);
     setPeriod(valid.length > 0 ? valid[valid.length - 1].value : 'all');
   }, [availableMonths, period]);
 
-  // --- Period-filtered data ---
-
+  // ── Period-filtered data ─────────────────────────────────────────────────
   const periodRange = useMemo(() => getPeriodRange(period), [period]);
 
-  /** Sessions filtered to the selected period. */
   const filteredSessions = useMemo(() => {
     if (period === 'all') return allCachedSessions;
     return allCachedSessions.filter(s => new Date(s.startsAt) >= periodRange.from);
   }, [allCachedSessions, period, periodRange.from]);
 
-  /** Monthly data filtered to the selected period. */
   const filteredMonthlyData = useMemo(() => {
     if (period === 'all') return allVenueMonthlyData;
     return allVenueMonthlyData.filter(m => {
@@ -174,7 +208,6 @@ export function ReportClient() {
     });
   }, [allVenueMonthlyData, period, periodRange.from]);
 
-  /** Benchmark metrics recomputed from the filtered session set. */
   const benchmarkMetrics = useMemo(() => {
     const activeSessions = filteredSessions.filter(s => s.ticketsSold > 0);
     if (activeSessions.length === 0) return null;
@@ -190,30 +223,29 @@ export function ReportClient() {
     );
   }, [filteredSessions, apiVenueConfig?.timezone]);
 
-  /** Earliest session date within the filtered window (for accurate date-range label). */
-  const actualFromDate = useMemo(() => {
-    if (filteredSessions.length === 0) return undefined;
-    const sorted = [...filteredSessions].sort(
-      (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
-    );
-    return new Date(sorted[0].startsAt);
-  }, [filteredSessions]);
+  // Derive label from the actual computation window (first → last active session),
+  // not the filter range, so any reader can independently verify the displayed rates.
+  const dateRangeLabel = benchmarkMetrics
+    ? formatComputedRange(benchmarkMetrics.computedFrom, benchmarkMetrics.computedTo)
+    : '';
 
-  const dateRangeLabel = formatPeriodDateRange(periodRange, actualFromDate);
+  // ── PDF export ───────────────────────────────────────────────────────────
+  const handleExportPDF = useCallback(() => {
+    if (typeof window !== 'undefined') window.print();
+  }, []);
 
+  // ── Empty states ─────────────────────────────────────────────────────────
   if (!entry) {
     return (
       <main className="notion-page">
-        <h1 className="notion-title">Report</h1>
+        {/* <h1 className="notion-title">Report</h1>
         <p className="notion-text">No cached venue found for this URL.</p>
-        <p className="notion-muted">
-          Start by fetching a venue on the home screen (or open a report link with hostId/from/to).
-        </p>
+        <p className="notion-muted">Start by fetching a venue on the home screen.</p>
         <div className="mt-6">
           <Button asChild variant="outline" size="sm">
             <Link href="/">Back</Link>
           </Button>
-        </div>
+        </div> */}
       </main>
     );
   }
@@ -232,112 +264,97 @@ export function ReportClient() {
     );
   }
 
-  const locationOverride = placeInfo?.suburb ?? apiVenueConfig?.location ?? undefined;
+  const venueName = entry.hostInfo?.name ?? entry.venueName;
+  const venueAddress = placeInfo?.address ?? placeInfo?.suburb ?? apiVenueConfig?.location ?? null;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="notion-page">
+    <div className="sauna-page-bg min-h-screen">
 
-        {/* X close / back button — top right */}
-        <div className="flex justify-end mb-6">
-          <Button
-            asChild
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Link href="/">
-              <X className="h-5 w-5" />
+      {/* ── Fixed header bar — Visitors style ── */}
+      <header className="sticky top-0 z-10 bg-background/90 backdrop-blur border-b border-border print:hidden">
+        <div className="max-w-[760px] mx-auto px-5 h-12 flex items-center justify-between">
+
+          {/* Left: back + venue identity */}
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href="/"
+              className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Back"
+            >
+              <ArrowLeft className="h-4 w-4" />
             </Link>
-          </Button>
-        </div>
+            <div className="min-w-0">
+              <span className="text-[13px] font-semibold text-foreground leading-none truncate block">
+                {venueName}
+              </span>
+              {venueAddress && (
+                <span className="text-[11px] text-muted-foreground leading-none truncate block mt-0.5">
+                  {venueAddress}
+                </span>
+              )}
+            </div>
+          </div>
 
-        <div className="space-y-10">
-          <VenueHeader
-            metrics={benchmarkMetrics}
-            venueConfig={entry.venueConfig}
-            hostInfo={entry.hostInfo}
-            hostId={hostId ?? undefined}
-            locationOverride={locationOverride}
-            placeInfo={placeInfo}
-            period={period}
-            onPeriodChange={setPeriod}
-            dateRangeLabel={dateRangeLabel}
+          {/* Right: sync status + export CTA */}
+          <div className="flex items-center gap-2 shrink-0">
+            {entry.cachedAt && (
+              <span className="text-[11px] text-muted-foreground hidden sm:block">
+                {formatRelativeTime(entry.cachedAt)}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleSync}
+              disabled={isSyncInProgress}
+              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-40"
+              aria-label="Refresh data"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isSyncInProgress ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              type="button"
+              onClick={handleExportPDF}
+              className="inline-flex items-center gap-1.5 rounded-full bg-foreground text-background text-[12px] font-medium px-3.5 py-1.5 hover:opacity-90 transition-opacity"
+            >
+              <Download className="h-3 w-3" />
+              Export
+            </button>
+          </div>
+
+        </div>
+      </header>
+
+      {/* Print-only header */}
+      <div className="hidden print:block px-8 pt-6 pb-2">
+        <p className="text-[11px] text-muted-foreground uppercase tracking-widest">
+          Slow Folk · Competitor Intelligence
+        </p>
+        <h1 className="text-xl font-semibold mt-1">{venueName}</h1>
+        {venueAddress && <p className="text-sm text-muted-foreground">{venueAddress}</p>}
+        <p className="text-sm text-muted-foreground mt-1">{dateRangeLabel}</p>
+      </div>
+
+      {/* ── Page body ── */}
+      <div className="max-w-[760px] mx-auto px-5 pt-6 pb-16 space-y-5">
+
+        {/* ── Filter row ── */}
+        <div className="flex items-center justify-between print:hidden">
+          <PeriodSelector
+            value={period}
+            onChange={setPeriod}
             availableMonths={availableMonths}
           />
-
-          {/* Performance */}
-          <section>
-            <SectionHeading>Performance</SectionHeading>
-            <PerformanceScorecard metrics={benchmarkMetrics} />
-          </section>
-
-          {/* Operations */}
-          {entry.venueConfig && (
-            <section>
-              <SectionHeading>Operations</SectionHeading>
-              <div className="space-y-4">
-                <OperationalBlueprint
-                  metrics={benchmarkMetrics}
-                  venueConfig={entry.venueConfig}
-                />
-                <SessionAnalysis
-                  sessions={filteredSessions}
-                  metrics={benchmarkMetrics}
-                />
-              </div>
-            </section>
-          )}
-
-          {/* Visitors */}
-          {filteredMonthlyData.length > 0 && (
-            <section>
-              <SectionHeading>Visitors</SectionHeading>
-              <CapacityUtilisation
-                metrics={benchmarkMetrics}
-                monthlyData={filteredMonthlyData}
-              />
-            </section>
-          )}
-
-          {/* Demand */}
-          {filteredSessions.length > 0 && (
-            <section>
-              <SectionHeading>Demand</SectionHeading>
-              <DemandIntelligence sessions={filteredSessions} metrics={benchmarkMetrics} />
-            </section>
-          )}
-
-          {/* Growth & Trajectory — always uses all-time data for trajectory value */}
-          {allVenueMonthlyData.length >= 2 && (
-            <section>
-              <SectionHeading>Growth</SectionHeading>
-              {openingDate && openingDate !== '-' && (
-                <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                  First session on record:{' '}
-                  <span className="font-medium text-foreground">{openingDate}</span>
-                  {allVenueMonthlyData.length !== entry.monthlyData.length && (
-                    <span className="text-muted-foreground/60">
-                      · using {allVenueMonthlyData.length} months from cache
-                    </span>
-                  )}
-                </div>
-              )}
-              <div className="space-y-6">
-                <GrowthStory monthlyData={allVenueMonthlyData} />
-                <UtilisationTrend monthlyData={allVenueMonthlyData} />
-              </div>
-            </section>
-          )}
-
-          {/* Monthly breakdown table */}
-          {filteredMonthlyData.length > 0 && (
-            <section>
-              <MonthlyTable data={filteredMonthlyData} sessions={filteredSessions} collapsible />
-            </section>
-          )}
+          <span className="text-[13px] text-muted-foreground tabular-nums">{dateRangeLabel}</span>
         </div>
+
+        {/* ── Report sections ── */}
+        <ReportSections
+          sessions={filteredSessions}
+          metrics={benchmarkMetrics}
+          monthlyData={filteredMonthlyData}
+          allMonthlyData={allVenueMonthlyData}
+        />
+
       </div>
     </div>
   );
