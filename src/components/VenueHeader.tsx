@@ -57,7 +57,10 @@ export function VenueHeader({
               {venueName}
             </h1>
             {location && (
-              <p className="text-sm text-muted-foreground mt-0.5">{location}</p>
+              <p className="text-md text-muted-foreground mt-0.5">{location}</p>
+            )}
+            {venue?.tagline && (
+              <p className="text-md text-muted-foreground/70 mt-2 leading-snug max-w-xs">{venue.tagline}</p>
             )}
           </div>
 
@@ -80,16 +83,16 @@ export function VenueHeader({
         <div className="flex items-center justify-between gap-3 mt-5">
           {/* Info pills */}
           <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-sm font-medium text-foreground">
+            <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
               {sessionCount.toLocaleString()} sessions
             </span>
             {weeklyVisits > 0 && (
-              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-sm font-medium text-foreground">
+              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
                 {weeklyVisits.toLocaleString()} weekly visits
               </span>
             )}
             {placeInfo?.rating && (
-              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-sm font-medium text-foreground">
+              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
                 ★ {placeInfo.rating.toFixed(1)}
               </span>
             )}
@@ -98,7 +101,7 @@ export function VenueHeader({
                 href={placeInfo.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors"
+                className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground hover:bg-muted/50 transition-colors"
               >
                 Website ↗
               </a>
@@ -107,13 +110,12 @@ export function VenueHeader({
 
           {/* Period selector — solid primary */}
           <div className="flex items-center gap-2.5 shrink-0">
-            <span className="text-sm text-muted-foreground tabular-nums hidden sm:block">
+            <span className="text-md text-muted-foreground tabular-nums hidden sm:block">
               {dateRangeLabel}
             </span>
             <PeriodSelector
               value={period}
               onChange={onPeriodChange}
-              variant="solid"
               availableMonths={availableMonths}
             />
           </div>

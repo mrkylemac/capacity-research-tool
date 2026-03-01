@@ -55,14 +55,14 @@ export function OperatingHoursOverride({
           <span className="text-muted-foreground">Operating Hours: </span>
           <span className="font-medium">{formatOperatingHours(displayHours)}</span>
           {currentOverride && (
-            <span className="text-xs text-amber-600 ml-2">(overridden)</span>
+            <span className="text-md text-amber-600 ml-2">(overridden)</span>
           )}
           {!currentOverride && (
-            <span className="text-xs text-muted-foreground ml-2">(inferred)</span>
+            <span className="text-md text-muted-foreground ml-2">(inferred)</span>
           )}
         </div>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-xs">
+          <Button variant="ghost" size="sm" className="text-s">
             Adjust <ChevronDown className="ml-1 h-3 w-3" />
           </Button>
         </CollapsibleTrigger>
@@ -72,7 +72,7 @@ export function OperatingHoursOverride({
         <div className="p-4 bg-muted/30 rounded-lg space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs">Weekday Start</Label>
+              <Label className="text-s">Weekday Start</Label>
               <Input
                 type="number"
                 min={0}
@@ -83,7 +83,7 @@ export function OperatingHoursOverride({
               />
             </div>
             <div>
-              <Label className="text-xs">Weekday End</Label>
+              <Label className="text-s">Weekday End</Label>
               <Input
                 type="number"
                 min={0}
@@ -94,7 +94,7 @@ export function OperatingHoursOverride({
               />
             </div>
             <div>
-              <Label className="text-xs">Weekend Start</Label>
+              <Label className="text-s">Weekend Start</Label>
               <Input
                 type="number"
                 min={0}
@@ -105,7 +105,7 @@ export function OperatingHoursOverride({
               />
             </div>
             <div>
-              <Label className="text-xs">Weekend End</Label>
+              <Label className="text-s">Weekend End</Label>
               <Input
                 type="number"
                 min={0}

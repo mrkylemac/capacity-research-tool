@@ -122,7 +122,7 @@
   }
 
   .notion-muted {
-    @apply text-sm text-muted-foreground;
+    @apply text-md text-muted-foreground;
   }
 
   .notion-divider {
@@ -142,7 +142,7 @@
   }
 
   .notion-table th {
-    @apply text-left text-muted-foreground font-medium text-xs py-2 px-3 border-b border-border;
+    @apply text-left text-muted-foreground font-medium text-md py-2 px-3 border-b border-border;
   }
 
   .notion-table td {
@@ -182,17 +182,17 @@
   --chart-low: var(--chart-4);
   --chart-weekend: var(--chart-5);
 
-  /* Surface & text */
+  /* Surface & text — light mode */
   --chart-background: oklch(1 0 0);
   --chart-foreground: oklch(0.145 0.004 285);
   --chart-foreground-muted: oklch(0.55 0.014 260);
   --chart-line-primary: var(--chart-1);
   --chart-line-secondary: var(--chart-2);
-  --chart-crosshair: oklch(0.4 0.1828 274.34);
-  --chart-grid: oklch(0.93 0 0);
-  --chart-tooltip-background: oklch(0.18 0.006 285 / 0.85);
-  --chart-tooltip-foreground: oklch(0.985 0 0);
-  --chart-tooltip-muted: oklch(0.65 0.01 260);
+  --chart-crosshair: oklch(0.5 0.15 274);
+  --chart-grid: oklch(0.92 0.005 260);
+  --chart-tooltip-background: oklch(1 0 0 / 0.97);
+  --chart-tooltip-foreground: oklch(0.145 0.004 285);
+  --chart-tooltip-muted: oklch(0.5 0.01 260);
   --chart-marker-background: oklch(0.97 0.005 260);
   --chart-marker-border: oklch(0.85 0.01 260);
   --chart-marker-foreground: oklch(0.3 0.01 260);

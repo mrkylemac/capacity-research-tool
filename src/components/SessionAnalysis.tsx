@@ -132,10 +132,10 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
       {/* Day-of-week session chart */}
       <Card>
         <CardContent className="p-5">
-          <p className="text-sm font-medium text-foreground mb-1">
+          <p className="text-md font-medium text-foreground mb-1">
             Average sessions per operating day
           </p>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-md text-muted-foreground mb-4">
             Normalised to days where at least one session ran
             {closedDays.length > 0 && ` · ${closedDays.join(', ')} excluded`}
           </p>
@@ -179,7 +179,7 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-          <p className="text-sm text-muted-foreground mt-3 flex gap-3">
+          <p className="text-md text-muted-foreground mt-3 flex gap-3">
             <span>
               <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mr-1" />
               Weekday
@@ -190,7 +190,7 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
             </span>
           </p>
           {rollingIntervalMins > 0 && (
-            <p className="text-sm text-muted-foreground mt-4 pt-3 border-t border-border leading-relaxed">
+            <p className="text-md text-muted-foreground mt-4 pt-3 border-t border-border leading-relaxed">
               Rolling {rollingIntervalMins}-minute waves allow up to{' '}
               <span className="font-medium text-foreground">{maxConcurrent} sessions</span> to overlap,
               placing a maximum of{' '}

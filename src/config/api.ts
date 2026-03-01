@@ -24,13 +24,15 @@ export interface VenueConfig {
   location: string;
   /** IANA timezone name, e.g. 'Australia/Melbourne'. Used to localise operating hours. */
   timezone?: string;
+  /** Short positive descriptor shown beneath the venue name on the report header. */
+  tagline?: string;
 }
 
 // Venue list
 export const VENUES: VenueConfig[] = [
   { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence', location: 'Collingwood', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
   { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence', location: 'South Yarra', mapsQuery: 'Inner Studio South Yarra Melbourne', timezone: 'Australia/Melbourne' },
-  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
 ];
 
 // Glofox configuration

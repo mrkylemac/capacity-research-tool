@@ -1,6 +1,43 @@
 @import "tailwindcss";
 @import "./theme.css";
 
+/* ── Open Runde — served from /public ──────────────────────────────────── */
+@font-face {
+  font-family: "Open Runde";
+  src: url("/OpenRunde-Regular.woff2") format("woff2"),
+       url("/OpenRunde-Regular.woff")  format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Open Runde";
+  src: url("/OpenRunde-Medium.woff2") format("woff2"),
+       url("/OpenRunde-Medium.woff")  format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Open Runde";
+  src: url("/OpenRunde-Semibold.woff2") format("woff2"),
+       url("/OpenRunde-Semibold.woff")  format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Open Runde";
+  src: url("/OpenRunde-Bold.woff2") format("woff2"),
+       url("/OpenRunde-Bold.woff")  format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @plugin "tailwindcss-animate";
 @plugin "tailwindcss-react-aria-components";
 
@@ -27,55 +64,95 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-  --radius: 0.5rem;
+  --color-data-sky: hsl(var(--data-sky));
+  --radius: 1rem;
+}
+
+/*
+ * ── Design system — light-mode first analytics palette ─────────────────────
+ *
+ * Unlayered :root so these variables win over any @layer base rules.
+ * Inspired by Visitors/Godly light stats UI: very light bg, violet accent,
+ * sky data color. Open Runde typeface as the typographic backbone.
+ *
+ * Dark mode: add class="dark-mode" to <html> element.
+ */
+:root {
+  /* Backgrounds */
+  --background:  220 14% 96%;       /* #f3f4f6 — bg-page, very light neutral */
+  --card:        0 0% 100%;         /* #ffffff — bg-surface, white cards */
+  --popover:     0 0% 100%;
+
+  /* Text */
+  --foreground:         222 47% 11%;    /* #111827 — text-strong */
+  --card-foreground:    222 47% 11%;
+  --popover-foreground: 222 47% 11%;
+
+  /* Primary accent — electric violet */
+  --primary:            263 79% 57%;    /* #7c3aed */
+  --primary-foreground: 0 0% 100%;
+
+  /* Muted surfaces — bg-soft for chips, nav pills */
+  --secondary:             220 13% 91%;  /* #eaedf2 */
+  --secondary-foreground:  222 47% 11%;
+  --muted:                 220 13% 91%;  /* #eaedf2 */
+  --muted-foreground:      218 11% 44%;  /* #6b7280 — text-subtle */
+
+  /* Accent — hover/active state */
+  --accent:            220 13% 91%;
+  --accent-foreground: 222 47% 11%;
+
+  /* Data color — sky blue for charts and weekend highlights */
+  --data-sky: 199 89% 48%;              /* #0ea5e9 */
+
+  /* System */
+  --destructive:            0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 88%;               /* #e2e4ea — border-soft */
+  --input:  220 13% 88%;
+  --ring:   263 79% 57%;               /* violet ring */
+  --radius: 1rem;
+}
+
+/* ── Dark mode override ─────────────────────────────────────────────────── */
+.dark-mode {
+  /* Backgrounds */
+  --background:  233 74% 5%;        /* #050814 — very dark navy */
+  --card:        228 44% 8%;        /* #0d101b — elevated card */
+  --popover:     228 44% 8%;
+
+  /* Text */
+  --foreground:         210 20% 98%;    /* #f9fafb — primary text */
+  --card-foreground:    210 20% 98%;
+  --popover-foreground: 210 20% 98%;
+
+  /* Primary accent */
+  --primary:            263 79% 57%;
+  --primary-foreground: 210 20% 98%;
+
+  /* Muted surfaces */
+  --secondary:             228 33% 11%;
+  --secondary-foreground:  210 20% 98%;
+  --muted:                 228 33% 11%;
+  --muted-foreground:      218 11% 65%;  /* #9ca3af */
+
+  /* Accent */
+  --accent:            228 33% 11%;
+  --accent-foreground: 210 20% 98%;
+
+  /* Data color */
+  --data-sky: 199 93% 60%;              /* #38bdf8 */
+
+  /* System */
+  --destructive:            0 72% 51%;
+  --destructive-foreground: 210 20% 98%;
+  --border: 228 28% 16%;
+  --input:  228 28% 16%;
+  --ring:   263 79% 57%;
+  --radius: 1rem;
 }
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --radius: 0.5rem;
-  }
-
-  .dark-mode {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-  }
-
   * {
     border-color: hsl(var(--border));
   }
@@ -90,68 +167,130 @@
 }
 
 @layer components {
-  .notion-page {
-    @apply max-w-4xl mx-auto px-6 py-8;
+
+  /* ── Page background — very light, subtle depth ── */
+  .sauna-page-bg {
+    background: linear-gradient(
+      180deg,
+      hsl(220 14% 96%) 0%,
+      hsl(220 14% 94%) 100%
+    );
+    min-height: 100vh;
   }
 
-  .notion-title {
-    @apply text-4xl font-bold mb-2 tracking-tight;
+  .dark-mode .sauna-page-bg {
+    background: linear-gradient(
+      180deg,
+      hsl(233 74% 4%) 0%,
+      hsl(228 50% 6%) 100%
+    );
+  }
+
+  /* ── Report cards — Visitors-style static white cards ── */
+  .report-card {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
+  }
+
+  .dark-mode .report-card {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  /* ── Accent-soft chip / tag background ── */
+  .bg-accent-soft {
+    background-color: hsl(263 79% 57% / 0.08);
+  }
+
+  .dark-mode .bg-accent-soft {
+    background-color: hsl(263 79% 57% / 0.12);
+  }
+
+  /* ── Visitors-style typography utilities ── */
+
+  /* Card title — sentence case, same weight/size as Visitors section labels */
+  .v-card-title {
+    font-size: 13px;
+    font-weight: 500;
     color: hsl(var(--foreground));
+    letter-spacing: -0.01em;
   }
 
-  .notion-subtitle {
-    @apply text-lg mb-8;
+  /* Metric strip number */
+  .v-metric-value {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Metric strip label */
+  .v-metric-label {
+    font-size: 12px;
+    font-weight: 500;
     color: hsl(var(--muted-foreground));
   }
 
-  .notion-h1 {
-    @apply text-2xl font-semibold mt-10 mb-4;
-    color: hsl(var(--foreground));
-  }
-
-  .notion-section-h1 {
-    font-size: 1.1rem;
-    @apply font-semibold mt-10 mb-4;
-    color: hsl(var(--foreground));
-  }
-
-  .notion-h2 {
-    @apply text-xl font-semibold mt-8 mb-3;
-    color: hsl(var(--foreground));
-  }
-
-  .notion-h3 {
-    @apply text-base font-semibold mt-6 mb-2;
-    color: hsl(var(--foreground));
-  }
-
-  .notion-text {
-    @apply text-base leading-relaxed;
-    color: hsl(var(--foreground));
-  }
-
-  .notion-muted {
-    @apply text-sm;
+  /* Metric strip unit */
+  .v-metric-unit {
+    font-size: 12px;
     color: hsl(var(--muted-foreground));
   }
 
-  .notion-table {
-    @apply w-full text-sm;
-  }
+  /* ── Notion-style page helpers (legacy) ── */
+  .notion-page       { @apply max-w-4xl mx-auto px-6 py-8; }
+  .notion-title      { @apply text-4xl font-bold mb-2 tracking-tight; color: hsl(var(--foreground)); }
+  .notion-subtitle   { @apply text-lg mb-8; color: hsl(var(--muted-foreground)); }
+  .notion-h1         { @apply text-2xl font-semibold mt-10 mb-4; color: hsl(var(--foreground)); }
+  .notion-section-h1 { font-size: 1.1rem; @apply font-semibold mt-10 mb-4; color: hsl(var(--foreground)); }
+  .notion-h2         { @apply text-xl font-semibold mt-8 mb-3; color: hsl(var(--foreground)); }
+  .notion-h3         { @apply text-base font-semibold mt-6 mb-2; color: hsl(var(--foreground)); }
+  .notion-text       { @apply text-base leading-relaxed; color: hsl(var(--foreground)); }
+  .notion-muted      { @apply text-sm; color: hsl(var(--muted-foreground)); }
 
   .notion-table th {
-    @apply text-left font-medium text-xs py-2 px-3 border-b;
+    @apply text-left font-medium text-md py-2 px-3 border-b;
     color: hsl(var(--muted-foreground));
     border-color: hsl(var(--border));
   }
+  .notion-table td   { @apply py-2 px-3 border-b; border-color: hsl(var(--border)); }
+  .notion-table tr:hover td { background-color: hsl(var(--muted) / 0.5); }
+}
 
-  .notion-table td {
-    @apply py-2 px-3 border-b;
-    border-color: hsl(var(--border));
+/* ── Section entrance animation ─────────────────────────────────────────────
+ * 200ms fade + 10px slide. Stagger delay applied inline in ReportSections.
+ */
+@keyframes sauna-section-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-
-  .notion-table tr:hover td {
-    background-color: hsl(var(--muted) / 0.3);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+.section-animate {
+  animation: sauna-section-in 200ms ease-out both;
+}
+
+/* ── Print styles ────────────────────────────────────────────────────────── */
+@media print {
+  .print\:hidden,
+  [class*="print:hidden"] { display: none !important; }
+
+  body,
+  .min-h-screen,
+  .sauna-page-bg { background: white !important; color: black !important; }
+
+  [class*="shadow"] { box-shadow: none !important; }
+
+  .print-section             { page-break-inside: avoid; break-inside: avoid; }
+  .print-section + .print-section + .print-section { page-break-before: auto; }
+
+  .recharts-text { fill: #333 !important; }
+  .recharts-cartesian-grid-horizontal line,
+  .recharts-cartesian-grid-vertical line { stroke: #ddd !important; }
+
+  .max-w-\[691px\] { max-width: 100% !important; padding: 0 !important; }
+}

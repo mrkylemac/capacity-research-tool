@@ -230,36 +230,36 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground mb-1">Total Revenue</p>
+            <p className="text-md text-muted-foreground mb-1">Total Revenue</p>
             <p className="text-xl font-semibold">${totalRevenue.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground mt-1">{monthlyRevenue.length} months</p>
+            <p className="text-md text-muted-foreground mt-1">{monthlyRevenue.length} months</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground mb-1">Avg Monthly</p>
+            <p className="text-md text-muted-foreground mb-1">Avg Monthly</p>
             <p className="text-xl font-semibold">${Math.round(avgMonthlyRevenue).toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-md text-muted-foreground mt-1">
               ${Math.round(avgMonthlyRevenue / 4.33).toLocaleString()}/week
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground mb-1">ARPV</p>
+            <p className="text-md text-muted-foreground mb-1">ARPV</p>
             <p className="text-xl font-semibold">
               ${totalVisitors > 0 ? (totalRevenue / totalVisitors).toFixed(2) : '0.00'}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">per visit</p>
+            <p className="text-md text-muted-foreground mt-1">per visit</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground mb-1">Rev/Session</p>
+            <p className="text-md text-muted-foreground mb-1">Rev/Session</p>
             <p className="text-xl font-semibold">
               ${sessions.length > 0 ? Math.round(totalRevenue / sessions.length).toLocaleString() : '0'}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">{sessions.length} sessions</p>
+            <p className="text-md text-muted-foreground mt-1">{sessions.length} sessions</p>
           </CardContent>
         </Card>
       </div>
@@ -279,17 +279,17 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
                     h.sentiment === 'positive' ? 'default' :
                     h.sentiment === 'warning' ? 'destructive' :
                     'secondary'
-                  } className="text-xs">
+                  } className="text-s">
                     {h.sentiment === 'positive' ? 'Signal' : h.sentiment === 'warning' ? 'Watch' : 'Insight'}
                   </Badge>
                 </div>
-                <p className="text-sm font-medium mb-1">{h.title}</p>
+                <p className="text-md font-medium mb-1">{h.title}</p>
                 <p className={`text-2xl font-bold ${
                   h.sentiment === 'positive' ? 'text-green-700' :
                   h.sentiment === 'warning' ? 'text-amber-700' :
                   'text-foreground'
                 }`}>{h.value}</p>
-                <p className="text-xs text-muted-foreground mt-1">{h.description}</p>
+                <p className="text-md text-muted-foreground mt-1">{h.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -300,7 +300,7 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
       {monthlyRevenue.length >= 2 && (
         <Card>
           <CardContent className="p-5">
-            <p className="text-xs text-muted-foreground mb-3">Monthly Revenue Trend</p>
+            <p className="text-md text-muted-foreground mb-3">Monthly Revenue Trend</p>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={monthlyRevenue} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
@@ -354,7 +354,7 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
       {/* Revenue by Day of Week */}
       <Card>
         <CardContent className="p-5">
-          <p className="text-xs text-muted-foreground mb-3">Revenue by Day of Week</p>
+          <p className="text-md text-muted-foreground mb-3">Revenue by Day of Week</p>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dayRevenue} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>

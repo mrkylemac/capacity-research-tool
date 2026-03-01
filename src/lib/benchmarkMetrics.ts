@@ -85,6 +85,10 @@ export interface BenchmarkMetrics {
   // Pricing (if available)
   avgPrice: number;
   impliedArpv: number;
+
+  // Exact computation window (first → last active session timestamp)
+  computedFrom: string;
+  computedTo: string;
 }
 
 export interface SlowFolkComparisonMetric {
@@ -267,6 +271,8 @@ export function calculateBenchmarkMetrics(
     weeksInRange,
     avgPrice,
     impliedArpv,
+    computedFrom: fromDate,
+    computedTo: toDate,
   };
 }
 

@@ -128,7 +128,7 @@ export function HomeClient() {
         {/* Heading */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Venues</h1>
-          <p className="text-sm text-muted-foreground mt-1">Select a venue to open its report</p>
+          <p className="text-md text-muted-foreground mt-1">Select a venue to open its report</p>
         </div>
 
         {/* Venue grid */}
@@ -161,7 +161,7 @@ export function HomeClient() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 pt-0.5 flex-1">
                       <p className="font-semibold text-base leading-tight truncate">{displayName}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{venue.location}</p>
+                      <p className="text-md text-muted-foreground mt-1">{venue.location}</p>
                     </div>
 
                     <Avatar className="h-14 w-14 shrink-0 rounded-xl">
@@ -172,7 +172,7 @@ export function HomeClient() {
                           className="rounded-xl object-cover"
                         />
                       ) : (
-                        <AvatarFallback className="rounded-xl text-sm font-bold">
+                        <AvatarFallback className="rounded-xl text-md font-bold">
                           {initials}
                         </AvatarFallback>
                       )}
@@ -182,7 +182,7 @@ export function HomeClient() {
                   {/* Bottom row: loading indicator or refresh button */}
                   <div className="flex items-center justify-between mt-4">
                     {isLoadingThis ? (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 text-md text-muted-foreground">
                         <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
                         <span>
                           {fetchingCount > 0
@@ -225,7 +225,7 @@ export function HomeClient() {
         )}
 
         {fetchError && (
-          <p className="mt-4 text-sm text-destructive">{fetchError}</p>
+          <p className="mt-4 text-md text-destructive">{fetchError}</p>
         )}
       </div>
     </main>

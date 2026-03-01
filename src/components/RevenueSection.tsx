@@ -47,26 +47,26 @@ export function RevenueSection({ metrics, monthlyData }: RevenueSectionProps) {
         {/* Revenue KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-            <p className="text-xs text-muted-foreground mb-1">Total Revenue</p>
+            <p className="text-md text-muted-foreground mb-1">Total Revenue</p>
             <p className="text-xl font-semibold text-green-600">${totalRevenue.toLocaleString()}</p>
           </div>
           <div className="p-3 bg-muted/30 rounded-lg">
-            <p className="text-xs text-muted-foreground mb-1">Avg Monthly</p>
+            <p className="text-md text-muted-foreground mb-1">Avg Monthly</p>
             <p className="text-xl font-semibold text-foreground">${Math.round(avgMonthlyRevenue).toLocaleString()}</p>
           </div>
           <div className="p-3 bg-muted/30 rounded-lg">
-            <p className="text-xs text-muted-foreground mb-1">Avg Weekly</p>
+            <p className="text-md text-muted-foreground mb-1">Avg Weekly</p>
             <p className="text-xl font-semibold text-foreground">${Math.round(avgWeeklyRevenue).toLocaleString()}</p>
           </div>
           <div className="p-3 bg-muted/30 rounded-lg">
-            <p className="text-xs text-muted-foreground mb-1">Per Visit</p>
+            <p className="text-md text-muted-foreground mb-1">Per Visit</p>
             <p className="text-xl font-semibold text-foreground">${metrics.avgRevenuePerVisit.toFixed(2)}</p>
           </div>
         </div>
 
         {/* Revenue Chart — monthly total + revenue-per-session trend */}
-        <p className="text-xs text-muted-foreground mb-1">Monthly Revenue Trend</p>
-        <p className="text-[10px] text-muted-foreground mb-3">
+        <p className="text-md text-muted-foreground mb-1">Monthly Revenue Trend</p>
+        <p className="text-md text-muted-foreground mb-3">
           Green = total revenue · Blue line = revenue per session
         </p>
         <AreaChart

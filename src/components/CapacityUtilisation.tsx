@@ -58,8 +58,8 @@ export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisatio
       {/* Monthly chart */}
       <Card>
         <CardContent className="p-5">
-          <p className="text-sm font-medium text-foreground mb-1">Monthly visitors vs capacity</p>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-md font-medium text-foreground mb-1">Monthly visitors vs capacity</p>
+          <p className="text-md text-muted-foreground mb-4">
             Filled <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mx-0.5" /> ·{' '}
             Unfilled <span className="inline-block w-2.5 h-2 rounded-sm bg-muted-foreground/30 align-middle mx-0.5" />
           </p>

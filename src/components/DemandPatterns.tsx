@@ -86,8 +86,8 @@ function SlotChart({ data, title }: { data: TimeSlotAnalysis[]; title: string })
   if (chartData.length === 0) {
     return (
       <div>
-        <p className="text-xs font-medium text-muted-foreground mb-2">{title}</p>
-        <p className="text-xs text-muted-foreground">No sessions found</p>
+        <p className="text-md font-medium text-muted-foreground mb-2">{title}</p>
+        <p className="text-md text-muted-foreground">No sessions found</p>
       </div>
     );
   }
@@ -97,7 +97,7 @@ function SlotChart({ data, title }: { data: TimeSlotAnalysis[]; title: string })
 
   return (
     <div>
-      <p className="text-xs font-medium text-muted-foreground mb-3">{title}</p>
+      <p className="text-md font-medium text-muted-foreground mb-3">{title}</p>
       <BarChart
         data={chartData}
         xDataKey="name"
@@ -167,17 +167,17 @@ export function DemandPatterns({ sessions, operatingHours }: DemandPatternsProps
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-5">
-            <h4 className="text-sm font-medium mb-3">Weekday Peak Hours</h4>
+            <h4 className="text-md font-medium mb-3">Weekday Peak Hours</h4>
             {weekdayPeaks.length > 0 ? (
               <div className="space-y-2">
                 {weekdayPeaks.map((peak, i) => (
                   <div key={i} className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{peak.slot}</span>
+                    <span className="text-md font-medium">{peak.slot}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-md text-muted-foreground">
                         {peak.utilisation.toFixed(0)}% avg
                       </span>
-                      <Badge variant={getBadgeVariant(peak.utilisationBand)} className="text-xs">
+                      <Badge variant={getBadgeVariant(peak.utilisationBand)} className="text-s">
                         {peak.sessionCount} sessions
                       </Badge>
                     </div>
@@ -185,24 +185,24 @@ export function DemandPatterns({ sessions, operatingHours }: DemandPatternsProps
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No weekday data</p>
+              <p className="text-md text-muted-foreground">No weekday data</p>
             )}
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-5">
-            <h4 className="text-sm font-medium mb-3">Weekend Peak Hours</h4>
+            <h4 className="text-md font-medium mb-3">Weekend Peak Hours</h4>
             {weekendPeaks.length > 0 ? (
               <div className="space-y-2">
                 {weekendPeaks.map((peak, i) => (
                   <div key={i} className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{peak.slot}</span>
+                    <span className="text-md font-medium">{peak.slot}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-md text-muted-foreground">
                         {peak.utilisation.toFixed(0)}% avg
                       </span>
-                      <Badge variant={getBadgeVariant(peak.utilisationBand)} className="text-xs">
+                      <Badge variant={getBadgeVariant(peak.utilisationBand)} className="text-s">
                         {peak.sessionCount} sessions
                       </Badge>
                     </div>
@@ -210,7 +210,7 @@ export function DemandPatterns({ sessions, operatingHours }: DemandPatternsProps
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No weekend data</p>
+              <p className="text-md text-muted-foreground">No weekend data</p>
             )}
           </CardContent>
         </Card>

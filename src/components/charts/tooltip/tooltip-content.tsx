@@ -92,7 +92,7 @@ export function TooltipContent({ title, rows, children }: TooltipContentProps) {
     >
       <div className="px-3 py-2.5" ref={measureRef}>
         {title && (
-          <div className="mb-2 font-medium text-chart-tooltip-foreground text-xs">
+          <div className="mb-2 font-medium text-chart-tooltip-foreground text-s">
             {title}
           </div>
         )}
@@ -111,7 +111,7 @@ export function TooltipContent({ title, rows, children }: TooltipContentProps) {
                   {row.label}
                 </span>
               </div>
-              <span className="font-medium text-chart-tooltip-foreground text-sm tabular-nums">
+              <span className="font-medium text-chart-tooltip-foreground text-md tabular-nums">
                 {typeof row.value === "number"
                   ? row.value.toLocaleString()
                   : row.value}

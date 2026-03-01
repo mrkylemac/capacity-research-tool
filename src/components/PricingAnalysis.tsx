@@ -99,28 +99,28 @@ export function PricingAnalysis({ sessions }: PricingAnalysisProps) {
         <CardContent className="p-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-1">Unique Offerings</p>
+              <p className="text-md text-muted-foreground mb-1">Unique Offerings</p>
               <p className="text-xl font-semibold">{offerings.length}</p>
             </div>
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-1">Price Range</p>
+              <p className="text-md text-muted-foreground mb-1">Price Range</p>
               <p className="text-xl font-semibold">
                 ${priceRange.min} – ${priceRange.max}
               </p>
             </div>
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-1">Most Offered</p>
+              <p className="text-md text-muted-foreground mb-1">Most Offered</p>
               <p className="text-lg font-semibold truncate" title={mostPopularOffering?.name}>
                 {mostPopularOffering?.name || '-'}
               </p>
-              <p className="text-xs text-muted-foreground">{mostPopularOffering?.sessionCount} sessions</p>
+              <p className="text-md text-muted-foreground">{mostPopularOffering?.sessionCount} sessions</p>
             </div>
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-1">Highest Occupancy</p>
+              <p className="text-md text-muted-foreground mb-1">Highest Occupancy</p>
               <p className="text-lg font-semibold truncate" title={highestOccupancy?.name}>
                 {highestOccupancy?.name || '-'}
               </p>
-              <p className="text-xs text-muted-foreground">{highestOccupancy?.occupancyRate.toFixed(1)}%</p>
+              <p className="text-md text-muted-foreground">{highestOccupancy?.occupancyRate.toFixed(1)}%</p>
             </div>
           </div>
         </CardContent>
@@ -165,7 +165,7 @@ export function PricingAnalysis({ sessions }: PricingAnalysisProps) {
             </table>
           </div>
           {offerings.length > 15 && (
-            <div className="p-3 text-center text-sm text-muted-foreground border-t">
+            <div className="p-3 text-center text-md text-muted-foreground border-t">
               Showing top 15 of {offerings.length} offerings
             </div>
           )}
@@ -201,7 +201,7 @@ export function PricingAnalysis({ sessions }: PricingAnalysisProps) {
                       <td className={`text-right ${getOccupancyClass(pp.avgOccupancy)}`}>
                         {pp.avgOccupancy.toFixed(1)}%
                       </td>
-                      <td className="text-sm text-muted-foreground max-w-[300px] truncate">
+                      <td className="text-md text-muted-foreground max-w-[300px] truncate">
                         {pp.classNames.slice(0, 3).join(', ')}
                         {pp.classNames.length > 3 && ` +${pp.classNames.length - 3} more`}
                       </td>

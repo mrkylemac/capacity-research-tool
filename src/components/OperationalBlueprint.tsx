@@ -69,8 +69,8 @@ export function OperationalBlueprint({ metrics, venueConfig }: OperationalBluepr
               const end   = isWeekend ? weEnd   : wdEnd;
               return (
                 <div key={name} className="flex items-center justify-between py-2.5 first:pt-1 last:pb-1">
-                  <span className="text-sm text-muted-foreground w-28">{name}</span>
-                  <span className="text-sm font-medium tabular-nums">{start} – {end}</span>
+                  <span className="text-md text-muted-foreground w-28">{name}</span>
+                  <span className="text-md font-medium tabular-nums">{start} – {end}</span>
                 </div>
               );
             })}

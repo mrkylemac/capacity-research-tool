@@ -6,7 +6,7 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 export function Badge({ className, variant = 'neutral', ...props }: BadgeProps) {
-  const base = 'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium';
+  const base = 'inline-flex items-center rounded-full px-2 py-0.5 text-md font-medium';
   const styles =
     variant === 'brand'
       ? 'bg-primary/10 text-primary'

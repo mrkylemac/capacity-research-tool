@@ -34,7 +34,7 @@ export function VenueOverview({ config }: VenueOverviewProps) {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {items.map((item, index) => (
             <div key={index}>
-              <p className="text-xs text-muted-foreground mb-1">{item.label}</p>
+              <p className="text-md text-muted-foreground mb-1">{item.label}</p>
               <p className="text-foreground font-medium">{item.value}</p>
             </div>
           ))}
