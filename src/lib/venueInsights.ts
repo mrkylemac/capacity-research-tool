@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import type { MonthlyData } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
 
@@ -86,19 +87,24 @@ export function getTimeToPeak(data: MonthlyData[]): number {
  * Returns a short explanatory string describing capacity vs demand for the period.
  * For single-day filters: "110 visitors vs 60 seats → 183.3% seat occupancy"
  * For multi-day filters:  "259 visitors/week vs 560 seats/week → 46.3% seat occupancy"
+ *
+ * The trailing % always uses totalVisits/totalCapacity so it matches the headline
+ * occupancy figure shown in SnapshotSection and CapacitySection.
  */
 export function buildCapacityString(metrics: BenchmarkMetrics): string {
+  // Consistent aggregate occupancy — matches occupancyRate on BenchmarkMetrics
+  const occ = metrics.totalCapacity > 0 ? (metrics.totalVisits / metrics.totalCapacity) * 100 : 0;
+
   if (metrics.daysInRange <= 1) {
-    const occ = metrics.totalCapacity > 0 ? (metrics.totalVisits / metrics.totalCapacity) * 100 : 0;
     return (
       `${metrics.totalVisits.toLocaleString()} visitors today` +
       ` vs ${metrics.totalCapacity.toLocaleString()} seats today` +
       ` → ${occ.toFixed(1)}% seat occupancy today`
     );
   }
+
   const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
   const seatCapPerWeek = metrics.modalCapacity * sessionsPerWeek;
-  const occ = seatCapPerWeek > 0 ? (metrics.weeklyVisits / seatCapPerWeek) * 100 : 0;
   return (
     `${Math.round(metrics.weeklyVisits).toLocaleString()} visitors/week` +
     ` vs ${Math.round(seatCapPerWeek).toLocaleString()} seats/week` +
@@ -160,12 +166,8 @@ export function buildOpeningPatternDescription(
  * Adapts to the date range reflected in `metrics` and `monthlyData`.
  */
 export function buildSummary(metrics: BenchmarkMetrics, monthlyData: MonthlyData[]): string {
-  // Weekly-model occupancy
-  const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
-  const seatCapPerWeek = metrics.modalCapacity * sessionsPerWeek;
-  const weeklyOcc = seatCapPerWeek > 0
-    ? (metrics.weeklyVisits / seatCapPerWeek) * 100
-    : metrics.occupancyRate * 100;
+  // Use aggregate occupancy — consistent with headline % and buildCapacityString
+  const occupancyPct = metrics.occupancyRate * 100;
 
   const weekdayPct = Math.round(metrics.weekdayShare * 100);
   const weekendPct = 100 - weekdayPct;
@@ -173,9 +175,9 @@ export function buildSummary(metrics: BenchmarkMetrics, monthlyData: MonthlyData
 
   // Occupancy descriptor
   let occDesc = 'under-utilised';
-  if (weeklyOcc >= 70) occDesc = 'near capacity';
-  else if (weeklyOcc >= 50) occDesc = 'well-utilised';
-  else if (weeklyOcc >= 30) occDesc = 'moderately utilised';
+  if (occupancyPct >= 70) occDesc = 'near capacity';
+  else if (occupancyPct >= 50) occDesc = 'well-utilised';
+  else if (occupancyPct >= 30) occDesc = 'moderately utilised';
 
   // Demand skew
   const skew =
@@ -204,11 +206,183 @@ export function buildSummary(metrics: BenchmarkMetrics, monthlyData: MonthlyData
   const totalVisitors = metrics.totalVisits.toLocaleString();
   const sessTotal = metrics.totalSessions.toLocaleString();
   const weeklyAvg = Math.round(metrics.weeklyVisits).toLocaleString();
-  const occStr = weeklyOcc.toFixed(0);
+  const occStr = occupancyPct.toFixed(0);
 
   return (
     `${totalVisitors} visitors across ${sessTotal} sessions — ` +
     `${weeklyAvg}/week at ~${occStr}% seat occupancy, ${occDesc}. ` +
     `Demand is ${skew}.${growthSentence}`
   );
+}
+
+// ── New types ─────────────────────────────────────────────────────────────────
+
+export interface PeriodSummary {
+  startDate: string;        // ISO, from BenchmarkMetrics.computedFrom
+  endDate: string;          // ISO, from BenchmarkMetrics.computedTo
+  periodLabel: string;      // e.g. "3 months"
+  weeksInPeriod: number;    // e.g. 13.0
+  visitorsPerWeek: number;
+  seatsPerWeek: number;     // totalCapacity / weeksInPeriod
+  sessionsPerWeek: number;
+  visitorsPerDay: number;
+  occupancyPercent: number; // same as occupancyRate * 100
+  subtitle: string;         // "30.9% seat occupancy on average over the last 13 weeks (2 Dec 2025 – 2 Mar 2026)"
+}
+
+export interface MonthlyTrajectoryPoint {
+  monthLabel: string;     // "Jan '26"
+  visitors: number;
+  seats: number;          // sum of session capacities for that month
+  occupancy: number;      // visitors / seats (0–1), or 0 if seats = 0
+  isPartial: boolean;
+  isLowData: boolean;
+}
+
+export interface CapacityUtilisationBar {
+  totalCapacitySeats: number;
+  usedCapacitySeats: number;
+  occupancyPercent: number;
+  label?: string;
+  subtitle?: string;
+  referenceMarkers?: { label: string; percent: number }[];
+}
+
+export type CapacityStatsGrid = Array<{
+  label: string;
+  value: string;
+  hint?: string;
+}>;
+
+// ── New computation helpers ────────────────────────────────────────────────────
+
+/** Human-readable period label from days in range. */
+function buildPeriodLabel(daysInRange: number, weeksInRange: number): string {
+  if (daysInRange < 8) {
+    return `${daysInRange} day${daysInRange === 1 ? '' : 's'}`;
+  }
+  const weeks = Math.round(weeksInRange);
+  if (weeksInRange < 5) {
+    return `${weeks} week${weeks === 1 ? '' : 's'}`;
+  }
+  const months = daysInRange / 30.4375;
+  if (months < 11) {
+    const m = Math.round(months);
+    return `${m} month${m === 1 ? '' : 's'}`;
+  }
+  const years = Math.round(months / 12);
+  return `${years} year${years === 1 ? '' : 's'}`;
+}
+
+/**
+ * Derives all period-level averages from BenchmarkMetrics aggregate totals.
+ * Uses the same totalVisits/totalCapacity formula as occupancyRate so every
+ * number cross-checks with the headline % shown in SnapshotSection.
+ */
+export function computePeriodSummary(metrics: BenchmarkMetrics): PeriodSummary {
+  const { totalVisits, totalCapacity, weeksInRange, daysInRange, totalSessions, computedFrom, computedTo } = metrics;
+
+  const visitorsPerWeek = totalVisits / weeksInRange;
+  const seatsPerWeek = totalCapacity / weeksInRange;
+  const sessionsPerWeek = totalSessions / weeksInRange;
+  const visitorsPerDay = totalVisits / daysInRange;
+  const occupancyPercent = totalCapacity > 0 ? (totalVisits / totalCapacity) * 100 : 0;
+
+  const periodLabel = buildPeriodLabel(daysInRange, weeksInRange);
+
+  const fromDate = new Date(computedFrom);
+  const toDate = new Date(computedTo);
+  const dateLabel = `${format(fromDate, 'd MMM yyyy')} – ${format(toDate, 'd MMM yyyy')}`;
+  const subtitle = `${occupancyPercent.toFixed(1)}% seat occupancy on average over the last ${periodLabel} (${dateLabel})`;
+
+  return {
+    startDate: computedFrom,
+    endDate: computedTo,
+    periodLabel,
+    weeksInPeriod: weeksInRange,
+    visitorsPerWeek,
+    seatsPerWeek,
+    sessionsPerWeek,
+    visitorsPerDay,
+    occupancyPercent,
+    subtitle,
+  };
+}
+
+/**
+ * Maps MonthlyData[] to MonthlyTrajectoryPoint[], enriching each bar with
+ * occupancy %, partial-month flags, and low-data flags.
+ *
+ * Partial detection uses both the heuristic (< 40% of median session count)
+ * and a calendar-boundary check against dateRange.from / dateRange.to.
+ */
+export function computeMonthlyTrajectory(
+  monthlyData: MonthlyData[],
+  dateRange: { from: string; to: string },
+  thresholds?: { minVisitors?: number },
+): MonthlyTrajectoryPoint[] {
+  const sorted = sortedMonthly(monthlyData);
+  const fromDate = new Date(dateRange.from);
+  const toDate = new Date(dateRange.to);
+
+  return sorted.map((m) => {
+    const monthDate = new Date(`${m.month} 1, ${m.year}`);
+    const monthIdx = monthDate.getMonth();
+    const monthYear = monthDate.getFullYear();
+
+    // Calendar boundaries of this month
+    const monthStart = new Date(monthYear, monthIdx, 1);
+    const monthEnd = new Date(monthYear, monthIdx + 1, 0);
+
+    // Partial by boundary: the filter cuts into the first or last calendar month
+    const isPartialByBoundary =
+      (fromDate > monthStart && fromDate <= monthEnd) ||
+      (toDate >= monthStart && toDate < monthEnd);
+    const isPartialByHeuristic = isPartialMonth(m, monthlyData);
+    const isPartial = isPartialByBoundary || isPartialByHeuristic;
+
+    const occupancy = m.capacity > 0 ? m.ticketsSold / m.capacity : 0;
+    const isLowData = isPartial || m.ticketsSold < (thresholds?.minVisitors ?? 50);
+
+    return {
+      monthLabel: `${m.month.slice(0, 3)} '${String(m.year).slice(-2)}`,
+      visitors: m.ticketsSold,
+      seats: m.capacity,
+      occupancy,
+      isPartial,
+      isLowData,
+    };
+  });
+}
+
+/** Thin wrapper that reads directly from BenchmarkMetrics + PeriodSummary. */
+export function computeCapacityUtilisationBar(
+  metrics: BenchmarkMetrics,
+  periodSummary: PeriodSummary,
+): CapacityUtilisationBar {
+  return {
+    totalCapacitySeats: metrics.totalCapacity,
+    usedCapacitySeats: metrics.totalVisits,
+    occupancyPercent: periodSummary.occupancyPercent,
+    label: `${periodSummary.occupancyPercent.toFixed(1)}% seat occupancy`,
+    subtitle: `Over ${periodSummary.periodLabel} (${periodSummary.startDate} – ${periodSummary.endDate})`,
+  };
+}
+
+/**
+ * Returns the 5 structural stat tiles for the Capacity section grid.
+ * seatsPerWeek uses totalCapacity / weeksInRange so it cross-checks identically
+ * with the headline occupancy %.
+ */
+export function computeCapacityStatsGrid(
+  metrics: BenchmarkMetrics,
+  periodSummary: PeriodSummary,
+): CapacityStatsGrid {
+  return [
+    { label: 'Visitors / week', value: Math.round(periodSummary.visitorsPerWeek).toLocaleString() },
+    { label: 'Seats / week', value: Math.round(periodSummary.seatsPerWeek).toLocaleString() },
+    { label: 'Visitors / day', value: Math.round(periodSummary.visitorsPerDay).toLocaleString() },
+    { label: 'Sessions / week', value: periodSummary.sessionsPerWeek.toFixed(1) },
+    { label: 'Configured seats / session', value: metrics.modalCapacity.toString() },
+  ];
 }

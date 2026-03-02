@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Check, ChevronsUpDown, Download, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Check, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import {
@@ -20,7 +20,6 @@ import { cn } from '@/lib/utils';
 import {
   PeriodSelector,
   getPeriodRange,
-  inferPeriodFromDates,
   PERIOD_OPTIONS,
   type PeriodOption,
 } from '@/components/ui/period-selector';
@@ -78,7 +77,7 @@ function formatRelativeTime(iso: string): string {
 export function ReportClient() {
   const [entry, setEntry] = useState<CachedVenueEntry | null>(null);
   const [hostId, setHostId] = useState<string | null>(null);
-  const [period, setPeriod] = useState<PeriodOption>('1m');
+  const [period, setPeriod] = useState<PeriodOption>('all');
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
   const syncStarted = useRef(false);
@@ -96,7 +95,6 @@ export function ReportClient() {
     setHostId(hId);
     const found = pickEntry({ hostId: hId, from, to, platform });
     setEntry(found);
-    if (from && to) setPeriod(inferPeriodFromDates(from, to));
   }, []);
 
   // ── Re-fetch / Sync ──────────────────────────────────────────────────────
@@ -242,11 +240,6 @@ export function ReportClient() {
     ? formatComputedRange(benchmarkMetrics.computedFrom, benchmarkMetrics.computedTo)
     : '';
 
-  // ── PDF export ───────────────────────────────────────────────────────────
-  const handleExportPDF = useCallback(() => {
-    if (typeof window !== 'undefined') window.print();
-  }, []);
-
   // ── Empty states ─────────────────────────────────────────────────────────
   if (!entry) {
     return (
@@ -318,14 +311,6 @@ export function ReportClient() {
               aria-label="Refresh data"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${isSyncInProgress ? 'animate-spin' : ''}`} />
-            </button>
-            <button
-              type="button"
-              onClick={handleExportPDF}
-              className="inline-flex items-center gap-1.5 rounded-full bg-foreground text-background text-sm font-medium px-3.5 py-1.5 hover:opacity-90 transition-opacity"
-            >
-              <Download className="h-3 w-3" />
-              Export
             </button>
           </div>
 

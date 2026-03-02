@@ -239,7 +239,7 @@ function PeakSlotList({
         {slots.map(s => {
           const aboveAvg = s.utilisation >= avgOccupancyPct;
           return (
-            <div key={s.slot} className="relative h-9 rounded-lg overflow-hidden flex items-center px-3">
+            <div key={s.slot} className="relative h-8 rounded-lg overflow-hidden flex items-center px-3">
               {/* Track */}
               <div className="absolute inset-0 bg" />
               {/* Fill — capped at 100% visually; label shows true value */}
@@ -261,7 +261,7 @@ function PeakSlotList({
                 />
               )}
               <span className="relative z-10 text-sm">{s.slot}</span>
-              <span className={`relative z-10 ml-auto text-sm tabular-nums font-semibold shrink-0 ${
+              <span className={`relative z-10 ml-auto text-sm tabular-nums font-medium shrink-0 ${
                 aboveAvg ? 'text-foreground' : 'text-muted-foreground'
               }`}>
                 {s.utilisation.toFixed(0)}%
@@ -378,7 +378,7 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
                 <button
                   type="button"
                   onClick={() => setExpandedDay(isExpanded ? null : d.name)}
-                  className="relative h-9 rounded-lg overflow-hidden flex items-center px-3 w-full text-left hover:opacity-80 transition-opacity"
+                  className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left hover:opacity-80 transition-opacity"
                 >
                   {/* Track */}
                   <div className="absolute inset-0 bg" />

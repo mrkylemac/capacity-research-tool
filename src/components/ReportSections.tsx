@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { parseISO } from 'date-fns';
 import {
-  BarChart, Bar, CartesianGrid, XAxis, Tooltip, ResponsiveContainer,
+  BarChart, Bar, Cell, CartesianGrid, XAxis, Tooltip, ResponsiveContainer,
   AreaChart, Area, YAxis,
 } from 'recharts';
 import { format, getISOWeek, getISOWeekYear } from 'date-fns';
@@ -13,7 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DemandIntelligence } from '@/components/DemandIntelligence';
 import { GrowthStory } from '@/components/GrowthStory';
 import { UtilisationTrend } from '@/components/UtilisationTrend';
-import { buildCapacityString } from '@/lib/venueInsights';
+import { buildCapacityString, computeMonthlyTrajectory } from '@/lib/venueInsights';
 
 // ── Private helpers ──────────────────────────────────────────────────────────
 
@@ -54,12 +54,45 @@ function buildHourlyTimeseries(sessions: MomenceSession[]): { label: string; vis
   });
 }
 
+/** Bucket sessions into calendar days. */
+function buildDailyTimeseries(sessions: MomenceSession[]): { label: string; visitors: number }[] {
+  const buckets = new Map<string, number>();
+  sessions.forEach(s => {
+    const key = format(parseISO(s.startsAt), 'yyyy-MM-dd');
+    buckets.set(key, (buckets.get(key) ?? 0) + s.ticketsSold);
+  });
+  return Array.from(buckets.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, visitors]) => ({ label: format(parseISO(key), 'd MMM'), visitors }));
+}
+
+/** Bucket sessions into calendar months. */
+function buildMonthlyTimeseries(sessions: MomenceSession[]): { label: string; visitors: number }[] {
+  const buckets = new Map<string, number>();
+  sessions.forEach(s => {
+    const key = format(parseISO(s.startsAt), 'yyyy-MM');
+    buckets.set(key, (buckets.get(key) ?? 0) + s.ticketsSold);
+  });
+  return Array.from(buckets.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, visitors]) => ({ label: format(parseISO(`${key}-01`), 'MMM yy'), visitors }));
+}
+
+type Granularity = 'monthly' | 'weekly' | 'daily' | 'hourly';
+
+function getGranularityConfig(period: string): { options: Granularity[]; default: Granularity } {
+  if (period === 'yesterday' || period === 'today') return { options: [], default: 'hourly' };
+  if (period === '1w') return { options: [], default: 'daily' };
+  if (period === '1m' || period === 'last1m') return { options: ['weekly', 'daily'], default: 'weekly' };
+  return { options: ['monthly', 'weekly', 'daily'], default: 'monthly' };
+}
+
 // ── Shared primitives ────────────────────────────────────────────────────────
 
 function CardHeader({ title, right }: { title: string; right?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between mb-14">
-      <p className="text-base font-medium">{title}</p>
+    <div className="flex items-center justify-between mb-8">
+      <p className="text-lg font-semibold">{title}</p>
       {right}
     </div>
   );
@@ -69,7 +102,7 @@ function MetricTile({ value, label }: { value: string; label: string }) {
   return (
     <div>
       <p className="text-sm font-medium text-muted-foreground mb-1.5 leading-none">{label}</p>
-      <p className="text-xl font-semibold tabular-nums leading-none tracking-[-0.02em]">{value}</p>
+      <p className="text-xl font-medium tabular-nums leading-none tracking-[-0.02em]">{value}</p>
     </div>
   );
 }
@@ -97,24 +130,44 @@ function SnapshotSection({
   period: string;
 }) {
   const isSingleDay = metrics.daysInRange <= 1;
-  const isHourly = period === 'yesterday';
-  const chartData = useMemo(
-    () => isHourly ? buildHourlyTimeseries(sessions) : buildWeeklyTimeseries(sessions),
-    [sessions, isHourly],
-  );
+  const granConfig = getGranularityConfig(period);
+  const [granularity, setGranularity] = useState<Granularity>(() => granConfig.default);
+
+  useEffect(() => {
+    setGranularity(getGranularityConfig(period).default);
+  }, [period]);
+
+  const chartData = useMemo(() => {
+    if (granularity === 'hourly') return buildHourlyTimeseries(sessions);
+    if (granularity === 'daily') return buildDailyTimeseries(sessions);
+    if (granularity === 'monthly') return buildMonthlyTimeseries(sessions);
+    return buildWeeklyTimeseries(sessions);
+  }, [sessions, granularity]);
+
   const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
 
-  // Occupancy: totalVisits/totalCapacity — consistent across all period lengths.
   const occupancyPct = metrics.totalCapacity > 0
     ? (metrics.totalVisits / metrics.totalCapacity) * 100
     : 0;
 
-  // Visitors per hour: total visitors divided by the number of plotted hour buckets.
-  // The label is scoped to the plotted window so the math is always verifiable.
   const hourlyAvg = chartData.length > 0 ? Math.round(metrics.totalVisits / chartData.length) : 0;
   const hourlyLabel = chartData.length >= 2
     ? `Visitors per hour (${chartData[0].label}–${chartData[chartData.length - 1].label})`
     : 'Visitors per hour';
+
+  const avgValue = granularity === 'hourly'
+    ? hourlyAvg
+    : granularity === 'weekly'
+    ? Math.round(metrics.weeklyVisits)
+    : Math.round(metrics.totalVisits / Math.max(chartData.length, 1));
+
+  const chartLabel = granularity === 'hourly'
+    ? hourlyLabel
+    : granularity === 'daily'
+    ? 'Visitors per day'
+    : granularity === 'monthly'
+    ? 'Visitors per month'
+    : 'Visitors per week';
 
   const coreMetrics = isSingleDay
     ? [
@@ -131,28 +184,40 @@ function SnapshotSection({
       ];
 
   return (
-    <Card className="print-section shadow-sm">
+    <Card className="print-section shadow-4">
       <CardContent className="p-5">
         <CardHeader title="Snapshot" />
 
-        {/* Visitors chart — hourly (single day) or weekly (multi-day) */}
+        {/* Visitors chart */}
         {chartData.length > 1 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-muted-foreground">
-                {isHourly ? hourlyLabel : 'Visitors per week'}
-              </p>
-              <p className="text-sm font-medium text-muted-foreground tabular-nums">
-                <span className="font-semibold text-foreground">
-                  {isHourly
-                    ? hourlyAvg.toLocaleString()
-                    : Math.round(metrics.weeklyVisits).toLocaleString()}
-                </span>{' '}
-                avg
-              </p>
+                <p className="text-sm font-medium text-muted-foreground tabular-nums">
+                  <span className="font-semibold text-foreground">{avgValue.toLocaleString()}</span>{' '} {chartLabel}
+                </p>
+              <div className="flex items-center gap-2.5">
+                {granConfig.options.length > 0 && (
+                  <div className="flex items-center rounded-full bg-muted p-0.5 gap-px">
+                    {granConfig.options.map(g => (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => setGranularity(g)}
+                        className={`px-2.5 py-1 text-xs font-medium rounded-full transition-colors ${
+                          granularity === g
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {g === 'monthly' ? 'Monthly' : g === 'weekly' ? 'Weekly' : 'Daily'}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <ResponsiveContainer width="100%" height={320}>
-              {isHourly ? (
+              {granularity === 'hourly' || granularity === 'monthly' ? (
                 <BarChart data={chartData} margin={{ top: 4, right: 2, bottom: 0, left: 0 }} barCategoryGap="20%">
                   <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
                   <XAxis
@@ -164,7 +229,7 @@ function SnapshotSection({
                   <YAxis hide />
                   <Tooltip
                     contentStyle={tooltipStyle}
-                    labelStyle={{ color: 'var(--color-white)', marginBottom: 12  }}
+                    labelStyle={{ color: 'var(--color-white)', marginBottom: 12 }}
                     formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
                   />
                   <Bar dataKey="visitors" fill="var(--color-gray-2)" radius={[4, 4, 0, 0]} />
@@ -241,11 +306,12 @@ function CapacitySection({
 }) {
   const isSingleDay = metrics.daysInRange <= 1;
   const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
-  const seatCapPerWeek = metrics.modalCapacity * sessionsPerWeek;
-  // Use totalVisits/totalCapacity for a consistent, period-accurate occupancy figure
+  // Consistent aggregate occupancy — matches occupancyRate on BenchmarkMetrics
   const seatOccupancyPct = metrics.totalCapacity > 0
     ? (metrics.totalVisits / metrics.totalCapacity) * 100
     : 0;
+  // seatsPerWeek derived from actual totalCapacity so it cross-checks with the headline %
+  const seatsPerWeek = metrics.totalCapacity / metrics.weeksInRange;
 
   // Realised avg seats per session from the filtered session list — source of truth.
   const realisedAvgSeats = metrics.totalSessions > 0
@@ -256,20 +322,15 @@ function CapacitySection({
 
   const visitorChartData = useMemo(
     () =>
-      [...monthlyData]
-        .sort((a, b) => {
-          if (a.year !== b.year) return a.year - b.year;
-          return (
-            new Date(`${a.month} 1, ${a.year}`).getMonth() -
-            new Date(`${b.month} 1, ${b.year}`).getMonth()
-          );
-        })
-        .map(m => ({
-          name: `${m.month.slice(0, 3)} '${String(m.year).slice(-2)}`,
-          visitors: m.ticketsSold,
-          unfilled: Math.max(0, m.capacity - m.ticketsSold),
+      computeMonthlyTrajectory(monthlyData, { from: metrics.computedFrom, to: metrics.computedTo })
+        .map(pt => ({
+          name: pt.monthLabel,
+          visitors: pt.visitors,
+          unfilled: Math.max(0, pt.seats - pt.visitors),
+          occupancyPct: pt.occupancy * 100,
+          isPartial: pt.isPartial,
         })),
-    [monthlyData],
+    [monthlyData, metrics.computedFrom, metrics.computedTo],
   );
 
   const structuralItems = isSingleDay
@@ -282,7 +343,7 @@ function CapacitySection({
     : [
         { value: `${metrics.modalCapacity}`, label: 'Configured seats / session' },
         { value: sessionsPerWeek.toFixed(1), label: 'Sessions / week' },
-        { value: Math.round(seatCapPerWeek).toLocaleString(), label: 'Seat cap / week' },
+        { value: Math.round(seatsPerWeek).toLocaleString(), label: 'Seats / week' },
       ];
 
   return (
@@ -358,19 +419,35 @@ function CapacitySection({
                 />
                 <Tooltip
                   contentStyle={tooltipStyle}
-                  formatter={(value: number, name: string) => {
-                    if (name === 'visitors') return [value.toLocaleString(), 'Visitors'];
+                  formatter={(value: number, name: string, props: { payload: { occupancyPct: number; isPartial: boolean } }) => {
+                    if (name === 'visitors') {
+                      const { occupancyPct, isPartial } = props.payload;
+                      const partialNote = isPartial ? ', partial month' : '';
+                      return [`${value.toLocaleString()} (${occupancyPct.toFixed(0)}%${partialNote})`, 'Visitors'];
+                    }
                     if (name === 'unfilled') return [value.toLocaleString(), 'Unfilled capacity'];
                     return [value, name];
                   }}
                 />
-                <Bar dataKey="visitors" stackId="a" fill="#474747" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="visitors" stackId="a" fill="#474747" radius={[0, 0, 0, 0]}>
+                  {visitorChartData.map((entry, i) => (
+                    <Cell key={i} fill="#474747" fillOpacity={entry.isPartial ? 0.4 : 1} />
+                  ))}
+                </Bar>
                 <Bar
                   dataKey="unfilled"
                   stackId="a"
                   fill="color-mix(in srgb, var(--muted-foreground) 18%, transparent)"
                   radius={[4, 4, 0, 0]}
-                />
+                >
+                  {visitorChartData.map((entry, i) => (
+                    <Cell
+                      key={i}
+                      fill="color-mix(in srgb, var(--muted-foreground) 18%, transparent)"
+                      fillOpacity={entry.isPartial ? 0.4 : 1}
+                    />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
