@@ -22,7 +22,7 @@ function OccDot(props: DotProps & { payload?: { partial?: boolean } }) {
       cx={cx}
       cy={cy}
       r={3.5}
-      fill={payload?.partial ? 'hsl(var(--muted-foreground))' : 'hsl(0 0% 28%)'}
+      fill={payload?.partial ? 'var(--muted-foreground)' : '#474747'}
       opacity={payload?.partial ? 0.3 : 1}
       stroke="none"
     />
@@ -74,10 +74,10 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
 
       <ResponsiveContainer width="100%" height={250}>
         <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-          <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
+          <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
           <XAxis
             dataKey="month"
-            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+            tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
             interval="preserveStartEnd"
@@ -85,14 +85,14 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
           <YAxis hide />
           <Tooltip
             contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
+              background: 'var(--popover)',
+              border: '1px solid var(--border)',
               borderRadius: '0.75rem',
               fontSize: 12,
-              color: 'hsl(var(--popover-foreground))',
+              color: 'var(--popover-foreground)',
               boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
             }}
-            labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}
+            labelStyle={{ color: 'var(--muted-foreground)', marginBottom: 2 }}
             formatter={(value: number, name: string) => {
               if (name === 'occupancy') return [`${value.toFixed(1)}%`, 'Occupancy'];
               return [value.toLocaleString(), name];
@@ -101,10 +101,10 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
           <Line
             type="monotone"
             dataKey="occupancy"
-            stroke="hsl(0 0% 28%)"
+            stroke="#474747"
             strokeWidth={1.5}
             dot={<OccDot />}
-            activeDot={{ r: 3, fill: 'hsl(0 0% 28%)' }}
+            activeDot={{ r: 3, fill: '#474747' }}
           />
         </LineChart>
       </ResponsiveContainer>

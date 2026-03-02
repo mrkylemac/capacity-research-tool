@@ -160,8 +160,8 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
           <Card>
             <CardContent className="p-5">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4">
-                <p className="text-md text-muted-foreground">Visitors per week</p>
-                <span className="flex gap-3 text-md text-muted-foreground">
+                <p className="text-base text-muted-foreground">Visitors per week</p>
+                <span className="flex gap-3 text-base text-muted-foreground">
                   <ColorDot color="bg-primary/70" label="Weekday" />
                   <ColorDot color="bg-violet-500" label="Weekend" />
                 </span>
@@ -214,7 +214,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
           <Card className="mt-3">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-                <table className="notion-table min-w-full">
+                <table className="data-table min-w-full">
                   <thead>
                     <tr className="bg-muted/30">
                       <th>Week</th>
@@ -227,14 +227,14 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                   <tbody>
                     {weeklySummary.map((row, i) => (
                       <tr key={i}>
-                        <td className="text-md font-medium">
+                        <td className="text-base font-medium">
                           <span className="hidden sm:inline">{row.weekLabel}</span>
                           <span className="sm:hidden">{format(row.weekStart, 'MMM d')}</span>
                         </td>
                         <td className="text-right text-sm">{row.sessions}</td>
-                        <td className="text-right text-md font-medium">{row.visitors.toLocaleString()}</td>
-                        <td className="hidden sm:table-cell text-right text-md text-muted-foreground">{row.capacity.toLocaleString()}</td>
-                        <td className={`text-right text-md ${occupancyClass(row.occupancy)}`}>
+                        <td className="text-right text-base font-medium">{row.visitors.toLocaleString()}</td>
+                        <td className="hidden sm:table-cell text-right text-base text-muted-foreground">{row.capacity.toLocaleString()}</td>
+                        <td className={`text-right text-base ${occupancyClass(row.occupancy)}`}>
                           {row.occupancy.toFixed(1)}%
                         </td>
                       </tr>
@@ -260,7 +260,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                   <div key={i} className="flex items-center gap-2 sm:gap-3">
                     {/* Day label */}
                     <div className="w-8 sm:w-10 flex-shrink-0 text-center">
-                      <span className={`text-md sm:text-md font-medium ${row.isWeekend ? 'text-violet-600' : ''}`}>
+                      <span className={`text-base sm:text-base font-medium ${row.isWeekend ? 'text-violet-600' : ''}`}>
                         {row.dayShort.slice(0, 2)}
                       </span>
                     </div>
@@ -278,7 +278,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center px-2">
-                          <span className="text-md text-muted-foreground">—</span>
+                          <span className="text-base text-muted-foreground">—</span>
                         </div>
                       )}
                     </div>
@@ -286,13 +286,13 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                     {/* Stats */}
                     {hasData ? (
                       <div className="flex items-center gap-2 flex-shrink-0 justify-end">
-                        <span className="text-md sm:text-md font-medium tabular-nums w-12 sm:w-16 text-right">
+                        <span className="text-base sm:text-base font-medium tabular-nums w-12 sm:w-16 text-right">
                           {row.visitors.toLocaleString()}
                         </span>
-                        <span className="hidden sm:inline text-md text-muted-foreground w-24 text-right">
+                        <span className="hidden sm:inline text-base text-muted-foreground w-24 text-right">
                           avg {row.avgVisitorsPerSession.toFixed(1)}/session
                         </span>
-                        <Badge variant={occupancyBadgeVariant(row.occupancy)} className="text-md w-11 justify-center flex-shrink-0">
+                        <Badge variant={occupancyBadgeVariant(row.occupancy)} className="text-base w-11 justify-center flex-shrink-0">
                           {row.occupancy.toFixed(0)}%
                         </Badge>
                       </div>
@@ -303,7 +303,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
                 );
               })}
             </div>
-            <p className="text-md sm:text-md text-muted-foreground mt-3 pt-3 border-t">
+            <p className="text-base sm:text-base text-muted-foreground mt-3 pt-3 border-t">
               Bar width = occupancy % · Badge = occupancy · Cumulative totals from Momence session data.
             </p>
           </CardContent>
@@ -324,7 +324,7 @@ export function VisitationSection({ sessions, monthlyData, operatingHours }: Vis
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h3 className="text-md font-medium text-muted-foreground uppercase tracking-wider mb-3">
+    <h3 className="text-base font-medium text-muted-foreground uppercase tracking-wider mb-3">
       {children}
     </h3>
   );

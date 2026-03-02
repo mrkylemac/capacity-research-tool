@@ -13,15 +13,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DemandIntelligence } from '@/components/DemandIntelligence';
 import { GrowthStory } from '@/components/GrowthStory';
 import { UtilisationTrend } from '@/components/UtilisationTrend';
-import {
-  buildSummary,
-  buildCapacityString,
-} from '@/lib/venueInsights';
+import { buildCapacityString } from '@/lib/venueInsights';
 
 // ── Private helpers ──────────────────────────────────────────────────────────
 
 /** Bucket sessions into ISO weeks for the timeseries chart. */
-function buildWeeklyTimeseries(sessions: MomenceSession[]): { week: string; visitors: number }[] {
+function buildWeeklyTimeseries(sessions: MomenceSession[]): { label: string; visitors: number }[] {
   const buckets = new Map<string, number>();
   sessions.forEach(s => {
     const d = parseISO(s.startsAt);
@@ -36,8 +33,25 @@ function buildWeeklyTimeseries(sessions: MomenceSession[]): { week: string; visi
       const day = d.getDay();
       const monday = new Date(d);
       monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
-      return { week: format(monday, 'd MMM'), visitors };
+      return { label: format(monday, 'd MMM'), visitors };
     });
+}
+
+/** Bucket sessions into hours for single-day view. */
+function buildHourlyTimeseries(sessions: MomenceSession[]): { label: string; visitors: number }[] {
+  const buckets = new Map<number, number>();
+  sessions.forEach(s => {
+    const h = parseISO(s.startsAt).getHours();
+    buckets.set(h, (buckets.get(h) ?? 0) + s.ticketsSold);
+  });
+  if (buckets.size === 0) return [];
+  const min = Math.min(...buckets.keys());
+  const max = Math.max(...buckets.keys());
+  return Array.from({ length: max - min + 1 }, (_, i) => {
+    const h = min + i;
+    const label = format(new Date(2000, 0, 1, h), 'ha').toLowerCase();
+    return { label, visitors: buckets.get(h) ?? 0 };
+  });
 }
 
 // ── Shared primitives ────────────────────────────────────────────────────────
@@ -45,7 +59,7 @@ function buildWeeklyTimeseries(sessions: MomenceSession[]): { week: string; visi
 function CardHeader({ title, right }: { title: string; right?: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between mb-14">
-      <p className="v-card-title">{title}</p>
+      <p className="text-base font-medium">{title}</p>
       {right}
     </div>
   );
@@ -61,12 +75,12 @@ function MetricTile({ value, label }: { value: string; label: string }) {
 }
 
 const tooltipStyle = {
-  background: 'hsl(var(--popover))',
-  border: '1px solid hsl(var(--border))',
-  borderRadius: '0.75rem',
-  fontSize: 12,
-  color: 'hsl(var(--popover-foreground))',
-  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+  background: 'var(--color-foreground)',
+  borderRadius: 'var(--radius-6)',
+  fontSize: 14,
+  lineHeight: 1.2,
+  color: 'var(--color-white)',
+  padding: '12px 16px 8px 16px',
 };
 
 // ── 1. Snapshot + Visitors per week ──────────────────────────────────────────
@@ -75,79 +89,118 @@ function SnapshotSection({
   sessions,
   metrics,
   monthlyData,
+  period,
 }: {
   sessions: MomenceSession[];
   metrics: BenchmarkMetrics;
   monthlyData: MonthlyData[];
+  period: string;
 }) {
-  const summary = useMemo(() => buildSummary(metrics, monthlyData), [metrics, monthlyData]);
-  const weeklyData = useMemo(() => buildWeeklyTimeseries(sessions), [sessions]);
-
+  const isSingleDay = metrics.daysInRange <= 1;
+  const isHourly = period === 'yesterday';
+  const chartData = useMemo(
+    () => isHourly ? buildHourlyTimeseries(sessions) : buildWeeklyTimeseries(sessions),
+    [sessions, isHourly],
+  );
   const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
-  const weekdayPct = Math.round(metrics.weekdayShare * 100);
-  const weekendPct = 100 - weekdayPct;
 
-  const seatCapPerWeek = metrics.modalCapacity * sessionsPerWeek;
-  const weeklyOccupancy = seatCapPerWeek > 0
-    ? (metrics.weeklyVisits / seatCapPerWeek) * 100
-    : metrics.occupancyRate * 100;
+  // Occupancy: totalVisits/totalCapacity — consistent across all period lengths.
+  const occupancyPct = metrics.totalCapacity > 0
+    ? (metrics.totalVisits / metrics.totalCapacity) * 100
+    : 0;
 
-  const coreMetrics = [
-    { value: Math.round(metrics.weeklyVisits).toLocaleString(), label: 'Visitors / week' },
-    { value: sessionsPerWeek.toFixed(1), label: 'Sessions / week' },
-    { value: Math.round(metrics.dailyVisits).toLocaleString(), label: 'Visitors / day' },
-    { value: `${weeklyOccupancy.toFixed(1)}%`, label: 'Seat occupancy' },
-    { value: metrics.totalVisits.toLocaleString(), label: 'Total visitors' },
-  ];
+  // Visitors per hour: total visitors divided by the number of plotted hour buckets.
+  // The label is scoped to the plotted window so the math is always verifiable.
+  const hourlyAvg = chartData.length > 0 ? Math.round(metrics.totalVisits / chartData.length) : 0;
+  const hourlyLabel = chartData.length >= 2
+    ? `Visitors per hour (${chartData[0].label}–${chartData[chartData.length - 1].label})`
+    : 'Visitors per hour';
+
+  const coreMetrics = isSingleDay
+    ? [
+        { value: metrics.totalVisits.toLocaleString(),   label: 'Visitors today' },
+        { value: metrics.totalSessions.toLocaleString(), label: 'Sessions today' },
+        { value: `${occupancyPct.toFixed(1)}%`,          label: 'Seat occupancy today' },
+      ]
+    : [
+        { value: Math.round(metrics.weeklyVisits).toLocaleString(), label: 'Visitors / week' },
+        { value: sessionsPerWeek.toFixed(1),                        label: 'Sessions / week' },
+        { value: Math.round(metrics.dailyVisits).toLocaleString(),  label: 'Visitors / day' },
+        { value: `${occupancyPct.toFixed(1)}%`,                     label: 'Seat occupancy' },
+        { value: metrics.totalVisits.toLocaleString(),              label: 'Total visitors' },
+      ];
 
   return (
-    <Card className="print-section report-card">
+    <Card className="print-section shadow-sm">
       <CardContent className="p-5">
         <CardHeader title="Snapshot" />
 
-        <p className="text-md font-medium text-foreground mb-7 pr-20">{summary}</p>
-
-        {/* Visitors per week chart */}
-        {weeklyData.length > 1 && (
+        {/* Visitors chart — hourly (single day) or weekly (multi-day) */}
+        {chartData.length > 1 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-muted-foreground">Visitors per week</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {isHourly ? hourlyLabel : 'Visitors per week'}
+              </p>
               <p className="text-sm font-medium text-muted-foreground tabular-nums">
-                <span className="font-semibold text-foreground">{Math.round(metrics.weeklyVisits).toLocaleString()}</span> avg
+                <span className="font-semibold text-foreground">
+                  {isHourly
+                    ? hourlyAvg.toLocaleString()
+                    : Math.round(metrics.weeklyVisits).toLocaleString()}
+                </span>{' '}
+                avg
               </p>
             </div>
             <ResponsiveContainer width="100%" height={320}>
-              <AreaChart data={weeklyData} margin={{ top: 4, right: 2, bottom: 0, left: 0 }}>
-                <defs>
-                  <linearGradient id="snapshotGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(0 0% 28%)" stopOpacity={0.14} />
-                    <stop offset="95%" stopColor="hsl(0 0% 28%)" stopOpacity={0.01} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
-                <XAxis
-                  dataKey="week"
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                  interval="preserveStartEnd"
-                />
-                <YAxis hide />
-                <Tooltip
-                  contentStyle={tooltipStyle}
-                  labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}
-                  formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="visitors"
-                  stroke="hsl(0 0% 28%)"
-                  strokeWidth={1.5}
-                  fill="url(#snapshotGradient)"
-                  dot={false}
-                  activeDot={{ r: 3, fill: 'hsl(0 0% 28%)' }}
-                />
-              </AreaChart>
+              {isHourly ? (
+                <BarChart data={chartData} margin={{ top: 4, right: 2, bottom: 0, left: 0 }} barCategoryGap="20%">
+                  <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fill: 'var(--color-gray-4)', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis hide />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    labelStyle={{ color: 'var(--color-white)', marginBottom: 12  }}
+                    formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
+                  />
+                  <Bar dataKey="visitors" fill="var(--color-gray-2)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              ) : (
+                <AreaChart data={chartData} margin={{ top: 4, right: 2, bottom: 0, left: 0 }}>
+                  <defs>
+                    <linearGradient id="snapshotGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-gray-2)" stopOpacity={0.14} />
+                      <stop offset="95%" stopColor="var(--color-gray-2)" stopOpacity={0.01} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis hide />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="visitors"
+                    stroke="var(--color-gray-2)"
+                    strokeWidth={1.5}
+                    fill="url(#snapshotGradient)"
+                    dot={false}
+                    activeDot={{ r: 3, fill: 'var(--color-gray-2)' }}
+                  />
+                </AreaChart>
+              )}
             </ResponsiveContainer>
           </div>
         )}
@@ -186,10 +239,17 @@ function CapacitySection({
   metrics: BenchmarkMetrics;
   monthlyData: MonthlyData[];
 }) {
+  const isSingleDay = metrics.daysInRange <= 1;
   const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
   const seatCapPerWeek = metrics.modalCapacity * sessionsPerWeek;
-  const seatOccupancyPct = seatCapPerWeek > 0
-    ? (metrics.weeklyVisits / seatCapPerWeek) * 100
+  // Use totalVisits/totalCapacity for a consistent, period-accurate occupancy figure
+  const seatOccupancyPct = metrics.totalCapacity > 0
+    ? (metrics.totalVisits / metrics.totalCapacity) * 100
+    : 0;
+
+  // Realised avg seats per session from the filtered session list — source of truth.
+  const realisedAvgSeats = metrics.totalSessions > 0
+    ? (metrics.totalCapacity / metrics.totalSessions)
     : 0;
 
   const capacityString = useMemo(() => buildCapacityString(metrics), [metrics]);
@@ -212,21 +272,33 @@ function CapacitySection({
     [monthlyData],
   );
 
-  const structuralItems = [
-    { value: `${metrics.modalCapacity}`, label: 'Seats / session' },
-    { value: sessionsPerWeek.toFixed(1), label: 'Sessions / week' },
-    { value: Math.round(seatCapPerWeek).toLocaleString(), label: 'Seat cap / week' },
-  ];
+  const structuralItems = isSingleDay
+    ? [
+        // Realised avg derived directly from the session list — not the configured default.
+        { value: realisedAvgSeats.toFixed(1), label: 'Avg seats / session (today)' },
+        { value: metrics.totalSessions.toLocaleString(), label: 'Sessions today' },
+        { value: metrics.totalCapacity.toLocaleString(), label: 'Seats today' },
+      ]
+    : [
+        { value: `${metrics.modalCapacity}`, label: 'Configured seats / session' },
+        { value: sessionsPerWeek.toFixed(1), label: 'Sessions / week' },
+        { value: Math.round(seatCapPerWeek).toLocaleString(), label: 'Seat cap / week' },
+      ];
 
   return (
-    <Card className="print-section report-card">
+    <Card className="print-section shadow-sm">
       <CardContent className="p-5">
         <CardHeader
-          title="Capacity vs realised demand"
+          title="Capacity"
           right={
-            <p className="text-[22px] font-semibold tabular-nums leading-none tracking-[-0.03em]">
-              {seatOccupancyPct.toFixed(1)}%
-            </p>
+            <div className="text-right">
+              <p className="text-[22px] font-semibold tabular-nums leading-none tracking-[-0.03em]">
+                {seatOccupancyPct.toFixed(1)}%
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isSingleDay ? 'today' : 'seat occupancy'}
+              </p>
+            </div>
           }
         />
 
@@ -235,7 +307,7 @@ function CapacitySection({
           <div className="h-1.5 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(seatOccupancyPct, 100)}%`, backgroundColor: 'hsl(0 0% 28%)' }}
+              style={{ width: `${Math.min(seatOccupancyPct, 100)}%`, backgroundColor: '#474747' }}
             />
           </div>
           <p className="text-sm text-muted-foreground mt-1.5">{capacityString}</p>
@@ -252,10 +324,17 @@ function CapacitySection({
         {visitorChartData.length > 1 && (
           <div className="pt-4 mt-4 border-t border-border">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm text-muted-foreground">By month</p>
+              <div>
+                <p className="text-sm text-muted-foreground">Monthly visitors vs capacity</p>
+                {isSingleDay && (
+                  <p className="text-xs text-muted-foreground/70 mt-0.5">
+                    Snapshot above is for the selected date only · chart below spans all cached months
+                  </p>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground flex gap-3">
                 <span>
-                  <span className="inline-block w-2.5 h-2 rounded-sm align-middle mr-1" style={{ backgroundColor: 'hsl(0 0% 28%)' }} />
+                  <span className="inline-block w-2.5 h-2 rounded-sm align-middle mr-1" style={{ backgroundColor: '#474747' }} />
                   Filled
                 </span>
                 <span>
@@ -270,10 +349,10 @@ function CapacitySection({
                 margin={{ top: 2, right: 2, bottom: 0, left: 0 }}
                 barCategoryGap="18%"
               >
-                <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
+                <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
                 <XAxis
                   dataKey="name"
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -285,11 +364,11 @@ function CapacitySection({
                     return [value, name];
                   }}
                 />
-                <Bar dataKey="visitors" stackId="a" fill="hsl(0 0% 28%)" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="visitors" stackId="a" fill="#474747" radius={[0, 0, 0, 0]} />
                 <Bar
                   dataKey="unfilled"
                   stackId="a"
-                  fill="hsl(var(--muted-foreground) / 0.18)"
+                  fill="color-mix(in srgb, var(--muted-foreground) 18%, transparent)"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -306,15 +385,21 @@ function CapacitySection({
 function DemandSection({
   sessions,
   metrics,
+  period,
 }: {
   sessions: MomenceSession[];
   metrics: BenchmarkMetrics;
+  period: string;
 }) {
   return (
-    <Card className="print-section report-card">
+    <Card className="print-section shadow-sm">
       <CardContent className="p-5">
-        <CardHeader title="Demand mix & peak times" />
-        <DemandIntelligence sessions={sessions} metrics={metrics} />
+        <CardHeader title="Demand" />
+        <DemandIntelligence
+          sessions={sessions}
+          metrics={metrics}
+          selectedDate={period === 'yesterday' ? metrics.computedFrom : undefined}
+        />
       </CardContent>
     </Card>
   );
@@ -323,10 +408,30 @@ function DemandSection({
 // ── 4. Trajectory & occupancy (merged) ────────────────────────────────────────
 
 function TrendsSection({ monthlyData }: { monthlyData: MonthlyData[] }) {
+  // Build a human-readable range label from the monthly data (e.g. "Jan 2025 – Mar 2026")
+  const rangeLabel = useMemo(() => {
+    if (monthlyData.length === 0) return '';
+    const sorted = [...monthlyData].sort((a, b) => {
+      if (a.year !== b.year) return a.year - b.year;
+      return new Date(`${a.month} 1`).getMonth() - new Date(`${b.month} 1`).getMonth();
+    });
+    const first = sorted[0];
+    const last = sorted[sorted.length - 1];
+    if (first === last) return `${first.month.slice(0, 3)} ${first.year}`;
+    return `${first.month.slice(0, 3)} ${first.year} – ${last.month.slice(0, 3)} ${last.year}`;
+  }, [monthlyData]);
+
   return (
-    <Card className="print-section report-card">
+    <Card className="print-section shadow-sm">
       <CardContent className="p-5">
-        <CardHeader title="Trajectory & occupancy" />
+        <CardHeader
+          title="Trajectory & occupancy"
+          right={
+            rangeLabel
+              ? <p className="text-xs text-muted-foreground">{rangeLabel}</p>
+              : undefined
+          }
+        />
         <GrowthStory monthlyData={monthlyData} />
         <div className="mt-12 pt-5">
           <UtilisationTrend monthlyData={monthlyData} />
@@ -343,6 +448,7 @@ interface ReportSectionsProps {
   metrics: BenchmarkMetrics;
   monthlyData: MonthlyData[];
   allMonthlyData: MonthlyData[];
+  period: string;
 }
 
 export function ReportSections({
@@ -350,25 +456,26 @@ export function ReportSections({
   metrics,
   monthlyData,
   allMonthlyData,
+  period,
 }: ReportSectionsProps) {
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-8">
       <div className="section-animate" style={{ animationDelay: '0ms' }}>
-        <SnapshotSection sessions={sessions} metrics={metrics} monthlyData={monthlyData} />
+        <SnapshotSection sessions={sessions} metrics={metrics} monthlyData={monthlyData} period={period} />
       </div>
       <div className="section-animate" style={{ animationDelay: '60ms' }}>
         <CapacitySection metrics={metrics} monthlyData={monthlyData} />
       </div>
       {sessions.length > 0 && (
         <div className="section-animate" style={{ animationDelay: '120ms' }}>
-          <DemandSection sessions={sessions} metrics={metrics} />
+          <DemandSection sessions={sessions} metrics={metrics} period={period} />
         </div>
       )}
-      {allMonthlyData.length >= 2 && (
+      {/* {allMonthlyData.length >= 2 && (
         <div className="section-animate" style={{ animationDelay: '180ms' }}>
           <TrendsSection monthlyData={allMonthlyData} />
         </div>
-      )}
+      )} */}
     </div>
   );
 }

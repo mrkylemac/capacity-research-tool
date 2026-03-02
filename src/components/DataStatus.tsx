@@ -15,7 +15,7 @@ interface DataStatusProps {
 export function DataStatus({ isLoading, fetchPhase, error, sessionCount, pageCount, dataRange, loadingLabel }: DataStatusProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 py-2 text-md text-muted-foreground">
+      <div className="flex items-center gap-2 py-2 text-base text-muted-foreground">
         <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
         {fetchPhase === 'processing' ? (
           <span>Filtering to your date range…</span>
@@ -50,11 +50,11 @@ export function DataStatus({ isLoading, fetchPhase, error, sessionCount, pageCou
         <div className="space-y-2 mb-4">
           <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
             <p className="font-medium">Showing last {dataRange.fallbackMonths} months of available data</p>
-            <p className="text-md mt-1">
+            <p className="text-base mt-1">
               No sessions found in requested range. Data available{dateRangeText}.
             </p>
           </div>
-          <div className="text-md text-muted-foreground">
+          <div className="text-base text-muted-foreground">
             Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
           </div>
         </div>
@@ -62,7 +62,7 @@ export function DataStatus({ isLoading, fetchPhase, error, sessionCount, pageCou
     }
 
     return (
-      <div className="text-md text-muted-foreground mb-4">
+      <div className="text-base text-muted-foreground mb-4">
         Loaded <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions{dateRangeText}
       </div>
     );
@@ -73,7 +73,7 @@ export function DataStatus({ isLoading, fetchPhase, error, sessionCount, pageCou
     return (
       <div className="p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">
         <p className="font-medium">No sessions found in requested date range</p>
-        <p className="text-md mt-1">
+        <p className="text-base mt-1">
           API returned data from {format(dataRange.rawFrom, 'MMM d, yyyy')} to {format(dataRange.rawTo, 'MMM d, yyyy')}.
           Try selecting a different date range or "All time".
         </p>

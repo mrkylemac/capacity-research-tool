@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Download, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Check, ChevronsUpDown, Download, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import {
@@ -15,6 +15,8 @@ import { VENUES } from '@/config/api';
 import { useVenueInfo } from '@/hooks/useVenueInfo';
 import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import {
   PeriodSelector,
   getPeriodRange,
@@ -77,6 +79,7 @@ export function ReportClient() {
   const [entry, setEntry] = useState<CachedVenueEntry | null>(null);
   const [hostId, setHostId] = useState<string | null>(null);
   const [period, setPeriod] = useState<PeriodOption>('1m');
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
   const syncStarted = useRef(false);
 
@@ -195,10 +198,20 @@ export function ReportClient() {
   // ── Period-filtered data ─────────────────────────────────────────────────
   const periodRange = useMemo(() => getPeriodRange(period), [period]);
 
-  const filteredSessions = useMemo(() => {
+  const periodFilteredSessions = useMemo(() => {
     if (period === 'all') return allCachedSessions;
     return allCachedSessions.filter(s => new Date(s.startsAt) >= periodRange.from);
   }, [allCachedSessions, period, periodRange.from]);
+
+  const sessionTypes = useMemo(() => {
+    const names = new Set(periodFilteredSessions.map(s => s.sessionName).filter(Boolean));
+    return Array.from(names).sort();
+  }, [periodFilteredSessions]);
+
+  const filteredSessions = useMemo(() => {
+    if (selectedTypes.size === 0) return periodFilteredSessions;
+    return periodFilteredSessions.filter(s => selectedTypes.has(s.sessionName));
+  }, [periodFilteredSessions, selectedTypes]);
 
   const filteredMonthlyData = useMemo(() => {
     if (period === 'all') return allVenueMonthlyData;
@@ -237,10 +250,10 @@ export function ReportClient() {
   // ── Empty states ─────────────────────────────────────────────────────────
   if (!entry) {
     return (
-      <main className="notion-page">
-        {/* <h1 className="notion-title">Report</h1>
-        <p className="notion-text">No cached venue found for this URL.</p>
-        <p className="notion-muted">Start by fetching a venue on the home screen.</p>
+      <main className="page-container">
+        {/* <h1 className="text-4xl font-bold tracking-tight">Report</h1>
+        <p className="text-base leading-relaxed">No cached venue found for this URL.</p>
+        <p className="text-sm text-muted-foreground">Start by fetching a venue on the home screen.</p>
         <div className="mt-6">
           <Button asChild variant="outline" size="sm">
             <Link href="/">Back</Link>
@@ -252,9 +265,9 @@ export function ReportClient() {
 
   if (!benchmarkMetrics) {
     return (
-      <main className="notion-page">
-        <h1 className="notion-title">Report</h1>
-        <p className="notion-text">No active sessions in this dataset.</p>
+      <main className="page-container">
+        <h1 className="text-4xl font-bold tracking-tight">Report</h1>
+        <p className="text-base leading-relaxed">No active sessions in this dataset.</p>
         <div className="mt-6">
           <Button asChild variant="outline" size="sm">
             <Link href="/">Back</Link>
@@ -268,11 +281,11 @@ export function ReportClient() {
   const venueAddress = placeInfo?.address ?? placeInfo?.suburb ?? apiVenueConfig?.location ?? null;
 
   return (
-    <div className="sauna-page-bg min-h-screen">
+    <div className="min-h-screen bg-background">
 
       {/* ── Fixed header bar — Visitors style ── */}
-      <header className="sticky top-0 z-10 bg-background/90 backdrop-blur border-b border-border print:hidden">
-        <div className="max-w-[760px] mx-auto px-5 h-12 flex items-center justify-between">
+      <header className="sticky top-0 z-10 bg-background/90 backdrop-blur border-border print:hidden">
+        <div className="mx-auto px-5 py-4 flex items-center justify-between">
 
           {/* Left: back + venue identity */}
           <div className="flex items-center gap-3 min-w-0">
@@ -284,14 +297,9 @@ export function ReportClient() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="min-w-0">
-              <span className="text-sm font-semibold text-foreground leading-none truncate block">
+              <p className="text-lg font-semibold text-foreground leading-none block">
                 {venueName}
-              </span>
-              {venueAddress && (
-                <span className="text-sm text-muted-foreground leading-none truncate block mt-0.5">
-                  {venueAddress}
-                </span>
-              )}
+              </p>
             </div>
           </div>
 
@@ -338,13 +346,77 @@ export function ReportClient() {
       <div className="max-w-[760px] mx-auto px-5 pt-6 pb-16 space-y-5">
 
         {/* ── Filter row ── */}
-        <div className="flex items-center justify-between print:hidden">
-          <PeriodSelector
-            value={period}
-            onChange={setPeriod}
-            availableMonths={availableMonths}
-          />
-          <span className="text-sm text-muted-foreground tabular-nums">{dateRangeLabel}</span>
+        <div className="grid grid-cols-2 gap-3 items-center justify-center">
+          <div className="grid grid-cols-2 gap-3 w-full">
+
+            <PeriodSelector
+              value={period}
+              onChange={(p) => { setPeriod(p); setSelectedTypes(new Set()); }}
+              availableMonths={availableMonths}
+              className="w-auto"
+            />
+
+            {sessionTypes.length > 1 && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex w-full items-center justify-between rounded-full bg px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-muted shadow-sm border-0 h-auto whitespace-nowrap shrink-0"
+                  >
+                    <span className="truncate overflow-hidden w-full text-left">
+                    {selectedTypes.size === 0
+                      ? 'All sessions'
+                      : selectedTypes.size === 1
+                        ? [...selectedTypes][0]
+                        : `${selectedTypes.size} session types`}
+                    </span>
+                    <ChevronsUpDown className="h-4.5 w-4.5 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" sideOffset={6} className="w-72 p-1.5 rounded-2xl shadow-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTypes(new Set())}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-sm transition-colors hover:bg-muted',
+                      selectedTypes.size === 0 ? 'font-medium' : 'text-muted-foreground',
+                    )}
+                  >
+                    <span className="flex h-3.5 w-3.5 items-center justify-center">
+                      {selectedTypes.size === 0 && <Check className="h-3.5 w-3.5" />}
+                    </span>
+                    <span className="text-base">
+                      All sessions
+                    </span>
+                  </button>
+                  <div className="my-1 h-px bg-border" />
+                  {sessionTypes.map(t => {
+                    const checked = selectedTypes.has(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => {
+                          setSelectedTypes(prev => {
+                            const next = new Set(prev);
+                            checked ? next.delete(t) : next.add(t);
+                            return next;
+                          });
+                        }}
+                        className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted"
+                      >
+                        <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-sm border border-input bg-background">
+                          {checked && <Check className="h-3 w-3" />}
+                        </span>
+                        <span className="truncate">{t}</span>
+                      </button>
+                    );
+                  })}
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
+          <span className="text-base font-medium sm:block ml-auto">{dateRangeLabel}</span>
         </div>
 
         {/* ── Report sections ── */}
@@ -353,6 +425,7 @@ export function ReportClient() {
           metrics={benchmarkMetrics}
           monthlyData={filteredMonthlyData}
           allMonthlyData={allVenueMonthlyData}
+          period={period}
         />
 
       </div>

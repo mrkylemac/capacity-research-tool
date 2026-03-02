@@ -83,10 +83,19 @@ export function getTimeToPeak(data: MonthlyData[]): number {
 // ── Capacity helpers ───────────────────────────────────────────────────────────
 
 /**
- * Returns a short explanatory string, e.g.
- * "259 visitors/week vs 560 seats/week → 46.3% seat occupancy"
+ * Returns a short explanatory string describing capacity vs demand for the period.
+ * For single-day filters: "110 visitors vs 60 seats → 183.3% seat occupancy"
+ * For multi-day filters:  "259 visitors/week vs 560 seats/week → 46.3% seat occupancy"
  */
 export function buildCapacityString(metrics: BenchmarkMetrics): string {
+  if (metrics.daysInRange <= 1) {
+    const occ = metrics.totalCapacity > 0 ? (metrics.totalVisits / metrics.totalCapacity) * 100 : 0;
+    return (
+      `${metrics.totalVisits.toLocaleString()} visitors today` +
+      ` vs ${metrics.totalCapacity.toLocaleString()} seats today` +
+      ` → ${occ.toFixed(1)}% seat occupancy today`
+    );
+  }
   const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
   const seatCapPerWeek = metrics.modalCapacity * sessionsPerWeek;
   const occ = seatCapPerWeek > 0 ? (metrics.weeklyVisits / seatCapPerWeek) * 100 : 0;

@@ -1,4 +1,4 @@
-import { format, parseISO, differenceInMonths, differenceInWeeks } from 'date-fns';
+import { format, parseISO, differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { VENUES } from '@/config/api';
 import type { CachedVenueEntry } from '@/lib/venueCache';
@@ -15,9 +15,33 @@ function derivePeriodLabel(from: string, to: string): { duration: string; fromLa
   try {
     const fromDate = parseISO(from);
     const toDate = parseISO(to);
+    const days = differenceInDays(toDate, fromDate);
     const months = differenceInMonths(toDate, fromDate);
-    const duration = months >= 1 ? `Last ${months} month${months !== 1 ? 's' : ''}` : 'Last 30 days';
-    const fromLabel = `From ${format(fromDate, 'd MMM')}`;
+
+    let duration: string;
+    if (days <= 1) {
+      duration = 'Today';
+    } else if (days <= 6) {
+      duration = `${days} days`;
+    } else if (days <= 13) {
+      duration = '1 week';
+    } else if (days <= 27) {
+      duration = `${Math.round(days / 7)} weeks`;
+    } else if (months <= 1) {
+      duration = '1 month';
+    } else if (months < 12) {
+      duration = `${months} months`;
+    } else {
+      const wholeYears = Math.floor(months / 12);
+      const remainingMonths = months % 12;
+      if (remainingMonths <= 1) {
+        duration = `${wholeYears} year${wholeYears !== 1 ? 's' : ''}`;
+      } else {
+        duration = `${months} months`;
+      }
+    }
+
+    const fromLabel = format(fromDate, 'd MMM yyyy');
     return { duration, fromLabel };
   } catch {
     return { duration: from, fromLabel: '' };
@@ -60,11 +84,12 @@ export function RecentSearches({ entries, onSelect }: RecentSearchesProps) {
           >
             <CardContent className="p-5">
               {/* Top row: name + logo */}
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="min-w-0 pt-0.5">
-                  <p className="font-semibold text-base leading-tight truncate">{entry.venueName}</p>
-                  <p className="text-md text-muted-foreground mt-1.5 leading-snug">{duration}</p>
-                  <p className="text-md text-muted-foreground leading-snug">({fromLabel})</p>
+              <div className="flex justify-between h-full">
+                <div className="grid grid-cols-1 gap-1">
+                  <p className="font-medium text-base leading-tight truncate">
+                    {entry.venueName.split(',')[0].trim()}
+                  </p>
+                  <p className="text-xs text-muted-foreground h-auto grow-0 flex items-end">{location}</p>
                 </div>
                 <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-muted flex items-center justify-center">
                   {entry.hostInfo?.profileImage ? (
@@ -79,23 +104,6 @@ export function RecentSearches({ entries, onSelect }: RecentSearchesProps) {
                     </span>
                   )}
                 </div>
-              </div>
-
-              {/* Pills */}
-              <div className="flex flex-wrap gap-2">
-                {location && (
-                  <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
-                    {location}
-                  </span>
-                )}
-                <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
-                  {sessionCount.toLocaleString()} sessions
-                </span>
-                {weeklyVisits > 0 && (
-                  <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
-                    {weeklyVisits.toLocaleString()} weekly visits
-                  </span>
-                )}
               </div>
             </CardContent>
           </Card>

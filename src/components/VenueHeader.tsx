@@ -53,19 +53,19 @@ export function VenueHeader({
         {/* Name + avatar row */}
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1 pt-0.5">
-            <h1 className="font-bold text-2xl leading-tight tracking-tight truncate">
+            <h1 className="font-bold text-xl sm:text-2xl leading-tight tracking-tight truncate">
               {venueName}
             </h1>
             {location && (
-              <p className="text-md text-muted-foreground mt-0.5">{location}</p>
+              <p className="text-base text-muted-foreground mt-0.5">{location}</p>
             )}
             {venue?.tagline && (
-              <p className="text-md text-muted-foreground/70 mt-2 leading-snug max-w-xs">{venue.tagline}</p>
+              <p className="text-base text-muted-foreground/70 mt-2 leading-snug max-w-xs">{venue.tagline}</p>
             )}
           </div>
 
           {/* Venue logo — 100px square */}
-          <Avatar className="h-[100px] w-[100px] shrink-0 rounded-xl">
+          <Avatar className="h-16 w-16 sm:h-[100px] sm:w-[100px] shrink-0 rounded-xl">
             {hostInfo?.profileImage && (
               <AvatarImage
                 src={hostInfo.profileImage}
@@ -83,16 +83,16 @@ export function VenueHeader({
         <div className="flex items-center justify-between gap-3 mt-5">
           {/* Info pills */}
           <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
+            <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-base font-medium text-foreground">
               {sessionCount.toLocaleString()} sessions
             </span>
             {weeklyVisits > 0 && (
-              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
+              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-base font-medium text-foreground">
                 {weeklyVisits.toLocaleString()} weekly visits
               </span>
             )}
             {placeInfo?.rating && (
-              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground">
+              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-base font-medium text-foreground">
                 ★ {placeInfo.rating.toFixed(1)}
               </span>
             )}
@@ -101,7 +101,7 @@ export function VenueHeader({
                 href={placeInfo.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-md font-medium text-foreground hover:bg-muted/50 transition-colors"
+                className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-base font-medium text-foreground hover:bg-muted/50 transition-colors"
               >
                 Website ↗
               </a>
@@ -110,7 +110,7 @@ export function VenueHeader({
 
           {/* Period selector — solid primary */}
           <div className="flex items-center gap-2.5 shrink-0">
-            <span className="text-md text-muted-foreground tabular-nums hidden sm:block">
+            <span className="text-base text-muted-foreground tabular-nums hidden sm:block">
               {dateRangeLabel}
             </span>
             <PeriodSelector

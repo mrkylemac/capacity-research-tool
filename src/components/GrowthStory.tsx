@@ -40,7 +40,7 @@ function GrowthDot(props: DotProps & { payload?: { partial?: boolean } }) {
       cx={cx}
       cy={cy}
       r={3.5}
-      fill={payload?.partial ? 'hsl(var(--muted-foreground))' : 'hsl(0 0% 28%)'}
+      fill={payload?.partial ? 'var(--muted-foreground)' : '#474747'}
       opacity={payload?.partial ? 0.3 : 1}
       stroke="none"
     />
@@ -102,14 +102,14 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
         <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id="visitorsGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(0 0% 28%)" stopOpacity={0.14} />
-              <stop offset="95%" stopColor="hsl(0 0% 28%)" stopOpacity={0.01} />
+              <stop offset="5%" stopColor="#474747" stopOpacity={0.14} />
+              <stop offset="95%" stopColor="#474747" stopOpacity={0.01} />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
+          <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
           <XAxis
             dataKey="month"
-            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+            tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
             interval="preserveStartEnd"
@@ -117,24 +117,24 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
           <YAxis hide />
           <Tooltip
             contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
+              background: 'var(--popover)',
+              border: '1px solid var(--border)',
               borderRadius: '0.75rem',
               fontSize: 12,
-              color: 'hsl(var(--popover-foreground))',
+              color: 'var(--popover-foreground)',
               boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
             }}
-            labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}
+            labelStyle={{ color: 'var(--muted-foreground)', marginBottom: 2 }}
             formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
           />
           <Area
             type="monotone"
             dataKey="visitors"
-            stroke="hsl(0 0% 28%)"
+            stroke="#474747"
             strokeWidth={1.5}
             fill="url(#visitorsGradient)"
             dot={<GrowthDot />}
-            activeDot={{ r: 3, fill: 'hsl(0 0% 28%)' }}
+            activeDot={{ r: 3, fill: '#474747' }}
           />
         </AreaChart>
       </ResponsiveContainer>

@@ -146,11 +146,11 @@ export function CapacityEconomics({ sessions, operatingHoursPerWeek }: CapacityE
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-md font-medium text-muted-foreground">Revenue per Available Seat Hour</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Revenue per Available Seat Hour</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">${economics.overall.revPASH.toFixed(2)}</div>
-            <p className="text-md text-muted-foreground mt-1">
+            <p className="text-base text-muted-foreground mt-1">
               Higher RevPASH = better capacity utilization
             </p>
           </CardContent>
@@ -158,13 +158,13 @@ export function CapacityEconomics({ sessions, operatingHoursPerWeek }: CapacityE
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-md font-medium text-muted-foreground">Revenue Realization</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Revenue Realization</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`text-3xl font-bold ${getRealizationColor(economics.overall.revenueRealization)}`}>
               {economics.overall.revenueRealization.toFixed(1)}%
             </div>
-            <p className="text-md text-muted-foreground mt-1">
+            <p className="text-base text-muted-foreground mt-1">
               Actual vs. potential revenue if all seats sold
             </p>
           </CardContent>
@@ -172,13 +172,13 @@ export function CapacityEconomics({ sessions, operatingHoursPerWeek }: CapacityE
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-md font-medium text-muted-foreground">Empty Seat Cost</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Empty Seat Cost</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-red-600">
               ${economics.overall.emptySeatCost.toLocaleString()}
             </div>
-            <p className="text-md text-muted-foreground mt-1">
+            <p className="text-base text-muted-foreground mt-1">
               Unrealized revenue from unsold capacity
             </p>
           </CardContent>
@@ -192,7 +192,7 @@ export function CapacityEconomics({ sessions, operatingHoursPerWeek }: CapacityE
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="notion-table min-w-full">
+            <table className="data-table min-w-full">
               <thead>
                 <tr className="bg-muted/30">
                   <th>Time Slot</th>
@@ -219,7 +219,7 @@ export function CapacityEconomics({ sessions, operatingHoursPerWeek }: CapacityE
               </tbody>
             </table>
           </div>
-          <p className="text-md text-muted-foreground mt-3">
+          <p className="text-base text-muted-foreground mt-3">
             Time slots ranked by RevPASH (highest to lowest)
           </p>
         </CardContent>
@@ -232,7 +232,7 @@ export function CapacityEconomics({ sessions, operatingHoursPerWeek }: CapacityE
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="notion-table min-w-full">
+            <table className="data-table min-w-full">
               <thead>
                 <tr className="bg-muted/30">
                   <th>Day</th>

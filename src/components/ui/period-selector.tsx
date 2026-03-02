@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from 'react';
 import {
   format,
   startOfDay,
@@ -11,9 +10,17 @@ import {
   startOfYear,
   subMonths,
 } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from './select';
 import { cn } from '@/lib/utils';
-import { ChevronsUpDown } from 'lucide-react';
 
 export type PeriodOption =
   | 'today'
@@ -119,70 +126,36 @@ interface PeriodSelectorProps {
 }
 
 export function PeriodSelector({ value, onChange, className, availableMonths }: PeriodSelectorProps) {
-  const [open, setOpen] = useState(false);
-
-  const currentLabel = PERIOD_OPTIONS.find(o => o.value === value)?.label ?? 'All time';
-
-  const isVisible = (opt: { value: PeriodOption; months: number | null }) => {
+  const isVisible = (opt: { months: number | null }) => {
     if (opt.months === null) return true;
     if (availableMonths == null) return true;
     return opt.months <= availableMonths;
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-muted/60 px-3.5 py-1.5 text-md font-medium text-foreground transition-colors hover:bg-muted',
-            className,
-          )}
-        >
-          {currentLabel}
-          <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-        </button>
-      </PopoverTrigger>
-
-      <PopoverContent
-        align="start"
-        sideOffset={6}
-        className="w-44 p-1.5"
+    <Select value={value} onValueChange={v => onChange(v as PeriodOption)}>
+      <SelectTrigger
+        className={cn(
+          'inline-flex h-auto w-auto items-center gap-1.5 rounded-full border-0 bg px-3.5 py-2 text-base font-medium text-foreground shadow-sm transition-colors hover:bg-muted focus:ring-0 focus:ring-offset-0',
+          className,
+        )}
       >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent align="start" sideOffset={6} className="w-44 rounded-2xl shadow-2">
         {PERIOD_GROUPS.map((group, gi) => (
-          <div key={gi}>
-            {gi > 0 && <div className="my-1 h-px bg-border" />}
-            {group.label && (
-              <p className="px-2.5 pt-1.5 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                {group.label}
-              </p>
-            )}
+          <SelectGroup key={gi}>
+            {gi > 0 && <SelectSeparator />}
             {group.options.map(v => {
               const opt = PERIOD_OPTIONS.find(o => o.value === v)!;
               if (!isVisible(opt)) return null;
-              const selected = value === v;
               return (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => { onChange(v); setOpen(false); }}
-                  className={cn(
-                    'flex w-full items-center justify-between rounded-sm px-2.5 py-2 text-md transition-colors',
-                    selected
-                      ? 'text-foreground'
-                      : 'text-foreground hover:bg-muted',
-                  )}
-                >
-                  {opt.label}
-                  {selected && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
-                  )}
-                </button>
+                <SelectItem key={v} value={v}>{opt.label}</SelectItem>
               );
             })}
-          </div>
+          </SelectGroup>
         ))}
-      </PopoverContent>
-    </Popover>
+      </SelectContent>
+    </Select>
   );
 }

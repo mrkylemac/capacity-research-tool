@@ -81,7 +81,7 @@ function buildDayProfile(sessions: MomenceSession[]) {
 
 function CardLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-md font-semibold uppercase tracking-widest text-muted-foreground">
+    <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground">
       {children}
     </p>
   );
@@ -90,10 +90,10 @@ function CardLabel({ children }: { children: React.ReactNode }) {
 function BigStat({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <p className="text-[2.75rem] font-bold tabular-nums tracking-tight leading-none text-foreground">
+      <p className="text-[2rem] sm:text-[2.75rem] font-bold tabular-nums tracking-tight leading-none text-foreground">
         {value}
       </p>
-      <p className="text-md text-muted-foreground mt-1.5">{label}</p>
+      <p className="text-base text-muted-foreground mt-1.5">{label}</p>
     </div>
   );
 }
@@ -103,8 +103,8 @@ function StatRow({ items }: { items: { value: string; label: string }[] }) {
     <div className="flex flex-wrap gap-x-6 gap-y-3 pt-1">
       {items.map((item) => (
         <div key={item.label}>
-          <p className="text-md font-medium tabular-nums text-foreground">{item.value}</p>
-          <p className="text-md text-muted-foreground mt-0.5">{item.label}</p>
+          <p className="text-base font-medium tabular-nums text-foreground">{item.value}</p>
+          <p className="text-base text-muted-foreground mt-0.5">{item.label}</p>
         </div>
       ))}
     </div>
@@ -112,11 +112,11 @@ function StatRow({ items }: { items: { value: string; label: string }[] }) {
 }
 
 const tooltipStyle = {
-  background: 'hsl(var(--popover))',
-  border: '1px solid hsl(var(--border))',
+  background: 'var(--popover)',
+  border: '1px solid var(--border)',
   borderRadius: '0.5rem',
   fontSize: 12,
-  color: 'hsl(var(--popover-foreground))',
+  color: 'var(--popover-foreground)',
   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
 };
 
@@ -172,13 +172,13 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
 
           {visitorChartData.length > 1 && (
             <div className="pt-1 border-t border-border">
-              <p className="text-md text-muted-foreground mb-3">Monthly visitors</p>
+              <p className="text-base text-muted-foreground mb-3">Monthly visitors</p>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={visitorChartData} margin={{ top: 2, right: 2, bottom: 0, left: 0 }} barCategoryGap="20%">
-                  <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
+                  <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
                   <XAxis
                     dataKey="name"
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
                     axisLine={false}
                     tickLine={false}
                   />
@@ -190,8 +190,8 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
                       return [value, name];
                     }}
                   />
-                  <Bar dataKey="visitors" stackId="a" fill="hsl(var(--primary))" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="unfilled" stackId="a" fill="hsl(var(--muted-foreground) / 0.15)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="visitors" stackId="a" fill="var(--primary)" radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="unfilled" stackId="a" fill="color-mix(in srgb, var(--muted-foreground) 15%, transparent)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -218,16 +218,16 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
 
           {/* Day-of-week chart */}
           <div className="pt-1 border-t border-border">
-            <p className="text-md text-muted-foreground mb-3">
+            <p className="text-base text-muted-foreground mb-3">
               Avg sessions per operating day
               {closedDays.length > 0 && ` · ${closedDays.join(', ')} excluded`}
             </p>
             <ResponsiveContainer width="100%" height={120}>
               <BarChart data={dayProfile} margin={{ top: 2, right: 2, bottom: 0, left: 0 }} barCategoryGap="25%">
-                <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
+                <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
                 <XAxis
                   dataKey="name"
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -237,7 +237,7 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
                     if (name === 'avgSessions') return [`${value.toFixed(1)} avg sessions`, ''];
                     return [value, name];
                   }}
-                  labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}
+                  labelStyle={{ color: 'var(--muted-foreground)', marginBottom: 2 }}
                 />
                 <Bar dataKey="avgSessions" radius={[4, 4, 0, 0]}>
                   {dayProfile.map((entry, index) => (
@@ -245,17 +245,17 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
                       key={`cell-${index}`}
                       fill={
                         !entry.isOpen
-                          ? 'hsl(var(--border))'
+                          ? 'var(--border)'
                           : entry.isWeekend
-                          ? 'hsl(var(--primary) / 0.55)'
-                          : 'hsl(var(--primary))'
+                          ? 'color-mix(in srgb, var(--primary) 55%, transparent)'
+                          : 'var(--primary)'
                       }
                     />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <p className="text-md text-muted-foreground mt-2.5 flex gap-3">
+            <p className="text-base text-muted-foreground mt-2.5 flex gap-3">
               <span>
                 <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mr-1" />
                 Weekday
@@ -269,7 +269,7 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
 
           {/* Rolling interval note */}
           {rollingInterval > 0 && (
-            <p className="text-md text-muted-foreground pt-1 border-t border-border leading-relaxed">
+            <p className="text-base text-muted-foreground pt-1 border-t border-border leading-relaxed">
               Rolling {rollingInterval}-minute waves allow up to{' '}
               <span className="font-medium text-foreground">{maxConcurrent} sessions</span> to overlap,
               placing up to{' '}

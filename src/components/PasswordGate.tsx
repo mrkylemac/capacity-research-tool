@@ -74,7 +74,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
                 autoFocus
               />
             </div>
-            {error && <p className="text-md text-destructive">{error}</p>}
+            {error && <p className="text-base text-destructive">{error}</p>}
             <div className="flex gap-2">
               <Button type="submit" className="flex-1">
                 Unlock

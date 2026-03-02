@@ -4,7 +4,8 @@ import type { Platform } from '@/config/api';
 
 const CACHE_KEY = 'venue-cache';
 const RECENT_KEY = 'venue-recent';
-const MAX_RECENT = 9;
+const MAX_RECENT = 3;
+const MAX_ENTRIES = 3; // hard cap before writing to avoid accumulating stale data
 
 function canUseStorage(): boolean {
   return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
@@ -53,6 +54,34 @@ export function getCachedEntry(key: string): CachedVenueEntry | null {
   return cache[key] ?? null;
 }
 
+/**
+ * Attempt to write the cache to localStorage.
+ * If a QuotaExceededError is thrown, evict the oldest entry (that isn't
+ * `currentKey`) and retry, up to MAX_ENTRIES times.
+ */
+function writeCacheWithEviction(
+  cache: Record<string, CachedVenueEntry>,
+  currentKey: string,
+): void {
+  for (let attempt = 0; attempt <= MAX_ENTRIES; attempt++) {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+      return;
+    } catch (err) {
+      const isQuota =
+        err instanceof DOMException &&
+        (err.name === 'QuotaExceededError' || err.name === 'NS_ERROR_DOM_QUOTA_REACHED');
+      if (!isQuota) return; // unexpected error — bail silently
+
+      // Evict the oldest entry that isn't the one we just wrote
+      const candidates = Object.values(cache).filter(e => e.key !== currentKey);
+      if (candidates.length === 0) return; // nothing left to evict
+      const oldest = candidates.reduce((a, b) => (a.cachedAt < b.cachedAt ? a : b));
+      delete cache[oldest.key];
+    }
+  }
+}
+
 export function setCachedEntry(entry: Omit<CachedVenueEntry, 'key' | 'cachedAt'>): CachedVenueEntry {
   if (!canUseStorage()) {
     const key = getCacheKey(entry.hostId, entry.platform, entry.dateRange.from, entry.dateRange.to);
@@ -62,7 +91,14 @@ export function setCachedEntry(entry: Omit<CachedVenueEntry, 'key' | 'cachedAt'>
   const full: CachedVenueEntry = { ...entry, key, cachedAt: new Date().toISOString() };
   const cache = getCache();
   cache[key] = full;
-  localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+
+  // Proactively evict entries beyond the cap (keep newest MAX_ENTRIES)
+  const allEntries = Object.values(cache).sort((a, b) => b.cachedAt.localeCompare(a.cachedAt));
+  for (const old of allEntries.slice(MAX_ENTRIES)) {
+    delete cache[old.key];
+  }
+
+  writeCacheWithEviction(cache, key);
 
   const recent = getRecentKeys();
   const updated = [key, ...recent.filter(k => k !== key)].slice(0, MAX_RECENT);

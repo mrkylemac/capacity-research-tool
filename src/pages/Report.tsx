@@ -62,7 +62,7 @@ const Report = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="notion-page">
+      <div className="page-container">
         {/* Navigation */}
         <div className="mb-6">
           <div className="flex items-center justify-between gap-2">
@@ -102,8 +102,8 @@ const Report = () => {
           {activeSessions.length > 0 && (
             <section>
               <div className="mb-6">
-                <h2 className="notion-h1">Visitation</h2>
-                <p className="text-md text-muted-foreground mt-1">
+                <h2 className="text-2xl font-semibold mt-10 mb-4">Visitation</h2>
+                <p className="text-base text-muted-foreground mt-1">
                   All figures are sourced directly from Momence session records with no augmentation.
                   Visitors = tickets sold per session. Occupancy = tickets sold ÷ capacity.
                 </p>

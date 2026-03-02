@@ -58,28 +58,28 @@ export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisatio
       {/* Monthly chart */}
       <Card>
         <CardContent className="p-5">
-          <p className="text-md font-medium text-foreground mb-1">Monthly visitors vs capacity</p>
-          <p className="text-md text-muted-foreground mb-4">
+          <p className="text-base font-medium text-foreground mb-1">Monthly visitors vs capacity</p>
+          <p className="text-base text-muted-foreground mb-4">
             Filled <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mx-0.5" /> ·{' '}
             Unfilled <span className="inline-block w-2.5 h-2 rounded-sm bg-muted-foreground/30 align-middle mx-0.5" />
           </p>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={visitorsChartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} barCategoryGap="20%">
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
+              <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
               <XAxis
                 dataKey="name"
-                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis hide />
               <Tooltip
                 contentStyle={{
-                  background: 'hsl(var(--popover))',
-                  border: '1px solid hsl(var(--border))',
+                  background: 'var(--popover)',
+                  border: '1px solid var(--border)',
                   borderRadius: '0.5rem',
                   fontSize: 13,
-                  color: 'hsl(var(--popover-foreground))',
+                  color: 'var(--popover-foreground)',
                   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
                 }}
                 formatter={(value: number, name: string) => {
@@ -88,8 +88,8 @@ export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisatio
                   return [value, name];
                 }}
               />
-              <Bar dataKey="visitors" stackId="a" fill="hsl(var(--primary))" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="unfilled" stackId="a" fill="hsl(var(--muted-foreground) / 0.2)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="visitors" stackId="a" fill="var(--primary)" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="unfilled" stackId="a" fill="color-mix(in srgb, var(--muted-foreground) 20%, transparent)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

@@ -56,6 +56,16 @@ export interface AreaChartProps {
   className?: string;
   /** Child components (Area, Grid, ChartTooltip, etc.) */
   children: ReactNode;
+  /**
+   * Add frosted-glass edge fade overlays on the left and right of the chart.
+   * Matches the backdrop-blur technique from the reference design.
+   */
+  edgeFade?: boolean;
+  /**
+   * Draw a vertical line at the right edge of the chart area to indicate
+   * the current time boundary (like the reference's right-edge bar).
+   */
+  showCurrentTimeLine?: boolean;
 }
 
 const DEFAULT_MARGIN: Margin = { top: 40, right: 40, bottom: 40, left: 40 };
@@ -107,6 +117,7 @@ interface ChartInnerProps {
   animationDuration: number;
   children: ReactNode;
   containerRef: React.RefObject<HTMLDivElement | null>;
+  showCurrentTimeLine?: boolean;
 }
 
 function ChartInner({
@@ -118,6 +129,7 @@ function ChartInner({
   animationDuration,
   children,
   containerRef,
+  showCurrentTimeLine = false,
 }: ChartInnerProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -304,6 +316,20 @@ function ChartInner({
 
           {preOverlayChildren}
           {postOverlayChildren}
+
+          {/* Current-time boundary line at the right edge of the data area */}
+          {showCurrentTimeLine && (
+            <line
+              x1={innerWidth}
+              x2={innerWidth}
+              y1={0}
+              y2={innerHeight + 8}
+              stroke="var(--border)"
+              strokeWidth={2}
+              strokeLinecap="round"
+              pointerEvents="none"
+            />
+          )}
         </g>
       </svg>
     </ChartProvider>
@@ -318,6 +344,8 @@ export function AreaChart({
   aspectRatio = "2 / 1",
   className = "",
   children,
+  edgeFade = false,
+  showCurrentTimeLine = false,
 }: AreaChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const margin = { ...DEFAULT_MARGIN, ...marginProp };
@@ -336,6 +364,7 @@ export function AreaChart({
             data={data}
             height={height}
             margin={margin}
+            showCurrentTimeLine={showCurrentTimeLine}
             width={width}
             xDataKey={xDataKey}
           >
@@ -343,6 +372,26 @@ export function AreaChart({
           </ChartInner>
         )}
       </ParentSize>
+
+      {/* Frosted-glass edge fade overlays matching the reference design */}
+      {edgeFade && (
+        <>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-0 left-0 top-0 w-6 backdrop-blur-xl md:w-8"
+            style={{
+              mask: "linear-gradient(to right, black 0%, transparent 100%)",
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-0 right-0 top-0 w-6 backdrop-blur-xl md:w-8"
+            style={{
+              mask: "linear-gradient(to left, black 0%, transparent 100%)",
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }

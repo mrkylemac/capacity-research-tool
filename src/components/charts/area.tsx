@@ -41,6 +41,28 @@ export interface AreaProps {
   gradientToOpacity?: number;
   /** Whether to fade the area fill at left/right edges. Default: false */
   fadeEdges?: boolean;
+  /**
+   * Add a midpoint stop to the fill gradient at this percentage (0–100),
+   * where opacity drops to 0. Creates a subtle top-only glow (e.g. 50).
+   */
+  gradientMidStop?: number;
+  /**
+   * End color for a horizontal two-color line stroke gradient.
+   * When set, the stroke transitions from `stroke` (or `fill`) to this color
+   * across the chart width, using SVG userSpaceOnUse coordinates.
+   */
+  strokeGradientTo?: string;
+  /**
+   * Where the two-color stroke gradient starts (0–100). Default: 30.
+   * Only applies when `strokeGradientTo` is set.
+   */
+  strokeGradientStartOffset?: number;
+  /**
+   * Whether to fade the stroke at left/right edges (default behavior).
+   * Set to false for a solid stroke or when using `strokeGradientTo`.
+   * Default: true
+   */
+  strokeEdgeFade?: boolean;
 }
 
 export function Area({
@@ -55,6 +77,10 @@ export function Area({
   showHighlight = true,
   gradientToOpacity = 0,
   fadeEdges = false,
+  gradientMidStop,
+  strokeGradientTo,
+  strokeGradientStartOffset = 30,
+  strokeEdgeFade = true,
 }: AreaProps) {
   const {
     data,
@@ -223,31 +249,53 @@ export function Area({
             offset="0%"
             style={{ stopColor: fill, stopOpacity: fillOpacity }}
           />
+          {gradientMidStop !== undefined && (
+            <stop
+              offset={`${gradientMidStop}%`}
+              style={{ stopColor: fill, stopOpacity: 0 }}
+            />
+          )}
           <stop
             offset="100%"
             style={{ stopColor: fill, stopOpacity: gradientToOpacity }}
           />
         </linearGradient>
 
-        {/* Stroke gradient - fades at edges */}
-        <linearGradient id={strokeGradientId} x1="0%" x2="100%" y1="0%" y2="0%">
-          <stop
-            offset="0%"
-            style={{ stopColor: resolvedStroke, stopOpacity: 0 }}
-          />
-          <stop
-            offset="15%"
-            style={{ stopColor: resolvedStroke, stopOpacity: 1 }}
-          />
-          <stop
-            offset="85%"
-            style={{ stopColor: resolvedStroke, stopOpacity: 1 }}
-          />
-          <stop
-            offset="100%"
-            style={{ stopColor: resolvedStroke, stopOpacity: 0 }}
-          />
-        </linearGradient>
+        {/* Stroke gradient — two-color horizontal, edge-fade, or omitted for solid */}
+        {strokeGradientTo ? (
+          /* Two-color horizontal gradient (e.g. sky → purple) */
+          <linearGradient
+            id={strokeGradientId}
+            gradientUnits="userSpaceOnUse"
+            x1="0"
+            x2={innerWidth}
+            y1="0"
+            y2="0"
+          >
+            <stop offset={`${strokeGradientStartOffset}%`} stopColor={resolvedStroke} />
+            <stop offset="100%" stopColor={strokeGradientTo} />
+          </linearGradient>
+        ) : strokeEdgeFade ? (
+          /* Edge-fade gradient (default) */
+          <linearGradient id={strokeGradientId} x1="0%" x2="100%" y1="0%" y2="0%">
+            <stop
+              offset="0%"
+              style={{ stopColor: resolvedStroke, stopOpacity: 0 }}
+            />
+            <stop
+              offset="15%"
+              style={{ stopColor: resolvedStroke, stopOpacity: 1 }}
+            />
+            <stop
+              offset="85%"
+              style={{ stopColor: resolvedStroke, stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: resolvedStroke, stopOpacity: 0 }}
+            />
+          </linearGradient>
+        ) : null}
 
         {/* Edge fade mask for area fill */}
         {fadeEdges && (
@@ -334,7 +382,11 @@ export function Area({
               curve={curve}
               data={data}
               innerRef={pathRef}
-              stroke={`url(#${strokeGradientId})`}
+              stroke={
+                strokeGradientTo || strokeEdgeFade
+                  ? `url(#${strokeGradientId})`
+                  : resolvedStroke
+              }
               strokeLinecap="round"
               strokeWidth={strokeWidth}
               x={(d) => xScale(xAccessor(d)) ?? 0}

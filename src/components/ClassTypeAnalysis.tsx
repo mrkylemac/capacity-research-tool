@@ -33,34 +33,34 @@ export function ClassTypeAnalysis({ data }: ClassTypeAnalysisProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <p className="text-md text-muted-foreground mb-1">Class Types</p>
+            <p className="text-base text-muted-foreground mb-1">Class Types</p>
             <p className="text-xl font-semibold text-foreground">{data.length}</p>
-            <p className="text-md text-muted-foreground">unique types</p>
+            <p className="text-base text-muted-foreground">unique types</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-md text-muted-foreground mb-1">Total Visitors</p>
+            <p className="text-base text-muted-foreground mb-1">Total Visitors</p>
             <p className="text-xl font-semibold text-foreground">{totalVisitors.toLocaleString()}</p>
-            <p className="text-md text-muted-foreground">across all types</p>
+            <p className="text-base text-muted-foreground">across all types</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-md text-muted-foreground mb-1">Top Class</p>
+            <p className="text-base text-muted-foreground mb-1">Top Class</p>
             <p className="text-xl font-semibold text-foreground truncate" title={data[0]?.className}>
               {data[0]?.className || '-'}
             </p>
-            <p className="text-md text-muted-foreground">{data[0]?.totalVisitors.toLocaleString() || 0} visitors</p>
+            <p className="text-base text-muted-foreground">{data[0]?.totalVisitors.toLocaleString() || 0} visitors</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-md text-muted-foreground mb-1">Avg Utilisation</p>
+            <p className="text-base text-muted-foreground mb-1">Avg Utilisation</p>
             <p className="text-xl font-semibold text-foreground">
               {(data.reduce((sum, d) => sum + d.avgUtilisation, 0) / data.length).toFixed(1)}%
             </p>
-            <p className="text-md text-muted-foreground">across types</p>
+            <p className="text-base text-muted-foreground">across types</p>
           </CardContent>
         </Card>
       </div>

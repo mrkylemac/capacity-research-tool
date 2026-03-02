@@ -38,12 +38,12 @@ function BarYAxisLabel({
           opacity: isHovered ? 1 : 0.7,
           color: isHovered
             ? "var(--foreground)"
-            : "var(--chart-label, var(--color-zinc-500))",
+            : "var(--chart-label)",
         }}
-        className={cn("truncate whitespace-nowrap text-right text-s")}
+        className={cn("truncate whitespace-nowrap text-right text-xs")}
         initial={{
           opacity: 0.7,
-          color: "var(--chart-label, var(--color-zinc-500))",
+          color: "var(--chart-label)",
         }}
         style={{ maxWidth: 70 }}
         transition={{ duration: 0.15 }}

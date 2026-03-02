@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from 'react';
-import { getDay, parseISO } from 'date-fns';
+import { format, getDay, parseISO } from 'date-fns';
 import {
   BarChart, Bar, Cell, XAxis, Tooltip, CartesianGrid, ResponsiveContainer,
 } from 'recharts';
@@ -18,9 +18,9 @@ interface SessionAnalysisProps {
 function detectRollingInterval(sessions: MomenceSession[]): number {
   const byDay = new Map<string, number[]>();
   sessions.forEach(s => {
-    const date = s.startsAt.slice(0, 10);
-    const d = new Date(s.startsAt);
-    const mins = d.getUTCHours() * 60 + d.getUTCMinutes();
+    const parsed = parseISO(s.startsAt);
+    const date = format(parsed, 'yyyy-MM-dd');
+    const mins = parsed.getHours() * 60 + parsed.getMinutes();
     const existing = byDay.get(date) ?? [];
     existing.push(mins);
     byDay.set(date, existing);
@@ -67,8 +67,9 @@ function buildDayProfile(sessions: MomenceSession[]) {
   });
 
   sessions.forEach(s => {
-    const day = getDay(parseISO(s.startsAt));
-    const date = s.startsAt.slice(0, 10);
+    const parsed = parseISO(s.startsAt);
+    const day = getDay(parsed);
+    const date = format(parsed, 'yyyy-MM-dd');
     dayUniqueDates.get(day)?.add(date);
     daySessionCounts.set(day, (daySessionCounts.get(day) ?? 0) + 1);
   });
@@ -132,36 +133,36 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
       {/* Day-of-week session chart */}
       <Card>
         <CardContent className="p-5">
-          <p className="text-md font-medium text-foreground mb-1">
+          <p className="text-base font-medium text-foreground mb-1">
             Average sessions per operating day
           </p>
-          <p className="text-md text-muted-foreground mb-4">
+          <p className="text-base text-muted-foreground mb-4">
             Normalised to days where at least one session ran
             {closedDays.length > 0 && ` · ${closedDays.join(', ')} excluded`}
           </p>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={dayProfile} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} barCategoryGap="25%">
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.6} />
+              <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
               <XAxis
                 dataKey="name"
-                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
                 contentStyle={{
-                  background: 'hsl(var(--popover))',
-                  border: '1px solid hsl(var(--border))',
+                  background: 'var(--popover)',
+                  border: '1px solid var(--border)',
                   borderRadius: '0.5rem',
                   fontSize: 13,
-                  color: 'hsl(var(--popover-foreground))',
+                  color: 'var(--popover-foreground)',
                   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
                 }}
                 formatter={(value: number, name: string) => {
                   if (name === 'avgSessions') return [`${value.toFixed(1)} avg sessions`, ''];
                   return [value, name];
                 }}
-                labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}
+                labelStyle={{ color: 'var(--muted-foreground)', marginBottom: 2 }}
               />
               <Bar dataKey="avgSessions" radius={[4, 4, 0, 0]}>
                 {dayProfile.map((entry, index) => (
@@ -169,17 +170,17 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
                     key={`cell-${index}`}
                     fill={
                       !entry.isOpen
-                        ? 'hsl(var(--border))'
+                        ? 'var(--border)'
                         : entry.isWeekend
-                        ? 'hsl(var(--primary) / 0.55)'
-                        : 'hsl(var(--primary))'
+                        ? 'color-mix(in srgb, var(--primary) 55%, transparent)'
+                        : 'var(--primary)'
                     }
                   />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-          <p className="text-md text-muted-foreground mt-3 flex gap-3">
+          <p className="text-base text-muted-foreground mt-3 flex gap-3">
             <span>
               <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mr-1" />
               Weekday
@@ -190,7 +191,7 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
             </span>
           </p>
           {rollingIntervalMins > 0 && (
-            <p className="text-md text-muted-foreground mt-4 pt-3 border-t border-border leading-relaxed">
+            <p className="text-base text-muted-foreground mt-4 pt-3 border-t border-border leading-relaxed">
               Rolling {rollingIntervalMins}-minute waves allow up to{' '}
               <span className="font-medium text-foreground">{maxConcurrent} sessions</span> to overlap,
               placing a maximum of{' '}

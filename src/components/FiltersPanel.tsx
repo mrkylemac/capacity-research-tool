@@ -60,11 +60,11 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
     : 'Select dates';
 
   return (
-    <form onSubmit={handleSubmit} className="notion-card mb-6">
+    <form onSubmit={handleSubmit} className="rounded-lg bg-card p-5 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Venue Selection */}
         <div className="space-y-2">
-          <Label className="text-md text-muted-foreground">Venue</Label>
+          <Label className="text-base text-muted-foreground">Venue</Label>
           <Select value={selectedVenue} onValueChange={handleVenueChange}>
             <SelectTrigger>
               <SelectValue placeholder="Select venue" />
@@ -81,7 +81,7 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
 
         {/* Date Range Picker with Presets */}
         <div className="space-y-2">
-          <Label className="text-md text-muted-foreground">Date Range</Label>
+          <Label className="text-base text-muted-foreground">Date Range</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full justify-start text-left font-normal">
@@ -97,7 +97,7 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
                       key={preset.label}
                       variant="ghost"
                       size="sm"
-                      className="justify-start text-md whitespace-nowrap"
+                      className="justify-start text-base whitespace-nowrap"
                       onClick={() => handlePreset(preset)}
                     >
                       {preset.label}
@@ -127,7 +127,7 @@ export function FiltersPanel({ onFetchData, isLoading }: FiltersPanelProps) {
 
         {/* Fetch Button */}
         <div className="space-y-2">
-          <Label className="text-md text-muted-foreground opacity-0">Action</Label>
+          <Label className="text-base text-muted-foreground opacity-0">Action</Label>
           <Button
             type="submit"
             disabled={isLoading || !dateRange.from || !dateRange.to}

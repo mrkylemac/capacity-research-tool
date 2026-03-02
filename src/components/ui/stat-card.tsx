@@ -23,12 +23,12 @@ export function StatCard({ value, label, note, className }: StatCardProps) {
           <div className="text-[2rem] font-bold tabular-nums tracking-tight leading-none text-foreground">
             {value}
           </div>
-          <p className="text-md text-muted-foreground mt-2 leading-snug">{label}</p>
+          <p className="text-base text-muted-foreground mt-2 leading-snug">{label}</p>
         </div>
 
         {/* Context note — pinned to bottom with separator */}
         {note && (
-          <p className="text-md text-muted-foreground mt-5 pt-3 border-t border-border leading-snug">
+          <p className="text-base text-muted-foreground mt-5 pt-3 border-t border-border leading-snug">
             {note}
           </p>
         )}
