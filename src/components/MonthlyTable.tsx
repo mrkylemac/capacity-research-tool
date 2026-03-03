@@ -5,6 +5,7 @@ import {
   ResponsiveContainer, ReferenceLine, Cell,
 } from 'recharts';
 import type { MonthlyData, MomenceSession } from '@/types/momence';
+import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -268,7 +269,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
             <Button
               variant={selectedMonth === null ? 'secondary' : 'ghost'}
               size="sm"
-              className="flex-shrink-0"
+              className="shrink-0"
               onClick={() => { setSelectedMonth(null); setExpandedWeeks(new Set()); }}
             >
               All
@@ -278,7 +279,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                 key={i}
                 variant={selectedMonth?.month === m.month && selectedMonth?.year === m.year ? 'secondary' : 'ghost'}
                 size="sm"
-                className="flex-shrink-0"
+                className="shrink-0"
                 onClick={() => { setSelectedMonth({ month: m.month, year: m.year }); setExpandedWeeks(new Set()); }}
               >
                 {m.month.slice(0, 3)} {m.year.toString().slice(2)}
@@ -316,16 +317,16 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={chartData} margin={{ top: 10, right: 40, left: -20, bottom: 0 }} barCategoryGap="25%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                 <XAxis
                   dataKey="name"
-                  tick={{ fill: '#737373', fontSize: 11 }}
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
                   yAxisId="left"
-                  tick={{ fill: '#737373', fontSize: 11 }}
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -333,29 +334,24 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                   yAxisId="right"
                   orientation="right"
                   domain={[0, 100]}
-                  tick={{ fill: '#737373', fontSize: 11 }}
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                   tickFormatter={(v: number) => `${v}%`}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #e6e6e6',
-                    borderRadius: '6px',
-                    fontSize: 12,
-                    color: '#171717',
-                  }}
+                  contentStyle={chartTooltipContentStyle}
+                  labelStyle={chartTooltipLabelStyle}
                   formatter={(value: number, name: string) => [
                     name === 'occupancy' ? `${value}%` : value.toLocaleString(),
                     name === 'occupancy' ? 'Occupancy' : 'Visitors',
                   ]}
                 />
-                <ReferenceLine yAxisId="right" y={70} stroke="#22c55e" strokeDasharray="4 4" strokeOpacity={0.6} />
-                <ReferenceLine yAxisId="right" y={avgOccupancy} stroke="#999999" strokeDasharray="5 5" />
+                <ReferenceLine yAxisId="right" y={70} stroke="var(--chart-high)" strokeDasharray="4 4" strokeOpacity={0.6} />
+                <ReferenceLine yAxisId="right" y={avgOccupancy} stroke="var(--muted-foreground)" strokeDasharray="5 5" />
                 <Bar yAxisId="left" dataKey="visitors" radius={[4, 4, 0, 0]} maxBarSize={40}>
                   {chartData.map((d, i) => {
-                    const fill = d.occupancy >= 70 ? '#22c55e' : d.occupancy >= 40 ? '#f59e0b' : '#ef4444';
+                    const fill = d.occupancy >= 70 ? 'var(--chart-high)' : d.occupancy >= 40 ? 'var(--chart-medium)' : 'var(--chart-low)';
                     return <Cell key={i} fill={fill} fillOpacity={0.85} />;
                   })}
                 </Bar>
@@ -363,25 +359,25 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                   yAxisId="right"
                   type="monotone"
                   dataKey="occupancy"
-                  stroke="#595959"
+                  stroke="var(--chart-fill)"
                   strokeWidth={1.5}
-                  dot={{ fill: '#595959', strokeWidth: 0, r: 3 }}
+                  dot={{ fill: 'var(--chart-fill)', strokeWidth: 0, r: 3 }}
                   activeDot={{ r: 5 }}
                 />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-2">
-            <span className="text-base text-muted-foreground flex items-center gap-1">
-              <span className="inline-block w-3 h-3 rounded-sm bg-green-500 opacity-85" /> ≥70% occupancy
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm opacity-85" style={{ backgroundColor: 'var(--chart-high)' }} /> ≥70% occupancy
             </span>
-            <span className="text-base text-muted-foreground flex items-center gap-1">
-              <span className="inline-block w-3 h-3 rounded-sm bg-amber-500 opacity-85" /> 40–69%
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm opacity-85" style={{ backgroundColor: 'var(--chart-medium)' }} /> 40–69%
             </span>
-            <span className="text-base text-muted-foreground flex items-center gap-1">
-              <span className="inline-block w-3 h-3 rounded-sm bg-red-500 opacity-85" /> &lt;40%
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm opacity-85" style={{ backgroundColor: 'var(--chart-low)' }} /> &lt;40%
             </span>
-            <span className="text-base text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               — — avg {avgOccupancy.toFixed(1)}% &nbsp;·&nbsp; green dashed = 70% threshold
             </span>
           </div>
@@ -473,7 +469,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                       <CollapsibleTrigger asChild>
                         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-3 sm:px-4 py-3 text-base cursor-pointer hover:bg-muted/20 transition-colors">
                           <div className="font-medium flex items-center gap-1.5 min-w-0">
-                            <span className="text-muted-foreground text-base flex-shrink-0">{isExpanded ? '▼' : '▶'}</span>
+                            <span className="text-muted-foreground text-base shrink-0">{isExpanded ? '▼' : '▶'}</span>
                             <span className="truncate">
                               <span className="hidden sm:inline">{row.weekLabel} – </span>
                               {format(row.weekStart, 'MMM d')}
@@ -511,7 +507,7 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                                   </div>
                                   <Badge
                                     variant={occupancyPct >= 70 ? 'secondary' : 'outline'}
-                                    className="text-base ml-2 flex-shrink-0"
+                                    className="text-base ml-2 shrink-0"
                                   >
                                     {session.ticketsSold}/{session.capacity}
                                   </Badge>

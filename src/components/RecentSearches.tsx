@@ -79,32 +79,33 @@ export function RecentSearches({ entries, onSelect }: RecentSearchesProps) {
         return (
           <Card
             key={entry.key}
-            className="cursor-pointer hover:border-primary/40 transition-colors bg-muted/30 border-muted"
+            className="cursor-pointer transition-colors bg-background rounded-2xl shadow-2"
             onClick={() => onSelect(entry)}
           >
-            <CardContent className="p-5">
-              {/* Top row: name + logo */}
-              <div className="flex justify-between h-full">
-                <div className="grid grid-cols-1 gap-1">
+            <CardContent className="p-0">
+
+              <div className="flex justify-between h-full flex-row-reverse">
+                <div className="grid grid-cols-1 gap-1 p-4 w-full">
                   <p className="font-medium text-base leading-tight truncate">
                     {entry.venueName.split(',')[0].trim()}
                   </p>
-                  <p className="text-xs text-muted-foreground h-auto grow-0 flex items-end">{location}</p>
+                  <p className="text-sm text-muted-foreground h-auto grow-0 flex items-end">{location}</p>
                 </div>
-                <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-muted flex items-center justify-center">
+                <div className="aspect-square w-full rounded-xl rounded-r-none overflow-hidden bg-gray-2 flex items-center justify-center max-w-24">
                   {entry.hostInfo?.profileImage ? (
                     <img
                       src={entry.hostInfo.profileImage}
                       alt={entry.venueName}
-                      className="w-full h-full object-cover"
+                      className="aspect-square rounded-xl rounded-r-none object-cover overflow-hidden"
                     />
                   ) : (
-                    <span className="text-xl font-bold text-muted-foreground">
-                      {entry.venueName.charAt(0)}
+                    <span className="text-3xl font-bold text-muted-foreground">
+                      {entry.venueName.charAt(0).toUpperCase()}
                     </span>
                   )}
                 </div>
               </div>
+              
             </CardContent>
           </Card>
         );

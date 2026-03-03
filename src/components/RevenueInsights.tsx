@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import type { MomenceSession, MonthlyData } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
+import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -227,39 +228,39 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
   return (
     <div className="space-y-6">
       {/* Top-line revenue KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <p className="text-base text-muted-foreground mb-1">Total Revenue</p>
+            <p className="text-sm text-muted-foreground mb-1">Total Revenue</p>
             <p className="text-xl font-semibold">${totalRevenue.toLocaleString()}</p>
-            <p className="text-base text-muted-foreground mt-1">{monthlyRevenue.length} months</p>
+            <p className="text-sm text-muted-foreground mt-1">{monthlyRevenue.length} months</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-base text-muted-foreground mb-1">Avg Monthly</p>
+            <p className="text-sm text-muted-foreground mb-1">Avg Monthly</p>
             <p className="text-xl font-semibold">${Math.round(avgMonthlyRevenue).toLocaleString()}</p>
-            <p className="text-base text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               ${Math.round(avgMonthlyRevenue / 4.33).toLocaleString()}/week
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-base text-muted-foreground mb-1">ARPV</p>
+            <p className="text-sm text-muted-foreground mb-1">ARPV</p>
             <p className="text-xl font-semibold">
               ${totalVisitors > 0 ? (totalRevenue / totalVisitors).toFixed(2) : '0.00'}
             </p>
-            <p className="text-base text-muted-foreground mt-1">per visit</p>
+            <p className="text-sm text-muted-foreground mt-1">per visit</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-base text-muted-foreground mb-1">Rev/Session</p>
+            <p className="text-sm text-muted-foreground mb-1">Rev/Session</p>
             <p className="text-xl font-semibold">
               ${sessions.length > 0 ? Math.round(totalRevenue / sessions.length).toLocaleString() : '0'}
             </p>
-            <p className="text-base text-muted-foreground mt-1">{sessions.length} sessions</p>
+            <p className="text-sm text-muted-foreground mt-1">{sessions.length} sessions</p>
           </CardContent>
         </Card>
       </div>
@@ -283,13 +284,9 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
                     {h.sentiment === 'positive' ? 'Signal' : h.sentiment === 'warning' ? 'Watch' : 'Insight'}
                   </Badge>
                 </div>
-                <p className="text-base font-medium mb-1">{h.title}</p>
-                <p className={`text-2xl font-bold ${
-                  h.sentiment === 'positive' ? 'text-green-700' :
-                  h.sentiment === 'warning' ? 'text-amber-700' :
-                  'text-foreground'
-                }`}>{h.value}</p>
-                <p className="text-base text-muted-foreground mt-1">{h.description}</p>
+                <p className="text-sm font-medium mb-1">{h.title}</p>
+                <p className="text-2xl font-semibold text-foreground">{h.value}</p>
+                <p className="text-sm text-muted-foreground mt-1">{h.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -300,36 +297,32 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
       {monthlyRevenue.length >= 2 && (
         <Card>
           <CardContent className="p-5">
-            <p className="text-base text-muted-foreground mb-3">Monthly Revenue Trend</p>
+            <p className="text-sm text-muted-foreground mb-3">Monthly Revenue Trend</p>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={monthlyRevenue} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--chart-revenue)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--chart-revenue)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis
                     dataKey="month"
-                    tick={{ fill: '#737373', fontSize: 11 }}
-                    axisLine={{ stroke: '#e6e6e6' }}
-                    tickLine={{ stroke: '#e6e6e6' }}
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
                   />
                   <YAxis
-                    tick={{ fill: '#737373', fontSize: 11 }}
-                    axisLine={{ stroke: '#e6e6e6' }}
-                    tickLine={{ stroke: '#e6e6e6' }}
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
                     tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #e6e6e6',
-                      borderRadius: '6px',
-                      color: '#171717',
-                    }}
+                    contentStyle={chartTooltipContentStyle}
+                    labelStyle={chartTooltipLabelStyle}
                     formatter={(value: number, name: string) => {
                       if (name === 'revenue') return [`$${value.toLocaleString()}`, 'Revenue'];
                       return [value, name];
@@ -338,10 +331,10 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
                   <Area
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#22c55e"
+                    stroke="var(--chart-revenue)"
                     strokeWidth={2}
                     fill="url(#revenueGradient)"
-                    dot={{ fill: '#22c55e', strokeWidth: 0, r: 4 }}
+                    dot={{ fill: 'var(--chart-revenue)', strokeWidth: 0, r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                 </AreaChart>
@@ -354,30 +347,26 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
       {/* Revenue by Day of Week */}
       <Card>
         <CardContent className="p-5">
-          <p className="text-base text-muted-foreground mb-3">Revenue by Day of Week</p>
+          <p className="text-sm text-muted-foreground mb-3">Revenue by Day of Week</p>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dayRevenue} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis
                   dataKey="day"
-                  tick={{ fill: '#737373', fontSize: 11 }}
-                  axisLine={{ stroke: '#e6e6e6' }}
-                  tickLine={{ stroke: '#e6e6e6' }}
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: '#737373', fontSize: 11 }}
-                  axisLine={{ stroke: '#e6e6e6' }}
-                  tickLine={{ stroke: '#e6e6e6' }}
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
                   tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #e6e6e6',
-                    borderRadius: '6px',
-                    color: '#171717',
-                  }}
+                  contentStyle={chartTooltipContentStyle}
+                  labelStyle={chartTooltipLabelStyle}
                   formatter={(value: number, name: string) => {
                     if (name === 'revenue') return [`$${value.toLocaleString()}`, 'Revenue'];
                     return [value, name];
@@ -388,10 +377,10 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
                     <Cell
                       key={index}
                       fill={entry.revenue === maxDayRevenue
-                        ? '#22c55e'
+                        ? 'var(--chart-revenue)'
                         : entry.revenue > 0
-                          ? '#22c55e80'
-                          : '#d9d9d9'
+                          ? 'color-mix(in srgb, var(--chart-revenue) 50%, transparent)'
+                          : 'var(--border)'
                       }
                     />
                   ))}

@@ -61,7 +61,7 @@ const Report = () => {
   const activeSessions = entry.sessions.filter(s => s.ticketsSold > 0);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="page-container">
         {/* Navigation */}
         <div className="mb-6">

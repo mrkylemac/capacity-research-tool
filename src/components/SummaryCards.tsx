@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import type { MomenceSession, MonthlyData } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
+import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 import { Card, CardContent } from '@/components/ui/card';
 
 // ── Session analysis helpers ────────────────────────────────────────────────
@@ -81,7 +82,7 @@ function buildDayProfile(sessions: MomenceSession[]) {
 
 function CardLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground">
+    <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
       {children}
     </p>
   );
@@ -90,10 +91,10 @@ function CardLabel({ children }: { children: React.ReactNode }) {
 function BigStat({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <p className="text-[2rem] sm:text-[2.75rem] font-bold tabular-nums tracking-tight leading-none text-foreground">
+      <p className="text-[2rem] sm:text-[2.75rem] font-semibold tabular-nums tracking-tight leading-none text-foreground">
         {value}
       </p>
-      <p className="text-base text-muted-foreground mt-1.5">{label}</p>
+      <p className="text-sm text-muted-foreground mt-1.5">{label}</p>
     </div>
   );
 }
@@ -103,22 +104,13 @@ function StatRow({ items }: { items: { value: string; label: string }[] }) {
     <div className="flex flex-wrap gap-x-6 gap-y-3 pt-1">
       {items.map((item) => (
         <div key={item.label}>
-          <p className="text-base font-medium tabular-nums text-foreground">{item.value}</p>
-          <p className="text-base text-muted-foreground mt-0.5">{item.label}</p>
+          <p className="text-sm font-medium tabular-nums text-foreground">{item.value}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{item.label}</p>
         </div>
       ))}
     </div>
   );
 }
-
-const tooltipStyle = {
-  background: 'var(--popover)',
-  border: '1px solid var(--border)',
-  borderRadius: '0.5rem',
-  fontSize: 12,
-  color: 'var(--popover-foreground)',
-  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
-};
 
 // ── Main component ───────────────────────────────────────────────────────────
 
@@ -172,7 +164,7 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
 
           {visitorChartData.length > 1 && (
             <div className="pt-1 border-t border-border">
-              <p className="text-base text-muted-foreground mb-3">Monthly visitors</p>
+              <p className="text-sm text-muted-foreground mb-3">Monthly visitors</p>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={visitorChartData} margin={{ top: 2, right: 2, bottom: 0, left: 0 }} barCategoryGap="20%">
                   <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
@@ -183,7 +175,7 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
                     tickLine={false}
                   />
                   <Tooltip
-                    contentStyle={tooltipStyle}
+                    contentStyle={chartTooltipContentStyle}
                     formatter={(value: number, name: string) => {
                       if (name === 'visitors') return [value.toLocaleString(), 'Visitors'];
                       if (name === 'unfilled') return [value.toLocaleString(), 'Unfilled'];
@@ -218,7 +210,7 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
 
           {/* Day-of-week chart */}
           <div className="pt-1 border-t border-border">
-            <p className="text-base text-muted-foreground mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               Avg sessions per operating day
               {closedDays.length > 0 && ` · ${closedDays.join(', ')} excluded`}
             </p>
@@ -232,12 +224,12 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
                   tickLine={false}
                 />
                 <Tooltip
-                  contentStyle={tooltipStyle}
+                  contentStyle={chartTooltipContentStyle}
+                  labelStyle={chartTooltipLabelStyle}
                   formatter={(value: number, name: string) => {
                     if (name === 'avgSessions') return [`${value.toFixed(1)} avg sessions`, ''];
                     return [value, name];
                   }}
-                  labelStyle={{ color: 'var(--muted-foreground)', marginBottom: 2 }}
                 />
                 <Bar dataKey="avgSessions" radius={[4, 4, 0, 0]}>
                   {dayProfile.map((entry, index) => (
@@ -255,7 +247,7 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <p className="text-base text-muted-foreground mt-2.5 flex gap-3">
+            <p className="text-sm text-muted-foreground mt-2.5 flex gap-3">
               <span>
                 <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mr-1" />
                 Weekday
@@ -269,7 +261,7 @@ export function SummaryCards({ sessions, metrics, monthlyData }: SummaryCardsPro
 
           {/* Rolling interval note */}
           {rollingInterval > 0 && (
-            <p className="text-base text-muted-foreground pt-1 border-t border-border leading-relaxed">
+            <p className="text-sm text-muted-foreground pt-1 border-t border-border leading-relaxed">
               Rolling {rollingInterval}-minute waves allow up to{' '}
               <span className="font-medium text-foreground">{maxConcurrent} sessions</span> to overlap,
               placing up to{' '}

@@ -163,6 +163,8 @@
   --chart-marker-badge-foreground: #fff;
   --chart-segment-background: var(--bg-2);
   --chart-segment-line: var(--gray-2);
+  /* Neutral charcoal used for filled bars / dots / lines across charts */
+  --chart-fill: #474747;
 }
 
 /* ── Dark mode (old site palette) ───────────────────────────────────────────── */

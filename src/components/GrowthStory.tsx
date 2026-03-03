@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, type DotProps } from 'recharts';
 import type { MonthlyData } from '@/types/momence';
+import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 import { isPartialMonth } from '@/lib/venueInsights';
 
 interface GrowthStoryProps {
@@ -40,7 +41,7 @@ function GrowthDot(props: DotProps & { payload?: { partial?: boolean } }) {
       cx={cx}
       cy={cy}
       r={3.5}
-      fill={payload?.partial ? 'var(--muted-foreground)' : '#474747'}
+      fill={payload?.partial ? 'var(--muted-foreground)' : 'var(--chart-fill)'}
       opacity={payload?.partial ? 0.3 : 1}
       stroke="none"
     />
@@ -82,9 +83,9 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-y-1 mb-2">
         <p className="text-sm text-muted-foreground">Visitors per month</p>
-        <p className="text-sm text-muted-foreground flex gap-3">
+        <p className="text-sm text-muted-foreground flex flex-wrap gap-x-3 gap-y-1">
           {peakMonth && (
             <span>Peak <span className="font-medium text-foreground">{peakMonth}</span></span>
           )}
@@ -102,8 +103,8 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
         <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id="visitorsGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#474747" stopOpacity={0.14} />
-              <stop offset="95%" stopColor="#474747" stopOpacity={0.01} />
+              <stop offset="5%" stopColor="var(--chart-fill)" stopOpacity={0.14} />
+              <stop offset="95%" stopColor="var(--chart-fill)" stopOpacity={0.01} />
             </linearGradient>
           </defs>
           <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
@@ -116,25 +117,18 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
           />
           <YAxis hide />
           <Tooltip
-            contentStyle={{
-              background: 'var(--popover)',
-              border: '1px solid var(--border)',
-              borderRadius: '0.75rem',
-              fontSize: 12,
-              color: 'var(--popover-foreground)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-            }}
-            labelStyle={{ color: 'var(--muted-foreground)', marginBottom: 2 }}
+            contentStyle={chartTooltipContentStyle}
+            labelStyle={chartTooltipLabelStyle}
             formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
           />
           <Area
             type="monotone"
             dataKey="visitors"
-            stroke="#474747"
+            stroke="var(--chart-fill)"
             strokeWidth={1.5}
             fill="url(#visitorsGradient)"
             dot={<GrowthDot />}
-            activeDot={{ r: 3, fill: '#474747' }}
+            activeDot={{ r: 3, fill: 'var(--chart-fill)' }}
           />
         </AreaChart>
       </ResponsiveContainer>

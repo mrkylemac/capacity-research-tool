@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import type { MomenceSession } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
+import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 import { Card, CardContent, CardDescription } from '@/components/ui/card';
 import { StatCard } from '@/components/ui/stat-card';
 
@@ -133,10 +134,10 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
       {/* Day-of-week session chart */}
       <Card>
         <CardContent className="p-5">
-          <p className="text-base font-medium text-foreground mb-1">
+          <p className="text-sm font-medium text-foreground mb-1">
             Average sessions per operating day
           </p>
-          <p className="text-base text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Normalised to days where at least one session ran
             {closedDays.length > 0 && ` · ${closedDays.join(', ')} excluded`}
           </p>
@@ -150,19 +151,12 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
                 tickLine={false}
               />
               <Tooltip
-                contentStyle={{
-                  background: 'var(--popover)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '0.5rem',
-                  fontSize: 13,
-                  color: 'var(--popover-foreground)',
-                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
-                }}
+                contentStyle={chartTooltipContentStyle}
+                labelStyle={chartTooltipLabelStyle}
                 formatter={(value: number, name: string) => {
                   if (name === 'avgSessions') return [`${value.toFixed(1)} avg sessions`, ''];
                   return [value, name];
                 }}
-                labelStyle={{ color: 'var(--muted-foreground)', marginBottom: 2 }}
               />
               <Bar dataKey="avgSessions" radius={[4, 4, 0, 0]}>
                 {dayProfile.map((entry, index) => (
@@ -180,7 +174,7 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-          <p className="text-base text-muted-foreground mt-3 flex gap-3">
+          <p className="text-sm text-muted-foreground mt-3 flex gap-3">
             <span>
               <span className="inline-block w-2.5 h-2 rounded-sm bg-primary align-middle mr-1" />
               Weekday
@@ -191,7 +185,7 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
             </span>
           </p>
           {rollingIntervalMins > 0 && (
-            <p className="text-base text-muted-foreground mt-4 pt-3 border-t border-border leading-relaxed">
+            <p className="text-sm text-muted-foreground mt-4 pt-3 border-t border-border leading-relaxed">
               Rolling {rollingIntervalMins}-minute waves allow up to{' '}
               <span className="font-medium text-foreground">{maxConcurrent} sessions</span> to overlap,
               placing a maximum of{' '}

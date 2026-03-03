@@ -210,7 +210,7 @@ function PeakSlotList({
   if (slots.length === 0) {
     return (
       <div>
-        <p className="text-sm font-medium mb-2">{title}</p>
+        <p className="text-base font-medium">{title}</p>
         <p className="text-sm text-muted-foreground">No sessions in this period</p>
       </div>
     );
@@ -231,8 +231,9 @@ function PeakSlotList({
             {avgOccupancyPct.toFixed(0)}%
           </span>
           {' '}
-          <span className="text-xs">(session occupancy, this period)</span>
+          
         </p>
+        <span className="text-xs opacity-40">(session occupancy, this period)</span>
       </div>
 
       <div className="space-y-1.5">
@@ -247,7 +248,7 @@ function PeakSlotList({
                 className="absolute inset-y-0 left-0 transition-all duration-300 rounded-lg"
                 style={{
                   width: `${Math.min(s.utilisation, 100)}%`,
-                  backgroundColor: aboveAvg ? 'rgba(71,71,71,0.18)' : 'rgba(71,71,71,0.08)',
+                  backgroundColor: aboveAvg ? 'color-mix(in srgb, var(--chart-fill) 18%, transparent)' : 'color-mix(in srgb, var(--chart-fill) 8%, transparent)',
                 }}
               />
               {/* Average reference tick */}
@@ -326,33 +327,33 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
       <div>
         <div className="flex items-start justify-between mb-5">
           <div>
-            <p className="text-sm font-medium mb-1">Visitors by day</p>
+            <p className="text-sm font-medium">Visitors by day</p>
             <p className="text-sm text-muted-foreground">
               {isSingleDay ? 'Selected date' : 'Total across period'}
             </p>
           </div>
           <div className="flex gap-5 text-right shrink-0 items-end">
             <div>
-              <p className="text-sm font-medium mb-1">Weekday</p>
+              <p className="text-sm font-medium">Weekday</p>
               <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="cursor-pointer">
                   <p className="text-lg font-semibold tabular-nums leading-none tracking-[-0.02em]">{weekdayPct.toFixed(0)}%</p>
                 </TooltipTrigger>
-                <TooltipContent className="bg-black text-white rounded-lg p-2 text-xs">
+                <TooltipContent>
                     <p>Total visitors: {weekdayTotal.toLocaleString()}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
             <div>
-              <p className="text-sm font-medium mb-1">Weekends</p>
+              <p className="text-sm font-medium">Weekends</p>
               <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="cursor-pointer">
                   <p className="text-lg font-semibold tabular-nums leading-none tracking-[-0.02em]">{weekendPct.toFixed(0)}%</p>
                 </TooltipTrigger>
-                <TooltipContent className="bg-black text-white rounded-lg p-2 text-xs">
+                <TooltipContent>
                     <p>Total visitors: {weekendTotal.toLocaleString()}</p>
                   </TooltipContent>
                 </Tooltip>
@@ -390,8 +391,8 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
                       backgroundColor: d.visitors === 0
                         ? 'transparent'
                         : d.isWeekend
-                        ? 'rgba(153,153,153,0.35)'
-                        : 'rgba(71,71,71,0.18)',
+                        ? 'color-mix(in srgb, var(--muted-foreground) 35%, transparent)'
+                        : 'color-mix(in srgb, var(--chart-fill) 18%, transparent)',
                     }}
                   />
                   <span className="relative z-10 text-sm">{d.name}</span>
@@ -468,7 +469,7 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
       </div>
 
       {/* ── Peak time slots — two column grid ── */}
-      <div className="pt-4 border-t border-border grid grid-cols-2 gap-8">
+      <div className="pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
         <PeakSlotList
           slots={weekdaySlots}
           title="Weekday Peak"

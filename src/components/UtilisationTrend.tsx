@@ -7,6 +7,7 @@ import {
   type DotProps,
 } from 'recharts';
 import type { MonthlyData } from '@/types/momence';
+import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 import { isPartialMonth } from '@/lib/venueInsights';
 
 interface UtilisationTrendProps {
@@ -22,7 +23,7 @@ function OccDot(props: DotProps & { payload?: { partial?: boolean } }) {
       cx={cx}
       cy={cy}
       r={3.5}
-      fill={payload?.partial ? 'var(--muted-foreground)' : '#474747'}
+      fill={payload?.partial ? 'var(--muted-foreground)' : 'var(--chart-fill)'}
       opacity={payload?.partial ? 0.3 : 1}
       stroke="none"
     />
@@ -59,9 +60,9 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-y-1 mb-2">
         <p className="text-sm text-muted-foreground">Monthly occupancy (%)</p>
-        <p className="text-sm text-muted-foreground flex gap-3">
+        <p className="text-sm text-muted-foreground flex flex-wrap gap-x-3 gap-y-1">
           <span>
             Peak <span className="font-medium text-foreground tabular-nums">{peak.occupancy.toFixed(0)}%</span>
             {' '}<span className="text-muted-foreground">{peak.month}</span>
@@ -84,15 +85,8 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
           />
           <YAxis hide />
           <Tooltip
-            contentStyle={{
-              background: 'var(--popover)',
-              border: '1px solid var(--border)',
-              borderRadius: '0.75rem',
-              fontSize: 12,
-              color: 'var(--popover-foreground)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-            }}
-            labelStyle={{ color: 'var(--muted-foreground)', marginBottom: 2 }}
+            contentStyle={chartTooltipContentStyle}
+            labelStyle={chartTooltipLabelStyle}
             formatter={(value: number, name: string) => {
               if (name === 'occupancy') return [`${value.toFixed(1)}%`, 'Occupancy'];
               return [value.toLocaleString(), name];
@@ -101,10 +95,10 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
           <Line
             type="monotone"
             dataKey="occupancy"
-            stroke="#474747"
+            stroke="var(--chart-fill)"
             strokeWidth={1.5}
             dot={<OccDot />}
-            activeDot={{ r: 3, fill: '#474747' }}
+            activeDot={{ r: 3, fill: 'var(--chart-fill)' }}
           />
         </LineChart>
       </ResponsiveContainer>

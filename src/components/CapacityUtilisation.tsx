@@ -4,6 +4,7 @@ import {
 } from 'recharts';
 import type { MonthlyData } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
+import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 import { Card, CardContent } from '@/components/ui/card';
 import { StatCard } from '@/components/ui/stat-card';
 
@@ -74,14 +75,8 @@ export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisatio
               />
               <YAxis hide />
               <Tooltip
-                contentStyle={{
-                  background: 'var(--popover)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '0.5rem',
-                  fontSize: 13,
-                  color: 'var(--popover-foreground)',
-                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08)',
-                }}
+                contentStyle={chartTooltipContentStyle}
+                labelStyle={chartTooltipLabelStyle}
                 formatter={(value: number, name: string) => {
                   if (name === 'visitors') return [value.toLocaleString(), 'Visitors'];
                   if (name === 'unfilled') return [value.toLocaleString(), 'Unfilled'];

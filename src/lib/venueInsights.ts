@@ -383,6 +383,6 @@ export function computeCapacityStatsGrid(
     { label: 'Seats / week', value: Math.round(periodSummary.seatsPerWeek).toLocaleString() },
     { label: 'Visitors / day', value: Math.round(periodSummary.visitorsPerDay).toLocaleString() },
     { label: 'Sessions / week', value: periodSummary.sessionsPerWeek.toFixed(1) },
-    { label: 'Configured seats / session', value: metrics.modalCapacity.toString() },
+    { label: 'Seats / session', value: metrics.modalCapacity.toString() },
   ];
 }

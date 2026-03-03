@@ -262,8 +262,10 @@ export function ReportClient() {
         <h1 className="text-4xl font-bold tracking-tight">Report</h1>
         <p className="text-base leading-relaxed">No active sessions in this dataset.</p>
         <div className="mt-6">
-          <Button asChild variant="outline" size="sm">
-            <Link href="/">Back</Link>
+          <Button asChild variant="ghost" size="icon" className="cursor-pointer hover:opacity-70 py-1.5 px-1.5 shadow-2 bg-background rounded-md">
+            <Link href="/">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </main>
@@ -274,17 +276,17 @@ export function ReportClient() {
   const venueAddress = placeInfo?.address ?? placeInfo?.suburb ?? apiVenueConfig?.location ?? null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
 
       {/* ── Fixed header bar — Visitors style ── */}
-      <header className="sticky top-0 z-10 bg-background/90 backdrop-blur border-border print:hidden">
+      <header className="sticky top-0 z-10 backdrop-blur border-border print:hidden">
         <div className="mx-auto px-5 py-4 flex items-center justify-between">
 
           {/* Left: back + venue identity */}
           <div className="flex items-center gap-3 min-w-0">
             <Link
               href="/"
-              className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+              className="cursor-pointer hover:opacity-70 py-1.5 px-1.5 shadow-2 bg-background rounded-md"
               aria-label="Back"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -307,10 +309,10 @@ export function ReportClient() {
               type="button"
               onClick={handleSync}
               disabled={isSyncInProgress}
-              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-40"
+              className="p-1.5 rounded-md cursor-pointer text-muted-foreground hover:text-foreground bg-background shadow-2 transition-colors disabled:opacity-40"
               aria-label="Refresh data"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isSyncInProgress ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 ${isSyncInProgress ? 'animate-spin' : ''}`} />
             </button>
           </div>
 
@@ -320,7 +322,7 @@ export function ReportClient() {
       {/* Print-only header */}
       <div className="hidden print:block px-8 pt-6 pb-2">
         <p className="text-sm text-muted-foreground uppercase tracking-widest">
-          Slow Folk · Competitor Intelligence
+          Capacity Report
         </p>
         <h1 className="text-xl font-semibold mt-1">{venueName}</h1>
         {venueAddress && <p className="text-sm text-muted-foreground">{venueAddress}</p>}
@@ -328,17 +330,17 @@ export function ReportClient() {
       </div>
 
       {/* ── Page body ── */}
-      <div className="max-w-[760px] mx-auto px-5 pt-6 pb-16 space-y-5">
+      <div className="max-w-[760px] mx-auto px-5 py-16 space-y-5">
 
         {/* ── Filter row ── */}
-        <div className="grid grid-cols-2 gap-3 items-center justify-center">
-          <div className="grid grid-cols-2 gap-3 w-full">
+        <div className="grid sm:grid-cols-2 gap-3 items-center justify-center grid-cols-1">
+          <div className="flex flex-col sm:flex-row sm:gap-3 gap-2 w-full">
 
             <PeriodSelector
               value={period}
               onChange={(p) => { setPeriod(p); setSelectedTypes(new Set()); }}
               availableMonths={availableMonths}
-              className="w-auto"
+              className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
             />
 
             {sessionTypes.length > 1 && (
@@ -346,7 +348,7 @@ export function ReportClient() {
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex w-full items-center justify-between rounded-full bg px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-muted shadow-sm border-0 h-auto whitespace-nowrap shrink-0"
+                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
                   >
                     <span className="truncate overflow-hidden w-full text-left">
                     {selectedTypes.size === 0
@@ -358,19 +360,20 @@ export function ReportClient() {
                     <ChevronsUpDown className="h-4.5 w-4.5 opacity-50" />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent align="start" sideOffset={6} className="w-72 p-1.5 rounded-2xl shadow-2">
+                
+                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2">
                   <button
                     type="button"
                     onClick={() => setSelectedTypes(new Set())}
                     className={cn(
-                      'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-sm transition-colors hover:bg-muted',
+                      'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-sm transition-colors bg-background hover:bg-muted',
                       selectedTypes.size === 0 ? 'font-medium' : 'text-muted-foreground',
                     )}
                   >
-                    <span className="flex h-3.5 w-3.5 items-center justify-center">
-                      {selectedTypes.size === 0 && <Check className="h-3.5 w-3.5" />}
+                    <span className="flex items-center justify-center">
+                      {selectedTypes.size === 0 && <Check className="h-4 w-4" />}
                     </span>
-                    <span className="text-base">
+                    <span className="text-base font-medium">
                       All sessions
                     </span>
                   </button>
@@ -390,9 +393,11 @@ export function ReportClient() {
                         }}
                         className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted"
                       >
-                        <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-sm border border-input bg-background">
-                          {checked && <Check className="h-3 w-3" />}
-                        </span>
+                        {checked &&
+                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                            <Check className="h-full w-full" />
+                          </span>
+                        }
                         <span className="truncate">{t}</span>
                       </button>
                     );
@@ -401,7 +406,7 @@ export function ReportClient() {
               </Popover>
             )}
           </div>
-          <span className="text-base font-medium sm:block ml-auto">{dateRangeLabel}</span>
+          <span className="text-base font-medium sm:block ml-auto sm:text-right w-full text-center">{dateRangeLabel}</span>
         </div>
 
         {/* ── Report sections ── */}

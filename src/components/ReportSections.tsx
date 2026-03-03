@@ -14,6 +14,7 @@ import { DemandIntelligence } from '@/components/DemandIntelligence';
 import { GrowthStory } from '@/components/GrowthStory';
 import { UtilisationTrend } from '@/components/UtilisationTrend';
 import { buildCapacityString, computeMonthlyTrajectory } from '@/lib/venueInsights';
+import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 
 // ── Private helpers ──────────────────────────────────────────────────────────
 
@@ -107,15 +108,6 @@ function MetricTile({ value, label }: { value: string; label: string }) {
   );
 }
 
-const tooltipStyle = {
-  background: 'var(--color-foreground)',
-  borderRadius: 'var(--radius-6)',
-  fontSize: 14,
-  lineHeight: 1.2,
-  color: 'var(--color-white)',
-  padding: '12px 16px 8px 16px',
-};
-
 // ── 1. Snapshot + Visitors per week ──────────────────────────────────────────
 
 function SnapshotSection({
@@ -184,7 +176,7 @@ function SnapshotSection({
       ];
 
   return (
-    <Card className="print-section shadow-4">
+    <Card className="print-section">
       <CardContent className="p-5">
         <CardHeader title="Snapshot" />
 
@@ -228,8 +220,8 @@ function SnapshotSection({
                   />
                   <YAxis hide />
                   <Tooltip
-                    contentStyle={tooltipStyle}
-                    labelStyle={{ color: 'var(--color-white)', marginBottom: 12 }}
+                    contentStyle={chartTooltipContentStyle}
+                    labelStyle={chartTooltipLabelStyle}
                     formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
                   />
                   <Bar dataKey="visitors" fill="var(--color-gray-2)" radius={[4, 4, 0, 0]} />
@@ -252,7 +244,8 @@ function SnapshotSection({
                   />
                   <YAxis hide />
                   <Tooltip
-                    contentStyle={tooltipStyle}
+                    contentStyle={chartTooltipContentStyle}
+                    labelStyle={chartTooltipLabelStyle}
                     formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
                   />
                   <Area
@@ -341,7 +334,7 @@ function CapacitySection({
         { value: metrics.totalCapacity.toLocaleString(), label: 'Seats today' },
       ]
     : [
-        { value: `${metrics.modalCapacity}`, label: 'Configured seats / session' },
+        { value: `${metrics.modalCapacity}`, label: 'Seats / session' },
         { value: sessionsPerWeek.toFixed(1), label: 'Sessions / week' },
         { value: Math.round(seatsPerWeek).toLocaleString(), label: 'Seats / week' },
       ];
@@ -363,51 +356,28 @@ function CapacitySection({
           }
         />
 
-        {/* Occupancy bar */}
-        <div className="mb-4">
-          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(seatOccupancyPct, 100)}%`, backgroundColor: '#474747' }}
-            />
-          </div>
-          <p className="text-sm text-muted-foreground mt-1.5">{capacityString}</p>
-        </div>
-
-        {/* Structural capacity metrics */}
-        <div className="grid grid-cols-3 gap-x-4 gap-y-4 pt-4 border-t border-border">
-          {structuralItems.map(item => (
-            <MetricTile key={item.label} value={item.value} label={item.label} />
-          ))}
-        </div>
-
         {/* Monthly visitors vs capacity */}
         {visitorChartData.length > 1 && (
-          <div className="pt-4 mt-4 border-t border-border">
-            <div className="flex items-center justify-between mb-3">
+          <div className="pt-4 mb-8">
+            <div className="flex justify-between mb-3 items-center">
               <div>
-                <p className="text-sm text-muted-foreground">Monthly visitors vs capacity</p>
-                {isSingleDay && (
-                  <p className="text-xs text-muted-foreground/70 mt-0.5">
-                    Snapshot above is for the selected date only · chart below spans all cached months
-                  </p>
-                )}
+                <p className="text-sm font-medium">Monthly visitors vs capacity</p>
               </div>
               <p className="text-sm text-muted-foreground flex gap-3">
-                <span>
-                  <span className="inline-block w-2.5 h-2 rounded-sm align-middle mr-1" style={{ backgroundColor: '#474747' }} />
+                <span className="flex gap-1">
+                  <span className="inline-block w-3 h-3 mr-1 mt-1" style={{ backgroundColor: 'var(--chart-fill)' }} />
                   Filled
                 </span>
-                <span>
-                  <span className="inline-block w-2.5 h-2 rounded-sm bg-muted-foreground/25 align-middle mr-1" />
+                <span className="flex gap-1">
+                  <span className="inline-block w-3 h-3 bg-muted-foreground/25 mr-1 mt-1" />
                   Capacity
                 </span>
               </p>
             </div>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={350}>
               <BarChart
                 data={visitorChartData}
-                margin={{ top: 2, right: 2, bottom: 0, left: 0 }}
+                margin={{ top: 20, right: 2, bottom: 0, left: 0 }}
                 barCategoryGap="18%"
               >
                 <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
@@ -418,7 +388,8 @@ function CapacitySection({
                   tickLine={false}
                 />
                 <Tooltip
-                  contentStyle={tooltipStyle}
+                  contentStyle={chartTooltipContentStyle}
+                  labelStyle={chartTooltipLabelStyle}
                   formatter={(value: number, name: string, props: { payload: { occupancyPct: number; isPartial: boolean } }) => {
                     if (name === 'visitors') {
                       const { occupancyPct, isPartial } = props.payload;
@@ -429,9 +400,9 @@ function CapacitySection({
                     return [value, name];
                   }}
                 />
-                <Bar dataKey="visitors" stackId="a" fill="#474747" radius={[0, 0, 0, 0]}>
+                <Bar dataKey="visitors" stackId="a" fill="var(--chart-fill)" radius={[0, 0, 0, 0]}>
                   {visitorChartData.map((entry, i) => (
-                    <Cell key={i} fill="#474747" fillOpacity={entry.isPartial ? 0.4 : 1} />
+                    <Cell key={i} fill="var(--chart-fill)" fillOpacity={entry.isPartial ? 0.4 : 1} />
                   ))}
                 </Bar>
                 <Bar
@@ -452,6 +423,50 @@ function CapacitySection({
             </ResponsiveContainer>
           </div>
         )}
+
+        {/* Capacity horizontal bar list (same pattern as Day-of-week in Demand) */}
+        <div>
+          <div className="space-y-1 mb-4">
+            {structuralItems.map(item => (
+              <div
+                key={item.label}
+                className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full"
+              >
+                <div className="absolute inset-0 bg-muted" />
+                <div
+                  className="absolute inset-y-0 left-0 transition-all duration-500 rounded-lg"
+                    style={{
+                    width: '100%',
+                    backgroundColor: 'color-mix(in srgb, var(--chart-fill) 18%, transparent)',
+                  }}
+                />
+                <span className="relative z-10 text-sm">{item.label}</span>
+                <span className="relative z-10 ml-auto text-sm tabular-nums text-foreground">
+                  {item.value}
+                </span>
+              </div>
+            ))}
+            <div className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full">
+              <div className="absolute inset-0 bg-muted" />
+              <div
+                className="absolute inset-y-0 left-0 transition-all duration-500 rounded-lg"
+                style={{
+                  width: `${Math.min(seatOccupancyPct, 100)}%`,
+                  backgroundColor: 'color-mix(in srgb, var(--chart-fill) 35%, transparent)',
+                }}
+              />
+              <span className="relative z-10 text-sm">
+                {isSingleDay ? 'Seat occupancy (today)' : 'Seat occupancy'}
+              </span>
+              <span className="relative z-10 ml-auto text-sm tabular-nums text-foreground">
+                {seatOccupancyPct.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">{capacityString}</p>
+        </div>
+
+        
       </CardContent>
     </Card>
   );

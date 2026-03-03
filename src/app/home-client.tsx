@@ -227,7 +227,7 @@ export function HomeClient() {
     : 'Loading…';
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
       <div className="page-container">
 
         <div className="mb-8">
@@ -237,12 +237,12 @@ export function HomeClient() {
         {/* ── Query bar ── */}
         <div className="flex flex-col sm:flex-row sm:gap-3 mb-8 gap-4">
           <Select value={selectedVenueId} onValueChange={setSelectedVenueId}>
-            <SelectTrigger className="h-10 w-full">
+            <SelectTrigger className="h-10 w-full rounded-2xl shadow-2 border-0 cursor-pointer focus:ring-0 focus:ring-offset-0">
               <SelectValue placeholder="Select venue" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-2xl shadow-2">
               {VENUES.map(v => (
-                <SelectItem key={v.id} value={v.id}>
+                <SelectItem key={v.id} value={v.id} className="cursor-pointer hover:opacity-80 transition-opacity">
                   {v.name}
                 </SelectItem>
               ))}
@@ -252,7 +252,7 @@ export function HomeClient() {
           <Button
             onClick={handleFetch}
             disabled={isLoadingNow || !selectedVenueId}
-            className="h-10 w-full sm:w-auto sm:ml-auto px-6 bg-black text-white"
+            className="h-10 w-full sm:w-auto sm:ml-auto px-6 bg-black text-white rounded-2xl border-0 shadow-2 hover:opacity-80 transition-opacity cursor-pointer"
           >
             {isLoadingNow ? (
               <>

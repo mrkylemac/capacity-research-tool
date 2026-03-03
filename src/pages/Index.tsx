@@ -69,7 +69,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="page-container">
         <FiltersPanel onFetchData={handleFetchData} isLoading={isLoading} />
 
