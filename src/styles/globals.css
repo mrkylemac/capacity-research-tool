@@ -170,6 +170,11 @@
 /* ── Dark mode (old site palette) ───────────────────────────────────────────── */
 .dark-mode {
   --background: #14141f;
+
+  /* On mobile, lift background to match card colour so full-bleed sections blend seamlessly */
+  @media (max-width: 639px) {
+    --background: #181925;
+  }
   --background-subtle: #181925;
   --bg-1: #181925;
   --bg-2: #212131;
