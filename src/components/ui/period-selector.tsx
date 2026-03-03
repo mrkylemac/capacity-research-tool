@@ -124,9 +124,11 @@ interface PeriodSelectorProps {
   className?: string;
   /** Months of data available. Options requiring more months are hidden. */
   availableMonths?: number | null;
+  /** Period values to render as disabled (no data available for those ranges). */
+  disabledValues?: Set<PeriodOption>;
 }
 
-export function PeriodSelector({ value, onChange, className, availableMonths }: PeriodSelectorProps) {
+export function PeriodSelector({ value, onChange, className, availableMonths, disabledValues }: PeriodSelectorProps) {
   const isVisible = (opt: { months: number | null }) => {
     if (opt.months === null) return true;
     if (availableMonths == null) return true;
@@ -134,7 +136,14 @@ export function PeriodSelector({ value, onChange, className, availableMonths }: 
   };
 
   return (
-    <Select value={value} onValueChange={v => onChange(v as PeriodOption)}>
+    <Select
+      value={value}
+      onValueChange={v => {
+        const p = v as PeriodOption;
+        if (disabledValues?.has(p)) return;
+        onChange(p);
+      }}
+    >
       <SelectTrigger
         className={cn(
           'inline-flex h-auto w-auto items-center gap-1.5 rounded-full border-0 bg px-3.5 py-2 text-base font-medium text-foreground shadow-sm transition-colors hover:bg-muted focus:ring-0 focus:ring-offset-0',
@@ -150,8 +159,16 @@ export function PeriodSelector({ value, onChange, className, availableMonths }: 
             {group.options.map(v => {
               const opt = PERIOD_OPTIONS.find(o => o.value === v)!;
               if (!isVisible(opt)) return null;
+              const isDisabled = disabledValues?.has(v) ?? false;
               return (
-                <SelectItem key={v} value={v}>{opt.label}</SelectItem>
+                <SelectItem
+                  key={v}
+                  value={v}
+                  disabled={isDisabled}
+                  className={isDisabled ? 'opacity-40 cursor-not-allowed' : undefined}
+                >
+                  {opt.label}
+                </SelectItem>
               );
             })}
           </SelectGroup>

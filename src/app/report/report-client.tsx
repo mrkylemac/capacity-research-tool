@@ -198,9 +198,21 @@ export function ReportClient() {
 
   const periodFilteredSessions = useMemo(() => {
     if (period === 'all') return allCachedSessions;
-    return allCachedSessions.filter(s => new Date(s.startsAt) >= periodRange.from);
-  }, [allCachedSessions, period, periodRange.from]);
+    const fromMs = periodRange.from.getTime();
+    const toMs = periodRange.to.getTime();
+    return allCachedSessions.filter(s => {
+      const ts = new Date(s.startsAt).getTime();
+      return ts >= fromMs && ts <= toMs;
+    });
+  }, [allCachedSessions, period, periodRange]);
 
+  // All-time session types (used to keep the filter visible across period changes).
+  const allSessionTypes = useMemo(() => {
+    const names = new Set(allCachedSessions.map(s => s.sessionName).filter(Boolean));
+    return Array.from(names).sort();
+  }, [allCachedSessions]);
+
+  // Period-scoped session types (used as dropdown options).
   const sessionTypes = useMemo(() => {
     const names = new Set(periodFilteredSessions.map(s => s.sessionName).filter(Boolean));
     return Array.from(names).sort();
@@ -215,9 +227,9 @@ export function ReportClient() {
     if (period === 'all') return allVenueMonthlyData;
     return allVenueMonthlyData.filter(m => {
       const monthDate = new Date(`${m.month} 1, ${m.year}`);
-      return monthDate >= periodRange.from;
+      return monthDate >= periodRange.from && monthDate <= periodRange.to;
     });
-  }, [allVenueMonthlyData, period, periodRange.from]);
+  }, [allVenueMonthlyData, period, periodRange]);
 
   const benchmarkMetrics = useMemo(() => {
     const activeSessions = filteredSessions.filter(s => s.ticketsSold > 0);
@@ -240,36 +252,27 @@ export function ReportClient() {
     ? formatComputedRange(benchmarkMetrics.computedFrom, benchmarkMetrics.computedTo)
     : '';
 
+  // Periods that have no active sessions — disable in the selector to prevent empty reports.
+  // Only check short periods (today, yesterday, 1w) since longer ones almost always have data.
+  const disabledPeriods = useMemo<Set<PeriodOption>>(() => {
+    const shortPeriods: PeriodOption[] = ['today', 'yesterday', '1w'];
+    const disabled = new Set<PeriodOption>();
+    shortPeriods.forEach(p => {
+      const range = getPeriodRange(p);
+      const fromMs = range.from.getTime();
+      const toMs = range.to.getTime();
+      const hasActive = allCachedSessions.some(s => {
+        const ts = new Date(s.startsAt).getTime();
+        return ts >= fromMs && ts <= toMs && s.ticketsSold > 0;
+      });
+      if (!hasActive) disabled.add(p);
+    });
+    return disabled;
+  }, [allCachedSessions]);
+
   // ── Empty states ─────────────────────────────────────────────────────────
   if (!entry) {
-    return (
-      <main className="page-container">
-        {/* <h1 className="text-4xl font-bold tracking-tight">Report</h1>
-        <p className="text-base leading-relaxed">No cached venue found for this URL.</p>
-        <p className="text-sm text-muted-foreground">Start by fetching a venue on the home screen.</p>
-        <div className="mt-6">
-          <Button asChild variant="outline" size="sm">
-            <Link href="/">Back</Link>
-          </Button>
-        </div> */}
-      </main>
-    );
-  }
-
-  if (!benchmarkMetrics) {
-    return (
-      <main className="page-container">
-        <h1 className="text-4xl font-bold tracking-tight">Report</h1>
-        <p className="text-base leading-relaxed">No active sessions in this dataset.</p>
-        <div className="mt-6">
-          <Button asChild variant="ghost" size="icon" className="cursor-pointer hover:opacity-70 py-1.5 px-1.5 shadow-2 bg-background rounded-md">
-            <Link href="/">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </main>
-    );
+    return <main className="page-container" />;
   }
 
   const venueName = entry.hostInfo?.name ?? entry.venueName;
@@ -340,10 +343,13 @@ export function ReportClient() {
               value={period}
               onChange={(p) => { setPeriod(p); setSelectedTypes(new Set()); }}
               availableMonths={availableMonths}
+              disabledValues={disabledPeriods}
               className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
             />
 
-            {sessionTypes.length > 1 && (
+            {/* Session type filter — shown whenever the venue has multiple session types
+                across all time, so it persists through narrow period selections. */}
+            {allSessionTypes.length > 1 && (
               <Popover>
                 <PopoverTrigger asChild>
                   <button
@@ -360,7 +366,7 @@ export function ReportClient() {
                     <ChevronsUpDown className="h-4.5 w-4.5 opacity-50" />
                   </button>
                 </PopoverTrigger>
-                
+
                 <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2">
                   <button
                     type="button"
@@ -378,20 +384,26 @@ export function ReportClient() {
                     </span>
                   </button>
                   <div className="my-1 h-px bg-border" />
-                  {sessionTypes.map(t => {
+                  {/* Show session types available in the current period, falling back to all types */}
+                  {(sessionTypes.length > 0 ? sessionTypes : allSessionTypes).map(t => {
                     const checked = selectedTypes.has(t);
+                    const availableInPeriod = sessionTypes.includes(t);
                     return (
                       <button
                         key={t}
                         type="button"
                         onClick={() => {
+                          if (!availableInPeriod) return;
                           setSelectedTypes(prev => {
                             const next = new Set(prev);
                             checked ? next.delete(t) : next.add(t);
                             return next;
                           });
                         }}
-                        className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted"
+                        className={cn(
+                          'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
+                          !availableInPeriod && 'opacity-40 cursor-not-allowed hover:bg-transparent',
+                        )}
                       >
                         {checked &&
                           <span className="flex h-4 w-4 shrink-0 items-center justify-center">
@@ -409,14 +421,21 @@ export function ReportClient() {
           <span className="text-base font-medium sm:block ml-auto sm:text-right w-full text-center">{dateRangeLabel}</span>
         </div>
 
-        {/* ── Report sections ── */}
-        <ReportSections
-          sessions={filteredSessions}
-          metrics={benchmarkMetrics}
-          monthlyData={filteredMonthlyData}
-          allMonthlyData={allVenueMonthlyData}
-          period={period}
-        />
+        {/* ── Report sections or period-empty state ── */}
+        {benchmarkMetrics ? (
+          <ReportSections
+            sessions={filteredSessions}
+            metrics={benchmarkMetrics}
+            monthlyData={filteredMonthlyData}
+            allMonthlyData={allVenueMonthlyData}
+            period={period}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <p className="text-base font-medium text-foreground">No sessions found for this period</p>
+            <p className="text-sm text-muted-foreground mt-1">Try selecting a wider time range above.</p>
+          </div>
+        )}
 
       </div>
     </div>
