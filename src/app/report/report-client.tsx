@@ -68,6 +68,64 @@ function formatRelativeTime(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+// ── Non-Momence no-data state ─────────────────────────────────────────────────
+
+function NonMomenceNoData({
+  hostId,
+  platform,
+  onFetched,
+}: {
+  hostId: string;
+  platform: string;
+  onFetched: (entry: CachedVenueEntry) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFetch = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/fetch-venue', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ hostId, platform }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+      }
+      // Load the freshly written cache file
+      const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
+      if (!cacheRes.ok) throw new Error('Data fetched but could not load from cache');
+      const entry: CachedVenueEntry = await cacheRes.json();
+      onFetched(entry);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center py-24 text-center px-4 gap-4">
+      <div>
+        <p className="text-base font-medium text-foreground">No cached data found</p>
+        <p className="text-sm text-muted-foreground mt-1">Fetch live data to build the report.</p>
+      </div>
+      <button
+        type="button"
+        onClick={handleFetch}
+        disabled={loading}
+        className="px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+      >
+        {loading ? 'Fetching…' : 'Fetch data'}
+      </button>
+      {error && <p className="text-sm text-red-500">{error}</p>}
+    </div>
+  );
+}
+
 // ── Main client ───────────────────────────────────────────────────────────────
 
 export function ReportClient() {
@@ -117,6 +175,34 @@ export function ReportClient() {
   // ── Re-fetch / Sync ──────────────────────────────────────────────────────
   const handleSync = useCallback(async () => {
     if (!hostId || !entry || isSyncInProgress) return;
+
+    if (platform !== 'momence') {
+      // Non-Momence venues: re-fetch via server-side route and reload cache
+      setIsSyncInProgress(true);
+      try {
+        const res = await fetch('/api/fetch-venue', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ hostId, platform }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+        }
+        const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
+        if (cacheRes.ok) {
+          const fresh: CachedVenueEntry = await cacheRes.json();
+          setCachedEntry(fresh);
+          setEntry(fresh);
+        }
+      } catch {
+        // swallow — spinner will stop
+      } finally {
+        setIsSyncInProgress(false);
+      }
+      return;
+    }
+
     setIsSyncInProgress(true);
     syncStarted.current = true;
     try {
@@ -129,7 +215,7 @@ export function ReportClient() {
       setIsSyncInProgress(false);
       syncStarted.current = false;
     }
-  }, [hostId, entry, isSyncInProgress, syncHook]);
+  }, [hostId, entry, isSyncInProgress, platform, syncHook]);
 
   // When sync or auto-fetch completes, persist fresh data and update local state
   useEffect(() => {
@@ -168,9 +254,11 @@ export function ReportClient() {
     autoFetchStarted.current = false;
   }, [syncHook.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-fetch live data when no cached entry is found after the initial resolution attempt
+  // Auto-fetch live data when no cached entry is found after the initial resolution attempt.
+  // Only supported for Momence — glofox/marianatek venues require a pre-built cache file.
   useEffect(() => {
     if (!entryLoadAttempted || !hostId || entry || autoFetchStarted.current || isSyncInProgress) return;
+    if (platform !== 'momence') return;
     autoFetchStarted.current = true;
     setIsSyncInProgress(true);
     const to = new Date();
@@ -194,6 +282,8 @@ export function ReportClient() {
   const allCachedSessions = useMemo<MomenceSession[]>(() => {
     if (!entry?.hostId) return entry?.sessions ?? [];
     const searches = getRecentSearches().filter(s => s.hostId === entry.hostId);
+    // Fall back to the in-memory entry when localStorage is empty (e.g. quota exceeded)
+    if (searches.length === 0) return entry?.sessions ?? [];
     const seen = new Set<string>();
     const result: MomenceSession[] = [];
     searches.forEach(search => {
@@ -207,6 +297,8 @@ export function ReportClient() {
   const allVenueMonthlyData = useMemo<MonthlyData[]>(() => {
     if (!entry?.hostId) return entry?.monthlyData ?? [];
     const searches = getRecentSearches().filter(s => s.hostId === entry.hostId);
+    // Fall back to the in-memory entry when localStorage is empty (e.g. quota exceeded)
+    if (searches.length === 0) return entry?.monthlyData ?? [];
     const merged = new Map<string, MonthlyData>();
     searches.forEach(search => {
       search.monthlyData.forEach(m => {
@@ -341,11 +433,20 @@ export function ReportClient() {
             )}
           </div>
         </header>
-        {isSyncInProgress && (
+        {isSyncInProgress ? (
           <div className="flex items-center justify-center py-24">
             <p className="text-sm text-muted-foreground">Fetching session data…</p>
           </div>
-        )}
+        ) : platform !== 'momence' ? (
+          <NonMomenceNoData
+            hostId={hostId ?? ''}
+            platform={platform}
+            onFetched={(data) => {
+              setCachedEntry(data);
+              setEntry(data);
+            }}
+          />
+        ) : null}
       </div>
     );
   }
