@@ -183,30 +183,28 @@ function SnapshotSection({
         {/* Visitors chart */}
         {chartData.length > 1 && (
           <div className="mb-5">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1.5">
                 <p className="text-sm font-medium text-muted-foreground tabular-nums">
                   <span className="font-semibold text-foreground">{avgValue.toLocaleString()}</span>{' '} {chartLabel}
                 </p>
-              <div className="flex items-center gap-2.5">
-                {granConfig.options.length > 0 && (
-                  <div className="flex items-center rounded-full bg-muted p-0.5 gap-px">
-                    {granConfig.options.map(g => (
-                      <button
-                        key={g}
-                        type="button"
-                        onClick={() => setGranularity(g)}
-                        className={`px-2.5 py-1 text-xs font-medium rounded-full transition-colors ${
-                          granularity === g
-                            ? 'bg-background text-foreground shadow-sm'
-                            : 'text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        {g === 'monthly' ? 'Monthly' : g === 'weekly' ? 'Weekly' : 'Daily'}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {granConfig.options.length > 0 && (
+                <div className="flex items-center rounded-full bg-muted p-0.5 gap-px self-start sm:self-auto">
+                  {granConfig.options.map(g => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setGranularity(g)}
+                      className={`px-2.5 py-1 text-xs font-medium rounded-full transition-colors ${
+                        granularity === g
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {g === 'monthly' ? 'Monthly' : g === 'weekly' ? 'Weekly' : 'Daily'}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <ResponsiveContainer width="100%" height={320}>
               {granularity === 'hourly' || granularity === 'monthly' ? (
