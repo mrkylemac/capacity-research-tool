@@ -1,6 +1,11 @@
 import type { ReactNode } from 'react';
+import type { Metadata } from 'next';
 import '../styles/globals.css';
 import { Providers } from './providers';
+
+export const metadata: Metadata = {
+  icons: { icon: '/favicon.svg', shortcut: '/favicon.svg' },
+};
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

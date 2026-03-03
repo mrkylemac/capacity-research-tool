@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "fetch-forecast": "tsx scripts/fetch-forecast.ts",
-    "test:sol-saunas": "tsx scripts/test-sol-saunas.ts"
+    "test:sol-saunas": "tsx scripts/test-sol-saunas.ts",
+    "fetch-venues": "tsx scripts/fetch-all-venues.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

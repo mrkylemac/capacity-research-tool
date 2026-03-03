@@ -4,8 +4,8 @@ import type { Platform } from '@/config/api';
 
 const CACHE_KEY = 'venue-cache';
 const RECENT_KEY = 'venue-recent';
-const MAX_RECENT = 3;
-const MAX_ENTRIES = 3; // hard cap before writing to avoid accumulating stale data
+const MAX_RECENT = 10;
+const MAX_ENTRIES = 10; // one entry per venue
 
 function canUseStorage(): boolean {
   return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
@@ -25,8 +25,8 @@ export interface CachedVenueEntry {
   hostInfo: HostInfo | null;
 }
 
-export function getCacheKey(hostId: string, platform: Platform, from: string, to: string): string {
-  return `${hostId}|${platform}|${from}|${to}`;
+export function getCacheKey(hostId: string, platform: Platform): string {
+  return `${hostId}|${platform}`;
 }
 
 function getCache(): Record<string, CachedVenueEntry> {
@@ -84,10 +84,10 @@ function writeCacheWithEviction(
 
 export function setCachedEntry(entry: Omit<CachedVenueEntry, 'key' | 'cachedAt'>): CachedVenueEntry {
   if (!canUseStorage()) {
-    const key = getCacheKey(entry.hostId, entry.platform, entry.dateRange.from, entry.dateRange.to);
+    const key = getCacheKey(entry.hostId, entry.platform);
     return { ...entry, key, cachedAt: new Date().toISOString() };
   }
-  const key = getCacheKey(entry.hostId, entry.platform, entry.dateRange.from, entry.dateRange.to);
+  const key = getCacheKey(entry.hostId, entry.platform);
   const full: CachedVenueEntry = { ...entry, key, cachedAt: new Date().toISOString() };
   const cache = getCache();
   cache[key] = full;

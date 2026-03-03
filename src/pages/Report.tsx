@@ -21,8 +21,8 @@ const Report = () => {
   const entry = useMemo(() => {
     const stateEntry = (location.state as { entry?: CachedVenueEntry })?.entry;
     if (stateEntry) return stateEntry;
-    if (hostId && from && to && platform) {
-      const key = getCacheKey(hostId, platform, from, to);
+    if (hostId && platform) {
+      const key = getCacheKey(hostId, platform);
       return getCachedEntry(key);
     }
     return null;
