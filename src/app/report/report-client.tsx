@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Check, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
+import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import {
   getCachedEntry,
@@ -477,11 +478,9 @@ export function ReportClient() {
 
           {/* Right: sync status + export CTA */}
           <div className="flex items-center gap-2 shrink-0">
-            {entry.cachedAt && (
-              <span className="text-sm text-muted-foreground hidden sm:block">
-                {formatRelativeTime(entry.cachedAt)}
-              </span>
-            )}
+            <span className="text-sm text-muted-foreground hidden sm:block">
+              {isSyncInProgress ? 'Fetching session data…' : entry.cachedAt ? formatRelativeTime(entry.cachedAt) : ''}
+            </span>
             <button
               type="button"
               onClick={handleSync}
