@@ -73,10 +73,13 @@ function formatRelativeTime(iso: string): string {
 export function ReportClient() {
   const [entry, setEntry] = useState<CachedVenueEntry | null>(null);
   const [hostId, setHostId] = useState<string | null>(null);
+  const [platform, setPlatform] = useState<CachedVenueEntry['platform']>('momence');
   const [period, setPeriod] = useState<PeriodOption>('all');
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
+  const [entryLoadAttempted, setEntryLoadAttempted] = useState(false);
   const syncStarted = useRef(false);
+  const autoFetchStarted = useRef(false);
 
   // Hook for live re-fetching
   const syncHook = useSessions();
@@ -85,23 +88,30 @@ export function ReportClient() {
     if (typeof window === 'undefined') return;
     const sp = new URLSearchParams(window.location.search);
     const hId = sp.get('hostId');
-    const platform = (sp.get('platform') as CachedVenueEntry['platform'] | null) ?? 'momence';
+    const plat = (sp.get('platform') as CachedVenueEntry['platform'] | null) ?? 'momence';
     setHostId(hId);
-    const found = pickEntry({ hostId: hId, platform });
+    setPlatform(plat);
+    const found = pickEntry({ hostId: hId, platform: plat });
     if (found) {
       setEntry(found);
-    } else if (hId && platform) {
-      // Fall back to server-side JSON file if not in localStorage
-      fetch(`/api/venue-data?hostId=${hId}&platform=${platform}`)
-        .then(r => r.ok ? r.json() : null)
-        .then((data: CachedVenueEntry | null) => {
-          if (data) {
-            setCachedEntry(data);
-            setEntry(data);
-          }
-        })
-        .catch(() => {/* leave entry null — empty state */});
+      setEntryLoadAttempted(true);
+      return;
     }
+    if (!hId || !plat) {
+      setEntryLoadAttempted(true);
+      return;
+    }
+    // Fall back to server-side JSON file if not in localStorage
+    fetch(`/api/venue-data?hostId=${hId}&platform=${plat}`)
+      .then(r => r.ok ? r.json() : null)
+      .then((data: CachedVenueEntry | null) => {
+        if (data) {
+          setCachedEntry(data);
+          setEntry(data);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setEntryLoadAttempted(true));
   }, []);
 
   // ── Re-fetch / Sync ──────────────────────────────────────────────────────
@@ -121,17 +131,23 @@ export function ReportClient() {
     }
   }, [hostId, entry, isSyncInProgress, syncHook]);
 
-  // When sync completes, persist fresh data and update local state
+  // When sync or auto-fetch completes, persist fresh data and update local state
   useEffect(() => {
-    if (!syncStarted.current || syncHook.isLoading) return;
-    if (!hostId || !entry) return;
+    const isActive = syncStarted.current || autoFetchStarted.current;
+    if (!isActive || syncHook.isLoading) return;
+    if (!hostId) return;
 
     if (syncHook.allSessions.length > 0) {
+      const dateRange = entry?.dateRange ?? {
+        from: syncHook.dataRange.from?.toISOString() ?? new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
+        to: syncHook.dataRange.to?.toISOString() ?? new Date().toISOString(),
+      };
+      const venueName = syncHook.hostInfo?.name ?? entry?.venueName ?? VENUES.find(v => v.id === hostId)?.name ?? hostId;
       const saved = setCachedEntry({
         hostId,
-        platform: entry.platform,
-        venueName: syncHook.hostInfo?.name ?? entry.venueName,
-        dateRange: entry.dateRange,
+        platform: entry?.platform ?? platform,
+        venueName,
+        dateRange,
         sessions: syncHook.allSessions,
         metrics: syncHook.metrics,
         monthlyData: syncHook.monthlyData,
@@ -139,7 +155,7 @@ export function ReportClient() {
         hostInfo: syncHook.hostInfo,
       });
       setEntry(saved);
-      // Persist refreshed data to server-side JSON file
+      // Persist to server-side JSON file
       fetch('/api/venue-data', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -149,7 +165,26 @@ export function ReportClient() {
 
     setIsSyncInProgress(false);
     syncStarted.current = false;
+    autoFetchStarted.current = false;
   }, [syncHook.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-fetch live data when no cached entry is found after the initial resolution attempt
+  useEffect(() => {
+    if (!entryLoadAttempted || !hostId || entry || autoFetchStarted.current || isSyncInProgress) return;
+    autoFetchStarted.current = true;
+    setIsSyncInProgress(true);
+    const to = new Date();
+    const from = new Date();
+    from.setFullYear(from.getFullYear() - 2);
+    syncHook.fetchData({
+      hostId,
+      startsAtFrom: from.toISOString(),
+      startsAtTo: to.toISOString(),
+    }).catch(() => {
+      setIsSyncInProgress(false);
+      autoFetchStarted.current = false;
+    });
+  }, [entryLoadAttempted, hostId, entry, isSyncInProgress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Venue info from Google Maps ──────────────────────────────────────────
   const apiVenueConfig = VENUES.find(v => v.id === (hostId ?? entry?.hostId));
@@ -283,9 +318,36 @@ export function ReportClient() {
     return disabled;
   }, [allCachedSessions]);
 
-  // ── Empty states ─────────────────────────────────────────────────────────
+  // ── Empty / loading states ────────────────────────────────────────────────
   if (!entry) {
-    return <main className="page-container" />;
+    return (
+      <div className="min-h-screen">
+        <header className="sticky top-0 z-10 backdrop-blur border-border print:hidden">
+          <div className="mx-auto px-5 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <Link
+                href="/"
+                className="cursor-pointer hover:opacity-70 py-1.5 px-1.5 shadow-2 bg-background rounded-md"
+                aria-label="Back"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+              <p className="text-lg font-semibold text-foreground leading-none">
+                {apiVenueConfig?.name?.split(',')[0] ?? 'Loading…'}
+              </p>
+            </div>
+            {isSyncInProgress && (
+              <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
+            )}
+          </div>
+        </header>
+        {isSyncInProgress && (
+          <div className="flex items-center justify-center py-24">
+            <p className="text-sm text-muted-foreground">Fetching session data…</p>
+          </div>
+        )}
+      </div>
+    );
   }
 
   const venueName = entry.hostInfo?.name ?? entry.venueName;

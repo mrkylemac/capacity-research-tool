@@ -1,11 +1,23 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { VENUES } from '@/config/api';
+import { getCachedEntry, getCacheKey } from '@/lib/venueCache';
 import { Card, CardContent } from '@/components/ui/card';
 
 export function HomeClient() {
   const router = useRouter();
+  const [logos, setLogos] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const map: Record<string, string> = {};
+    for (const venue of VENUES) {
+      const entry = getCachedEntry(getCacheKey(venue.id, venue.platform));
+      if (entry?.hostInfo?.profileImage) map[venue.id] = entry.hostInfo.profileImage;
+    }
+    setLogos(map);
+  }, []);
 
   return (
     <main className="min-h-screen">
@@ -33,9 +45,17 @@ export function HomeClient() {
                     </p>
                   </div>
                   <div className="aspect-square w-full rounded-xl rounded-r-none overflow-hidden bg-gray-2 flex items-center justify-center max-w-24">
-                    <span className="text-3xl font-bold text-muted-foreground">
-                      {venue.name.charAt(0).toUpperCase()}
-                    </span>
+                    {logos[venue.id] ? (
+                      <img
+                        src={logos[venue.id]}
+                        alt={venue.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-3xl font-bold text-muted-foreground">
+                        {venue.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </div>
                 </div>
               </CardContent>
