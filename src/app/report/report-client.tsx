@@ -68,22 +68,20 @@ function formatRelativeTime(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-// ── Non-Momence no-data state ─────────────────────────────────────────────────
+// ── Non-Momence no-data state (glofox / marianatek) ─────────────────────────────
 
-function NonMomenceNoData({
-  hostId,
-  platform,
-  onFetched,
-}: {
+interface NonMomenceNoDataProps {
   hostId: string;
-  platform: string;
-  onFetched: (entry: CachedVenueEntry) => void;
-}) {
-  const [loading, setLoading] = useState(false);
+  platform: CachedVenueEntry['platform'];
+  onFetched: (data: CachedVenueEntry) => void;
+}
+
+function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps) {
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFetch = async () => {
-    setLoading(true);
+  const handleFetch = useCallback(async () => {
+    setIsFetching(true);
     setError(null);
     try {
       const res = await fetch('/api/fetch-venue', {
@@ -91,37 +89,37 @@ function NonMomenceNoData({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ hostId, platform }),
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
-      }
-      // Load the freshly written cache file
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+
       const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
-      if (!cacheRes.ok) throw new Error('Data fetched but could not load from cache');
-      const entry: CachedVenueEntry = await cacheRes.json();
-      onFetched(entry);
+      if (!cacheRes.ok) throw new Error('Failed to load cached data');
+      const fresh: CachedVenueEntry = await cacheRes.json();
+      onFetched(fresh);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
-      setLoading(false);
+      setIsFetching(false);
     }
-  };
+  }, [hostId, platform, onFetched]);
 
   return (
-    <div className="flex flex-col items-center justify-center py-24 text-center px-4 gap-4">
-      <div>
-        <p className="text-base font-medium text-foreground">No cached data found</p>
-        <p className="text-sm text-muted-foreground mt-1">Fetch live data to build the report.</p>
-      </div>
+    <div className="flex flex-col items-center justify-center py-24 px-4">
+      <p className="text-base text-muted-foreground text-center mb-4">
+        No cached data for this venue. Fetch session data from {platform === 'glofox' ? 'Glofox' : 'Mariana Tek'}.
+      </p>
       <button
         type="button"
         onClick={handleFetch}
-        disabled={loading}
-        className="px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+        disabled={isFetching}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-background shadow-2 font-medium text-foreground hover:bg-gray-2 disabled:opacity-50 transition-colors"
       >
-        {loading ? 'Fetching…' : 'Fetch data'}
+        <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+        {isFetching ? 'Fetching…' : 'Fetch data'}
       </button>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <p className="text-sm text-destructive mt-3 text-center max-w-md">{error}</p>
+      )}
     </div>
   );
 }
