@@ -45,17 +45,13 @@ function formatComputedRange(from: string, to: string): string {
 
 function pickEntry({
   hostId,
-  from,
-  to,
   platform,
 }: {
   hostId: string | null;
-  from: string | null;
-  to: string | null;
   platform: CachedVenueEntry['platform'] | null;
 }): CachedVenueEntry | null {
-  if (hostId && from && to && platform) {
-    const key = getCacheKey(hostId, platform, from, to);
+  if (hostId && platform) {
+    const key = getCacheKey(hostId, platform);
     return getCachedEntry(key);
   }
   const recent = getRecentSearches();
@@ -89,12 +85,23 @@ export function ReportClient() {
     if (typeof window === 'undefined') return;
     const sp = new URLSearchParams(window.location.search);
     const hId = sp.get('hostId');
-    const from = sp.get('from');
-    const to = sp.get('to');
     const platform = (sp.get('platform') as CachedVenueEntry['platform'] | null) ?? 'momence';
     setHostId(hId);
-    const found = pickEntry({ hostId: hId, from, to, platform });
-    setEntry(found);
+    const found = pickEntry({ hostId: hId, platform });
+    if (found) {
+      setEntry(found);
+    } else if (hId && platform) {
+      // Fall back to server-side JSON file if not in localStorage
+      fetch(`/api/venue-data?hostId=${hId}&platform=${platform}`)
+        .then(r => r.ok ? r.json() : null)
+        .then((data: CachedVenueEntry | null) => {
+          if (data) {
+            setCachedEntry(data);
+            setEntry(data);
+          }
+        })
+        .catch(() => {/* leave entry null — empty state */});
+    }
   }, []);
 
   // ── Re-fetch / Sync ──────────────────────────────────────────────────────
@@ -132,6 +139,12 @@ export function ReportClient() {
         hostInfo: syncHook.hostInfo,
       });
       setEntry(saved);
+      // Persist refreshed data to server-side JSON file
+      fetch('/api/venue-data', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ entry: saved }),
+      }).catch(() => {/* fire-and-forget */});
     }
 
     setIsSyncInProgress(false);
