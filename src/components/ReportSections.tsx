@@ -177,7 +177,7 @@ function SnapshotSection({
 
   return (
     <Card className="print-section">
-      <CardContent className="p-5">
+      <CardContent className="px-4 py-4 sm:p-5">
         <CardHeader title="Snapshot" />
 
         {/* Visitors chart */}
@@ -341,7 +341,7 @@ function CapacitySection({
 
   return (
     <Card className="print-section shadow-sm">
-      <CardContent className="p-5">
+      <CardContent className="px-4 py-4 sm:p-5">
         <CardHeader
           title="Capacity"
           right={
@@ -485,7 +485,7 @@ function DemandSection({
 }) {
   return (
     <Card className="print-section shadow-sm">
-      <CardContent className="p-5">
+      <CardContent className="px-4 py-4 sm:p-5">
         <CardHeader title="Demand" />
         <DemandIntelligence
           sessions={sessions}
@@ -551,15 +551,15 @@ export function ReportSections({
   period,
 }: ReportSectionsProps) {
   return (
-    <div className="flex flex-col gap-8">
-      <div className="section-animate" style={{ animationDelay: '0ms' }}>
+    <div className="flex flex-col gap-5 sm:gap-8">
+      <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '0ms' }}>
         <SnapshotSection sessions={sessions} metrics={metrics} monthlyData={monthlyData} period={period} />
       </div>
-      <div className="section-animate" style={{ animationDelay: '60ms' }}>
+      <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '60ms' }}>
         <CapacitySection metrics={metrics} monthlyData={monthlyData} />
       </div>
       {sessions.length > 0 && (
-        <div className="section-animate" style={{ animationDelay: '120ms' }}>
+        <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '120ms' }}>
           <DemandSection sessions={sessions} metrics={metrics} period={period} />
         </div>
       )}

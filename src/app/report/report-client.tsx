@@ -330,7 +330,7 @@ export function ReportClient() {
       </div>
 
       {/* ── Page body ── */}
-      <div className="max-w-[760px] mx-auto px-5 py-16 space-y-5">
+      <div className="max-w-[760px] mx-auto px-4 pt-5 pb-12 sm:px-5 sm:pt-12 space-y-5">
 
         {/* ── Filter row ── */}
         <div className="grid sm:grid-cols-2 gap-3 items-center justify-center grid-cols-1">
