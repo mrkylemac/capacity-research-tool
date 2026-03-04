@@ -32,14 +32,14 @@ export interface VenueConfig {
 export const VENUES: VenueConfig[] = [
   { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence', location: 'Collingwood', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
   { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence', location: 'South Yarra', mapsQuery: 'Inner Studio South Yarra Melbourne', timezone: 'Australia/Melbourne' },
-  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
-  { id: '49448', name: 'Aalto, Adelaide', platform: 'momence', location: 'Adelaide', mapsQuery: 'Aalto Bathhouse Adelaide', timezone: 'Australia/Adelaide' },
-  { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', mapsQuery: 'EQ Wellness South Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '59636', name: 'Sol Saunas', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
+  // { id: '49448', name: 'Aalto, Adelaide', platform: 'momence', location: 'Adelaide', mapsQuery: 'Aalto Bathhouse Adelaide', timezone: 'Australia/Adelaide' },
+  // { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', mapsQuery: 'EQ Wellness South Melbourne', timezone: 'Australia/Melbourne' },
   // { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco', mapsQuery: 'Fjord SF San Francisco', timezone: 'America/Los_Angeles' },
-  { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox', location: 'New York', mapsQuery: 'Lore Bathing Club New York', timezone: 'America/New_York' },
-  { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek', location: 'Melbourne', mapsQuery: 'Project Mood Melbourne', timezone: 'Australia/Melbourne' },
+  // { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox', location: 'New York', mapsQuery: 'Lore Bathing Club New York', timezone: 'America/New_York' },
+  // { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek', location: 'Melbourne', mapsQuery: 'Project Mood Melbourne', timezone: 'Australia/Melbourne' },
   // { id: 'aerth', name: 'Ærth Saunas, Victoria BC', platform: 'marianatek', location: 'Victoria BC', mapsQuery: 'Aerth Saunas Victoria BC', timezone: 'America/Vancouver' },
-  { id: 'senseofself', name: 'Sense of Self, Melbourne', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
+  // { id: 'senseofself', name: 'Sense of Self, Melbourne', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
 ];
 
 // Glofox configuration
