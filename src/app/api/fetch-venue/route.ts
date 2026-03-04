@@ -295,6 +295,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         toDate,
       );
       venueName = cfg.name;
+    } else if (platform === 'glofox' && hostId === 'akari') {
+      const cfg = GLOFOX_CONFIG.akariSaunas;
+      if (!cfg.token) {
+        return NextResponse.json({ error: 'Akari Saunas Glofox token not configured. Run: npx tsx scripts/test-akari-saunas.ts' }, { status: 401 });
+      }
+      if (cfg.tokenExpiry && new Date() > new Date(cfg.tokenExpiry)) {
+        return NextResponse.json({ error: `Glofox token expired on ${cfg.tokenExpiry}` }, { status: 401 });
+      }
+      sessions = await fetchAllGlofoxSessions(
+        cfg.branchId,
+        cfg.token,
+        cfg.timezone,
+        new Date(cfg.operatingSince),
+        toDate,
+      );
+      venueName = cfg.name;
     } else if (platform === 'marianatek' && hostId === 'projectmood') {
       const cfg = MARIANATEK_CONFIG.projectMood;
       const from = fromDate.toISOString().split('T')[0];

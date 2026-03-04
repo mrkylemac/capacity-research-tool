@@ -14,7 +14,7 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'sheets';
 
 export interface VenueConfig {
   mapsQuery?: string;
@@ -40,6 +40,7 @@ export const VENUES: VenueConfig[] = [
   { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek', location: 'Melbourne', mapsQuery: 'Project Mood Melbourne', timezone: 'Australia/Melbourne' },
   // { id: 'aerth', name: 'Ærth Saunas, Victoria BC', platform: 'marianatek', location: 'Victoria BC', mapsQuery: 'Aerth Saunas Victoria BC', timezone: 'America/Vancouver' },
   { id: 'senseofself', name: 'Sense of Self, Melbourne', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'akari', name: 'Akari Saunas, Brooklyn', platform: 'glofox', location: 'Brooklyn', mapsQuery: 'Akari Sauna Williamsburg Brooklyn', timezone: 'America/New_York' },
 ];
 
 // Glofox configuration
@@ -53,6 +54,20 @@ export const GLOFOX_CONFIG = {
     token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzcyODUyMDc4LCJpYXQiOjE3NzA0MzI4NzgsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoibG9yZWJhdGhpbmdjbHViIiwiYnJhbmNoX2lkIjoiNjdjNWViMDllZmI0Mjc3YjA2MDg0ZWI2IiwiZmlyc3RfbmFtZSI6Ikd1ZXN0IiwibGFzdF9uYW1lIjoiVXNlciIsInR5cGUiOiJHVUVTVCIsImlzU3VwZXJBZG1pbiI6ZmFsc2V9fQ.ht0QGgJ3dzT3Cp5CTMiqSIJawAlxWfWX_PakV4XlFu4',
     tokenExpiry: '2026-03-08',
     operatingSince: '2026-01-01',
+  },
+  akariSaunas: {
+    branchId: '67cf4fe8ef346c3817003b8f',
+    namespace: '', // TODO: discover via guest token probe
+    name: 'Akari Saunas',
+    timezone: 'America/New_York',
+    // No guest token yet — run `npx tsx scripts/test-akari-saunas.ts` to discover
+    token: '',
+    tokenExpiry: '',
+    operatingSince: '2025-01-01',
+    // Google Sheets occupancy feed (live data published by venue)
+    sheetsSpreadsheetId: '1yrIBz86iBFtin1_glrHsl0g05raVsisvbgIYaAYtin4',
+    sheetsApiKey: 'AIzaSyB_CloyomHHpxfqBS8jJFBeIiR_MjE4gAQ',
+    sheetsRange: 'SingleRow!A2:E2',
   },
 } as const;
 
