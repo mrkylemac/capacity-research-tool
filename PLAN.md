@@ -1,79 +1,240 @@
-# Plan: Clean Venue Data — Session Times & Capacity Normalization
+# Slow Folk Financial Tracker — Implementation Plan
 
-## Problem Summary
+## Overview
 
-Two data quality issues in fetched venue data:
-
-1. **Phantom early sessions**: Time slots start at 4:30am but most venues open at 6:00am+. The `inferOperatingHours()` function uses raw `Math.min()` across all session start times — a single outlier (test session, timezone glitch, or placeholder) drags the reported opening time down and pollutes the 4:30–6:30am demand slot.
-
-2. **Capacity variations**: Sessions from the same venue show different capacity values (e.g. 12, 15, 20) due to special events, instructor overrides, or API inconsistencies. This skews `avgCapacityPerSession`, utilisation %, and theoretical max calculations.
+Build a `/tracker` section of the app that serves as the financial control centre for the Slow Folk build. Google Sheets remains the source of truth. The front-end reads from (and eventually writes to) the workbook, presenting clear signals on CapEx burn, OpEx forecasting, and pricing/breakeven position.
 
 ---
 
-## Proposed Changes
+## Two Routes
 
-### 1. Outlier-resistant operating hours (`src/lib/benchmarkMetrics.ts`)
+### Route 1: Economical (Start here)
+- **Read-only front-end** powered by Google Sheets API v4 (API key, no OAuth)
+- Google Sheets stays as the single source of truth — edit in Sheets, view in app
+- Proxy API route (`/api/sheets`) fetches and caches sheet data server-side
+- CapEx tracker, OpEx view, and Pricing/Breakeven views render from cached data
+- Data entry for invoices/actuals lives in Google Sheets; front-end displays it
+- **Cost**: Free (Sheets API quota is generous), no auth infra needed
 
-**Current**: `inferOperatingHours()` uses `Math.min(startTimes)` / `Math.max(endTimes)` — any single outlier shifts the range.
+### Route 2: Extensive (Layer on later)
+- **Two-way sync** — edit directly in the front-end, push changes back to Sheets
+- Google Service Account with editor access to the workbook (no OAuth flow needed)
+- Inline editing on cost line items, status updates, invoice data entry
+- File upload for fee proposals & invoices (store in Google Drive or local)
+- Optimistic updates with conflict detection
+- **Cost**: Service account setup, slightly more complex API layer
 
-**Proposed**: Use **percentile-based bounds** (5th/95th percentile) instead of absolute min/max. This drops the earliest/latest ~5% of sessions as outliers.
+**Recommendation**: Build Route 1 now. Design the data layer so Route 2 is a natural extension (same types, same API routes, just add POST/PUT handlers).
 
-- Add a `percentile(arr, p)` helper
-- Replace `safeMin`/`safeMax` with `percentile(arr, 0.05)` and `percentile(arr, 0.95)`
-- Floor start times and ceil end times to the nearest 0.5h for clean display
+---
 
-### 2. Filter sessions outside inferred operating hours (`src/lib/utils.ts`)
+## Architecture
 
-**New rule in `sanitizeSessions()`**: After inferring robust operating hours, drop sessions that start before the 5th-percentile opening time. This prevents phantom 4:30am slots from appearing in demand patterns.
+### Data Flow
+```
+Google Sheets ──(API key)──> /api/sheets proxy ──> React hooks ──> Components
+                                    │
+                              Server-side cache
+                            (src/data/tracker/)
+```
 
-- Add `outsideOperatingHours` counter to `DataQualityReport.dropped`
-- Accept an optional `operatingHoursBounds` parameter `{ earliestStart: number; latestEnd: number }` in `sanitizeSessions()`
-- When provided, drop sessions outside these bounds
+### New Files
 
-### 3. Normalize capacity with modal value detection (`src/lib/utils.ts`)
+```
+src/
+├── app/
+│   ├── tracker/
+│   │   ├── page.tsx                    # Server component — tracker landing
+│   │   ├── tracker-client.tsx          # Client shell — tab navigation
+│   │   ├── capex/
+│   │   │   └── page.tsx                # CapEx view (deep-dive)
+│   │   ├── opex/
+│   │   │   └── page.tsx                # OpEx view (Phase 2)
+│   │   └── pricing/
+│   │       └── page.tsx                # Pricing & breakeven view (Phase 3)
+│   └── api/
+│       └── sheets/
+│           ├── route.ts                # GET: fetch all tabs metadata
+│           └── [tab]/
+│               └── route.ts            # GET: fetch specific tab data
+├── components/
+│   └── tracker/
+│       ├── TrackerNav.tsx              # Top nav with tabs (CapEx | OpEx | Pricing)
+│       ├── BudgetSummary.tsx           # Hero cards: total budget, spent, remaining, % burn
+│       ├── CostTable.tsx               # Line-item table with forecast vs actual columns
+│       ├── BurnChart.tsx               # Cumulative spend vs budget over time
+│       ├── VarianceChart.tsx           # Forecast vs actual variance by category
+│       ├── CategoryBreakdown.tsx       # Pie/bar chart of spend by category
+│       ├── CashSignals.tsx             # Alert cards: over-budget items, investment needed
+│       └── StatusBadge.tsx             # Paid/Pending/Overdue badge component
+├── hooks/
+│   └── useSheets.ts                    # React Query hook for Google Sheets data
+├── lib/
+│   └── sheetsClient.ts                 # Google Sheets API helper (server-side)
+└── types/
+    └── tracker.ts                      # TypeScript interfaces for CapEx/OpEx data
+```
 
-**New function `normalizeCapacity(sessions)`**: Detect the **mode** (most common) capacity value per venue. Flag sessions with capacity deviating more than a configurable threshold (e.g. >50% deviation from mode) and either:
+---
 
-- Clamp to the modal capacity (conservative — preserves session count)
-- Report the variance in `DataQualityReport`
+## Phase 1: CapEx Tracker (This PR)
 
-Add to `DataQualityReport`:
+### 1. Google Sheets API Integration
+
+**`src/lib/sheetsClient.ts`**
+- Uses Google Sheets API v4 with API key (read-only)
+- Fetches sheet metadata (tab names, grid properties)
+- Fetches range data for specific tabs
+- Auto-discovers columns from header row
+- Falls back to cached JSON if API fails
+
+**`src/app/api/sheets/route.ts`**
+- GET: Returns list of all sheet tabs with their column headers
+- Caches response in `src/data/tracker/` as JSON (same pattern as venue data)
+
+**`src/app/api/sheets/[tab]/route.ts`**
+- GET: Returns all rows for a given tab name
+- Query params: `spreadsheetId` (defaults to env var)
+- Returns typed JSON with headers + rows
+
+**Environment**:
+- `GOOGLE_SHEETS_API_KEY` — standard API key with Sheets API enabled
+- `GOOGLE_SHEETS_SPREADSHEET_ID` — the workbook ID from the URL
+
+### 2. CapEx Data Model
+
+**`src/types/tracker.ts`**
 ```typescript
-clamped: {
-  ticketsExceededCapacity: number;
-  capacityNormalized: number;  // NEW
+interface CostLineItem {
+  category: string;           // e.g. "Construction", "Consultants"
+  description: string;        // Line item detail
+  supplier?: string;          // Vendor name
+  forecastAmount: number;     // Budgeted / quoted amount
+  actualAmount: number;       // What was actually paid
+  variance: number;           // forecast - actual (positive = under budget)
+  status: 'forecast' | 'quoted' | 'invoiced' | 'paid';
+  date?: string;              // Invoice/payment date
+  notes?: string;
+}
+
+interface CapExSummary {
+  totalBudget: number;
+  totalSpent: number;
+  totalCommitted: number;     // Quoted + invoiced but not yet paid
+  totalRemaining: number;
+  burnPercentage: number;
+  categories: CategorySummary[];
+  signals: FinancialSignal[];  // Over-budget warnings, investment alerts
+}
+
+interface FinancialSignal {
+  type: 'warning' | 'danger' | 'info';
+  title: string;
+  message: string;
+  amount?: number;
 }
 ```
 
-### 4. Dynamic time slots based on inferred hours (`src/lib/metricsCalculator.ts`, `src/components/DemandPatterns.tsx`)
+### 3. CapEx Views
 
-**Current**: 9 hardcoded 2-hour slots starting at 4:30am.
+**`/tracker` landing page**
+- Hero summary cards (matching existing `BigStat` / `StatRow` patterns)
+  - Total Budget | Total Spent | Remaining | Burn %
+- Burn rate progress bar (matching existing occupancy bar pattern)
+- Financial signals section (over-budget alerts, additional investment needed)
 
-**Proposed**: Generate time slots dynamically from the venue's inferred operating hours. Only create slots that overlap with the venue's actual operating window.
+**Budget Summary Cards** (using existing Card/CardContent pattern):
+- Total CapEx Budget (forecast total)
+- Spent to Date (actual total)
+- Committed (quoted/invoiced, not yet paid)
+- Remaining Budget
+- Burn Rate (% of budget consumed)
+- Additional Investment Signal (if actuals tracking above forecast)
 
-- New function `generateTimeSlots(operatingHours: OperatingHours): TimeSlot[]`
-- Keeps the 2-hour bucket width but starts from the venue's earliest operating hour
-- Both `metricsCalculator.ts` and `DemandPatterns.tsx` use the generated slots instead of the hardcoded array
+**Cost Table** (using existing `data-table` CSS class):
+- Columns: Category | Description | Forecast | Actual | Variance | Status
+- Row-level colour coding: green (under budget), amber (close), red (over)
+- Category grouping with subtotals
+- Sortable by any column
 
-### 5. Wire it all together (`src/hooks/useSessions.ts`)
+**Burn Chart** (Recharts, matching existing chart patterns):
+- Cumulative spend line vs budget line over time
+- Area fill between forecast and actual
+- Months on X-axis, AUD on Y-axis
 
-Update the data pipeline:
-1. Fetch raw sessions (existing)
-2. Date-range filter (existing)
-3. Basic sanitization (existing `sanitizeSessions`)
-4. Infer operating hours with percentile bounds (new)
-5. Filter out-of-hours sessions (new)
-6. Normalize capacity (new)
-7. Calculate metrics with dynamic time slots (updated)
+**Variance Chart**:
+- Horizontal bar chart showing variance per category
+- Green bars = under budget, red bars = over budget
+- Net position highlighted
+
+**Cash Signals Panel**:
+- Cards with clear financial alerts
+- "Construction is 12% over budget — $X additional investment needed"
+- "Current burn rate suggests $X total CapEx vs $Y budgeted"
+- Projected total based on current trajectory
+
+### 4. Navigation
+
+Update home page to include a "Financial Tracker" card/link alongside the venue grid. Add a tabbed navigation within `/tracker` for CapEx | OpEx | Pricing views.
 
 ---
 
-## Files Changed
+## Phase 2: OpEx View (Future)
 
-| File | Change |
-|------|--------|
-| `src/lib/benchmarkMetrics.ts` | Percentile-based `inferOperatingHours()` |
-| `src/lib/utils.ts` | Extended `sanitizeSessions()` with operating hours filter; new `normalizeCapacity()`; updated `DataQualityReport` |
-| `src/lib/metricsCalculator.ts` | New `generateTimeSlots()`; use dynamic slots in `calculateDemandPatterns()` |
-| `src/components/DemandPatterns.tsx` | Use dynamic slots from `generateTimeSlots()` |
-| `src/hooks/useSessions.ts` | Wire new cleaning steps into pipeline |
+- Monthly operational cost breakdown
+- Fixed vs variable costs
+- Revenue projections vs operating costs
+- Break-even timeline visualisation
+- Cash runway indicator
+
+## Phase 3: Pricing & Breakeven (Future)
+
+- Integrates existing `forecastUtils.ts` data
+- Benchmark pricing from venue data (already captured)
+- Breakeven analysis with multiple scenarios
+- Market positioning chart (Slow Folk vs comparables)
+- Uses real venue data from the existing benchmarking tool
+
+---
+
+## Design Principles
+
+1. **Match existing style exactly** — Open Runde font, same Card/BigStat/StatRow patterns, same chart styling, same colour palette (gray-1 through gray-4, semantic colours for status)
+2. **Same animation patterns** — `section-animate` class with staggered delays
+3. **Same responsive approach** — `page-container` class, mobile-first grid
+4. **Same data architecture** — server-side API routes with JSON cache fallback, React hooks for data fetching
+5. **Progressive enhancement** — starts read-only (Route 1), designed so Route 2 write-back is additive, not a rewrite
+
+---
+
+## Implementation Steps (This PR)
+
+1. Create branch, set up environment config for Sheets API
+2. Build `sheetsClient.ts` (Google Sheets API helper)
+3. Build API routes (`/api/sheets`, `/api/sheets/[tab]`)
+4. Create types (`tracker.ts`)
+5. Create `useSheets` hook
+6. Build tracker page shell with tab navigation
+7. Build CapEx components (BudgetSummary, CostTable, BurnChart, VarianceChart, CashSignals)
+8. Wire up CapEx page with real sheet data
+9. Add tracker link to home page
+10. Test, commit, push
+
+---
+
+## Google Sheets Access Strategy
+
+### Development (MCP)
+The Google Sheets MCP connector is already set up as a custom connector. During development, we can use it to:
+- Inspect sheet structure and tab names
+- Read data for building/testing components
+- Eventually write data back for Route 2
+
+### Production (Sheets API v4)
+For the deployed app:
+1. Enable the Google Sheets API in Google Cloud Console
+2. Create an API key (or reuse existing Google Maps key if Sheets API is enabled on it)
+3. Set `GOOGLE_SHEETS_API_KEY` and `GOOGLE_SHEETS_SPREADSHEET_ID` in `.env.local`
+4. Ensure the spreadsheet is shared as "Anyone with the link can view"
+
+The app will auto-discover all tabs and columns from the sheet at runtime, so no hardcoded structure is required — it adapts to whatever exists in the workbook. Column mapping is inferred from header rows.
