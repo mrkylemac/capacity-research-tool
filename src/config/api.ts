@@ -60,14 +60,18 @@ export const GLOFOX_CONFIG = {
     namespace: '', // TODO: discover via guest token probe
     name: 'Akari Saunas',
     timezone: 'America/New_York',
-    // No guest token yet — run `npx tsx scripts/test-akari-saunas.ts` to discover
+    // Glofox is used for memberships, not session booking
     token: '',
     tokenExpiry: '',
     operatingSince: '2025-01-01',
-    // Google Sheets occupancy feed (live data published by venue)
+    // Google Sheets live occupancy feed (from akarisauna.com JS)
+    // SingleRow!A2:E2 → [lastUpdatedDatetime, rawOccupancy (0–0.2), prettyDate, prettyTime, occupancyLabel]
+    // Closures!A2:A1001 → list of special closure dates
     sheetsSpreadsheetId: '1yrIBz86iBFtin1_glrHsl0g05raVsisvbgIYaAYtin4',
     sheetsApiKey: 'AIzaSyB_CloyomHHpxfqBS8jJFBeIiR_MjE4gAQ',
     sheetsRange: 'SingleRow!A2:E2',
+    // Operating hours (from their website JS)
+    // Mon–Fri: 8am–10pm ET, Sat–Sun: 9am–8pm ET
   },
 } as const;
 
