@@ -69,6 +69,44 @@ function formatRelativeTime(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+// ── Session count ticker (lightweight number animation, no deps) ─────────────
+
+function SessionTicker({ count }: { count: number }) {
+  const [displayed, setDisplayed] = useState(0);
+  const displayedRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (count <= displayedRef.current) return;
+
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    const target = count;
+    const STEP = 10;
+    const diff = target - displayedRef.current;
+    const frames = Math.max(10, Math.ceil(diff / STEP));
+    const delay = Math.max(16, Math.round(300 / frames));
+
+    timerRef.current = setInterval(() => {
+      const next = displayedRef.current + STEP;
+      if (next >= target) {
+        displayedRef.current = target;
+        setDisplayed(target);
+        if (timerRef.current) clearInterval(timerRef.current);
+      } else {
+        displayedRef.current = next;
+        setDisplayed(next);
+      }
+    }, delay);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [count]);
+
+  return <>{displayed.toLocaleString()}</>;
+}
+
 // ── Non-Momence no-data state (glofox / marianatek) ─────────────────────────────
 
 interface NonMomenceNoDataProps {
@@ -463,8 +501,27 @@ export function ReportClient() {
           </div>
         </header>
         {isSyncInProgress ? (
-          <div className="flex items-center justify-center py-24">
-            <p className="text-sm text-muted-foreground">Fetching session data…</p>
+          <div className="flex flex-col items-center justify-center py-16 px-4 gap-6">
+            {/* Status text */}
+            <div className="text-center space-y-1">
+              <p className="text-base font-medium text-foreground">
+                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history…'}
+              </p>
+              <p className="text-sm text-muted-foreground">This usually takes 2–4 minutes</p>
+            </div>
+
+            {/* Live session counter */}
+            {syncHook.fetchingCount > 0 && (
+              <div className="text-center">
+                <div className="text-5xl font-semibold tabular-nums tracking-tight text-foreground">
+                  <SessionTicker count={syncHook.fetchingCount} />
+                </div>
+                <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
+              </div>
+            )}
+
+            {/* Dino animation */}
+            <DinoLoader />
           </div>
         ) : platform !== 'momence' ? (
           <NonMomenceNoData
@@ -537,6 +594,31 @@ export function ReportClient() {
 
       {/* ── Page body ── */}
       <div className="max-w-[760px] mx-auto px-4 pt-5 pb-12 sm:px-5 sm:pt-12 space-y-5">
+
+        {isSyncInProgress ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4 gap-6">
+            {/* Status text */}
+            <div className="text-center space-y-1">
+              <p className="text-base font-medium text-foreground">
+                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history…'}
+              </p>
+              <p className="text-sm text-muted-foreground">This usually takes 2–4 minutes</p>
+            </div>
+
+            {/* Live session counter */}
+            {syncHook.fetchingCount > 0 && (
+              <div className="text-center">
+                <div className="text-5xl font-semibold tabular-nums tracking-tight text-foreground">
+                  <SessionTicker count={syncHook.fetchingCount} />
+                </div>
+                <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
+              </div>
+            )}
+
+            {/* Dino animation */}
+            <DinoLoader />
+          </div>
+        ) : <>
 
         {/* ── Filter row ── */}
         <div className="grid sm:grid-cols-2 gap-3 items-center justify-center grid-cols-1">
@@ -639,6 +721,8 @@ export function ReportClient() {
             <p className="text-sm text-muted-foreground mt-1">Try selecting a wider time range above.</p>
           </div>
         )}
+
+        </>}
 
       </div>
     </div>
