@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import type { DataRange } from '@/hooks/useSessions';
 
@@ -13,16 +14,64 @@ interface DataStatusProps {
 }
 
 export function DataStatus({ isLoading, fetchPhase, error, sessionCount, pageCount, dataRange, loadingLabel }: DataStatusProps) {
+  const [displayedCount, setDisplayedCount] = useState(0);
+  const animRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Animate the session count upward by 10 per tick when new data arrives
+  useEffect(() => {
+    if (!isLoading || fetchPhase === 'processing') {
+      if (animRef.current) {
+        clearInterval(animRef.current);
+        animRef.current = null;
+      }
+      return;
+    }
+
+    if (sessionCount <= displayedCount) return;
+
+    if (animRef.current) {
+      clearInterval(animRef.current);
+    }
+
+    animRef.current = setInterval(() => {
+      setDisplayedCount(prev => {
+        const next = prev + 10;
+        if (next >= sessionCount) {
+          if (animRef.current) {
+            clearInterval(animRef.current);
+            animRef.current = null;
+          }
+          return sessionCount;
+        }
+        return next;
+      });
+    }, 30);
+
+    return () => {
+      if (animRef.current) {
+        clearInterval(animRef.current);
+        animRef.current = null;
+      }
+    };
+  }, [sessionCount, isLoading, fetchPhase]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset displayed count when a new fetch starts
+  useEffect(() => {
+    if (isLoading && fetchPhase === 'fetching' && sessionCount === 0) {
+      setDisplayedCount(0);
+    }
+  }, [isLoading, fetchPhase, sessionCount]);
+
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 py-2 text-base text-muted-foreground">
         <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
         {fetchPhase === 'processing' ? (
           <span>Filtering to your date range…</span>
-        ) : sessionCount > 0 ? (
+        ) : displayedCount > 0 ? (
           <span>
             Downloading session history…{' '}
-            <strong className="text-foreground">{sessionCount.toLocaleString()}</strong> sessions
+            <strong className="text-foreground">{displayedCount.toLocaleString()}</strong> sessions
           </span>
         ) : (
           <span>{loadingLabel ?? 'Fetching session data…'}</span>
