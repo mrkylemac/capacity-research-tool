@@ -14,7 +14,7 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe';
 
 export interface VenueConfig {
   mapsQuery?: string;
@@ -34,10 +34,12 @@ export const VENUES: VenueConfig[] = [
   { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence', location: 'South Yarra', mapsQuery: 'Inner Studio South Yarra Melbourne', timezone: 'Australia/Melbourne' },
   { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
   { id: '49448', name: 'Aalto, Adelaide', platform: 'momence', location: 'Adelaide', mapsQuery: 'Aalto Bathhouse Adelaide', timezone: 'Australia/Adelaide' },
+  { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', mapsQuery: 'EQ Wellness South Melbourne', timezone: 'Australia/Melbourne' },
   // { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco', mapsQuery: 'Fjord SF San Francisco', timezone: 'America/Los_Angeles' },
   { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox', location: 'New York', mapsQuery: 'Lore Bathing Club New York', timezone: 'America/New_York' },
   { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek', location: 'Melbourne', mapsQuery: 'Project Mood Melbourne', timezone: 'Australia/Melbourne' },
   // { id: 'aerth', name: 'Ærth Saunas, Victoria BC', platform: 'marianatek', location: 'Victoria BC', mapsQuery: 'Aerth Saunas Victoria BC', timezone: 'America/Vancouver' },
+  { id: 'senseofself', name: 'Sense of Self, Melbourne', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
 ];
 
 // Glofox configuration
@@ -51,6 +53,24 @@ export const GLOFOX_CONFIG = {
     token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzcyODUyMDc4LCJpYXQiOjE3NzA0MzI4NzgsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoibG9yZWJhdGhpbmdjbHViIiwiYnJhbmNoX2lkIjoiNjdjNWViMDllZmI0Mjc3YjA2MDg0ZWI2IiwiZmlyc3RfbmFtZSI6Ikd1ZXN0IiwibGFzdF9uYW1lIjoiVXNlciIsInR5cGUiOiJHVUVTVCIsImlzU3VwZXJBZG1pbiI6ZmFsc2V9fQ.ht0QGgJ3dzT3Cp5CTMiqSIJawAlxWfWX_PakV4XlFu4',
     tokenExpiry: '2026-03-08',
     operatingSince: '2026-01-01',
+  },
+} as const;
+
+// TryBe configuration (public customer API — no auth required)
+export const TRYBE_CONFIG = {
+  senseOfSelf: {
+    venueId: '9f40f5e4-d840-487a-b5cd-12e9a571b80e',
+    // Each offering is a bookable session type. Sessions are fetched per-offering.
+    offerings: [
+      { id: '689bfaa6238f5106bb09ebef', name: 'Quiet Morning Bathhouse' },
+      { id: '6861f7143c3fb8e08d061fa4', name: 'Bathhouse Session' },
+    ],
+    name: 'Sense of Self',
+    timezone: 'Australia/Melbourne',
+    // TryBe only exposes upcoming/current sessions — past sessions are not accessible
+    // via the public API. The fetcher merges newly fetched sessions with previously
+    // cached past sessions to build up history over time.
+    launchDate: '2025-07-07',
   },
 } as const;
 

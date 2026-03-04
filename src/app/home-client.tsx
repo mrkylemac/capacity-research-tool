@@ -11,12 +11,27 @@ export function HomeClient() {
   const [logos, setLogos] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const logoMap: Record<string, string> = {};
-    for (const venue of VENUES) {
-      const entry = getCachedEntry(getCacheKey(venue.id, venue.platform));
-      if (entry?.hostInfo?.profileImage) logoMap[venue.id] = entry.hostInfo.profileImage;
-    }
-    setLogos(logoMap);
+    // Seed from the server-side store first (works on first visit, no localStorage needed)
+    fetch('/api/venue-images')
+      .then(r => r.ok ? r.json() as Promise<Record<string, string>> : {})
+      .then(serverImages => {
+        const logoMap: Record<string, string> = { ...serverImages };
+        // Merge localStorage entries — they may be more recent after a fresh fetch
+        for (const venue of VENUES) {
+          const entry = getCachedEntry(getCacheKey(venue.id, venue.platform));
+          if (entry?.hostInfo?.profileImage) logoMap[venue.id] = entry.hostInfo.profileImage;
+        }
+        setLogos(logoMap);
+      })
+      .catch(() => {
+        // Fallback to localStorage only
+        const logoMap: Record<string, string> = {};
+        for (const venue of VENUES) {
+          const entry = getCachedEntry(getCacheKey(venue.id, venue.platform));
+          if (entry?.hostInfo?.profileImage) logoMap[venue.id] = entry.hostInfo.profileImage;
+        }
+        setLogos(logoMap);
+      });
   }, []);
 
   return (

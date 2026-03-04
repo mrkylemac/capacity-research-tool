@@ -55,7 +55,7 @@ export const PERIOD_OPTIONS: { value: PeriodOption; label: string; months: numbe
 
 /** Groups used to render the dropdown with separators. */
 const PERIOD_GROUPS: { label?: string; options: PeriodOption[] }[] = [
-  { options: ['yesterday', '1w', '1m'] },
+  { options: ['today', 'yesterday', '1w', '1m'] },
   { label: 'The last', options: ['last1m', '3m', '6m', '12m'] },
   { options: ['all'] },
 ];

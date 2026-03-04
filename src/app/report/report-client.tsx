@@ -507,7 +507,9 @@ export function ReportClient() {
               <p className="text-base font-medium text-foreground">
                 {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history…'}
               </p>
-              <p className="text-sm text-muted-foreground">This usually takes 2–4 minutes</p>
+
+              {/* Dino animation */}
+              <DinoLoader />
             </div>
 
             {/* Live session counter */}
@@ -517,11 +519,9 @@ export function ReportClient() {
                   <SessionTicker count={syncHook.fetchingCount} />
                 </div>
                 <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
+                <p className="text-xs opacity-40 text-muted-foreground">This usually takes 2–4 minutes</p>
               </div>
             )}
-
-            {/* Dino animation */}
-            <DinoLoader />
           </div>
         ) : platform !== 'momence' ? (
           <NonMomenceNoData
@@ -714,6 +714,7 @@ export function ReportClient() {
             monthlyData={filteredMonthlyData}
             allMonthlyData={allVenueMonthlyData}
             period={period}
+            platform={platform}
           />
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">

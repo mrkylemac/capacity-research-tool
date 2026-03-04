@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { GLOFOX_CONFIG, MARIANATEK_CONFIG } from '@/config/api';
+import { GLOFOX_CONFIG, MARIANATEK_CONFIG, TRYBE_CONFIG } from '@/config/api';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
@@ -167,6 +167,85 @@ async function fetchAllMarianaTekSessions(
   return all;
 }
 
+// ── TryBe server-side fetcher ─────────────────────────────────────────────────
+
+interface TBSession {
+  id: string;
+  room: { id: string; name: string; capacity: number };
+  start_time: string;
+  end_time: string;
+  duration: number;
+  capacity: number;
+  remaining_capacity: number;
+  price: number;
+  is_valid: boolean;
+}
+
+interface TBResponse {
+  data: TBSession[];
+}
+
+async function fetchTrybeOfferingSessions(
+  venueId: string,
+  offeringId: string,
+  offeringName: string,
+  from: Date,
+  to: Date,
+): Promise<MomenceSession[]> {
+  // TryBe expects ISO 8601 with timezone; use UTC to avoid DST ambiguity
+  const fromStr = encodeURIComponent(from.toISOString().slice(0, 19) + '+00:00');
+  const toStr = encodeURIComponent(to.toISOString().slice(0, 19) + '+00:00');
+  const url = `https://api.try.be/shop/item-availability/sessions/${venueId}/${offeringId}?date_time_from=${fromStr}&date_time_to=${toStr}`;
+
+  const res = await fetch(url, { headers: { accept: 'application/json' } });
+  if (!res.ok) throw new Error(`TryBe API: ${res.status} ${res.statusText}`);
+  const data: TBResponse = await res.json();
+
+  return (data.data ?? []).map(s => ({
+    id: s.id,
+    sessionName: offeringName,
+    startsAt: s.start_time,
+    endsAt: s.end_time,
+    durationMinutes: s.duration,
+    capacity: s.capacity,
+    ticketsSold: Math.max(0, s.capacity - s.remaining_capacity),
+    fixedTicketPrice: s.price / 100,
+    location: s.room.name,
+    inPerson: true,
+  }));
+}
+
+async function fetchAllTrybeSessions(
+  venueId: string,
+  offerings: readonly { id: string; name: string }[],
+  from: Date,
+  to: Date,
+  venueName: string,
+  existingSessions: MomenceSession[],
+): Promise<MomenceSession[]> {
+  // Fetch fresh data for the upcoming window
+  const fresh: MomenceSession[] = [];
+  const freshIds = new Set<string>();
+  const now = new Date();
+
+  for (const offering of offerings) {
+    const sessions = await fetchTrybeOfferingSessions(venueId, offering.id, offering.name, from, to);
+    console.log(`[${venueName}] Offering "${offering.name}": ${sessions.length} upcoming sessions`);
+    for (const s of sessions) {
+      if (!freshIds.has(s.id)) {
+        freshIds.add(s.id);
+        fresh.push(s);
+      }
+    }
+  }
+
+  // Preserve previously cached sessions that have now passed (TryBe removes them from the API)
+  const past = existingSessions.filter(s => new Date(s.startsAt) < now && !freshIds.has(s.id));
+  console.log(`[${venueName}] Retaining ${past.length} cached past sessions`);
+
+  return [...past, ...fresh].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+}
+
 // ── Route handler ─────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -188,6 +267,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   let sessions: MomenceSession[];
   let venueName: string;
+
+  // Load existing cached sessions for platforms that need incremental merging
+  let existingSessions: MomenceSession[] = [];
+  const existingFilePath = path.join(VENUES_DIR, `${hostId}-${platform}.json`);
+  if (fs.existsSync(existingFilePath)) {
+    try {
+      const raw = fs.readFileSync(existingFilePath, 'utf-8');
+      const existing = JSON.parse(raw) as CachedVenueEntry;
+      existingSessions = existing.sessions ?? [];
+    } catch {
+      // ignore — we'll just start fresh
+    }
+  }
 
   try {
     if (platform === 'glofox' && hostId === 'lore') {
@@ -215,6 +307,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         from,
         to,
         cfg.name,
+      );
+      venueName = cfg.name;
+    } else if (platform === 'trybe' && hostId === 'senseofself') {
+      const cfg = TRYBE_CONFIG.senseOfSelf;
+      // TryBe only exposes upcoming sessions; fetch 90 days ahead and merge with past cache
+      const fetchFrom = new Date();
+      const fetchTo = new Date();
+      fetchTo.setDate(fetchTo.getDate() + 90);
+      sessions = await fetchAllTrybeSessions(
+        cfg.venueId,
+        cfg.offerings,
+        fetchFrom,
+        fetchTo,
+        cfg.name,
+        existingSessions,
       );
       venueName = cfg.name;
     } else {
