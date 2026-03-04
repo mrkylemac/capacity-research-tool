@@ -8806,7 +8806,7 @@
       "endsAt": "2026-03-03T23:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 6,
-      "ticketsSold": 4,
+      "ticketsSold": 5,
       "fixedTicketPrice": 45,
       "location": "Inner Studio South Yarra ",
       "inPerson": true,
@@ -8830,14 +8830,14 @@
   ],
   "metrics": {
     "totalSessions": 630,
-    "totalTicketsSold": 2114,
+    "totalTicketsSold": 2115,
     "totalCapacity": 4966,
-    "avgUtilisation": 42.56947241240435,
-    "totalRevenue": 95130,
+    "avgUtilisation": 42.58960934353605,
+    "totalRevenue": 95175,
     "avgRevenuePerVisit": 45,
-    "avgRevenuePerSession": 151,
-    "sessionsPerDay": 0.8618331053351573,
-    "sessionsPerWeek": 6.032831737346101,
+    "avgRevenuePerSession": 151.07142857142858,
+    "sessionsPerDay": 26.25,
+    "sessionsPerWeek": 183.75,
     "operatingSince": "February 2026"
   },
   "monthlyData": [
@@ -8854,10 +8854,10 @@
       "month": "March",
       "year": 2026,
       "sessions": 100,
-      "ticketsSold": 420,
+      "ticketsSold": 421,
       "capacity": 756,
-      "utilisation": 55.55555555555556,
-      "revenue": 18900
+      "utilisation": 55.68783068783068,
+      "revenue": 18945
     }
   ],
   "venueConfig": {
@@ -8866,7 +8866,7 @@
     "duration": 60,
     "price": 45,
     "capacity": 8,
-    "sessionsPerDay": 0.9,
+    "sessionsPerDay": 26.3,
     "operatingHours": "12am – 12:30pm"
   },
   "hostInfo": {
@@ -8879,5 +8879,5 @@
     "profileImage": "https://images.momence.com/h/190198/host-profile-image/e8605b0f-379f-4a0e-8b73-2789de98f401.png"
   },
   "key": "190198|momence",
-  "cachedAt": "2026-03-03T23:04:11.613Z"
+  "cachedAt": "2026-03-04T09:16:49.182Z"
 }

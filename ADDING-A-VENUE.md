@@ -108,6 +108,15 @@ In `ReportSections.tsx`, the `SnapshotSection` accepts a `platform` prop and ren
 - Full history available via `/2.0/events` with Unix timestamp range
 - `ticketsSold = booked`; `capacity = size`
 
+### Mindbody (paused — requires venue partnership)
+- Widget (`widgets.mindbodyonline.com`) renders HTML server-side — **no JSON API**, no capacity data, future sessions only
+- Public API (`api.mindbodyonline.com/public/v6`) requires a developer API key (401 without it)
+- **Business must authorize your app** via an activation link before you can access their site data
+- To pursue: register at `developers.mindbodyonline.com`, create an app, then ask the venue to click your activation link
+- Once activated: full history + `MaxCapacity` + `TotalBooked` available via `/public/v6/class/classes`
+- Sandbox testing is free (1,000 calls/day); production is $0.003/call beyond 1,000/day
+- Venue IDs: widget slug → MBO Site ID (e.g. `121255` for 1Remedy); also find internal `data-site-mbo-id` in widget HTML
+
 ### Zenoti (paused)
 - Public `getTokenForV2` token works for Services, Centers, Therapists only
 - `POST /api/Catalog/Appointments/Availabletimes` → 503 "Booking slots not found" (cause unknown)
