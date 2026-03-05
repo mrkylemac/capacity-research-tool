@@ -57,6 +57,23 @@ export const GLOFOX_CONFIG = {
     tokenExpiry: '2026-03-08',
     operatingSince: '2026-01-01',
   },
+  akariSaunas: {
+    branchId: '67cf4fe8ef346c3817003b8f',
+    namespace: '', // TODO: discover via guest token probe
+    name: 'Akari Saunas',
+    timezone: 'America/New_York',
+    // Glofox is used for memberships, not session booking
+    token: '',
+    tokenExpiry: '',
+    operatingSince: '2025-01-01',
+    // Google Sheets live occupancy feed (from akarisauna.com JS)
+    // SingleRow!A2:E2 → [lastUpdatedDatetime, rawOccupancy (0–0.2), prettyDate, prettyTime, occupancyLabel]
+    // Closures!A2:A1001 → list of special closure dates
+    sheetsSpreadsheetId: '1yrIBz86iBFtin1_glrHsl0g05raVsisvbgIYaAYtin4',
+    sheetsApiKey: 'AIzaSyB_CloyomHHpxfqBS8jJFBeIiR_MjE4gAQ',
+    sheetsRange: 'SingleRow!A2:E2',
+    // Operating hours (from their website JS)
+    // Mon–Fri: 8am–10pm ET, Sat–Sun: 9am–8pm ET
   wellnessSocialClub: {
     branchId: '6769bc07dd963d1b0108804b',
     namespace: "wellnesssocialbusine",
