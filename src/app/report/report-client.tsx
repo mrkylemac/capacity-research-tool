@@ -12,7 +12,7 @@ import {
   getRecentSearches,
   setCachedEntry,
 } from '@/lib/venueCache';
-import { VENUES, GLOFOX_CONFIG } from '@/config/api';
+import { VENUES, getGlofoxConfig } from '@/config/api';
 import { useVenueInfo } from '@/hooks/useVenueInfo';
 import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,39 @@ import {
 import { format, parseISO } from 'date-fns';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MonthlyData, MomenceSession } from '@/types/momence';
+
+/**
+ * Normalise session names so near-duplicates collapse into a single filter option.
+ * Handles weekday/weekend qualifiers, inconsistent minute formats, trailing whitespace,
+ * and common prefix groupings (women-only variants, one-off event labels, etc.).
+ */
+function normalizeSessionName(raw: string): string {
+  let n = raw.trim();
+
+  // Remove (Weekday), (Weekend), (Weekday - Dry Only), (Weekday - dry), etc.
+  // Replace with a single space to avoid merging adjacent words.
+  n = n.replace(/\s*\((?:Weekday|Weekend)(?:\s*-\s*[^)]+)?\)\s*/gi, ' ');
+
+  // Remove trailing "- Weekday" / "- Weekend" (with or without spaces / dashes)
+  n = n.replace(/\s*[-–]\s*(?:Weekday|Weekend)\s*$/i, '');
+
+  // Normalise minute labels: "45 Minute" / "45-minute" → "45-min"
+  n = n.replace(/(\d+)[\s-]+(?:minutes?|min)\b/gi, '$1-min');
+
+  // Group all "Woman-Only" / "Women-Only" variants into one bucket
+  if (/^Wom[ae]n-Only/i.test(n)) return 'Women-Only';
+
+  // Group common prefix families (one-off events, recurring specials)
+  if (/^EQ First Birthday/i.test(n)) return 'EQ First Birthday';
+  if (/^Fire & Ice/i.test(n)) return 'Fire & Ice';
+  if (/^Post-Race Recovery/i.test(n)) return 'Post-Race Recovery';
+  if (/^Influencer/i.test(n)) return 'Influencer Session';
+
+  // Collapse multiple spaces and trailing whitespace / hyphens left over after stripping
+  n = n.replace(/\s{2,}/g, ' ').replace(/[\s-]+$/, '');
+
+  return n;
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -146,7 +179,7 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
   const venueLabel = VENUES.find(v => v.id === hostId)?.name?.split(',')[0] ?? 'this venue';
 
   // Glofox token expiry warning
-  const glofoxExpiry = platform === 'glofox' ? GLOFOX_CONFIG.loreBathingClub.tokenExpiry : null;
+  const glofoxExpiry = platform === 'glofox' ? getGlofoxConfig(hostId).tokenExpiry : null;
   const tokenExpired = glofoxExpiry ? new Date(glofoxExpiry).getTime() <= Date.now() : false;
   const tokenExpiringSoon = glofoxExpiry && !tokenExpired
     ? new Date(glofoxExpiry).getTime() <= Date.now() + 7 * 24 * 60 * 60 * 1000
@@ -422,9 +455,11 @@ export function ReportClient() {
 
   const hasMultipleLocations = allLocations.length > 1;
 
-  // Auto-select the location with the most sessions as default
+  // Auto-select the location with the most sessions as default,
+  // or reset if the selected location is no longer in the data.
   useEffect(() => {
-    if (!hasMultipleLocations || selectedLocation !== null) return;
+    if (!hasMultipleLocations) return;
+    if (selectedLocation !== null && allLocations.includes(selectedLocation)) return;
     const counts = new Map<string, number>();
     allCachedSessions.forEach(s => {
       if (s.location) counts.set(s.location, (counts.get(s.location) ?? 0) + 1);
@@ -442,21 +477,21 @@ export function ReportClient() {
     return periodFilteredSessions.filter(s => s.location === selectedLocation);
   }, [periodFilteredSessions, selectedLocation, hasMultipleLocations]);
 
-  // All-time session types (used to keep the filter visible across period changes).
+  // All-time session types (normalised, used to keep the filter visible across period changes).
   const allSessionTypes = useMemo(() => {
-    const names = new Set(allCachedSessions.map(s => s.sessionName).filter(Boolean));
+    const names = new Set(allCachedSessions.map(s => normalizeSessionName(s.sessionName)).filter(Boolean));
     return Array.from(names).sort();
   }, [allCachedSessions]);
 
-  // Period-scoped session types (used as dropdown options).
+  // Period-scoped session types (normalised, used as dropdown options).
   const sessionTypes = useMemo(() => {
-    const names = new Set(locationFilteredSessions.map(s => s.sessionName).filter(Boolean));
+    const names = new Set(locationFilteredSessions.map(s => normalizeSessionName(s.sessionName)).filter(Boolean));
     return Array.from(names).sort();
   }, [locationFilteredSessions]);
 
   const filteredSessions = useMemo(() => {
     if (selectedTypes.size === 0) return locationFilteredSessions;
-    return locationFilteredSessions.filter(s => selectedTypes.has(s.sessionName));
+    return locationFilteredSessions.filter(s => selectedTypes.has(normalizeSessionName(s.sessionName)));
   }, [locationFilteredSessions, selectedTypes]);
 
   const filteredMonthlyData = useMemo(() => {
@@ -566,7 +601,7 @@ export function ReportClient() {
     );
   }
 
-  const venueName = entry.hostInfo?.name ?? entry.venueName;
+  const venueName = apiVenueConfig?.name?.split(',')[0] ?? entry.hostInfo?.name ?? entry.venueName;
   const venueAddress = placeInfo?.address ?? placeInfo?.suburb ?? apiVenueConfig?.location ?? null;
 
   return (

@@ -66,6 +66,7 @@ export interface GlofoxVenueConfig {
 export interface GlofoxQueryParams {
   branchId: string;
   token: string;
+  tokenExpiry: string;
   timezone?: string;
   startDate: Date;
   endDate: Date;

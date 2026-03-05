@@ -14,7 +14,7 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs';
 
 export interface VenueConfig {
   mapsQuery?: string;
@@ -30,8 +30,7 @@ export interface VenueConfig {
 
 // Venue list
 export const VENUES: VenueConfig[] = [
-  { id: '37867', name: 'Inner Studio, Collingwood', platform: 'momence', location: 'Collingwood', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
-  { id: '190198', name: 'Inner Studio, South Yarra', platform: 'momence', location: 'South Yarra', mapsQuery: 'Inner Studio South Yarra Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'innerstudio', name: 'Inner Studio, Melbourne', platform: 'momence', location: 'Melbourne', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
   { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
   { id: '49448', name: 'Aalto, Adelaide', platform: 'momence', location: 'Adelaide', mapsQuery: 'Aalto Bathhouse Adelaide', timezone: 'Australia/Adelaide' },
   { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', mapsQuery: 'EQ Wellness South Melbourne', timezone: 'Australia/Melbourne' },
@@ -42,6 +41,8 @@ export const VENUES: VenueConfig[] = [
   { id: 'senseofself', name: 'Sense of Self, Melbourne', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
   { id: '40726', name: 'Panda Society', platform: 'momence', location: '', mapsQuery: 'Panda Society', timezone: 'Australia/Melbourne' },
   { id: 'portal', name: 'Portal, Colorado', platform: 'portal', location: 'Colorado', mapsQuery: 'Portal Thermaculture Denver', timezone: 'America/Denver' },
+  { id: 'xtraclubs', name: 'Xtra Clubs, Sydney', platform: 'xtraclubs', location: 'Sydney', mapsQuery: 'Xtra Clubs Bondi Junction Sydney', timezone: 'Australia/Sydney' },
+  { id: 'wellnesssocial', name: 'Wellness Social Club, Melbourne', platform: 'glofox', location: 'Melbourne', mapsQuery: 'Wellness Social Club Melbourne', timezone: 'Australia/Melbourne' },
 ];
 
 // Glofox configuration
@@ -56,7 +57,27 @@ export const GLOFOX_CONFIG = {
     tokenExpiry: '2026-03-08',
     operatingSince: '2026-01-01',
   },
+  wellnessSocialClub: {
+    branchId: '6769bc07dd963d1b0108804b',
+    namespace: "wellnesssocialbusine",
+    name: 'Wellness Social Club',
+    timezone: 'Australia/Melbourne',
+    token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzc1MzY0MTM3LCJpYXQiOjE3NzI2ODU3MzcsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoid2VsbG5lc3Nzb2NpYWxidXNpbmUiLCJicmFuY2hfaWQiOiI2NzY5YmMwN2RkOTYzZDFiMDEwODgwNGIiLCJmaXJzdF9uYW1lIjoiR3Vlc3QiLCJsYXN0X25hbWUiOiJVc2VyIiwidHlwZSI6IkdVRVNUIiwiaXNTdXBlckFkbWluIjpmYWxzZX19.Pj2NwdXiTGPdAaAQ13dqXgV-G2sBr-7o86ptwLJs--E',
+    tokenExpiry: '2026-04-08',
+    operatingSince: '2025-06-01',
+  },
 } as const;
+
+/** Resolve the Glofox config entry for a given venue hostId. */
+export function getGlofoxConfig(hostId: string) {
+  const map: Record<string, (typeof GLOFOX_CONFIG)[keyof typeof GLOFOX_CONFIG]> = {
+    lore: GLOFOX_CONFIG.loreBathingClub,
+    wellnesssocial: GLOFOX_CONFIG.wellnessSocialClub,
+  };
+  const cfg = map[hostId];
+  if (!cfg) throw new Error(`No Glofox config for hostId "${hostId}"`);
+  return cfg;
+}
 
 // TryBe configuration (public customer API — no auth required)
 export const TRYBE_CONFIG = {
@@ -94,6 +115,28 @@ export const MARIANATEK_CONFIG = {
     timezone: 'America/Vancouver',
     classTypeFilter: 'Ærth Cycle (90 min)',
   },
+} as const;
+
+// Xtra Clubs configuration (public schedule API — no auth required)
+export const XTRA_CLUBS_CONFIG = {
+  baseUrl: 'https://checkout.xtraclubs.au/api',
+  name: 'Xtra Clubs',
+  timezone: 'Australia/Sydney',
+  locations: [
+    { siteId: '65c468e98af2a3e02af945ae', name: 'Bondi Junction', operatingSince: '2024-01-01' },
+    { siteId: '6785c335ead6da842a685ba1', name: 'Green Square', operatingSince: '2025-01-01' },
+    { siteId: '67ee5f25751de5d4c7470c67', name: 'Merrickville', operatingSince: '2025-01-01' },
+  ],
+} as const;
+
+// Inner Studio configuration (multi-location Momence venue)
+export const INNER_STUDIO_CONFIG = {
+  name: 'Inner Studio',
+  timezone: 'Australia/Melbourne',
+  locations: [
+    { hostId: '37867', name: 'Collingwood' },
+    { hostId: '190198', name: 'South Yarra' },
+  ],
 } as const;
 
 // Portal Thermaculture configuration (custom Wix-backed booking platform — no auth required)

@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { format, subYears } from 'date-fns';
-import { VENUES, GLOFOX_CONFIG, MARIANATEK_CONFIG, type VenueConfig } from '../src/config/api';
+import { VENUES, getGlofoxConfig, MARIANATEK_CONFIG, type VenueConfig } from '../src/config/api';
 import { momenceClient } from '../src/lib/momenceClient';
 import { fetchMarianaTekSessions } from '../src/lib/marianatekClient';
 import { sanitizeSessions, logDataQuality } from '../src/lib/utils';
@@ -69,12 +69,12 @@ async function fetchGlofoxPage(
 }
 
 async function fetchAllGlofoxEvents(venue: VenueConfig): Promise<MomenceSession[]> {
-  const config = GLOFOX_CONFIG.loreBathingClub;
+  const config = getGlofoxConfig(venue.id);
 
   // Check token expiry
   if (new Date() > new Date(config.tokenExpiry)) {
     throw new Error(
-      `Glofox token expired on ${config.tokenExpiry}. Obtain a new token from the Lore Bathing Club booking page.`,
+      `Glofox token for ${config.name} expired on ${config.tokenExpiry}. Obtain a new guest token.`,
     );
   }
 

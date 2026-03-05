@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { GLOFOX_CONFIG, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG } from '@/config/api';
+import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG } from '@/config/api';
 import { fetchPortalSessions } from '@/lib/portalClient';
+import { fetchXtraClubsSessions } from '@/lib/xtraClient';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
@@ -283,8 +284,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    if (platform === 'glofox' && hostId === 'lore') {
-      const cfg = GLOFOX_CONFIG.loreBathingClub;
+    if (platform === 'glofox') {
+      const cfg = getGlofoxConfig(hostId);
       if (new Date() > new Date(cfg.tokenExpiry)) {
         return NextResponse.json({ error: `Glofox token expired on ${cfg.tokenExpiry}` }, { status: 401 });
       }
@@ -335,6 +336,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         from,
         to,
         cfg.name,
+      );
+      venueName = cfg.name;
+    } else if (platform === 'xtraclubs' && hostId === 'xtraclubs') {
+      const cfg = XTRA_CLUBS_CONFIG;
+      const from = fromDate.toISOString().split('T')[0];
+      const to = toDate.toISOString().split('T')[0];
+      sessions = await fetchXtraClubsSessions(
+        cfg.baseUrl,
+        cfg.locations,
+        from,
+        to,
+        cfg.name,
+        cfg.timezone,
       );
       venueName = cfg.name;
     } else {
