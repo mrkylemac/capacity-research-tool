@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { GLOFOX_CONFIG, MARIANATEK_CONFIG, TRYBE_CONFIG } from '@/config/api';
+import { GLOFOX_CONFIG, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG } from '@/config/api';
+import { fetchPortalSessions } from '@/lib/portalClient';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
@@ -322,6 +323,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         fetchTo,
         cfg.name,
         existingSessions,
+      );
+      venueName = cfg.name;
+    } else if (platform === 'portal' && hostId === 'portal') {
+      const cfg = PORTAL_CONFIG;
+      const from = fromDate.toISOString().split('T')[0];
+      const to = toDate.toISOString().split('T')[0];
+      sessions = await fetchPortalSessions(
+        cfg.baseUrl,
+        cfg.locations,
+        from,
+        to,
+        cfg.name,
       );
       venueName = cfg.name;
     } else {

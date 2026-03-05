@@ -157,7 +157,7 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
       <div className="text-center space-y-1">
         <p className="text-base font-medium text-foreground">No session data for {venueLabel}</p>
         <p className="text-sm text-muted-foreground">
-          Fetch session history from {platformLabel} to generate this report.
+          Fetch session history to generate this report.
         </p>
       </div>
 
@@ -201,6 +201,7 @@ export function ReportClient() {
   const [platform, setPlatform] = useState<CachedVenueEntry['platform']>('momence');
   const [period, setPeriod] = useState<PeriodOption>('all');
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
   const [entryLoadAttempted, setEntryLoadAttempted] = useState(false);
   const syncStarted = useRef(false);
@@ -413,6 +414,34 @@ export function ReportClient() {
     });
   }, [allCachedSessions, period, periodRange]);
 
+  // ── Location filter (for multi-location venues like Portal) ──────────────
+  const allLocations = useMemo(() => {
+    const locs = new Set(allCachedSessions.map(s => s.location).filter(Boolean));
+    return Array.from(locs).sort();
+  }, [allCachedSessions]);
+
+  const hasMultipleLocations = allLocations.length > 1;
+
+  // Auto-select the location with the most sessions as default
+  useEffect(() => {
+    if (!hasMultipleLocations || selectedLocation !== null) return;
+    const counts = new Map<string, number>();
+    allCachedSessions.forEach(s => {
+      if (s.location) counts.set(s.location, (counts.get(s.location) ?? 0) + 1);
+    });
+    let best = allLocations[0];
+    let bestCount = 0;
+    counts.forEach((count, loc) => {
+      if (count > bestCount) { best = loc; bestCount = count; }
+    });
+    setSelectedLocation(best);
+  }, [hasMultipleLocations, selectedLocation, allLocations, allCachedSessions]);
+
+  const locationFilteredSessions = useMemo(() => {
+    if (!hasMultipleLocations || !selectedLocation) return periodFilteredSessions;
+    return periodFilteredSessions.filter(s => s.location === selectedLocation);
+  }, [periodFilteredSessions, selectedLocation, hasMultipleLocations]);
+
   // All-time session types (used to keep the filter visible across period changes).
   const allSessionTypes = useMemo(() => {
     const names = new Set(allCachedSessions.map(s => s.sessionName).filter(Boolean));
@@ -421,14 +450,14 @@ export function ReportClient() {
 
   // Period-scoped session types (used as dropdown options).
   const sessionTypes = useMemo(() => {
-    const names = new Set(periodFilteredSessions.map(s => s.sessionName).filter(Boolean));
+    const names = new Set(locationFilteredSessions.map(s => s.sessionName).filter(Boolean));
     return Array.from(names).sort();
-  }, [periodFilteredSessions]);
+  }, [locationFilteredSessions]);
 
   const filteredSessions = useMemo(() => {
-    if (selectedTypes.size === 0) return periodFilteredSessions;
-    return periodFilteredSessions.filter(s => selectedTypes.has(s.sessionName));
-  }, [periodFilteredSessions, selectedTypes]);
+    if (selectedTypes.size === 0) return locationFilteredSessions;
+    return locationFilteredSessions.filter(s => selectedTypes.has(s.sessionName));
+  }, [locationFilteredSessions, selectedTypes]);
 
   const filteredMonthlyData = useMemo(() => {
     if (period === 'all') return allVenueMonthlyData;
@@ -504,8 +533,8 @@ export function ReportClient() {
           <div className="flex flex-col items-center justify-center py-16 px-4 gap-6">
             {/* Status text */}
             <div className="text-center space-y-1">
-              <p className="text-base font-medium text-foreground">
-                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history…'}
+              <p className="text-lg font-semibold text-foreground">
+                {syncHook.fetchPhase === 'processing' ? 'Processing sessions' : 'Fetching session history'}
               </p>
 
               {/* Dino animation */}
@@ -599,8 +628,8 @@ export function ReportClient() {
           <div className="flex flex-col items-center justify-center py-16 px-4 gap-6">
             {/* Status text */}
             <div className="text-center space-y-1">
-              <p className="text-base font-medium text-foreground">
-                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history…'}
+              <p className="text-lg font-semibold text-foreground">
+                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history'}
               </p>
               <p className="text-sm text-muted-foreground">This usually takes 2–4 minutes</p>
             </div>
@@ -631,6 +660,41 @@ export function ReportClient() {
               disabledValues={disabledPeriods}
               className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
             />
+
+            {/* Location filter — shown when venue has multiple locations (e.g. Portal) */}
+            {hasMultipleLocations && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
+                  >
+                    <span className="truncate overflow-hidden w-full text-left">
+                      {selectedLocation ?? 'All locations'}
+                    </span>
+                    <ChevronsUpDown className="h-4.5 w-4.5 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2">
+                  {allLocations.map(loc => (
+                    <button
+                      key={loc}
+                      type="button"
+                      onClick={() => { setSelectedLocation(loc); setSelectedTypes(new Set()); }}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
+                        selectedLocation === loc ? 'font-medium' : 'text-muted-foreground',
+                      )}
+                    >
+                      <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                        {selectedLocation === loc && <Check className="h-full w-full" />}
+                      </span>
+                      <span className="truncate">{loc}</span>
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            )}
 
             {/* Session type filter — shown whenever the venue has multiple session types
                 across all time, so it persists through narrow period selections. */}

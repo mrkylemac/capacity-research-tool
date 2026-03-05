@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { VENUES } from '@/config/api';
 import { getCachedEntry, getCacheKey } from '@/lib/venueCache';
 import { Card, CardContent } from '@/components/ui/card';
@@ -39,7 +40,24 @@ export function HomeClient() {
       <div className="page-container">
 
         <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">Capacity Report</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Slow Folk Workbook</h1>
+        </div>
+
+        {/* Financial Tracker entry point */}
+        {/* <Link href="/tracker" className="block mb-6">
+          <Card className="bg-purple-1 border-purple-2 rounded-2xl shadow-1 hover:shadow-2 transition-shadow">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-purple-4">Financial Tracker</p>
+                <p className="text-sm text-muted-foreground mt-0.5">CapEx burn · Forecast vs actual · Signals</p>
+              </div>
+              <span className="text-purple-4 text-lg">→</span>
+            </CardContent>
+          </Card>
+        </Link> */}
+
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold">Capacity Report</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

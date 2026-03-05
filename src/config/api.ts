@@ -14,7 +14,7 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal';
 
 export interface VenueConfig {
   mapsQuery?: string;
@@ -40,6 +40,8 @@ export const VENUES: VenueConfig[] = [
   { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek', location: 'Melbourne', mapsQuery: 'Project Mood Melbourne', timezone: 'Australia/Melbourne' },
   // { id: 'aerth', name: 'Ærth Saunas, Victoria BC', platform: 'marianatek', location: 'Victoria BC', mapsQuery: 'Aerth Saunas Victoria BC', timezone: 'America/Vancouver' },
   { id: 'senseofself', name: 'Sense of Self, Melbourne', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '40726', name: 'Panda Society', platform: 'momence', location: '', mapsQuery: 'Panda Society', timezone: 'Australia/Melbourne' },
+  { id: 'portal', name: 'Portal, Colorado', platform: 'portal', location: 'Colorado', mapsQuery: 'Portal Thermaculture Denver', timezone: 'America/Denver' },
 ];
 
 // Glofox configuration
@@ -92,4 +94,16 @@ export const MARIANATEK_CONFIG = {
     timezone: 'America/Vancouver',
     classTypeFilter: 'Ærth Cycle (90 min)',
   },
+} as const;
+
+// Portal Thermaculture configuration (custom Wix-backed booking platform — no auth required)
+export const PORTAL_CONFIG = {
+  baseUrl: 'https://book.portalthermaculture.com/api',
+  name: 'Portal',
+  timezone: 'America/Denver',
+  locations: [
+    { wixLocationId: '09d22dbe-dae2-4847-b657-90cf03ea5e67', name: 'Denver', operatingSince: '2025-03-26' },
+    { wixLocationId: '8ac6d40a-fbbb-4524-9959-33da8cdc67bc', name: 'Boulder', operatingSince: '2025-03-26' },
+    { wixLocationId: '44897ca4-c829-4108-8929-60be0a91fe60', name: 'Bozeman', operatingSince: '2025-03-26' },
+  ],
 } as const;
