@@ -924,6 +924,7 @@ export function ReportClient() {
             allMonthlyData={allVenueMonthlyData}
             period={period}
             platform={platform}
+            hostId={hostId ?? entry?.hostId}
           />
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">

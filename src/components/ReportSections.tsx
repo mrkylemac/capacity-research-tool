@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DemandIntelligence } from '@/components/DemandIntelligence';
 import { GrowthStory } from '@/components/GrowthStory';
 import { UtilisationTrend } from '@/components/UtilisationTrend';
+import { VenueComparisonChart } from '@/components/VenueComparisonChart';
 import { buildCapacityString, computeMonthlyTrajectory } from '@/lib/venueInsights';
 import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
 
@@ -548,6 +549,7 @@ interface ReportSectionsProps {
   allMonthlyData: MonthlyData[];
   period: string;
   platform?: string;
+  hostId?: string;
 }
 
 export function ReportSections({
@@ -557,6 +559,7 @@ export function ReportSections({
   allMonthlyData,
   period,
   platform,
+  hostId,
 }: ReportSectionsProps) {
   return (
     <div className="flex flex-col gap-5 sm:gap-8">
@@ -571,11 +574,11 @@ export function ReportSections({
           <DemandSection sessions={sessions} metrics={metrics} period={period} />
         </div>
       )}
-      {/* {allMonthlyData.length >= 2 && (
-        <div className="section-animate" style={{ animationDelay: '180ms' }}>
-          <TrendsSection monthlyData={allMonthlyData} />
+      {hostId && (
+        <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '180ms' }}>
+          <VenueComparisonChart currentVenueId={hostId} />
         </div>
-      )} */}
+      )}
     </div>
   );
 }
