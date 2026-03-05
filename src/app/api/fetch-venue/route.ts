@@ -1,13 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG } from '@/config/api';
+import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig } from '@/config/api';
 import { fetchPortalSessions } from '@/lib/portalClient';
 import { fetchXtraClubsSessions } from '@/lib/xtraClient';
+import { fetchAllAcuitySessions } from '@/lib/acuityClient';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
 const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
+
+// ── Glofox guest token auto-refresh ───────────────────────────────────────────
+
+/**
+ * Fetch a fresh Glofox guest token for any branch.
+ * Uses the public login endpoint — no credentials required.
+ */
+async function fetchGlofoxGuestToken(branchId: string): Promise<string> {
+  const res = await fetch('https://api.glofox.com/2.0/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-glofox-source': 'webportal' },
+    body: JSON.stringify({ branch_id: branchId, login: 'GUEST', password: 'GUEST' }),
+  });
+  if (!res.ok) throw new Error(`Glofox guest login failed: ${res.status} ${res.statusText}`);
+  const data = await res.json();
+  if (!data.token) throw new Error('Glofox guest login returned no token');
+  return data.token;
+}
+
+/**
+ * Return a valid Glofox guest token, auto-refreshing if the stored one is expired
+ * or will expire within 24 hours.
+ */
+async function getValidGlofoxToken(branchId: string, storedToken: string, tokenExpiry: string): Promise<string> {
+  const expiresAt = new Date(tokenExpiry).getTime();
+  const oneDayFromNow = Date.now() + 24 * 60 * 60 * 1000;
+  if (storedToken && expiresAt > oneDayFromNow) return storedToken;
+
+  console.log(`[Glofox] Token expired or expiring soon for branch ${branchId}, refreshing...`);
+  return fetchGlofoxGuestToken(branchId);
+}
 
 // ── Glofox server-side fetcher ────────────────────────────────────────────────
 
@@ -269,13 +301,12 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
     return NextResponse.json({ error: 'Missing hostId or platform' }, { status: 400 });
   }
 
-  // Glofox token expiry — fail fast before streaming begins
+  // Glofox — resolve a valid token (auto-refresh if expired)
+  let glofoxToken: string | undefined;
   if (platform === 'glofox') {
     try {
       const cfg = getGlofoxConfig(hostId);
-      if (new Date() > new Date(cfg.tokenExpiry)) {
-        return NextResponse.json({ error: `Glofox token expired on ${cfg.tokenExpiry}` }, { status: 401 });
-      }
+      glofoxToken = await getValidGlofoxToken(cfg.branchId, cfg.token, cfg.tokenExpiry);
     } catch (err) {
       return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 400 });
     }
@@ -315,7 +346,7 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
       if (platform === 'glofox') {
         const cfg = getGlofoxConfig(hostId);
         sessions = await fetchAllGlofoxSessions(
-          cfg.branchId, cfg.token, cfg.timezone,
+          cfg.branchId, glofoxToken!, cfg.timezone,
           new Date(cfg.operatingSince), toDate, onProgress,
         );
         venueName = cfg.name;
@@ -345,6 +376,22 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
         sessions = await fetchPortalSessions(
           cfg.baseUrl, cfg.locations, from, to, cfg.name, onProgress,
         );
+
+        // Merge Glofox-based locations (e.g. Minneapolis)
+        for (const glofoxLoc of cfg.glofoxLocations) {
+          console.log(`[Portal] Fetching Glofox location "${glofoxLoc.name}"...`);
+          const token = await getValidGlofoxToken(glofoxLoc.branchId, glofoxLoc.token, glofoxLoc.tokenExpiry);
+          const glofoxSessions = await fetchAllGlofoxSessions(
+            glofoxLoc.branchId, token, glofoxLoc.timezone,
+            new Date(glofoxLoc.operatingSince), toDate, onProgress,
+          );
+          // Tag each session with the location name
+          for (const s of glofoxSessions) {
+            s.location = glofoxLoc.name;
+          }
+          sessions.push(...glofoxSessions);
+        }
+
         venueName = cfg.name;
       } else if (platform === 'xtraclubs' && hostId === 'xtraclubs') {
         const cfg = XTRA_CLUBS_CONFIG;
@@ -354,6 +401,10 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
           cfg.baseUrl, cfg.locations, from, to,
           cfg.name, cfg.timezone, onProgress,
         );
+        venueName = cfg.name;
+      } else if (platform === 'acuity') {
+        const cfg = getAcuityConfig(hostId);
+        sessions = await fetchAllAcuitySessions(cfg, existingSessions, onProgress);
         venueName = cfg.name;
       } else {
         send({ type: 'error', error: `Unsupported platform/hostId: ${platform}/${hostId}` });

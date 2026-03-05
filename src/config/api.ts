@@ -14,7 +14,7 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity';
 
 export interface VenueConfig {
   mapsQuery?: string;
@@ -30,19 +30,20 @@ export interface VenueConfig {
 
 // Venue list
 export const VENUES: VenueConfig[] = [
-  { id: 'innerstudio', name: 'Inner Studio, Melbourne', platform: 'momence', location: 'Melbourne', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'innerstudio', name: 'Inner Studio', platform: 'momence', location: 'Melbourne', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
   { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
-  { id: '49448', name: 'Aalto, Adelaide', platform: 'momence', location: 'Adelaide', mapsQuery: 'Aalto Bathhouse Adelaide', timezone: 'Australia/Adelaide' },
+  { id: '49448', name: 'Aalto', platform: 'momence', location: 'Adelaide', mapsQuery: 'Aalto Bathhouse Adelaide', timezone: 'Australia/Adelaide' },
   { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', mapsQuery: 'EQ Wellness South Melbourne', timezone: 'Australia/Melbourne' },
   // { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco', mapsQuery: 'Fjord SF San Francisco', timezone: 'America/Los_Angeles' },
-  { id: 'lore', name: 'Lore Bathing Club, NYC', platform: 'glofox', location: 'New York', mapsQuery: 'Lore Bathing Club New York', timezone: 'America/New_York' },
-  { id: 'projectmood', name: 'Project Mood, Melbourne', platform: 'marianatek', location: 'Melbourne', mapsQuery: 'Project Mood Melbourne', timezone: 'Australia/Melbourne' },
-  // { id: 'aerth', name: 'Ærth Saunas, Victoria BC', platform: 'marianatek', location: 'Victoria BC', mapsQuery: 'Aerth Saunas Victoria BC', timezone: 'America/Vancouver' },
-  { id: 'senseofself', name: 'Sense of Self, Melbourne', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'lore', name: 'Lore Bathing Club', platform: 'glofox', location: 'New York', mapsQuery: 'Lore Bathing Club New York', timezone: 'America/New_York' },
+  { id: 'projectmood', name: 'Project Mood', platform: 'marianatek', location: 'Melbourne', mapsQuery: 'Project Mood Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'aerth', name: 'Ærth Saunas', platform: 'marianatek', location: 'Victoria BC', mapsQuery: 'Aerth Saunas Victoria BC', timezone: 'America/Vancouver' },
+  { id: 'senseofself', name: 'Sense of Self', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
   { id: '40726', name: 'Panda Society', platform: 'momence', location: '', mapsQuery: 'Panda Society', timezone: 'Australia/Melbourne' },
-  { id: 'portal', name: 'Portal, Colorado', platform: 'portal', location: 'Colorado', mapsQuery: 'Portal Thermaculture Denver', timezone: 'America/Denver' },
-  { id: 'xtraclubs', name: 'Xtra Clubs, Sydney', platform: 'xtraclubs', location: 'Sydney', mapsQuery: 'Xtra Clubs Bondi Junction Sydney', timezone: 'Australia/Sydney' },
-  { id: 'wellnesssocial', name: 'Wellness Social Club, Melbourne', platform: 'glofox', location: 'Melbourne', mapsQuery: 'Wellness Social Club Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'portal', name: 'PORTAL° Thermaculture', platform: 'portal', location: 'Colorado · Montana · Minnesota', mapsQuery: 'Portal Thermaculture Denver', timezone: 'America/Denver' },
+  { id: 'xtraclubs', name: 'Xtra Clubs', platform: 'xtraclubs', location: 'Sydney', mapsQuery: 'Xtra Clubs Bondi Junction Sydney', timezone: 'Australia/Sydney' },
+  { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', mapsQuery: 'Wellness Social Club Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', mapsQuery: 'Sauna Goose Melbourne', timezone: 'Australia/Melbourne' },
 ];
 
 // Glofox configuration
@@ -165,5 +166,60 @@ export const PORTAL_CONFIG = {
   locations: [
     { wixLocationId: '09d22dbe-dae2-4847-b657-90cf03ea5e67', name: 'Denver', operatingSince: '2025-03-26' },
     { wixLocationId: '8ac6d40a-fbbb-4524-9959-33da8cdc67bc', name: 'Boulder', operatingSince: '2025-03-26' },
+    { wixLocationId: '44897ca4-c829-4108-8929-60be0a91fe60', name: 'Bozeman', operatingSince: '2025-03-16' },
+  ],
+  // Minneapolis uses Glofox instead of the Wix booking API — fetched separately and merged
+  glofoxLocations: [
+    {
+      branchId: '67d9d5a8c2dce5404b08ef68',
+      namespace: 'portalthermaculture',
+      name: 'Minneapolis',
+      timezone: 'America/Chicago',
+      token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzc1MzgxNDU1LCJpYXQiOjE3NzI3MDMwNTUsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoicG9ydGFsdGhlcm1hY3VsdHVyZSIsImJyYW5jaF9pZCI6IjY3ZDlkNWE4YzJkY2U1NDA0YjA4ZWY2OCIsImZpcnN0X25hbWUiOiJHdWVzdCIsImxhc3RfbmFtZSI6IlVzZXIiLCJ0eXBlIjoiR1VFU1QiLCJpc1N1cGVyQWRtaW4iOmZhbHNlfX0.NMzpi4u4WY9Z0qGWWvR3Obh-gVqhrxlrUv4T8gKOi6E',
+      tokenExpiry: '2026-04-03',
+      operatingSince: '2025-01-01',
+    },
   ],
 } as const;
+
+// Acuity Scheduling configuration (public scheduling widget API — no auth required)
+export interface AcuityConfig {
+  baseUrl: string;
+  ownerKey: string;
+  name: string;
+  timezone: string;
+  appointmentTypes: { id: number; name: string; duration: number; price: string; classSize: number }[];
+  calendarIds: number[];
+}
+
+export const ACUITY_CONFIG: Record<string, AcuityConfig> = {
+  saunagoose: {
+    baseUrl: 'https://saunagoose.as.me',
+    ownerKey: '1549c4c0',
+    name: 'Sauna Goose',
+    timezone: 'Australia/Melbourne',
+    appointmentTypes: [
+      { id: 69170578, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
+      { id: 83472539, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
+      { id: 69171187, name: 'Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
+      { id: 88489076, name: 'Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
+      { id: 88489132, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
+      { id: 89924672, name: 'Yoga & Saunagus', duration: 120, price: '66.50', classSize: 10 },
+      { id: 89924356, name: "Men's Breathwork & Saunagus", duration: 120, price: '66.50', classSize: 10 },
+      { id: 81434660, name: 'Femme Fridays', duration: 90, price: '56.25', classSize: 10 },
+      { id: 85308919, name: 'Latvian Sauna', duration: 180, price: '97.50', classSize: 18 },
+      { id: 87799529, name: 'Sunset Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
+    ],
+    calendarIds: [
+      12582797, 13267765, 12637053, 11913403, 12002100, 12953939, 13121171,
+      13212786, 11872240, 11864080, 12473472, 12473476, 12473477, 13561145,
+      12582798, 13505082, 12642771, 10841888, 11854765, 12513155,
+    ],
+  },
+};
+
+export function getAcuityConfig(hostId: string): AcuityConfig {
+  const cfg = ACUITY_CONFIG[hostId];
+  if (!cfg) throw new Error(`No Acuity config for hostId "${hostId}"`);
+  return cfg;
+}

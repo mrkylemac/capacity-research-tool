@@ -40,7 +40,7 @@ export function HomeClient() {
       <div className="page-container">
 
         <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">Slow Folk Workbook</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Capacity Reports</h1>
         </div>
 
         {/* Financial Tracker entry point */}
@@ -56,10 +56,6 @@ export function HomeClient() {
           </Card>
         </Link> */}
 
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold">Capacity Report</h2>
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {VENUES.map((venue) => (
             <Card
@@ -69,7 +65,7 @@ export function HomeClient() {
             >
               <CardContent className="p-0">
                 <div className="flex justify-between h-full flex-row-reverse">
-                  <div className="p-4 w-full min-w-0">
+                  <div className="p-4 w-full min-w-0 flex flex-col justify-between">
                     <p className="font-medium text-base leading-tight truncate">
                       {venue.name.split(',')[0].trim()}
                     </p>
@@ -77,19 +73,16 @@ export function HomeClient() {
                       {venue.location}
                     </p>
                   </div>
-                  <div className="aspect-square w-full rounded-xl rounded-r-none overflow-hidden bg-gray-2 flex items-center justify-center max-w-24">
-                    {logos[venue.id] ? (
-                      <img
-                        src={logos[venue.id]}
-                        alt={venue.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-3xl font-bold text-muted-foreground">
-                        {venue.name.charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
+                  
+                    {logos[venue.id] && (
+                      <div className="aspect-square w-full rounded-xl rounded-r-none overflow-hidden flex items-center justify-center max-w-24">
+                        <img
+                          src={logos[venue.id]}
+                          alt={venue.name}
+                          className="w-full h-full object-contain"
+                        />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

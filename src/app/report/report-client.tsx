@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, ArrowLeft, Check, ChevronRight, ChevronsUpDown, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Check, ChevronRight, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
 import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
@@ -12,7 +12,7 @@ import {
   getRecentSearches,
   setCachedEntry,
 } from '@/lib/venueCache';
-import { VENUES, getGlofoxConfig } from '@/config/api';
+import { VENUES } from '@/config/api';
 import { useVenueInfo } from '@/hooks/useVenueInfo';
 import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
@@ -232,13 +232,6 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
   const platformLabel = platform === 'glofox' ? 'Glofox' : 'Mariana Tek';
   const venueLabel = VENUES.find(v => v.id === hostId)?.name?.split(',')[0] ?? 'this venue';
 
-  // Glofox token expiry warning
-  const glofoxExpiry = platform === 'glofox' ? getGlofoxConfig(hostId).tokenExpiry : null;
-  const tokenExpired = glofoxExpiry ? new Date(glofoxExpiry).getTime() <= Date.now() : false;
-  const tokenExpiringSoon = glofoxExpiry && !tokenExpired
-    ? new Date(glofoxExpiry).getTime() <= Date.now() + 7 * 24 * 60 * 60 * 1000
-    : false;
-
   return (
     <div className="flex flex-col items-center justify-center py-24 px-4 gap-8">
 
@@ -253,25 +246,10 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
         </div>
       )}
 
-      {(tokenExpired || tokenExpiringSoon) && (
-        <div className={`flex items-start gap-2 px-4 py-3 rounded-xl text-sm max-w-sm ${
-          tokenExpired
-            ? 'bg-red-50 border border-red-200 text-red-700'
-            : 'bg-amber-50 border border-amber-200 text-amber-800'
-        }`}>
-          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>
-            {tokenExpired
-              ? `Glofox guest token expired on ${glofoxExpiry}. Update the token in GLOFOX_CONFIG to fetch new data.`
-              : `Glofox guest token expires ${glofoxExpiry}. Fetch data soon or update the token.`}
-          </span>
-        </div>
-      )}
-
       <button
         type="button"
         onClick={handleFetch}
-        disabled={isFetching || tokenExpired}
+        disabled={isFetching}
         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-background shadow-2 font-medium text-foreground hover:bg-gray-2 disabled:opacity-50 transition-colors"
       >
         <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
@@ -871,7 +849,7 @@ export function ReportClient() {
                               className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base font-medium text-muted-foreground transition-colors hover:bg-muted"
                             >
                               <ChevronRight className={cn('h-4 w-4 transition-transform', classesExpanded && 'rotate-90')} />
-                              <span>Classes</span>
+                              <span>Classes & Events</span>
                               <span className="ml-auto text-xs text-muted-foreground">{classTypes.length}</span>
                             </button>
                             {classesExpanded && classTypes.map(t => {
