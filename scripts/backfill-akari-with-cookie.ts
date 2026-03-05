@@ -384,7 +384,6 @@ async function verifyAuth(cookie: string): Promise<boolean> {
   }
 
   // Test 2: Can we access the revisions/show endpoint?
-  const headers = makeHeaders(cookie);
   const showUrl = `${SHEETS_BASE}/d/${SHEET_ID}/revisions/show?rev=${DEFAULT_FROM_REV}&ismajor=true`;
   console.log(`  Testing revisions/show endpoint...`);
   try {
