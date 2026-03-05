@@ -118,6 +118,7 @@ export async function fetchXtraClubsSessions(
   toDate: string,
   venueName: string,
   timezone: string,
+  onProgress?: (sessionCount: number) => void,
 ): Promise<MomenceSession[]> {
   const from = new Date(fromDate);
   const to = new Date(toDate);
@@ -136,10 +137,14 @@ export async function fetchXtraClubsSessions(
 
   console.log(`[${venueName}] Fetching ${tasks.length} day-location pairs across ${locations.length} locations`);
 
+  let totalSoFar = 0;
   const results = await mapConcurrent(tasks, 10, async ({ loc, dateStr }) => {
     const items = await fetchDay(baseUrl, loc.siteId, dateStr);
     // Filter out hidden sessions
-    return items.filter(s => !s.hidden).map(s => toSession(s, loc.name, timezone));
+    const sessions = items.filter(s => !s.hidden).map(s => toSession(s, loc.name, timezone));
+    totalSoFar += sessions.length;
+    onProgress?.(totalSoFar);
+    return sessions;
   });
 
   const all = results.flat();

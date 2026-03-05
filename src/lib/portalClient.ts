@@ -118,6 +118,7 @@ export async function fetchPortalSessions(
   fromDate: string,
   toDate: string,
   venueName: string,
+  onProgress?: (sessionCount: number) => void,
 ): Promise<MomenceSession[]> {
   const from = new Date(fromDate);
   const to = new Date(toDate);
@@ -135,13 +136,19 @@ export async function fetchPortalSessions(
 
   console.log(`[${venueName}] Fetching ${tasks.length} day-location pairs across ${locations.length} locations`);
 
+  let totalSoFar = 0;
   const results = await mapConcurrent(tasks, 10, async ({ loc, date }) => {
     const items = await fetchDay(baseUrl, loc.wixLocationId, date);
-    return items.map(toSession);
+    const sessions = items.map(toSession);
+    totalSoFar += sessions.length;
+    onProgress?.(totalSoFar);
+    return sessions;
   });
 
-  const all = results.flat();
-  console.log(`[${venueName}] Total: ${all.length} sessions`);
+  // Only keep sessions whose API location.name matches a configured location
+  const allowedNames = new Set(locations.map(l => l.name));
+  const all = results.flat().filter(s => allowedNames.has(s.location));
+  console.log(`[${venueName}] Total: ${all.length} sessions (filtered to configured locations)`);
 
   const { sessions, report } = sanitizeSessions(all);
   logDataQuality('Portal', report);

@@ -61,11 +61,11 @@ function normalizeSessionName(raw: string): string {
   return n;
 }
 
-/** Keyword patterns that identify fitness / wellness classes (not bathing sessions). */
-const CLASS_PATTERNS = /\b(yoga|pilates|hiit|flow|power|sculpt|melt|breathwork)\b/i;
+/** Patterns that identify core bathing sessions — everything else is a "class". */
+const BATHING_PATTERNS = /\b(bathhouse|social bathing|sauna)\b/i;
 
 function isClassSession(normalizedName: string): boolean {
-  return CLASS_PATTERNS.test(normalizedName);
+  return !BATHING_PATTERNS.test(normalizedName);
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -147,6 +147,57 @@ function SessionTicker({ count }: { count: number }) {
   return <>{displayed.toLocaleString()}</>;
 }
 
+// ── Streaming fetch helper for non-Momence venues ───────────────────────────
+
+/**
+ * Fetch venue data via the streaming NDJSON endpoint.
+ * Calls `onProgress` with session counts as they arrive.
+ */
+async function fetchVenueWithProgress(
+  hostId: string,
+  platform: string,
+  onProgress?: (count: number) => void,
+): Promise<void> {
+  const res = await fetch('/api/fetch-venue', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ hostId, platform }),
+  });
+
+  // Non-200 responses are regular JSON error responses (validation / token expired)
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+  }
+
+  // Read NDJSON stream for progress events
+  const reader = res.body?.getReader();
+  if (!reader) return;
+
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop()!;
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const msg = JSON.parse(line);
+      if (msg.type === 'progress') onProgress?.(msg.sessionCount);
+      if (msg.type === 'error') throw new Error(msg.error);
+    }
+  }
+
+  // Process remaining buffer
+  if (buffer.trim()) {
+    const msg = JSON.parse(buffer);
+    if (msg.type === 'error') throw new Error(msg.error);
+  }
+}
+
 // ── Non-Momence no-data state (glofox / marianatek) ─────────────────────────────
 
 interface NonMomenceNoDataProps {
@@ -157,19 +208,15 @@ interface NonMomenceNoDataProps {
 
 function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps) {
   const [isFetching, setIsFetching] = useState(false);
+  const [fetchingCount, setFetchingCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const handleFetch = useCallback(async () => {
     setIsFetching(true);
+    setFetchingCount(0);
     setError(null);
     try {
-      const res = await fetch('/api/fetch-venue', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ hostId, platform }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+      await fetchVenueWithProgress(hostId, platform, setFetchingCount);
 
       const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
       if (!cacheRes.ok) throw new Error('Failed to load cached data');
@@ -193,13 +240,18 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
     : false;
 
   return (
-    <div className="flex flex-col items-center justify-center py-24 px-4 gap-4">
-      <div className="text-center space-y-1">
-        <p className="text-base font-medium text-foreground">No session data for {venueLabel}</p>
-        <p className="text-sm text-muted-foreground">
-          Fetch session history to generate this report.
-        </p>
-      </div>
+    <div className="flex flex-col items-center justify-center py-24 px-4 gap-8">
+
+      <DinoLoader />
+
+      {isFetching && fetchingCount > 0 && (
+        <div className="text-center">
+          <div className="text-5xl font-semibold tabular-nums tracking-tight text-foreground">
+            <SessionTicker count={fetchingCount} />
+          </div>
+          <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
+        </div>
+      )}
 
       {(tokenExpired || tokenExpiringSoon) && (
         <div className={`flex items-start gap-2 px-4 py-3 rounded-xl text-sm max-w-sm ${
@@ -244,6 +296,7 @@ export function ReportClient() {
   const [classesExpanded, setClassesExpanded] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
+  const [nonMomenceFetchCount, setNonMomenceFetchCount] = useState(0);
   const [entryLoadAttempted, setEntryLoadAttempted] = useState(false);
   const syncStarted = useRef(false);
   const autoFetchStarted = useRef(false);
@@ -286,18 +339,11 @@ export function ReportClient() {
     if (!hostId || !entry || isSyncInProgress) return;
 
     if (platform !== 'momence') {
-      // Non-Momence venues: re-fetch via server-side route and reload cache
+      // Non-Momence venues: re-fetch via server-side route with streaming progress
       setIsSyncInProgress(true);
+      setNonMomenceFetchCount(0);
       try {
-        const res = await fetch('/api/fetch-venue', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ hostId, platform }),
-        });
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
-        }
+        await fetchVenueWithProgress(hostId, platform, setNonMomenceFetchCount);
         const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
         if (cacheRes.ok) {
           const fresh: CachedVenueEntry = await cacheRes.json();
@@ -553,7 +599,7 @@ export function ReportClient() {
   if (!entry) {
     return (
       <div className="min-h-screen">
-        <header className="sticky top-0 z-10 backdrop-blur border-border print:hidden">
+        <header className="sticky top-0 z-10 print:hidden">
           <div className="mx-auto px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
               <Link
@@ -563,7 +609,7 @@ export function ReportClient() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
-              <p className="text-lg font-semibold text-foreground leading-none">
+              <p className="text-lg font-semibold text-foreground leading-none text-shimmer overflow">
                 {apiVenueConfig?.name?.split(',')[0] ?? 'Loading…'}
               </p>
             </div>
@@ -678,10 +724,10 @@ export function ReportClient() {
             </div>
 
             {/* Live session counter */}
-            {syncHook.fetchingCount > 0 && (
+            {(platform !== 'momence' ? nonMomenceFetchCount : syncHook.fetchingCount) > 0 && (
               <div className="text-center">
                 <div className="text-5xl font-semibold tabular-nums tracking-tight text-foreground">
-                  <SessionTicker count={syncHook.fetchingCount} />
+                  <SessionTicker count={platform !== 'momence' ? nonMomenceFetchCount : syncHook.fetchingCount} />
                 </div>
                 <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
               </div>

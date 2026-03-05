@@ -147,6 +147,5 @@ export const PORTAL_CONFIG = {
   locations: [
     { wixLocationId: '09d22dbe-dae2-4847-b657-90cf03ea5e67', name: 'Denver', operatingSince: '2025-03-26' },
     { wixLocationId: '8ac6d40a-fbbb-4524-9959-33da8cdc67bc', name: 'Boulder', operatingSince: '2025-03-26' },
-    { wixLocationId: '44897ca4-c829-4108-8929-60be0a91fe60', name: 'Bozeman', operatingSince: '2025-03-26' },
   ],
 } as const;
