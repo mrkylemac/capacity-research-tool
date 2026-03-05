@@ -234,13 +234,100 @@ async function listRevisions(cookie: string): Promise<RevisionInfo[]> {
 
 // ── Export a single revision ─────────────────────────────────────────────────
 
+/**
+ * Extract cell data from the revisions/show HTML page.
+ * Google embeds sheet data in the page as JS/JSON — we parse it from there.
+ */
+function extractCellsFromShowPage(html: string): string[] | null {
+  // Strategy 1: Look for cell data in the bootstrapData / model JSON
+  // Google Sheets embeds data like: ["s","cell_value"] in the page source
+  // The show page renders a table — look for the data row cells
+
+  // Look for the CSV-like data in the page. The revisions/show page
+  // often includes the cell values in a structured format.
+
+  // Try to find cell values in the HTML table rendered on the page
+  const tableMatch = html.match(/<table[^>]*class="[^"]*waffle[^"]*"[^>]*>([\s\S]*?)<\/table>/i);
+  if (tableMatch) {
+    const tableHtml = tableMatch[1];
+    // Extract text from <td> elements
+    const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+    const cells: string[] = [];
+    let m;
+    while ((m = cellRegex.exec(tableHtml)) !== null) {
+      // Strip HTML tags from cell content
+      const text = m[1].replace(/<[^>]*>/g, '').trim();
+      cells.push(text);
+    }
+    if (cells.length >= 5) return cells;
+  }
+
+  // Strategy 2: Look for data in the embedded JSON/JS
+  // Google often uses patterns like: ,["s","value1","value2",...],
+  const jsonArrayMatch = html.match(/\[(?:"s"|"f"),\s*"([^"]*)",\s*"([^"]*)",\s*"([^"]*)",\s*"([^"]*)",\s*"([^"]*)"\]/);
+  if (jsonArrayMatch) {
+    return [jsonArrayMatch[1], jsonArrayMatch[2], jsonArrayMatch[3], jsonArrayMatch[4], jsonArrayMatch[5]];
+  }
+
+  // Strategy 3: Search for specific patterns — timestamps and occupancy labels
+  // Look for the ISO timestamp pattern that Akari uses
+  const tsMatch = html.match(/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2})/);
+  const occLabels = ['Quiet', 'Moderate', 'Busy', 'Very Busy', 'At Capacity'];
+  let foundLabel = '';
+  for (const label of occLabels) {
+    if (html.includes(label)) {
+      foundLabel = label;
+      break;
+    }
+  }
+
+  // If we found a timestamp and label, try to reconstruct the data
+  if (tsMatch && foundLabel) {
+    // Look for numeric occupancy value near the timestamp
+    const numMatch = html.match(/(?:0\.\d+|0\.0[0-5]|0)/);
+    const rawOcc = numMatch ? numMatch[0] : '0';
+
+    // Look for pretty date/time patterns
+    const dateMatch = html.match(/"([A-Z][a-z]+ \d{1,2}, \d{4})"/);
+    const timeMatch = html.match(/"(\d{1,2}:\d{2}(?:am|pm))"/i);
+
+    return [
+      tsMatch[1],
+      rawOcc,
+      dateMatch ? dateMatch[1] : '',
+      timeMatch ? timeMatch[1] : '',
+      foundLabel,
+    ];
+  }
+
+  return null;
+}
+
 async function fetchRevisionCSV(revision: number, cookie: string): Promise<string | null> {
   const headers = makeHeaders(cookie);
 
-  // Try the export endpoint with auth
-  const url = `${SHEETS_BASE}/export?id=${SHEET_ID}&revision=${revision}&exportFormat=csv&gid=0`;
+  // Primary: use revisions/show endpoint which renders the sheet at a specific revision
+  const showUrl = `${SHEETS_BASE}/d/${SHEET_ID}/revisions/show?rev=${revision}&ismajor=true`;
   try {
-    const res = await fetch(url, { headers, redirect: 'follow' });
+    const res = await fetch(showUrl, { headers, redirect: 'follow' });
+    if (res.ok) {
+      const html = await res.text();
+      const cells = extractCellsFromShowPage(html);
+      if (cells && cells.length >= 5) {
+        // Reconstruct as CSV so downstream parsing works unchanged
+        const header = 'Timestamp,Occupancy,Date,Time,Label';
+        const row = cells.slice(0, 5).map(c => c.includes(',') ? `"${c}"` : c).join(',');
+        return `${header}\n${row}`;
+      }
+    }
+  } catch {
+    // Fall through to CSV export fallback
+  }
+
+  // Fallback: try the export endpoint (may not respect revision param)
+  const exportUrl = `${SHEETS_BASE}/export?id=${SHEET_ID}&revision=${revision}&exportFormat=csv&gid=0`;
+  try {
+    const res = await fetch(exportUrl, { headers, redirect: 'follow' });
     if (!res.ok) {
       return null;
     }
@@ -296,7 +383,39 @@ async function verifyAuth(cookie: string): Promise<boolean> {
     return false;
   }
 
-  // Test 2: Can we export with a revision?
+  // Test 2: Can we access the revisions/show endpoint?
+  const headers = makeHeaders(cookie);
+  const showUrl = `${SHEETS_BASE}/d/${SHEET_ID}/revisions/show?rev=${DEFAULT_FROM_REV}&ismajor=true`;
+  console.log(`  Testing revisions/show endpoint...`);
+  try {
+    const res = await fetch(showUrl, { headers, redirect: 'follow' });
+    console.log(`  Show page status: ${res.status}`);
+    if (res.ok) {
+      const html = await res.text();
+      console.log(`  Show page size: ${html.length} bytes`);
+
+      // Save sample for debugging
+      const sampleFile = path.join(LOG_DIR, 'akari-show-sample.html');
+      fs.mkdirSync(LOG_DIR, { recursive: true });
+      fs.writeFileSync(sampleFile, html, 'utf-8');
+      console.log(`  Saved sample to: ${sampleFile}`);
+
+      // Try to extract cells
+      const cells = extractCellsFromShowPage(html);
+      if (cells) {
+        console.log(`  Extracted cells: ${JSON.stringify(cells.slice(0, 5))}`);
+      } else {
+        console.log('  ⚠ Could not extract cell data from show page.');
+        console.log('  Check the saved HTML file to see the page format.');
+      }
+    } else {
+      console.log(`  ⚠ revisions/show returned ${res.status} — may need editor access.`);
+    }
+  } catch (err: any) {
+    console.log(`  ⚠ revisions/show error: ${err.message}`);
+  }
+
+  // Test 3: Try two different revisions to verify they return different data
   const revs = [DEFAULT_FROM_REV, Math.floor(DEFAULT_FROM_REV / 2)];
   const results: string[] = [];
 
@@ -314,7 +433,7 @@ async function verifyAuth(cookie: string): Promise<boolean> {
   }
 
   if (results.length < 2) {
-    console.log('\n  ⚠ Could not fetch multiple revisions. Export may not support revision param.');
+    console.log('\n  ⚠ Could not fetch multiple revisions.');
     return results.length > 0;
   }
 
