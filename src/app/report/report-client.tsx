@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, ArrowLeft, Check, ChevronsUpDown, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Check, ChevronRight, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
 import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
@@ -59,6 +59,13 @@ function normalizeSessionName(raw: string): string {
   n = n.replace(/\s{2,}/g, ' ').replace(/[\s-]+$/, '');
 
   return n;
+}
+
+/** Keyword patterns that identify fitness / wellness classes (not bathing sessions). */
+const CLASS_PATTERNS = /\b(yoga|pilates|hiit|flow|power|sculpt|melt|breathwork)\b/i;
+
+function isClassSession(normalizedName: string): boolean {
+  return CLASS_PATTERNS.test(normalizedName);
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -234,6 +241,7 @@ export function ReportClient() {
   const [platform, setPlatform] = useState<CachedVenueEntry['platform']>('momence');
   const [period, setPeriod] = useState<PeriodOption>('all');
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  const [classesExpanded, setClassesExpanded] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
   const [entryLoadAttempted, setEntryLoadAttempted] = useState(false);
@@ -751,7 +759,7 @@ export function ReportClient() {
                   </button>
                 </PopoverTrigger>
 
-                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2">
+                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2 max-h-[70vh] overflow-y-auto">
                   <button
                     type="button"
                     onClick={() => setSelectedTypes(new Set())}
@@ -768,36 +776,92 @@ export function ReportClient() {
                     </span>
                   </button>
                   <div className="my-1 h-px bg-border" />
-                  {/* Show session types available in the current period, falling back to all types */}
-                  {(sessionTypes.length > 0 ? sessionTypes : allSessionTypes).map(t => {
-                    const checked = selectedTypes.has(t);
-                    const availableInPeriod = sessionTypes.includes(t);
+
+                  {/* ── Bathing sessions (top-level) ── */}
+                  {(() => {
+                    const types = sessionTypes.length > 0 ? sessionTypes : allSessionTypes;
+                    const bathingTypes = types.filter(t => !isClassSession(t));
+                    const classTypes = types.filter(t => isClassSession(t));
+
                     return (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => {
-                          if (!availableInPeriod) return;
-                          setSelectedTypes(prev => {
-                            const next = new Set(prev);
-                            checked ? next.delete(t) : next.add(t);
-                            return next;
-                          });
-                        }}
-                        className={cn(
-                          'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
-                          !availableInPeriod && 'opacity-40 cursor-not-allowed hover:bg-transparent',
+                      <>
+                        {bathingTypes.map(t => {
+                          const checked = selectedTypes.has(t);
+                          const availableInPeriod = sessionTypes.includes(t);
+                          return (
+                            <button
+                              key={t}
+                              type="button"
+                              onClick={() => {
+                                if (!availableInPeriod) return;
+                                setSelectedTypes(prev => {
+                                  const next = new Set(prev);
+                                  checked ? next.delete(t) : next.add(t);
+                                  return next;
+                                });
+                              }}
+                              className={cn(
+                                'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
+                                !availableInPeriod && 'opacity-40 cursor-not-allowed hover:bg-transparent',
+                              )}
+                            >
+                              {checked &&
+                                <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                                  <Check className="h-full w-full" />
+                                </span>
+                              }
+                              <span className="truncate">{t}</span>
+                            </button>
+                          );
+                        })}
+
+                        {/* ── Classes sub-menu ── */}
+                        {classTypes.length > 0 && (
+                          <>
+                            <div className="my-1 h-px bg-border" />
+                            <button
+                              type="button"
+                              onClick={() => setClassesExpanded(prev => !prev)}
+                              className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base font-medium text-muted-foreground transition-colors hover:bg-muted"
+                            >
+                              <ChevronRight className={cn('h-4 w-4 transition-transform', classesExpanded && 'rotate-90')} />
+                              <span>Classes</span>
+                              <span className="ml-auto text-xs text-muted-foreground">{classTypes.length}</span>
+                            </button>
+                            {classesExpanded && classTypes.map(t => {
+                              const checked = selectedTypes.has(t);
+                              const availableInPeriod = sessionTypes.includes(t);
+                              return (
+                                <button
+                                  key={t}
+                                  type="button"
+                                  onClick={() => {
+                                    if (!availableInPeriod) return;
+                                    setSelectedTypes(prev => {
+                                      const next = new Set(prev);
+                                      checked ? next.delete(t) : next.add(t);
+                                      return next;
+                                    });
+                                  }}
+                                  className={cn(
+                                    'flex w-full items-center gap-2 rounded-sm pl-7 pr-2.5 py-2 text-base transition-colors hover:bg-muted',
+                                    !availableInPeriod && 'opacity-40 cursor-not-allowed hover:bg-transparent',
+                                  )}
+                                >
+                                  {checked &&
+                                    <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                                      <Check className="h-full w-full" />
+                                    </span>
+                                  }
+                                  <span className="truncate">{t}</span>
+                                </button>
+                              );
+                            })}
+                          </>
                         )}
-                      >
-                        {checked &&
-                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                            <Check className="h-full w-full" />
-                          </span>
-                        }
-                        <span className="truncate">{t}</span>
-                      </button>
+                      </>
                     );
-                  })}
+                  })()}
                 </PopoverContent>
               </Popover>
             )}
