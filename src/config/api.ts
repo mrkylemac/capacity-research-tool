@@ -74,6 +74,7 @@ export const GLOFOX_CONFIG = {
     sheetsRange: 'SingleRow!A2:E2',
     // Operating hours (from their website JS)
     // Mon–Fri: 8am–10pm ET, Sat–Sun: 9am–8pm ET
+  },
   wellnessSocialClub: {
     branchId: '6769bc07dd963d1b0108804b',
     namespace: "wellnesssocialbusine",

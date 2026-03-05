@@ -21,7 +21,7 @@ export async function GET(
   let usingCache = false;
 
   // 1. Try live Sheets API
-  let sheetData = null;
+  let sheetData: Awaited<ReturnType<typeof fetchSheetData>> | null = null;
   if (spreadsheetId && apiKey) {
     try {
       sheetData = await fetchSheetData(spreadsheetId, tab, apiKey);
