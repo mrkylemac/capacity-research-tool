@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, ArrowLeft, Check, ChevronsUpDown, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Check, ChevronRight, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
 import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
@@ -12,7 +12,7 @@ import {
   getRecentSearches,
   setCachedEntry,
 } from '@/lib/venueCache';
-import { VENUES, GLOFOX_CONFIG } from '@/config/api';
+import { VENUES, getGlofoxConfig } from '@/config/api';
 import { useVenueInfo } from '@/hooks/useVenueInfo';
 import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,46 @@ import {
 import { format, parseISO } from 'date-fns';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MonthlyData, MomenceSession } from '@/types/momence';
+
+/**
+ * Normalise session names so near-duplicates collapse into a single filter option.
+ * Handles weekday/weekend qualifiers, inconsistent minute formats, trailing whitespace,
+ * and common prefix groupings (women-only variants, one-off event labels, etc.).
+ */
+function normalizeSessionName(raw: string): string {
+  let n = raw.trim();
+
+  // Remove (Weekday), (Weekend), (Weekday - Dry Only), (Weekday - dry), etc.
+  // Replace with a single space to avoid merging adjacent words.
+  n = n.replace(/\s*\((?:Weekday|Weekend)(?:\s*-\s*[^)]+)?\)\s*/gi, ' ');
+
+  // Remove trailing "- Weekday" / "- Weekend" (with or without spaces / dashes)
+  n = n.replace(/\s*[-–]\s*(?:Weekday|Weekend)\s*$/i, '');
+
+  // Normalise minute labels: "45 Minute" / "45-minute" → "45-min"
+  n = n.replace(/(\d+)[\s-]+(?:minutes?|min)\b/gi, '$1-min');
+
+  // Group all "Woman-Only" / "Women-Only" variants into one bucket
+  if (/^Wom[ae]n-Only/i.test(n)) return 'Women-Only';
+
+  // Group common prefix families (one-off events, recurring specials)
+  if (/^EQ First Birthday/i.test(n)) return 'EQ First Birthday';
+  if (/^Fire & Ice/i.test(n)) return 'Fire & Ice';
+  if (/^Post-Race Recovery/i.test(n)) return 'Post-Race Recovery';
+  if (/^Influencer/i.test(n)) return 'Influencer Session';
+
+  // Collapse multiple spaces and trailing whitespace / hyphens left over after stripping
+  n = n.replace(/\s{2,}/g, ' ').replace(/[\s-]+$/, '');
+
+  return n;
+}
+
+/** Patterns that identify core bathing sessions — everything else is a "class". */
+const BATHING_PATTERNS = /\b(bathhouse|social bathing|sauna)\b/i;
+
+function isClassSession(normalizedName: string): boolean {
+  return !BATHING_PATTERNS.test(normalizedName);
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -107,6 +147,57 @@ function SessionTicker({ count }: { count: number }) {
   return <>{displayed.toLocaleString()}</>;
 }
 
+// ── Streaming fetch helper for non-Momence venues ───────────────────────────
+
+/**
+ * Fetch venue data via the streaming NDJSON endpoint.
+ * Calls `onProgress` with session counts as they arrive.
+ */
+async function fetchVenueWithProgress(
+  hostId: string,
+  platform: string,
+  onProgress?: (count: number) => void,
+): Promise<void> {
+  const res = await fetch('/api/fetch-venue', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ hostId, platform }),
+  });
+
+  // Non-200 responses are regular JSON error responses (validation / token expired)
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+  }
+
+  // Read NDJSON stream for progress events
+  const reader = res.body?.getReader();
+  if (!reader) return;
+
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop()!;
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const msg = JSON.parse(line);
+      if (msg.type === 'progress') onProgress?.(msg.sessionCount);
+      if (msg.type === 'error') throw new Error(msg.error);
+    }
+  }
+
+  // Process remaining buffer
+  if (buffer.trim()) {
+    const msg = JSON.parse(buffer);
+    if (msg.type === 'error') throw new Error(msg.error);
+  }
+}
+
 // ── Non-Momence no-data state (glofox / marianatek) ─────────────────────────────
 
 interface NonMomenceNoDataProps {
@@ -117,19 +208,15 @@ interface NonMomenceNoDataProps {
 
 function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps) {
   const [isFetching, setIsFetching] = useState(false);
+  const [fetchingCount, setFetchingCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const handleFetch = useCallback(async () => {
     setIsFetching(true);
+    setFetchingCount(0);
     setError(null);
     try {
-      const res = await fetch('/api/fetch-venue', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ hostId, platform }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+      await fetchVenueWithProgress(hostId, platform, setFetchingCount);
 
       const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
       if (!cacheRes.ok) throw new Error('Failed to load cached data');
@@ -146,20 +233,25 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
   const venueLabel = VENUES.find(v => v.id === hostId)?.name?.split(',')[0] ?? 'this venue';
 
   // Glofox token expiry warning
-  const glofoxExpiry = platform === 'glofox' ? GLOFOX_CONFIG.loreBathingClub.tokenExpiry : null;
+  const glofoxExpiry = platform === 'glofox' ? getGlofoxConfig(hostId).tokenExpiry : null;
   const tokenExpired = glofoxExpiry ? new Date(glofoxExpiry).getTime() <= Date.now() : false;
   const tokenExpiringSoon = glofoxExpiry && !tokenExpired
     ? new Date(glofoxExpiry).getTime() <= Date.now() + 7 * 24 * 60 * 60 * 1000
     : false;
 
   return (
-    <div className="flex flex-col items-center justify-center py-24 px-4 gap-4">
-      <div className="text-center space-y-1">
-        <p className="text-base font-medium text-foreground">No session data for {venueLabel}</p>
-        <p className="text-sm text-muted-foreground">
-          Fetch session history from {platformLabel} to generate this report.
-        </p>
-      </div>
+    <div className="flex flex-col items-center justify-center py-24 px-4 gap-8">
+
+      <DinoLoader />
+
+      {isFetching && fetchingCount > 0 && (
+        <div className="text-center">
+          <div className="text-5xl font-semibold tabular-nums tracking-tight text-foreground">
+            <SessionTicker count={fetchingCount} />
+          </div>
+          <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
+        </div>
+      )}
 
       {(tokenExpired || tokenExpiringSoon) && (
         <div className={`flex items-start gap-2 px-4 py-3 rounded-xl text-sm max-w-sm ${
@@ -201,7 +293,10 @@ export function ReportClient() {
   const [platform, setPlatform] = useState<CachedVenueEntry['platform']>('momence');
   const [period, setPeriod] = useState<PeriodOption>('all');
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  const [classesExpanded, setClassesExpanded] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
+  const [nonMomenceFetchCount, setNonMomenceFetchCount] = useState(0);
   const [entryLoadAttempted, setEntryLoadAttempted] = useState(false);
   const syncStarted = useRef(false);
   const autoFetchStarted = useRef(false);
@@ -244,18 +339,11 @@ export function ReportClient() {
     if (!hostId || !entry || isSyncInProgress) return;
 
     if (platform !== 'momence') {
-      // Non-Momence venues: re-fetch via server-side route and reload cache
+      // Non-Momence venues: re-fetch via server-side route with streaming progress
       setIsSyncInProgress(true);
+      setNonMomenceFetchCount(0);
       try {
-        const res = await fetch('/api/fetch-venue', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ hostId, platform }),
-        });
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
-        }
+        await fetchVenueWithProgress(hostId, platform, setNonMomenceFetchCount);
         const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
         if (cacheRes.ok) {
           const fresh: CachedVenueEntry = await cacheRes.json();
@@ -413,22 +501,52 @@ export function ReportClient() {
     });
   }, [allCachedSessions, period, periodRange]);
 
-  // All-time session types (used to keep the filter visible across period changes).
+  // ── Location filter (for multi-location venues like Portal) ──────────────
+  const allLocations = useMemo(() => {
+    const locs = new Set(allCachedSessions.map(s => s.location).filter(Boolean));
+    return Array.from(locs).sort();
+  }, [allCachedSessions]);
+
+  const hasMultipleLocations = allLocations.length > 1;
+
+  // Auto-select the location with the most sessions as default,
+  // or reset if the selected location is no longer in the data.
+  useEffect(() => {
+    if (!hasMultipleLocations) return;
+    if (selectedLocation !== null && allLocations.includes(selectedLocation)) return;
+    const counts = new Map<string, number>();
+    allCachedSessions.forEach(s => {
+      if (s.location) counts.set(s.location, (counts.get(s.location) ?? 0) + 1);
+    });
+    let best = allLocations[0];
+    let bestCount = 0;
+    counts.forEach((count, loc) => {
+      if (count > bestCount) { best = loc; bestCount = count; }
+    });
+    setSelectedLocation(best);
+  }, [hasMultipleLocations, selectedLocation, allLocations, allCachedSessions]);
+
+  const locationFilteredSessions = useMemo(() => {
+    if (!hasMultipleLocations || !selectedLocation) return periodFilteredSessions;
+    return periodFilteredSessions.filter(s => s.location === selectedLocation);
+  }, [periodFilteredSessions, selectedLocation, hasMultipleLocations]);
+
+  // All-time session types (normalised, used to keep the filter visible across period changes).
   const allSessionTypes = useMemo(() => {
-    const names = new Set(allCachedSessions.map(s => s.sessionName).filter(Boolean));
+    const names = new Set(allCachedSessions.map(s => normalizeSessionName(s.sessionName)).filter(Boolean));
     return Array.from(names).sort();
   }, [allCachedSessions]);
 
-  // Period-scoped session types (used as dropdown options).
+  // Period-scoped session types (normalised, used as dropdown options).
   const sessionTypes = useMemo(() => {
-    const names = new Set(periodFilteredSessions.map(s => s.sessionName).filter(Boolean));
+    const names = new Set(locationFilteredSessions.map(s => normalizeSessionName(s.sessionName)).filter(Boolean));
     return Array.from(names).sort();
-  }, [periodFilteredSessions]);
+  }, [locationFilteredSessions]);
 
   const filteredSessions = useMemo(() => {
-    if (selectedTypes.size === 0) return periodFilteredSessions;
-    return periodFilteredSessions.filter(s => selectedTypes.has(s.sessionName));
-  }, [periodFilteredSessions, selectedTypes]);
+    if (selectedTypes.size === 0) return locationFilteredSessions;
+    return locationFilteredSessions.filter(s => selectedTypes.has(normalizeSessionName(s.sessionName)));
+  }, [locationFilteredSessions, selectedTypes]);
 
   const filteredMonthlyData = useMemo(() => {
     if (period === 'all') return allVenueMonthlyData;
@@ -481,7 +599,7 @@ export function ReportClient() {
   if (!entry) {
     return (
       <div className="min-h-screen">
-        <header className="sticky top-0 z-10 backdrop-blur border-border print:hidden">
+        <header className="sticky top-0 z-10 print:hidden">
           <div className="mx-auto px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
               <Link
@@ -491,7 +609,7 @@ export function ReportClient() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
-              <p className="text-lg font-semibold text-foreground leading-none">
+              <p className="text-lg font-semibold text-foreground leading-none text-shimmer overflow">
                 {apiVenueConfig?.name?.split(',')[0] ?? 'Loading…'}
               </p>
             </div>
@@ -504,8 +622,8 @@ export function ReportClient() {
           <div className="flex flex-col items-center justify-center py-16 px-4 gap-6">
             {/* Status text */}
             <div className="text-center space-y-1">
-              <p className="text-base font-medium text-foreground">
-                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history…'}
+              <p className="text-lg font-semibold text-foreground">
+                {syncHook.fetchPhase === 'processing' ? 'Processing sessions' : 'Fetching session history'}
               </p>
 
               {/* Dino animation */}
@@ -537,7 +655,7 @@ export function ReportClient() {
     );
   }
 
-  const venueName = entry.hostInfo?.name ?? entry.venueName;
+  const venueName = apiVenueConfig?.name?.split(',')[0] ?? entry.hostInfo?.name ?? entry.venueName;
   const venueAddress = placeInfo?.address ?? placeInfo?.suburb ?? apiVenueConfig?.location ?? null;
 
   return (
@@ -599,17 +717,17 @@ export function ReportClient() {
           <div className="flex flex-col items-center justify-center py-16 px-4 gap-6">
             {/* Status text */}
             <div className="text-center space-y-1">
-              <p className="text-base font-medium text-foreground">
-                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history…'}
+              <p className="text-lg font-semibold text-foreground">
+                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history'}
               </p>
               <p className="text-sm text-muted-foreground">This usually takes 2–4 minutes</p>
             </div>
 
             {/* Live session counter */}
-            {syncHook.fetchingCount > 0 && (
+            {(platform !== 'momence' ? nonMomenceFetchCount : syncHook.fetchingCount) > 0 && (
               <div className="text-center">
                 <div className="text-5xl font-semibold tabular-nums tracking-tight text-foreground">
-                  <SessionTicker count={syncHook.fetchingCount} />
+                  <SessionTicker count={platform !== 'momence' ? nonMomenceFetchCount : syncHook.fetchingCount} />
                 </div>
                 <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
               </div>
@@ -632,6 +750,41 @@ export function ReportClient() {
               className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
             />
 
+            {/* Location filter — shown when venue has multiple locations (e.g. Portal) */}
+            {hasMultipleLocations && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
+                  >
+                    <span className="truncate overflow-hidden w-full text-left">
+                      {selectedLocation ?? 'All locations'}
+                    </span>
+                    <ChevronsUpDown className="h-4.5 w-4.5 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2">
+                  {allLocations.map(loc => (
+                    <button
+                      key={loc}
+                      type="button"
+                      onClick={() => { setSelectedLocation(loc); setSelectedTypes(new Set()); }}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
+                        selectedLocation === loc ? 'font-medium' : 'text-muted-foreground',
+                      )}
+                    >
+                      <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                        {selectedLocation === loc && <Check className="h-full w-full" />}
+                      </span>
+                      <span className="truncate">{loc}</span>
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            )}
+
             {/* Session type filter — shown whenever the venue has multiple session types
                 across all time, so it persists through narrow period selections. */}
             {allSessionTypes.length > 1 && (
@@ -652,7 +805,7 @@ export function ReportClient() {
                   </button>
                 </PopoverTrigger>
 
-                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2">
+                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2 max-h-[70vh] overflow-y-auto">
                   <button
                     type="button"
                     onClick={() => setSelectedTypes(new Set())}
@@ -669,36 +822,92 @@ export function ReportClient() {
                     </span>
                   </button>
                   <div className="my-1 h-px bg-border" />
-                  {/* Show session types available in the current period, falling back to all types */}
-                  {(sessionTypes.length > 0 ? sessionTypes : allSessionTypes).map(t => {
-                    const checked = selectedTypes.has(t);
-                    const availableInPeriod = sessionTypes.includes(t);
+
+                  {/* ── Bathing sessions (top-level) ── */}
+                  {(() => {
+                    const types = sessionTypes.length > 0 ? sessionTypes : allSessionTypes;
+                    const bathingTypes = types.filter(t => !isClassSession(t));
+                    const classTypes = types.filter(t => isClassSession(t));
+
                     return (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => {
-                          if (!availableInPeriod) return;
-                          setSelectedTypes(prev => {
-                            const next = new Set(prev);
-                            checked ? next.delete(t) : next.add(t);
-                            return next;
-                          });
-                        }}
-                        className={cn(
-                          'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
-                          !availableInPeriod && 'opacity-40 cursor-not-allowed hover:bg-transparent',
+                      <>
+                        {bathingTypes.map(t => {
+                          const checked = selectedTypes.has(t);
+                          const availableInPeriod = sessionTypes.includes(t);
+                          return (
+                            <button
+                              key={t}
+                              type="button"
+                              onClick={() => {
+                                if (!availableInPeriod) return;
+                                setSelectedTypes(prev => {
+                                  const next = new Set(prev);
+                                  checked ? next.delete(t) : next.add(t);
+                                  return next;
+                                });
+                              }}
+                              className={cn(
+                                'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
+                                !availableInPeriod && 'opacity-40 cursor-not-allowed hover:bg-transparent',
+                              )}
+                            >
+                              {checked &&
+                                <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                                  <Check className="h-full w-full" />
+                                </span>
+                              }
+                              <span className="truncate">{t}</span>
+                            </button>
+                          );
+                        })}
+
+                        {/* ── Classes sub-menu ── */}
+                        {classTypes.length > 0 && (
+                          <>
+                            <div className="my-1 h-px bg-border" />
+                            <button
+                              type="button"
+                              onClick={() => setClassesExpanded(prev => !prev)}
+                              className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base font-medium text-muted-foreground transition-colors hover:bg-muted"
+                            >
+                              <ChevronRight className={cn('h-4 w-4 transition-transform', classesExpanded && 'rotate-90')} />
+                              <span>Classes</span>
+                              <span className="ml-auto text-xs text-muted-foreground">{classTypes.length}</span>
+                            </button>
+                            {classesExpanded && classTypes.map(t => {
+                              const checked = selectedTypes.has(t);
+                              const availableInPeriod = sessionTypes.includes(t);
+                              return (
+                                <button
+                                  key={t}
+                                  type="button"
+                                  onClick={() => {
+                                    if (!availableInPeriod) return;
+                                    setSelectedTypes(prev => {
+                                      const next = new Set(prev);
+                                      checked ? next.delete(t) : next.add(t);
+                                      return next;
+                                    });
+                                  }}
+                                  className={cn(
+                                    'flex w-full items-center gap-2 rounded-sm pl-7 pr-2.5 py-2 text-base transition-colors hover:bg-muted',
+                                    !availableInPeriod && 'opacity-40 cursor-not-allowed hover:bg-transparent',
+                                  )}
+                                >
+                                  {checked &&
+                                    <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                                      <Check className="h-full w-full" />
+                                    </span>
+                                  }
+                                  <span className="truncate">{t}</span>
+                                </button>
+                              );
+                            })}
+                          </>
                         )}
-                      >
-                        {checked &&
-                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                            <Check className="h-full w-full" />
-                          </span>
-                        }
-                        <span className="truncate">{t}</span>
-                      </button>
+                      </>
                     );
-                  })}
+                  })()}
                 </PopoverContent>
               </Popover>
             )}
