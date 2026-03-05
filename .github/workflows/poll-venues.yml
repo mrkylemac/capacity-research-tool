@@ -1,0 +1,48 @@
+name: Poll future-only venues
+
+on:
+  schedule:
+    # Acuity morning capture: 19:50 UTC = 06:50 AEDT (before 07:00 morning sessions)
+    - cron: '50 19 * * *'
+    # Acuity evening capture: 06:20 UTC = 17:20 AEDT (before 17:30 evening sessions)
+    - cron: '20 6 * * *'
+    # TryBe evening capture: 11:00 UTC = 22:00 AEDT (end of day)
+    - cron: '0 11 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Poll Acuity venues (Sauna Goose)
+        run: npx tsx scripts/poll-acuity.ts
+
+      # TryBe is more forgiving (sessions persist through the day).
+      # Run on all triggers but the data only meaningfully changes twice a day.
+      - name: Poll TryBe venues (Sense of Self)
+        run: npx tsx scripts/poll-trybe.ts
+
+      - name: Commit updated cache files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/venues/saunagoose-acuity.json src/data/venues/senseofself-trybe.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+            git commit -m "chore: poll Acuity + TryBe session data ($TIMESTAMP) [skip ci]"
+            git push
+          fi

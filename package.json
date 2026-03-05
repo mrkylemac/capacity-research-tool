@@ -13,7 +13,8 @@
     "fetch-forecast": "tsx scripts/fetch-forecast.ts",
     "test:sol-saunas": "tsx scripts/test-sol-saunas.ts",
     "fetch-venues": "tsx scripts/fetch-all-venues.ts",
-    "poll:acuity": "tsx scripts/poll-acuity.ts"
+    "poll:acuity": "tsx scripts/poll-acuity.ts",
+    "poll:trybe": "tsx scripts/poll-trybe.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
