@@ -358,6 +358,34 @@
   animation: shimmer-glare 2.5s ease-in-out infinite;
 }
 
+/* Skeleton shimmer bar — subtle left-to-right highlight sweep */
+@keyframes skeleton-sweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-bar {
+  background: linear-gradient(
+    90deg,
+    var(--bg-2) 25%,
+    var(--bg-3) 50%,
+    var(--bg-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.8s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* Gentle pulse for interactive elements that are loading */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.loading-pulse {
+  animation: soft-pulse 2s ease-in-out infinite;
+}
+
 @media print {
   .print\:hidden { display: none !important; }
   body, .min-h-screen { background: white !important; color: black !important; }

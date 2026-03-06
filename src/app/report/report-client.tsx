@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Check, ChevronRight, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
+import { ReportSkeleton, ReportCardsSkeleton } from '@/components/ReportSkeleton';
 import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import {
@@ -31,38 +32,64 @@ import type { MonthlyData, MomenceSession } from '@/types/momence';
 /**
  * Normalise session names so near-duplicates collapse into a single filter option.
  * Handles weekday/weekend qualifiers, inconsistent minute formats, trailing whitespace,
- * and common prefix groupings (women-only variants, one-off event labels, etc.).
+ * vinyl-set / time-of-day suffixes, and common prefix groupings.
  */
 function normalizeSessionName(raw: string): string {
   let n = raw.trim();
 
-  // Remove (Weekday), (Weekend), (Weekday - Dry Only), (Weekday - dry), etc.
-  // Replace with a single space to avoid merging adjacent words.
+  // ── Strip scheduling noise ──────────────────────────────────────────────
+  // Remove (Weekday), (Weekend), (Weekday - Dry Only), etc.
   n = n.replace(/\s*\((?:Weekday|Weekend)(?:\s*-\s*[^)]+)?\)\s*/gi, ' ');
-
-  // Remove trailing "- Weekday" / "- Weekend" (with or without spaces / dashes)
+  // Remove trailing "- Weekday" / "- Weekend"
   n = n.replace(/\s*[-–]\s*(?:Weekday|Weekend)\s*$/i, '');
 
-  // Normalise minute labels: "45 Minute" / "45-minute" → "45-min"
+  // ── Strip vinyl set / live music / time-of-day suffixes ─────────────────
+  // "(with Live Vinyl Set)", "with Live Vinyl Set until 4.30pm", etc.
+  n = n.replace(/\s*\(with\s+live\s+vinyl\s+set\)\s*/i, '');
+  n = n.replace(/[:\s]*(?:with\s+)?live\s+vinyl\s+set\b[^)]*$/i, '');
+  // "Session starts 3pm with Live Vinyl Set until 3.30pm"
+  n = n.replace(/[:\s]*session\s+starts\s+\d{1,2}(?::\d{2})?\s*[ap]m\b.*$/i, '');
+  // "powered by Lululemon (AEST)" and similar promo tails
+  n = n.replace(/\s+powered\s+by\s+.+$/i, '');
+  // "Tickets available through humanitix (AEST)"
+  n = n.replace(/\s*[-–]?\s*tickets?\s+available\b.*$/i, '');
+
+  // ── Fix broken parentheses ──────────────────────────────────────────────
+  // "Open Sauna & Plunge (Non Guided" → add closing paren
+  if (/\([^)]*$/.test(n)) n += ')';
+  // Remove stray trailing paren not preceded by an opening paren, e.g. "Access)"
+  n = n.replace(/^([^(]*)\)/, '$1');
+
+  // ── Normalise minute labels: "45 Minute" → "45-min" ────────────────────
   n = n.replace(/(\d+)[\s-]+(?:minutes?|min)\b/gi, '$1-min');
 
-  // Group all "Woman-Only" / "Women-Only" variants into one bucket
-  if (/^Wom[ae]n-Only/i.test(n)) return 'Women-Only';
+  // ── Collapse multiple spaces / trailing junk ────────────────────────────
+  n = n.replace(/\s{2,}/g, ' ').replace(/[\s\-:]+$/, '');
 
-  // Group common prefix families (one-off events, recurring specials)
+  // ── Group well-known prefix families ────────────────────────────────────
+  if (/^Wom[ae]n-Only/i.test(n)) return 'Women-Only';
   if (/^EQ First Birthday/i.test(n)) return 'EQ First Birthday';
   if (/^Fire & Ice/i.test(n)) return 'Fire & Ice';
   if (/^Post-Race Recovery/i.test(n)) return 'Post-Race Recovery';
   if (/^Influencer/i.test(n)) return 'Influencer Session';
 
-  // Collapse multiple spaces and trailing whitespace / hyphens left over after stripping
-  n = n.replace(/\s{2,}/g, ' ').replace(/[\s-]+$/, '');
+  // ── Collapse "Class Only | X" into "X | Class+" ────────────────────────
+  const classOnlyMatch = n.match(/^class\s+only\s*\|\s*(.+)$/i);
+  if (classOnlyMatch) return `${classOnlyMatch[1].trim()} | Class+`;
+
+  // ── Skip non-session entries ────────────────────────────────────────────
+  if (/^studio\s+closed$/i.test(n)) return '';
 
   return n;
 }
 
+/** Names the normalizer returns as empty — excluded from filter lists and data. */
+function isExcludedSession(normalizedName: string): boolean {
+  return normalizedName === '';
+}
+
 /** Patterns that identify core bathing sessions — everything else is a "class". */
-const BATHING_PATTERNS = /\b(bathhouse|social bathing|sauna)\b/i;
+const BATHING_PATTERNS = /\b(bathhouse|social bathing|sauna|plunge)\b/i;
 
 function isClassSession(normalizedName: string): boolean {
   return !BATHING_PATTERNS.test(normalizedName);
@@ -250,7 +277,7 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
         type="button"
         onClick={handleFetch}
         disabled={isFetching}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-background shadow-2 font-medium text-foreground hover:bg-gray-2 disabled:opacity-50 transition-colors"
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-background shadow-2 font-medium text-foreground hover:bg-gray-2 disabled:opacity-50 transition-colors ${isFetching ? '' : 'loading-pulse'}`}
       >
         <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
         {isFetching ? 'Fetching…' : 'Fetch data'}
@@ -276,6 +303,7 @@ export function ReportClient() {
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
   const [nonMomenceFetchCount, setNonMomenceFetchCount] = useState(0);
   const [entryLoadAttempted, setEntryLoadAttempted] = useState(false);
+  const [isTransitioning, startTransition] = useTransition();
   const syncStarted = useRef(false);
   const autoFetchStarted = useRef(false);
 
@@ -427,6 +455,22 @@ export function ReportClient() {
     return result;
   }, [entry?.hostId, entry?.sessions]);
 
+  // Pre-compute normalised names once — avoids running regex chains on 18K+ sessions
+  // repeatedly across allSessionTypes / sessionTypes / filteredSessions / benchmarkMetrics.
+  const normalizedNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of allCachedSessions) {
+      if (!map.has(s.id)) map.set(s.id, normalizeSessionName(s.sessionName));
+    }
+    return map;
+  }, [allCachedSessions]);
+
+  /** Fast lookup — uses the pre-computed map, falls back to live normalisation. */
+  const getNorm = useCallback(
+    (s: MomenceSession) => normalizedNameMap.get(s.id) ?? normalizeSessionName(s.sessionName),
+    [normalizedNameMap],
+  );
+
   const allVenueMonthlyData = useMemo<MonthlyData[]>(() => {
     if (!entry?.hostId) return entry?.monthlyData ?? [];
     const searches = getRecentSearches().filter(s => s.hostId === entry.hostId);
@@ -510,21 +554,28 @@ export function ReportClient() {
   }, [periodFilteredSessions, selectedLocation, hasMultipleLocations]);
 
   // All-time session types (normalised, used to keep the filter visible across period changes).
+  // Scoped to the selected location so multi-location venues only show relevant session types.
   const allSessionTypes = useMemo(() => {
-    const names = new Set(allCachedSessions.map(s => normalizeSessionName(s.sessionName)).filter(Boolean));
+    const source = hasMultipleLocations && selectedLocation
+      ? allCachedSessions.filter(s => s.location === selectedLocation)
+      : allCachedSessions;
+    const names = new Set(source.map(s => getNorm(s)).filter(Boolean));
     return Array.from(names).sort();
-  }, [allCachedSessions]);
+  }, [allCachedSessions, hasMultipleLocations, selectedLocation, getNorm]);
 
   // Period-scoped session types (normalised, used as dropdown options).
   const sessionTypes = useMemo(() => {
-    const names = new Set(locationFilteredSessions.map(s => normalizeSessionName(s.sessionName)).filter(Boolean));
+    const names = new Set(locationFilteredSessions.map(s => getNorm(s)).filter(Boolean));
     return Array.from(names).sort();
-  }, [locationFilteredSessions]);
+  }, [locationFilteredSessions, getNorm]);
 
   const filteredSessions = useMemo(() => {
-    if (selectedTypes.size === 0) return locationFilteredSessions;
-    return locationFilteredSessions.filter(s => selectedTypes.has(normalizeSessionName(s.sessionName)));
-  }, [locationFilteredSessions, selectedTypes]);
+    if (selectedTypes.size === 0) {
+      // Exclude sessions with empty normalized names (e.g. "STUDIO CLOSED")
+      return locationFilteredSessions.filter(s => getNorm(s) !== '');
+    }
+    return locationFilteredSessions.filter(s => selectedTypes.has(getNorm(s)));
+  }, [locationFilteredSessions, selectedTypes, getNorm]);
 
   const filteredMonthlyData = useMemo(() => {
     if (period === 'all') return allVenueMonthlyData;
@@ -587,7 +638,7 @@ export function ReportClient() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
-              <p className="text-lg font-semibold text-foreground leading-none text-shimmer overflow">
+              <p className="text-lg font-semibold text-foreground leading-none text-shimmer">
                 {apiVenueConfig?.name?.split(',')[0] ?? 'Loading…'}
               </p>
             </div>
@@ -597,27 +648,8 @@ export function ReportClient() {
           </div>
         </header>
         {isSyncInProgress ? (
-          <div className="flex flex-col items-center justify-center py-16 px-4 gap-6">
-            {/* Status text */}
-            <div className="text-center space-y-1">
-              <p className="text-lg font-semibold text-foreground">
-                {syncHook.fetchPhase === 'processing' ? 'Processing sessions' : 'Fetching session history'}
-              </p>
-
-              {/* Dino animation */}
-              <DinoLoader />
-            </div>
-
-            {/* Live session counter */}
-            {syncHook.fetchingCount > 0 && (
-              <div className="text-center">
-                <div className="text-5xl font-semibold tabular-nums tracking-tight text-foreground">
-                  <SessionTicker count={syncHook.fetchingCount} />
-                </div>
-                <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
-                <p className="text-xs opacity-40 text-muted-foreground">This usually takes 2–4 minutes</p>
-              </div>
-            )}
+          <div className="max-w-[760px] mx-auto px-4 pt-5 pb-12 sm:px-5 sm:pt-12">
+            <ReportSkeleton />
           </div>
         ) : platform !== 'momence' ? (
           <NonMomenceNoData
@@ -692,28 +724,7 @@ export function ReportClient() {
       <div className="max-w-[760px] mx-auto px-4 pt-5 pb-12 sm:px-5 sm:pt-12 space-y-5">
 
         {isSyncInProgress ? (
-          <div className="flex flex-col items-center justify-center py-16 px-4 gap-6">
-            {/* Status text */}
-            <div className="text-center space-y-1">
-              <p className="text-lg font-semibold text-foreground">
-                {syncHook.fetchPhase === 'processing' ? 'Processing sessions…' : 'Fetching session history'}
-              </p>
-              <p className="text-sm text-muted-foreground">This usually takes 2–4 minutes</p>
-            </div>
-
-            {/* Live session counter */}
-            {(platform !== 'momence' ? nonMomenceFetchCount : syncHook.fetchingCount) > 0 && (
-              <div className="text-center">
-                <div className="text-5xl font-semibold tabular-nums tracking-tight text-foreground">
-                  <SessionTicker count={platform !== 'momence' ? nonMomenceFetchCount : syncHook.fetchingCount} />
-                </div>
-                <p className="text-sm text-muted-foreground mt-1.5">sessions retrieved</p>
-              </div>
-            )}
-
-            {/* Dino animation */}
-            <DinoLoader />
-          </div>
+          <ReportSkeleton />
         ) : <>
 
         {/* ── Filter row ── */}
@@ -722,7 +733,7 @@ export function ReportClient() {
 
             <PeriodSelector
               value={period}
-              onChange={(p) => { setPeriod(p); setSelectedTypes(new Set()); }}
+              onChange={(p) => { startTransition(() => { setPeriod(p); setSelectedTypes(new Set()); }); }}
               availableMonths={availableMonths}
               disabledValues={disabledPeriods}
               className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
@@ -747,7 +758,7 @@ export function ReportClient() {
                     <button
                       key={loc}
                       type="button"
-                      onClick={() => { setSelectedLocation(loc); setSelectedTypes(new Set()); }}
+                      onClick={() => { startTransition(() => { setSelectedLocation(loc); setSelectedTypes(new Set()); }); }}
                       className={cn(
                         'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
                         selectedLocation === loc ? 'font-medium' : 'text-muted-foreground',
@@ -786,7 +797,7 @@ export function ReportClient() {
                 <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2 max-h-[70vh] overflow-y-auto">
                   <button
                     type="button"
-                    onClick={() => setSelectedTypes(new Set())}
+                    onClick={() => startTransition(() => setSelectedTypes(new Set()))}
                     className={cn(
                       'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-sm transition-colors bg-background hover:bg-muted',
                       selectedTypes.size === 0 ? 'font-medium' : 'text-muted-foreground',
@@ -818,10 +829,12 @@ export function ReportClient() {
                               type="button"
                               onClick={() => {
                                 if (!availableInPeriod) return;
-                                setSelectedTypes(prev => {
-                                  const next = new Set(prev);
-                                  checked ? next.delete(t) : next.add(t);
-                                  return next;
+                                startTransition(() => {
+                                  setSelectedTypes(prev => {
+                                    const next = new Set(prev);
+                                    checked ? next.delete(t) : next.add(t);
+                                    return next;
+                                  });
                                 });
                               }}
                               className={cn(
@@ -861,10 +874,12 @@ export function ReportClient() {
                                   type="button"
                                   onClick={() => {
                                     if (!availableInPeriod) return;
-                                    setSelectedTypes(prev => {
-                                      const next = new Set(prev);
-                                      checked ? next.delete(t) : next.add(t);
-                                      return next;
+                                    startTransition(() => {
+                                      setSelectedTypes(prev => {
+                                        const next = new Set(prev);
+                                        checked ? next.delete(t) : next.add(t);
+                                        return next;
+                                      });
                                     });
                                   }}
                                   className={cn(
@@ -894,7 +909,9 @@ export function ReportClient() {
         </div>
 
         {/* ── Report sections or period-empty state ── */}
-        {benchmarkMetrics ? (
+        {isTransitioning ? (
+          <ReportCardsSkeleton />
+        ) : benchmarkMetrics ? (
           <ReportSections
             sessions={filteredSessions}
             metrics={benchmarkMetrics}

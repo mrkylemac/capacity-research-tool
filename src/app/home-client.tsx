@@ -74,15 +74,17 @@ export function HomeClient() {
                     </p>
                   </div>
                   
-                    {logos[venue.id] && (
-                      <div className="aspect-square w-full rounded-xl rounded-r-none overflow-hidden flex items-center justify-center max-w-24">
+                    <div className="aspect-square w-full rounded-xl rounded-r-none overflow-hidden flex items-center justify-center max-w-24">
+                      {logos[venue.id] ? (
                         <img
                           src={logos[venue.id]}
                           alt={venue.name}
                           className="w-full h-full object-contain"
                         />
+                      ) : (
+                        <div className="w-full h-full skeleton-bar" />
+                      )}
                     </div>
-                  )}
                 </div>
               </CardContent>
             </Card>
