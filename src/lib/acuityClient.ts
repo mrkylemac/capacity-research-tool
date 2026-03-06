@@ -1,12 +1,16 @@
 /**
- * Acuity Scheduling client — fetches class availability from the public
- * scheduling widget API. Uses the same POST endpoint the scheduling SPA calls.
+ * Acuity Scheduling client — fetches availability from the public
+ * scheduling widget API. Supports two Acuity appointment models:
+ *
+ *   mode: 'class'   → POST /availability/class  (group classes, e.g. Sauna Goose)
+ *   mode: 'service' → GET  /availability/times   (individual bookings, e.g. The Corner Sauna)
  *
  * Data model:
  * - Future sessions only (past sessions are removed by the API)
  * - `slotsAvailable` = remaining spots → ticketsSold = classSize - slotsAvailable
  * - Price comes from the static appointment type config (not per-session)
- * - Pagination: server caps at 15 results per page regardless of requested limit
+ * - Class-mode pagination: server caps at 15 results per page
+ * - Service-mode: one request per appointment type + calendar pair; maxDays-based
  *
  * Incremental caching: like TryBe, we merge fresh (future) sessions with
  * previously cached past sessions to build history over time.
@@ -25,8 +29,15 @@ interface AcuityClassSlot {
   seriesClassCount: number | null;
 }
 
-/** Response is keyed by date string (YYYY-MM-DD), each value is an array of class slots */
+/** Service-type slot — simpler than class slot (no appointmentTypeId/calendarId in response) */
+interface AcuityServiceSlot {
+  time: string;          // ISO 8601 with timezone offset
+  slotsAvailable: number;
+}
+
+/** Response is keyed by date string (YYYY-MM-DD), each value is an array of slots */
 type AcuityAvailabilityResponse = Record<string, AcuityClassSlot[]>;
+type AcuityTimesResponse = Record<string, AcuityServiceSlot[]>;
 
 interface AcuityAppointmentType {
   id: number;
@@ -34,9 +45,12 @@ interface AcuityAppointmentType {
   duration: number;
   price: string;
   classSize: number;
+  calendarId?: number;
 }
 
-// ── Fetcher ──────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// CLASS MODE — POST /availability/class (existing, e.g. Sauna Goose)
+// ══════════════════════════════════════════════════════════════════════════════
 
 const PAGE_SIZE = 15; // Acuity caps at 15 per request
 
@@ -73,7 +87,7 @@ async function fetchAcuityPage(
   return res.json();
 }
 
-function slotToSession(
+function classSlotToSession(
   slot: AcuityClassSlot,
   typeMap: Map<number, AcuityAppointmentType>,
 ): MomenceSession | null {
@@ -98,12 +112,11 @@ function slotToSession(
   };
 }
 
-export async function fetchAllAcuitySessions(
+async function fetchAllClassSessions(
   cfg: AcuityConfig,
   existingSessions: MomenceSession[],
   onProgress?: (count: number) => void,
 ): Promise<MomenceSession[]> {
-  // Build appointment type lookup from config
   const typeMap = new Map<number, AcuityAppointmentType>();
   for (const at of cfg.appointmentTypes) {
     typeMap.set(at.id, at);
@@ -112,7 +125,6 @@ export async function fetchAllAcuitySessions(
   const appointmentTypeIds = cfg.appointmentTypes.map(at => at.id);
   const calendarIds = cfg.calendarIds;
 
-  // Paginate through all available future sessions
   const freshSessions: MomenceSession[] = [];
   const freshIds = new Set<string>();
   let offset = 0;
@@ -126,7 +138,7 @@ export async function fetchAllAcuitySessions(
     let pageCount = 0;
     for (const slots of Object.values(page)) {
       for (const slot of slots) {
-        const session = slotToSession(slot, typeMap);
+        const session = classSlotToSession(slot, typeMap);
         if (session && !freshIds.has(session.id)) {
           freshIds.add(session.id);
           freshSessions.push(session);
@@ -136,27 +148,156 @@ export async function fetchAllAcuitySessions(
     }
 
     onProgress?.(freshSessions.length);
-    console.log(`[Acuity] Offset ${offset}: ${pageCount} slots (total sessions: ${freshSessions.length})`);
+    console.log(`[Acuity/class] Offset ${offset}: ${pageCount} slots (total: ${freshSessions.length})`);
 
     if (pageCount < PAGE_SIZE) break;
     offset += pageCount;
 
-    // Safety limit
     if (offset > 5000) {
-      console.warn('[Acuity] Hit pagination safety limit at offset 5000');
+      console.warn('[Acuity/class] Hit pagination safety limit at offset 5000');
       break;
     }
   }
 
-  // Merge with cached sessions (incremental history pattern)
-  // - Past sessions not in fresh set: keep as-is (they've left the API window)
-  // - Sessions in both: use fresh data (updated ticketsSold counts)
-  // - New fresh sessions: add them
+  return mergeWithCached(freshSessions, freshIds, existingSessions, 'class');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SERVICE MODE — GET /availability/times (e.g. The Corner Sauna)
+// ══════════════════════════════════════════════════════════════════════════════
+
+const SERVICE_MAX_DAYS = 30;
+
+/**
+ * Fetch available time slots for a single appointment type + calendar pair.
+ * Service-type Acuity venues use GET with query params (not POST with body).
+ */
+async function fetchAcuityTimesPage(
+  baseUrl: string,
+  ownerKey: string,
+  timezone: string,
+  appointmentTypeId: number,
+  calendarId: number,
+): Promise<AcuityTimesResponse> {
+  const today = new Date().toISOString().slice(0, 10);
+
+  const url = new URL(`${baseUrl}/api/scheduling/v1/availability/times`);
+  url.searchParams.set('owner', ownerKey);
+  url.searchParams.set('appointmentTypeId', String(appointmentTypeId));
+  url.searchParams.set('calendarId', String(calendarId));
+  url.searchParams.set('startDate', today);
+  url.searchParams.set('maxDays', String(SERVICE_MAX_DAYS));
+  url.searchParams.set('timezone', timezone);
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      accept: 'application/json',
+      'user-agent': 'Mozilla/5.0',
+      'x-secondo-owner': ownerKey,
+    },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Acuity times API ${res.status}: ${body}`);
+  }
+
+  return res.json();
+}
+
+function serviceSlotToSession(
+  slot: AcuityServiceSlot,
+  apptType: AcuityAppointmentType,
+  calendarId: number,
+): MomenceSession {
+  const start = new Date(slot.time);
+  const end = new Date(start.getTime() + apptType.duration * 60_000);
+  const ticketsSold = Math.max(0, apptType.classSize - slot.slotsAvailable);
+
+  return {
+    id: `acuity-${apptType.id}-${calendarId}-${slot.time}`,
+    sessionName: apptType.name,
+    startsAt: start.toISOString(),
+    endsAt: end.toISOString(),
+    durationMinutes: apptType.duration,
+    capacity: apptType.classSize,
+    ticketsSold,
+    fixedTicketPrice: parseFloat(apptType.price) || 0,
+    location: '',
+    inPerson: true,
+  };
+}
+
+async function fetchAllServiceSessions(
+  cfg: AcuityConfig,
+  existingSessions: MomenceSession[],
+  onProgress?: (count: number) => void,
+): Promise<MomenceSession[]> {
+  const freshSessions: MomenceSession[] = [];
+  const freshIds = new Set<string>();
+
+  // Query each appointment type + its calendar pair
+  for (const apptType of cfg.appointmentTypes) {
+    const calId = apptType.calendarId;
+    if (!calId) {
+      console.warn(`[Acuity/service] Skipping type ${apptType.id} (${apptType.name}) — no calendarId`);
+      continue;
+    }
+
+    console.log(`[Acuity/service] Fetching: ${apptType.name} (type=${apptType.id}, cal=${calId})`);
+
+    const page = await fetchAcuityTimesPage(
+      cfg.baseUrl, cfg.ownerKey, cfg.timezone,
+      apptType.id, calId,
+    );
+
+    for (const slots of Object.values(page)) {
+      for (const slot of slots) {
+        const session = serviceSlotToSession(slot, apptType, calId);
+        if (!freshIds.has(session.id)) {
+          freshIds.add(session.id);
+          freshSessions.push(session);
+        }
+      }
+    }
+
+    onProgress?.(freshSessions.length);
+    console.log(`[Acuity/service] ${apptType.name}: running total ${freshSessions.length} sessions`);
+  }
+
+  return mergeWithCached(freshSessions, freshIds, existingSessions, 'service');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Shared — incremental merge + public entry point
+// ══════════════════════════════════════════════════════════════════════════════
+
+function mergeWithCached(
+  freshSessions: MomenceSession[],
+  freshIds: Set<string>,
+  existingSessions: MomenceSession[],
+  label: string,
+): MomenceSession[] {
   const now = new Date();
   const past = existingSessions.filter(
     s => new Date(s.startsAt) < now && !freshIds.has(s.id),
   );
-  console.log(`[Acuity] Retaining ${past.length} cached past sessions, ${freshSessions.length} fresh`);
+  console.log(`[Acuity/${label}] Retaining ${past.length} cached past sessions, ${freshSessions.length} fresh`);
 
   return [...past, ...freshSessions].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+}
+
+/**
+ * Fetch all sessions for an Acuity venue.
+ * Automatically dispatches to the correct mode (class vs service) based on config.
+ */
+export async function fetchAllAcuitySessions(
+  cfg: AcuityConfig,
+  existingSessions: MomenceSession[],
+  onProgress?: (count: number) => void,
+): Promise<MomenceSession[]> {
+  if (cfg.mode === 'service') {
+    return fetchAllServiceSessions(cfg, existingSessions, onProgress);
+  }
+  return fetchAllClassSessions(cfg, existingSessions, onProgress);
 }

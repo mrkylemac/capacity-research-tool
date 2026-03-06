@@ -1,0 +1,5 @@
+# Cache files written by GitHub Actions polling workflow.
+# On merge conflicts, keep the version from the branch being merged INTO
+# (main), which has the latest polled data.
+# Requires one-time setup: npm run cache:setup
+src/data/venues/*.json merge=ours

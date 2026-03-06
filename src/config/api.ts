@@ -44,6 +44,7 @@ export const VENUES: VenueConfig[] = [
   { id: 'xtraclubs', name: 'Xtra Clubs', platform: 'xtraclubs', location: 'Sydney', mapsQuery: 'Xtra Clubs Bondi Junction Sydney', timezone: 'Australia/Sydney' },
   { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', mapsQuery: 'Wellness Social Club Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', mapsQuery: 'Sauna Goose Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', mapsQuery: 'The Corner Sauna Apollo Bay', timezone: 'Australia/Sydney' },
 ];
 
 // Glofox configuration
@@ -183,16 +184,46 @@ export const PORTAL_CONFIG = {
 } as const;
 
 // Acuity Scheduling configuration (public scheduling widget API — no auth required)
+//
+// Two modes:
+//   'class'   — group classes via POST /availability/class (e.g. Sauna Goose)
+//   'service' — individual appointments via GET /availability/times (e.g. The Corner Sauna)
+//
+// Service-type venues must specify a `calendarId` on each appointment type
+// because the GET endpoint queries one type+calendar pair at a time.
 export interface AcuityConfig {
+  /** 'class' (default) or 'service'. Determines which API endpoint to use. */
+  mode?: 'class' | 'service';
   baseUrl: string;
   ownerKey: string;
   name: string;
   timezone: string;
-  appointmentTypes: { id: number; name: string; duration: number; price: string; classSize: number }[];
+  appointmentTypes: {
+    id: number;
+    name: string;
+    duration: number;
+    price: string;
+    classSize: number;
+    /** Required for service-type: which calendar to query this type against. */
+    calendarId?: number;
+  }[];
   calendarIds: number[];
 }
 
 export const ACUITY_CONFIG: Record<string, AcuityConfig> = {
+  thecornersauna: {
+    mode: 'service',
+    baseUrl: 'https://app.squarespacescheduling.com',
+    ownerKey: '6f7bfa9c',
+    name: 'The Corner Sauna',
+    timezone: 'Australia/Sydney',
+    appointmentTypes: [
+      { id: 71669392, name: 'Single Session', duration: 60, price: '40.00', classSize: 8, calendarId: 11172572 },
+      { id: 80179076, name: "Women's Wellness Session", duration: 60, price: '40.00', classSize: 8, calendarId: 11172572 },
+      { id: 86988395, name: 'Silent Sauna', duration: 60, price: '40.00', classSize: 8, calendarId: 13261360 },
+    ],
+    calendarIds: [11172572, 13261360],
+  },
   saunagoose: {
     baseUrl: 'https://saunagoose.as.me',
     ownerKey: '1549c4c0',

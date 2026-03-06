@@ -2,19 +2,65 @@ name: Poll future-only venues
 
 on:
   schedule:
-    # Acuity morning capture: 19:50 UTC = 06:50 AEDT (before 07:00 morning sessions)
-    - cron: '50 19 * * *'
-    # Acuity evening capture: 06:20 UTC = 17:20 AEDT (before 17:30 evening sessions)
-    - cron: '20 6 * * *'
-    # TryBe evening capture: 11:00 UTC = 22:00 AEDT (end of day)
-    - cron: '0 11 * * *'
-  workflow_dispatch: # Allow manual trigger
+    # Run every 30 min; a lightweight gate step checks Melbourne local time
+    # and only triggers the actual poll when a session is about to start.
+    # DST (AEDT ↔ AEST) is handled automatically via TZ=Australia/Melbourne.
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Always polls both venues
 
 permissions:
   contents: write
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      poll-acuity: ${{ steps.check.outputs.acuity }}
+      poll-trybe: ${{ steps.check.outputs.trybe }}
+    steps:
+      - id: check
+        run: |
+          MELB_H=$(TZ=Australia/Melbourne date +%-H)
+          MELB_M=$(TZ=Australia/Melbourne date +%-M)
+          NOW=$((MELB_H * 60 + MELB_M))
+          echo "Melbourne time: $(TZ=Australia/Melbourne date +%H:%M) (${NOW} min since midnight)"
+
+          # Acuity session start times (Melbourne local, minutes since midnight)
+          # Sauna Goose:      07:00 08:10 08:30 09:20 09:30 10:30 11:40 12:50 13:50 15:00 16:10 17:20 17:30 18:30 19:30 20:30
+          # Corner Sauna:     07:00 08:00 09:00              15:00 16:00 17:00 18:00 19:00
+          # Merged (deduped):
+          SESSIONS="420 480 490 510 540 560 570 630 700 770 830 900 960 970 1020 1040 1050 1080 1110 1140 1170 1230"
+
+          ACUITY=false
+          for T in $SESSIONS; do
+            DIFF=$((T - NOW))
+            if [ $DIFF -ge 0 ] && [ $DIFF -le 35 ]; then
+              HH=$((T / 60))
+              MM=$((T % 60))
+              printf "  Session at %02d:%02d starts in %d min — will poll\n" "$HH" "$MM" "$DIFF"
+              ACUITY=true
+              break
+            fi
+          done
+
+          # TryBe (Sense of Self): end-of-day capture at ~22:00 Melbourne
+          TRYBE=false
+          TRYBE_DIFF=$((1320 - NOW))
+          if [ $TRYBE_DIFF -ge 0 ] && [ $TRYBE_DIFF -le 35 ]; then
+            TRYBE=true
+            echo "  TryBe end-of-day window — will poll"
+          fi
+
+          echo "acuity=$ACUITY" >> "$GITHUB_OUTPUT"
+          echo "trybe=$TRYBE" >> "$GITHUB_OUTPUT"
+          echo "Result — Acuity: $ACUITY, TryBe: $TRYBE"
+
   poll:
+    needs: gate
+    if: >-
+      needs.gate.outputs.poll-acuity == 'true' ||
+      needs.gate.outputs.poll-trybe == 'true' ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,19 +72,19 @@ jobs:
 
       - run: npm ci
 
-      - name: Poll Acuity venues (Sauna Goose)
+      - name: Poll Acuity venues (Sauna Goose + The Corner Sauna)
+        if: needs.gate.outputs.poll-acuity == 'true' || github.event_name == 'workflow_dispatch'
         run: npx tsx scripts/poll-acuity.ts
 
-      # TryBe is more forgiving (sessions persist through the day).
-      # Run on all triggers but the data only meaningfully changes twice a day.
       - name: Poll TryBe venues (Sense of Self)
+        if: needs.gate.outputs.poll-trybe == 'true' || github.event_name == 'workflow_dispatch'
         run: npx tsx scripts/poll-trybe.ts
 
       - name: Commit updated cache files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/venues/saunagoose-acuity.json src/data/venues/senseofself-trybe.json
+          git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
