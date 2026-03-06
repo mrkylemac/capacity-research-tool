@@ -2,11 +2,6 @@
 
 import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { BarChart } from '@/components/charts/bar-chart';
-import { Bar } from '@/components/charts/bar';
-import { BarYAxis } from '@/components/charts/bar-y-axis';
-import { Grid } from '@/components/charts/grid';
-import { ChartTooltip } from '@/components/charts/tooltip/chart-tooltip';
 import { getVenueComparisonData } from '@/lib/venueComparisonData';
 
 interface VenueComparisonChartProps {
@@ -19,28 +14,12 @@ export function VenueComparisonChart({
 }: VenueComparisonChartProps) {
   const rawData = useMemo(() => getVenueComparisonData(), []);
 
-  // Sort ascending so highest is at the top in horizontal bar chart
-  const chartData = useMemo(
-    () =>
-      [...rawData]
-        .sort((a, b) => a.weeklyVisitors - b.weeklyVisitors)
-        .map((d) => ({
-          name: d.venueName,
-          weeklyVisitors: d.weeklyVisitors,
-          totalVisitors: d.totalVisitors,
-          weeksOfData: d.weeksOfData,
-          venueId: d.venueId,
-        })),
-    [rawData]
-  );
-
   if (rawData.length < 2) return null;
 
   const currentVenueRank =
     rawData.findIndex((d) => d.venueId === currentVenueId) + 1;
 
-  // Dynamic aspect ratio based on venue count
-  const aspectRatio = `4 / ${Math.max(2, Math.min(chartData.length * 0.55, 6))}`;
+  const maxVisitors = Math.max(...rawData.map((d) => d.weeklyVisitors));
 
   return (
     <Card className="print-section shadow-sm">
@@ -54,62 +33,43 @@ export function VenueComparisonChart({
           )}
         </div>
 
-        <p className="text-base font-medium text-muted-foreground mb-3">
-          Average weekly visitors across all tracked venues
-        </p>
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <p className="text-sm font-medium">Average weekly visitors</p>
+            <p className="text-sm text-muted-foreground">Across all tracked venues</p>
+          </div>
+        </div>
 
-        <BarChart
-          data={chartData as unknown as Record<string, unknown>[]}
-          xDataKey="name"
-          orientation="horizontal"
-          aspectRatio={aspectRatio}
-          margin={{ top: 8, right: 48, bottom: 8, left: 8 }}
-          barGap={0.25}
-        >
-          <Grid horizontal={false} vertical fadeVertical />
-          <Bar
-            dataKey="weeklyVisitors"
-            fill="var(--chart-visitors)"
-            stroke="var(--chart-visitors)"
-            lineCap={4}
-          />
-          <BarYAxis />
-          <ChartTooltip
-            showDatePill={false}
-            rows={(point) => {
-              const visitors = point.weeklyVisitors as number;
-              const total = point.totalVisitors as number;
-              const weeks = point.weeksOfData as number;
-              const isCurrent = point.venueId === currentVenueId;
-              return [
-                {
-                  color: 'var(--chart-visitors)',
-                  label: 'Weekly avg',
-                  value: visitors.toLocaleString(),
-                },
-                {
-                  color: 'var(--chart-foreground-muted)',
-                  label: 'Total visitors',
-                  value: total.toLocaleString(),
-                },
-                {
-                  color: 'var(--chart-foreground-muted)',
-                  label: 'Weeks of data',
-                  value: weeks.toFixed(1),
-                },
-                ...(isCurrent
-                  ? [
-                      {
-                        color: 'var(--chart-high)',
-                        label: 'Current venue',
-                        value: `#${currentVenueRank}`,
-                      },
-                    ]
-                  : []),
-              ];
-            }}
-          />
-        </BarChart>
+        <div className="space-y-1">
+          {rawData.map((d) => {
+            const isCurrent = d.venueId === currentVenueId;
+            const pctOfPeak = maxVisitors > 0 ? (d.weeklyVisitors / maxVisitors) * 100 : 0;
+
+            return (
+              <div
+                key={d.venueId}
+                className="relative h-8 rounded-lg overflow-hidden flex items-center px-3"
+              >
+                {/* Track */}
+                <div className="absolute inset-0 bg" />
+                {/* Fill */}
+                <div
+                  className="absolute inset-y-0 left-0 transition-all duration-500 rounded-lg"
+                  style={{
+                    width: `${pctOfPeak}%`,
+                    backgroundColor: isCurrent
+                      ? 'color-mix(in srgb, var(--muted-foreground) 35%, transparent)'
+                      : 'color-mix(in srgb, var(--chart-fill) 18%, transparent)',
+                  }}
+                />
+                <span className="relative z-10 text-sm">{d.venueName}</span>
+                <span className="relative z-10 ml-auto text-sm tabular-nums text-foreground">
+                  {d.weeklyVisitors > 0 ? d.weeklyVisitors.toLocaleString() : '—'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );
