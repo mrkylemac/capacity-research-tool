@@ -2,6 +2,7 @@
   "name": "vite_react_shadcn_ts",
   "private": true,
   "version": "0.0.0",
+  "packageManager": "yarn@1.22.22",
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -17,7 +18,7 @@
     "poll:trybe": "tsx scripts/poll-trybe.ts",
     "cache:sync": "git fetch origin main && git checkout origin/main -- src/data/venues/",
     "cache:setup": "git config merge.ours.driver true",
-    "predev": "npm run cache:sync"
+    "predev": "yarn cache:sync"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

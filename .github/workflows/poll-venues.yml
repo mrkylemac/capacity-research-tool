@@ -68,17 +68,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: yarn
 
-      - run: npm ci
+      - run: yarn install --frozen-lockfile
 
       - name: Poll Acuity venues (Sauna Goose + The Corner Sauna)
         if: needs.gate.outputs.poll-acuity == 'true' || github.event_name == 'workflow_dispatch'
-        run: npx tsx scripts/poll-acuity.ts
+        run: yarn poll:acuity
 
       - name: Poll TryBe venues (Sense of Self)
         if: needs.gate.outputs.poll-trybe == 'true' || github.event_name == 'workflow_dispatch'
-        run: npx tsx scripts/poll-trybe.ts
+        run: yarn poll:trybe
 
       - name: Commit updated cache files
         run: |
