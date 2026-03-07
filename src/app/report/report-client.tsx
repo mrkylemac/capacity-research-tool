@@ -382,7 +382,13 @@ export function ReportClient() {
     }
 
     setIsSyncInProgress(false);
-    setLoadPhase('ready');
+    // Only transition to 'ready' if we actually have data to show
+    if (syncHook.allSessions.length > 0) {
+      setLoadPhase('ready');
+    } else if (!entry) {
+      // Fetch completed with no sessions and no prior entry — show empty state
+      setLoadPhase('empty');
+    }
     syncStarted.current = false;
     autoFetchStarted.current = false;
   }, [syncHook.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -405,7 +411,7 @@ export function ReportClient() {
     }).catch(() => {
       setIsSyncInProgress(false);
       setLoadPhase('empty');
-      autoFetchStarted.current = false;
+      // Keep autoFetchStarted=true to prevent infinite retry loops
     });
   }, [loadPhase, hostId, entry, isSyncInProgress]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -614,6 +620,8 @@ export function ReportClient() {
 
     const showSkeleton = loadPhase === 'initializing' || loadPhase === 'fetching-cache' || loadPhase === 'fetching-api' || isSyncInProgress;
     const showFetchPrompt = loadPhase === 'empty' && platform !== 'momence';
+    // Safety: if loadPhase is 'ready' but entry is somehow null, show skeleton to avoid blank page
+    const showFallbackSkeleton = !showSkeleton && !showFetchPrompt && !entry;
 
     return (
       <div className="min-h-screen">
@@ -653,6 +661,10 @@ export function ReportClient() {
               setLoadPhase('ready');
             }}
           />
+        ) : showFallbackSkeleton ? (
+          <div className="max-w-[760px] mx-auto px-4 pt-5 pb-12 sm:px-5 sm:pt-12">
+            <ReportSkeleton statusMessage="Loading…" />
+          </div>
         ) : null}
       </div>
     );
