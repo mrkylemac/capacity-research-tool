@@ -1,0 +1,39 @@
+name: Refresh Glofox tokens
+
+on:
+  schedule:
+    # Run weekly on Mondays at 06:00 UTC — tokens last ~30 days, so weekly is plenty
+    - cron: '0 6 * * 1'
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Refresh Glofox guest tokens
+        run: yarn refresh:glofox
+
+      - name: Commit updated tokens
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/config/api.ts
+          if git diff --staged --quiet; then
+            echo "No token changes to commit"
+          else
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+            git commit -m "chore: refresh Glofox guest tokens ($TIMESTAMP) [skip ci]"
+            git push
+          fi
