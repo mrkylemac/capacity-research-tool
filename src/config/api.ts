@@ -11,6 +11,12 @@ export const API_CONFIG = {
     'special-event-new',
   ] as const,
   pageSize: 100,
+  /** Maximum number of pages to fetch per Momence host */
+  maxPages: 250,
+  /** Number of pages fetched in parallel per batch */
+  batchSize: 10,
+  /** Default lookback window when auto-fetching session history */
+  defaultFetchWindowYears: 2,
 } as const;
 
 // Platform types for venue identification

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Check, ChevronRight, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
 import { ReportSkeleton, ReportCardsSkeleton } from '@/components/ReportSkeleton';
+import { SessionTicker } from '@/components/SessionTicker';
 import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import {
@@ -13,7 +14,7 @@ import {
   getRecentSearches,
   setCachedEntry,
 } from '@/lib/venueCache';
-import { VENUES } from '@/config/api';
+import { VENUES, API_CONFIG } from '@/config/api';
 import { useVenueInfo } from '@/hooks/useVenueInfo';
 import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
@@ -136,43 +137,13 @@ function formatRelativeTime(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-// ── Session count ticker (lightweight number animation, no deps) ─────────────
-
-function SessionTicker({ count }: { count: number }) {
-  const [displayed, setDisplayed] = useState(0);
-  const displayedRef = useRef(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    if (count <= displayedRef.current) return;
-
-    if (timerRef.current) clearInterval(timerRef.current);
-
-    const target = count;
-    const STEP = 10;
-    const diff = target - displayedRef.current;
-    const frames = Math.max(10, Math.ceil(diff / STEP));
-    const delay = Math.max(16, Math.round(300 / frames));
-
-    timerRef.current = setInterval(() => {
-      const next = displayedRef.current + STEP;
-      if (next >= target) {
-        displayedRef.current = target;
-        setDisplayed(target);
-        if (timerRef.current) clearInterval(timerRef.current);
-      } else {
-        displayedRef.current = next;
-        setDisplayed(next);
-      }
-    }, delay);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [count]);
-
-  return <>{displayed.toLocaleString()}</>;
-}
+// ── Load phase state machine ─────────────────────────────────────────────────
+type LoadPhase =
+  | 'initializing'    // First render — checking localStorage
+  | 'fetching-cache'  // Fetching from /api/venue-data (server-side JSON file)
+  | 'fetching-api'    // Auto-fetching from Momence API or manual non-Momence fetch
+  | 'ready'           // Data loaded → show report
+  | 'empty';          // No cache found → show fetch prompt or error
 
 // ── Streaming fetch helper for non-Momence venues ───────────────────────────
 
@@ -256,9 +227,6 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
     }
   }, [hostId, platform, onFetched]);
 
-  const platformLabel = platform === 'glofox' ? 'Glofox' : 'Mariana Tek';
-  const venueLabel = VENUES.find(v => v.id === hostId)?.name?.split(',')[0] ?? 'this venue';
-
   return (
     <div className="flex flex-col items-center justify-center py-24 px-4 gap-8">
 
@@ -302,7 +270,7 @@ export function ReportClient() {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
   const [nonMomenceFetchCount, setNonMomenceFetchCount] = useState(0);
-  const [entryLoadAttempted, setEntryLoadAttempted] = useState(false);
+  const [loadPhase, setLoadPhase] = useState<LoadPhase>('initializing');
   const [isTransitioning, startTransition] = useTransition();
   const syncStarted = useRef(false);
   const autoFetchStarted = useRef(false);
@@ -320,24 +288,27 @@ export function ReportClient() {
     const found = pickEntry({ hostId: hId, platform: plat });
     if (found) {
       setEntry(found);
-      setEntryLoadAttempted(true);
+      setLoadPhase('ready');
       return;
     }
     if (!hId || !plat) {
-      setEntryLoadAttempted(true);
+      setLoadPhase('empty');
       return;
     }
     // Fall back to server-side JSON file if not in localStorage
+    setLoadPhase('fetching-cache');
     fetch(`/api/venue-data?hostId=${hId}&platform=${plat}`)
       .then(r => r.ok ? r.json() : null)
       .then((data: CachedVenueEntry | null) => {
         if (data) {
           setCachedEntry(data);
           setEntry(data);
+          setLoadPhase('ready');
+        } else {
+          setLoadPhase('empty');
         }
       })
-      .catch(() => {})
-      .finally(() => setEntryLoadAttempted(true));
+      .catch(() => setLoadPhase('empty'));
   }, []);
 
   // ── Re-fetch / Sync ──────────────────────────────────────────────────────
@@ -411,6 +382,13 @@ export function ReportClient() {
     }
 
     setIsSyncInProgress(false);
+    // Only transition to 'ready' if we actually have data to show
+    if (syncHook.allSessions.length > 0) {
+      setLoadPhase('ready');
+    } else if (!entry) {
+      // Fetch completed with no sessions and no prior entry — show empty state
+      setLoadPhase('empty');
+    }
     syncStarted.current = false;
     autoFetchStarted.current = false;
   }, [syncHook.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -418,42 +396,49 @@ export function ReportClient() {
   // Auto-fetch live data when no cached entry is found after the initial resolution attempt.
   // Only supported for Momence — glofox/marianatek venues require a pre-built cache file.
   useEffect(() => {
-    if (!entryLoadAttempted || !hostId || entry || autoFetchStarted.current || isSyncInProgress) return;
+    if (loadPhase !== 'empty' || !hostId || entry || autoFetchStarted.current || isSyncInProgress) return;
     if (platform !== 'momence') return;
     autoFetchStarted.current = true;
     setIsSyncInProgress(true);
+    setLoadPhase('fetching-api');
     const to = new Date();
     const from = new Date();
-    from.setFullYear(from.getFullYear() - 2);
+    from.setFullYear(from.getFullYear() - API_CONFIG.defaultFetchWindowYears);
     syncHook.fetchData({
       hostId,
       startsAtFrom: from.toISOString(),
       startsAtTo: to.toISOString(),
     }).catch(() => {
       setIsSyncInProgress(false);
-      autoFetchStarted.current = false;
+      setLoadPhase('empty');
+      // Keep autoFetchStarted=true to prevent infinite retry loops
     });
-  }, [entryLoadAttempted, hostId, entry, isSyncInProgress]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadPhase, hostId, entry, isSyncInProgress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Venue info from Google Maps ──────────────────────────────────────────
   const apiVenueConfig = VENUES.find(v => v.id === (hostId ?? entry?.hostId));
   const { info: placeInfo } = useVenueInfo(apiVenueConfig?.mapsQuery);
 
+  // Parse recent searches once — avoids redundant localStorage reads
+  const venueSearches = useMemo(() => {
+    if (!entry?.hostId) return [];
+    return getRecentSearches().filter(s => s.hostId === entry.hostId);
+  }, [entry?.hostId, entry?.sessions]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── All-time data: merge every cached search for this venue ─────────────
   const allCachedSessions = useMemo<MomenceSession[]>(() => {
     if (!entry?.hostId) return entry?.sessions ?? [];
-    const searches = getRecentSearches().filter(s => s.hostId === entry.hostId);
     // Fall back to the in-memory entry when localStorage is empty (e.g. quota exceeded)
-    if (searches.length === 0) return entry?.sessions ?? [];
+    if (venueSearches.length === 0) return entry?.sessions ?? [];
     const seen = new Set<string>();
     const result: MomenceSession[] = [];
-    searches.forEach(search => {
+    venueSearches.forEach(search => {
       search.sessions.forEach(s => {
         if (!seen.has(s.id)) { seen.add(s.id); result.push(s); }
       });
     });
     return result;
-  }, [entry?.hostId, entry?.sessions]);
+  }, [entry?.hostId, entry?.sessions, venueSearches]);
 
   // Pre-compute normalised names once — avoids running regex chains on 18K+ sessions
   // repeatedly across allSessionTypes / sessionTypes / filteredSessions / benchmarkMetrics.
@@ -473,11 +458,10 @@ export function ReportClient() {
 
   const allVenueMonthlyData = useMemo<MonthlyData[]>(() => {
     if (!entry?.hostId) return entry?.monthlyData ?? [];
-    const searches = getRecentSearches().filter(s => s.hostId === entry.hostId);
     // Fall back to the in-memory entry when localStorage is empty (e.g. quota exceeded)
-    if (searches.length === 0) return entry?.monthlyData ?? [];
+    if (venueSearches.length === 0) return entry?.monthlyData ?? [];
     const merged = new Map<string, MonthlyData>();
-    searches.forEach(search => {
+    venueSearches.forEach(search => {
       search.monthlyData.forEach(m => {
         const key = `${m.year}-${m.month}`;
         const existing = merged.get(key);
@@ -488,7 +472,7 @@ export function ReportClient() {
       if (a.year !== b.year) return a.year - b.year;
       return new Date(`${a.month} 1`).getMonth() - new Date(`${b.month} 1`).getMonth();
     });
-  }, [entry?.hostId, entry?.monthlyData]);
+  }, [entry?.hostId, entry?.monthlyData, venueSearches]);
 
   // ── Available months span ────────────────────────────────────────────────
   const availableMonths = useMemo<number | null>(() => {
@@ -625,7 +609,20 @@ export function ReportClient() {
   }, [allCachedSessions]);
 
   // ── Empty / loading states ────────────────────────────────────────────────
-  if (!entry) {
+  if (loadPhase !== 'ready' || !entry) {
+    // Determine skeleton status message based on load phase
+    const statusMessage =
+      loadPhase === 'initializing' || loadPhase === 'fetching-cache'
+        ? 'Loading saved data…'
+        : loadPhase === 'fetching-api'
+          ? 'Downloading session history…'
+          : undefined;
+
+    const showSkeleton = loadPhase === 'initializing' || loadPhase === 'fetching-cache' || loadPhase === 'fetching-api' || isSyncInProgress;
+    const showFetchPrompt = loadPhase === 'empty' && platform !== 'momence';
+    // Safety: if loadPhase is 'ready' but entry is somehow null, show skeleton to avoid blank page
+    const showFallbackSkeleton = !showSkeleton && !showFetchPrompt && !entry;
+
     return (
       <div className="min-h-screen">
         <header className="sticky top-0 z-10 print:hidden">
@@ -642,24 +639,32 @@ export function ReportClient() {
                 {apiVenueConfig?.name?.split(',')[0] ?? 'Loading…'}
               </p>
             </div>
-            {isSyncInProgress && (
+            {(isSyncInProgress || loadPhase === 'fetching-api') && (
               <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
             )}
           </div>
         </header>
-        {isSyncInProgress ? (
+        {showSkeleton ? (
           <div className="max-w-[760px] mx-auto px-4 pt-5 pb-12 sm:px-5 sm:pt-12">
-            <ReportSkeleton />
+            <ReportSkeleton
+              statusMessage={statusMessage}
+              sessionCount={loadPhase === 'fetching-api' ? syncHook.fetchingCount : undefined}
+            />
           </div>
-        ) : platform !== 'momence' ? (
+        ) : showFetchPrompt ? (
           <NonMomenceNoData
             hostId={hostId ?? ''}
             platform={platform}
             onFetched={(data) => {
               setCachedEntry(data);
               setEntry(data);
+              setLoadPhase('ready');
             }}
           />
+        ) : showFallbackSkeleton ? (
+          <div className="max-w-[760px] mx-auto px-4 pt-5 pb-12 sm:px-5 sm:pt-12">
+            <ReportSkeleton statusMessage="Loading…" />
+          </div>
         ) : null}
       </div>
     );
@@ -724,7 +729,10 @@ export function ReportClient() {
       <div className="max-w-[760px] mx-auto px-4 pt-5 pb-12 sm:px-5 sm:pt-12 space-y-5">
 
         {isSyncInProgress ? (
-          <ReportSkeleton />
+          <ReportSkeleton
+            statusMessage="Refreshing data…"
+            sessionCount={platform !== 'momence' ? nonMomenceFetchCount : syncHook.fetchingCount}
+          />
         ) : <>
 
         {/* ── Filter row ── */}

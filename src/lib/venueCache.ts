@@ -54,6 +54,11 @@ export function getCachedEntry(key: string): CachedVenueEntry | null {
   return cache[key] ?? null;
 }
 
+/** Return the full cache map, parsed once. Use for batch lookups to avoid repeated JSON.parse calls. */
+export function getAllCachedEntries(): Record<string, CachedVenueEntry> {
+  return getCache();
+}
+
 /**
  * Attempt to write the cache to localStorage.
  * If a QuotaExceededError is thrown, evict the oldest entry (that isn't

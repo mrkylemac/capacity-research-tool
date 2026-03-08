@@ -16,6 +16,7 @@
     "fetch-venues": "tsx scripts/fetch-all-venues.ts",
     "poll:acuity": "tsx scripts/poll-acuity.ts",
     "poll:trybe": "tsx scripts/poll-trybe.ts",
+    "refresh:glofox": "tsx scripts/refresh-glofox-tokens.ts",
     "cache:sync": "git fetch origin main && git checkout origin/main -- src/data/venues/",
     "cache:setup": "git config merge.ours.driver true",
     "predev": "yarn cache:sync"

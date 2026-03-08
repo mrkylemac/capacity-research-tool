@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { VENUES } from '@/config/api';
-import { getCachedEntry, getCacheKey } from '@/lib/venueCache';
+import { getAllCachedEntries, getCacheKey } from '@/lib/venueCache';
 import { Card, CardContent } from '@/components/ui/card';
 
 export function HomeClient() {
@@ -18,17 +18,20 @@ export function HomeClient() {
       .then(serverImages => {
         const logoMap: Record<string, string> = { ...serverImages };
         // Merge localStorage entries — they may be more recent after a fresh fetch
+        // Parse cache once instead of per-venue to avoid redundant JSON.parse calls
+        const cache = getAllCachedEntries();
         for (const venue of VENUES) {
-          const entry = getCachedEntry(getCacheKey(venue.id, venue.platform));
+          const entry = cache[getCacheKey(venue.id, venue.platform)];
           if (entry?.hostInfo?.profileImage) logoMap[venue.id] = entry.hostInfo.profileImage;
         }
         setLogos(logoMap);
       })
       .catch(() => {
-        // Fallback to localStorage only
+        // Fallback to localStorage only — single parse for all venues
+        const cache = getAllCachedEntries();
         const logoMap: Record<string, string> = {};
         for (const venue of VENUES) {
-          const entry = getCachedEntry(getCacheKey(venue.id, venue.platform));
+          const entry = cache[getCacheKey(venue.id, venue.platform)];
           if (entry?.hostInfo?.profileImage) logoMap[venue.id] = entry.hostInfo.profileImage;
         }
         setLogos(logoMap);

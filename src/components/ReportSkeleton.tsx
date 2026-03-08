@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent } from '@/components/ui/card';
+import { SessionTicker } from '@/components/SessionTicker';
 
 function Bar({ className = '', style }: { className?: string; style?: React.CSSProperties }) {
   return <div className={`skeleton-bar ${className}`} style={style} />;
@@ -134,6 +135,14 @@ function CapacitySkeleton() {
   );
 }
 
+// Deterministic opacity values for heatmap cells (avoids Math.random() hydration mismatch)
+const HEATMAP_OPACITIES = [
+  0.45, 0.62, 0.38, 0.71, 0.55, 0.49, 0.67, 0.42, 0.58, 0.73, 0.44, 0.61,
+  0.53, 0.69, 0.47, 0.64, 0.40, 0.72, 0.56, 0.50, 0.65, 0.43, 0.59, 0.68,
+  0.46, 0.63, 0.39, 0.70, 0.54, 0.48, 0.66, 0.41, 0.57, 0.74, 0.52, 0.60,
+  0.51, 0.35, 0.75, 0.37, 0.63, 0.47,
+];
+
 /** Skeleton matching DemandSection: title + weekday/weekend toggle + heatmap + day-of-week bars */
 function DemandSkeleton() {
   return (
@@ -156,7 +165,7 @@ function DemandSkeleton() {
             <Bar
               key={i}
               className="aspect-square"
-              style={{ borderRadius: 4, opacity: 0.3 + Math.random() * 0.5 }}
+              style={{ borderRadius: 4, opacity: HEATMAP_OPACITIES[i] }}
             />
           ))}
         </div>
@@ -200,10 +209,38 @@ export function ReportCardsSkeleton() {
   );
 }
 
+export interface ReportSkeletonProps {
+  /** Status message shown above skeleton, e.g. "Loading saved data..." */
+  statusMessage?: string;
+  /** Animated session count shown during API fetch */
+  sessionCount?: number;
+}
+
 /** Full report skeleton — mirrors the real report section layout */
-export function ReportSkeleton() {
+export function ReportSkeleton({ statusMessage, sessionCount }: ReportSkeletonProps = {}) {
   return (
     <div className="space-y-5">
+      {(statusMessage || (sessionCount != null && sessionCount > 0)) && (
+        <div className="flex flex-col items-center gap-3 py-4">
+          {sessionCount != null && sessionCount > 0 && (
+            <div className="text-center">
+              <div className="text-4xl font-semibold tabular-nums tracking-tight text-foreground">
+                <SessionTicker count={sessionCount} />
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">sessions retrieved</p>
+            </div>
+          )}
+          {statusMessage && (
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-muted-foreground opacity-50" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-muted-foreground" />
+              </span>
+              <p className="text-sm text-muted-foreground text-shimmer">{statusMessage}</p>
+            </div>
+          )}
+        </div>
+      )}
       <FilterBarSkeleton />
       <ReportCardsSkeleton />
     </div>

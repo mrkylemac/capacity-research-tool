@@ -88,16 +88,14 @@ export function useSessions() {
     const sessions: MomenceSession[] = [...firstResponse.sessions];
     onProgress(sessions.length);
 
-    const MAX_PAGES = 250;
-    const BATCH_SIZE = 10;
     const apiTotalPages = firstResponse.totalPages;
     const totalPagesFromAPI = apiTotalPages > 1
-      ? Math.min(apiTotalPages, MAX_PAGES)
-      : MAX_PAGES;
+      ? Math.min(apiTotalPages, API_CONFIG.maxPages)
+      : API_CONFIG.maxPages;
 
     if (firstResponse.sessions.length === API_CONFIG.pageSize) {
-      for (let batchStart = 2; batchStart <= totalPagesFromAPI; batchStart += BATCH_SIZE) {
-        const batchEnd = Math.min(batchStart + BATCH_SIZE - 1, totalPagesFromAPI);
+      for (let batchStart = 2; batchStart <= totalPagesFromAPI; batchStart += API_CONFIG.batchSize) {
+        const batchEnd = Math.min(batchStart + API_CONFIG.batchSize - 1, totalPagesFromAPI);
         const pageNumbers = Array.from({ length: batchEnd - batchStart + 1 }, (_, i) => batchStart + i);
 
         const batchResults = await Promise.all(
