@@ -91,7 +91,7 @@ export function RecentSearches({ entries, onSelect }: RecentSearchesProps) {
                   </p>
                   <p className="text-sm text-muted-foreground h-auto grow-0 flex items-end">{location}</p>
                 </div>
-                <div className="aspect-square w-full rounded-xl rounded-r-none overflow-hidden bg-gray-2 flex items-center justify-center max-w-24">
+                <div className="aspect-square w-full rounded-xl rounded-r-none overflow-hidden flex items-center justify-center max-w-24">
                   {entry.hostInfo?.profileImage ? (
                     <img
                       src={entry.hostInfo.profileImage}

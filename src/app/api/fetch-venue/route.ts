@@ -1,11 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { GLOFOX_CONFIG, MARIANATEK_CONFIG, TRYBE_CONFIG } from '@/config/api';
+import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig } from '@/config/api';
+import { fetchPortalSessions } from '@/lib/portalClient';
+import { fetchXtraClubsSessions } from '@/lib/xtraClient';
+import { fetchAllAcuitySessions } from '@/lib/acuityClient';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
 const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
+
+// ── Glofox guest token auto-refresh ───────────────────────────────────────────
+
+/**
+ * Fetch a fresh Glofox guest token for any branch.
+ * Uses the public login endpoint — no credentials required.
+ */
+async function fetchGlofoxGuestToken(branchId: string): Promise<string> {
+  const res = await fetch('https://api.glofox.com/2.0/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-glofox-source': 'webportal' },
+    body: JSON.stringify({ branch_id: branchId, login: 'GUEST', password: 'GUEST' }),
+  });
+  if (!res.ok) throw new Error(`Glofox guest login failed: ${res.status} ${res.statusText}`);
+  const data = await res.json();
+  if (!data.token) throw new Error('Glofox guest login returned no token');
+  return data.token;
+}
+
+/**
+ * Return a valid Glofox guest token, auto-refreshing if the stored one is expired
+ * or will expire within 24 hours.
+ */
+async function getValidGlofoxToken(branchId: string, storedToken: string, tokenExpiry: string): Promise<string> {
+  const expiresAt = new Date(tokenExpiry).getTime();
+  const oneDayFromNow = Date.now() + 24 * 60 * 60 * 1000;
+  if (storedToken && expiresAt > oneDayFromNow) return storedToken;
+
+  console.log(`[Glofox] Token expired or expiring soon for branch ${branchId}, refreshing...`);
+  return fetchGlofoxGuestToken(branchId);
+}
 
 // ── Glofox server-side fetcher ────────────────────────────────────────────────
 
@@ -80,6 +114,7 @@ async function fetchAllGlofoxSessions(
   timezone: string,
   startDate: Date,
   endDate: Date,
+  onProgress?: (count: number) => void,
 ): Promise<MomenceSession[]> {
   const allEvents: GlofoxEvent[] = [];
   let page = 1;
@@ -87,6 +122,7 @@ async function fetchAllGlofoxSessions(
   while (true) {
     const response = await fetchGlofoxDirect(branchId, token, timezone, startDate, endDate, page, 100);
     allEvents.push(...response.data);
+    onProgress?.(allEvents.length);
     console.log(`[Glofox] Page ${page}: ${response.data.length} events (total: ${allEvents.length}/${response.total_count})`);
     if (!response.has_more || page >= 100) break;
     page++;
@@ -122,6 +158,7 @@ async function fetchAllMarianaTekSessions(
   fromDate: string,
   toDate: string,
   venueName: string,
+  onProgress?: (count: number) => void,
 ): Promise<MomenceSession[]> {
   const all: MomenceSession[] = [];
   let page = 1;
@@ -157,6 +194,7 @@ async function fetchAllMarianaTekSessions(
       });
     }
 
+    onProgress?.(all.length);
     console.log(`[${venueName}] Page ${page}: ${data.results?.length ?? 0} classes → ${filtered.length} "${classTypeFilter}" (total: ${all.length})`);
 
     const pages = data.meta?.pagination?.pages ?? 1;
@@ -222,6 +260,7 @@ async function fetchAllTrybeSessions(
   to: Date,
   venueName: string,
   existingSessions: MomenceSession[],
+  onProgress?: (count: number) => void,
 ): Promise<MomenceSession[]> {
   // Fetch fresh data for the upcoming window
   const fresh: MomenceSession[] = [];
@@ -237,6 +276,7 @@ async function fetchAllTrybeSessions(
         fresh.push(s);
       }
     }
+    onProgress?.(fresh.length);
   }
 
   // Preserve previously cached sessions that have now passed (TryBe removes them from the API)
@@ -248,7 +288,7 @@ async function fetchAllTrybeSessions(
 
 // ── Route handler ─────────────────────────────────────────────────────────────
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<NextResponse | Response> {
   let body: { hostId: string; platform: string };
   try {
     body = await request.json();
@@ -261,12 +301,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Missing hostId or platform' }, { status: 400 });
   }
 
-  const toDate = new Date();
-  const fromDate = new Date();
-  fromDate.setFullYear(fromDate.getFullYear() - 3);
-
-  let sessions: MomenceSession[];
-  let venueName: string;
+  // Glofox — resolve a valid token (auto-refresh if expired)
+  let glofoxToken: string | undefined;
+  if (platform === 'glofox') {
+    try {
+      const cfg = getGlofoxConfig(hostId);
+      glofoxToken = await getValidGlofoxToken(cfg.branchId, cfg.token, cfg.tokenExpiry);
+    } catch (err) {
+      return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 400 });
+    }
+  }
 
   // Load existing cached sessions for platforms that need incremental merging
   let existingSessions: MomenceSession[] = [];
@@ -281,86 +325,139 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
   }
 
-  try {
-    if (platform === 'glofox' && hostId === 'lore') {
-      const cfg = GLOFOX_CONFIG.loreBathingClub;
-      if (new Date() > new Date(cfg.tokenExpiry)) {
-        return NextResponse.json({ error: `Glofox token expired on ${cfg.tokenExpiry}` }, { status: 401 });
-      }
-      sessions = await fetchAllGlofoxSessions(
-        cfg.branchId,
-        cfg.token,
-        cfg.timezone,
-        new Date(cfg.operatingSince),
-        toDate,
-      );
-      venueName = cfg.name;
-    } else if (platform === 'marianatek' && hostId === 'projectmood') {
-      const cfg = MARIANATEK_CONFIG.projectMood;
-      const from = fromDate.toISOString().split('T')[0];
-      const to = toDate.toISOString().split('T')[0];
-      sessions = await fetchAllMarianaTekSessions(
-        cfg.baseUrl,
-        cfg.locationId,
-        cfg.regionId,
-        cfg.classTypeFilter,
-        from,
-        to,
-        cfg.name,
-      );
-      venueName = cfg.name;
-    } else if (platform === 'trybe' && hostId === 'senseofself') {
-      const cfg = TRYBE_CONFIG.senseOfSelf;
-      // TryBe only exposes upcoming sessions; fetch 90 days ahead and merge with past cache
-      const fetchFrom = new Date();
-      const fetchTo = new Date();
-      fetchTo.setDate(fetchTo.getDate() + 90);
-      sessions = await fetchAllTrybeSessions(
-        cfg.venueId,
-        cfg.offerings,
-        fetchFrom,
-        fetchTo,
-        cfg.name,
-        existingSessions,
-      );
-      venueName = cfg.name;
-    } else {
-      return NextResponse.json({ error: `Unsupported platform/hostId: ${platform}/${hostId}` }, { status: 400 });
-    }
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: msg }, { status: 502 });
-  }
-
-  const dateRange = sessions.length > 0
-    ? {
-        from: sessions.reduce((min, s) => s.startsAt < min ? s.startsAt : min, sessions[0].startsAt),
-        to: sessions.reduce((max, s) => s.startsAt > max ? s.startsAt : max, sessions[0].startsAt),
-      }
-    : { from: fromDate.toISOString(), to: toDate.toISOString() };
-
-  const entry: CachedVenueEntry = {
-    key: `${hostId}|${platform}`,
-    hostId,
-    platform: platform as CachedVenueEntry['platform'],
-    venueName,
-    dateRange,
-    cachedAt: new Date().toISOString(),
-    sessions,
-    metrics: null,
-    monthlyData: [],
-    venueConfig: null,
-    hostInfo: null,
+  // Stream progress events as NDJSON
+  const encoder = new TextEncoder();
+  const stream = new TransformStream();
+  const writer = stream.writable.getWriter();
+  const send = (obj: Record<string, unknown>) => {
+    writer.write(encoder.encode(JSON.stringify(obj) + '\n')).catch(() => {});
   };
 
-  try {
-    fs.mkdirSync(VENUES_DIR, { recursive: true });
-    const filePath = path.join(VENUES_DIR, `${hostId}-${platform}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(entry, null, 2), 'utf-8');
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: `Failed to write cache: ${msg}` }, { status: 500 });
-  }
+  (async () => {
+    const toDate = new Date();
+    const fromDate = new Date();
+    fromDate.setFullYear(fromDate.getFullYear() - 3);
 
-  return NextResponse.json({ ok: true, sessionCount: sessions.length, venueName });
+    let sessions: MomenceSession[];
+    let venueName: string;
+    const onProgress = (count: number) => send({ type: 'progress', sessionCount: count });
+
+    try {
+      if (platform === 'glofox') {
+        const cfg = getGlofoxConfig(hostId);
+        sessions = await fetchAllGlofoxSessions(
+          cfg.branchId, glofoxToken!, cfg.timezone,
+          new Date(cfg.operatingSince), toDate, onProgress,
+        );
+        venueName = cfg.name;
+      } else if (platform === 'marianatek' && hostId === 'projectmood') {
+        const cfg = MARIANATEK_CONFIG.projectMood;
+        const from = fromDate.toISOString().split('T')[0];
+        const to = toDate.toISOString().split('T')[0];
+        sessions = await fetchAllMarianaTekSessions(
+          cfg.baseUrl, cfg.locationId, cfg.regionId, cfg.classTypeFilter,
+          from, to, cfg.name, onProgress,
+        );
+        venueName = cfg.name;
+      } else if (platform === 'trybe' && hostId === 'senseofself') {
+        const cfg = TRYBE_CONFIG.senseOfSelf;
+        const fetchFrom = new Date();
+        const fetchTo = new Date();
+        fetchTo.setDate(fetchTo.getDate() + 90);
+        sessions = await fetchAllTrybeSessions(
+          cfg.venueId, cfg.offerings, fetchFrom, fetchTo,
+          cfg.name, existingSessions, onProgress,
+        );
+        venueName = cfg.name;
+      } else if (platform === 'portal' && hostId === 'portal') {
+        const cfg = PORTAL_CONFIG;
+        const from = fromDate.toISOString().split('T')[0];
+        const to = toDate.toISOString().split('T')[0];
+        sessions = await fetchPortalSessions(
+          cfg.baseUrl, cfg.locations, from, to, cfg.name, onProgress,
+        );
+
+        // Merge Glofox-based locations (e.g. Minneapolis)
+        for (const glofoxLoc of cfg.glofoxLocations) {
+          console.log(`[Portal] Fetching Glofox location "${glofoxLoc.name}"...`);
+          const token = await getValidGlofoxToken(glofoxLoc.branchId, glofoxLoc.token, glofoxLoc.tokenExpiry);
+          const glofoxSessions = await fetchAllGlofoxSessions(
+            glofoxLoc.branchId, token, glofoxLoc.timezone,
+            new Date(glofoxLoc.operatingSince), toDate, onProgress,
+          );
+          // Tag each session with the location name
+          for (const s of glofoxSessions) {
+            s.location = glofoxLoc.name;
+          }
+          sessions.push(...glofoxSessions);
+        }
+
+        venueName = cfg.name;
+      } else if (platform === 'xtraclubs' && hostId === 'xtraclubs') {
+        const cfg = XTRA_CLUBS_CONFIG;
+        const from = fromDate.toISOString().split('T')[0];
+        const to = toDate.toISOString().split('T')[0];
+        sessions = await fetchXtraClubsSessions(
+          cfg.baseUrl, cfg.locations, from, to,
+          cfg.name, cfg.timezone, onProgress,
+        );
+        venueName = cfg.name;
+      } else if (platform === 'acuity') {
+        const cfg = getAcuityConfig(hostId);
+        sessions = await fetchAllAcuitySessions(cfg, existingSessions, onProgress);
+        venueName = cfg.name;
+      } else {
+        send({ type: 'error', error: `Unsupported platform/hostId: ${platform}/${hostId}` });
+        writer.close();
+        return;
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      send({ type: 'error', error: msg });
+      writer.close();
+      return;
+    }
+
+    const dateRange = sessions.length > 0
+      ? {
+          from: sessions.reduce((min, s) => s.startsAt < min ? s.startsAt : min, sessions[0].startsAt),
+          to: sessions.reduce((max, s) => s.startsAt > max ? s.startsAt : max, sessions[0].startsAt),
+        }
+      : { from: fromDate.toISOString(), to: toDate.toISOString() };
+
+    const entry: CachedVenueEntry = {
+      key: `${hostId}|${platform}`,
+      hostId,
+      platform: platform as CachedVenueEntry['platform'],
+      venueName,
+      dateRange,
+      cachedAt: new Date().toISOString(),
+      sessions,
+      metrics: null,
+      monthlyData: [],
+      venueConfig: null,
+      hostInfo: null,
+    };
+
+    try {
+      fs.mkdirSync(VENUES_DIR, { recursive: true });
+      const filePath = path.join(VENUES_DIR, `${hostId}-${platform}.json`);
+      fs.writeFileSync(filePath, JSON.stringify(entry, null, 2), 'utf-8');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      send({ type: 'error', error: `Failed to write cache: ${msg}` });
+      writer.close();
+      return;
+    }
+
+    send({ type: 'done', ok: true, sessionCount: sessions.length, venueName });
+    writer.close();
+  })();
+
+  return new Response(stream.readable, {
+    headers: {
+      'Content-Type': 'application/x-ndjson',
+      'Cache-Control': 'no-cache',
+    },
+  });
 }

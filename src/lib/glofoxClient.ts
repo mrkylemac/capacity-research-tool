@@ -4,17 +4,14 @@ import type {
   GlofoxSession,
   GlofoxQueryParams,
 } from '@/types/glofox';
-import { GLOFOX_CONFIG } from '@/config/api';
 import { sanitizeSessions, logDataQuality } from '@/lib/utils';
 
 const GLOFOX_PROXY_EVENTS = '/api/glofox/events';
 
-function checkTokenExpiry(): void {
-  const expiry = GLOFOX_CONFIG.loreBathingClub.tokenExpiry;
-  if (new Date() > new Date(expiry)) {
+function checkTokenExpiry(tokenExpiry: string): void {
+  if (new Date() > new Date(tokenExpiry)) {
     throw new Error(
-      `Glofox guest token expired on ${expiry}. ` +
-      `Visit the Lore Bathing Club booking page to obtain a new token.`,
+      `Glofox guest token expired on ${tokenExpiry}. Obtain a new guest token.`,
     );
   }
 }
@@ -25,7 +22,7 @@ function checkTokenExpiry(): void {
  */
 class GlofoxClient {
   async fetchEvents(params: GlofoxQueryParams): Promise<GlofoxEventsResponse> {
-    checkTokenExpiry();
+    checkTokenExpiry(params.tokenExpiry);
 
     const start = Math.floor(params.startDate.getTime() / 1000);
     const end = Math.floor(params.endDate.getTime() / 1000);

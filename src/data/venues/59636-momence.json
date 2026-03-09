@@ -69706,7 +69706,7 @@
       "endsAt": "2026-03-04T00:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 30,
       "location": "Sól Saunas Prahran",
       "inPerson": true,
@@ -69716,14 +69716,14 @@
   ],
   "metrics": {
     "totalSessions": 4979,
-    "totalTicketsSold": 7455,
+    "totalTicketsSold": 7456,
     "totalCapacity": 67631,
-    "avgUtilisation": 11.023051559196228,
-    "totalRevenue": 223650,
+    "avgUtilisation": 11.024530171075394,
+    "totalRevenue": 223680,
     "avgRevenuePerVisit": 30,
-    "avgRevenuePerSession": 44.91865836513356,
-    "sessionsPerDay": 6.811217510259918,
-    "sessionsPerWeek": 47.67852257181943,
+    "avgRevenuePerSession": 44.92468367141996,
+    "sessionsPerDay": 24.16990291262136,
+    "sessionsPerWeek": 169.18932038834953,
     "operatingSince": "August 2025"
   },
   "monthlyData": [
@@ -69794,10 +69794,10 @@
       "month": "March",
       "year": 2026,
       "sessions": 52,
-      "ticketsSold": 192,
+      "ticketsSold": 193,
       "capacity": 520,
-      "utilisation": 36.92307692307693,
-      "revenue": 5760
+      "utilisation": 37.11538461538461,
+      "revenue": 5790
     }
   ],
   "venueConfig": {
@@ -69806,7 +69806,7 @@
     "duration": 60,
     "price": 30,
     "capacity": 15,
-    "sessionsPerDay": 6.8,
+    "sessionsPerDay": 24.2,
     "operatingHours": "12am – 12:30pm"
   },
   "hostInfo": {
@@ -69819,5 +69819,5 @@
     "profileImage": "https://images.momence.com/h/59636/host-profile-image/ab6d46b7-1240-45e5-a653-637ea99aad8a.png"
   },
   "key": "59636|momence",
-  "cachedAt": "2026-03-03T23:03:55.240Z"
+  "cachedAt": "2026-03-09T03:14:39.587Z"
 }

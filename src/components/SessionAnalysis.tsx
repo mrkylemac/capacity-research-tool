@@ -7,7 +7,7 @@ import {
 } from 'recharts';
 import type { MomenceSession } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
-import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
+import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
 import { Card, CardContent, CardDescription } from '@/components/ui/card';
 import { StatCard } from '@/components/ui/stat-card';
 
@@ -153,6 +153,9 @@ export function SessionAnalysis({ sessions, metrics }: SessionAnalysisProps) {
               <Tooltip
                 contentStyle={chartTooltipContentStyle}
                 labelStyle={chartTooltipLabelStyle}
+                itemStyle={chartTooltipItemStyle}
+                separator=": "
+                cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                 formatter={(value: number, name: string) => {
                   if (name === 'avgSessions') return [`${value.toFixed(1)} avg sessions`, ''];
                   return [value, name];

@@ -2,6 +2,7 @@
   "name": "vite_react_shadcn_ts",
   "private": true,
   "version": "0.0.0",
+  "packageManager": "yarn@1.22.22",
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -12,7 +13,13 @@
     "test:watch": "vitest",
     "fetch-forecast": "tsx scripts/fetch-forecast.ts",
     "test:sol-saunas": "tsx scripts/test-sol-saunas.ts",
-    "fetch-venues": "tsx scripts/fetch-all-venues.ts"
+    "fetch-venues": "tsx scripts/fetch-all-venues.ts",
+    "poll:acuity": "tsx scripts/poll-acuity.ts",
+    "poll:trybe": "tsx scripts/poll-trybe.ts",
+    "refresh:glofox": "tsx scripts/refresh-glofox-tokens.ts",
+    "cache:sync": "git fetch origin main && git checkout origin/main -- src/data/venues/",
+    "cache:setup": "git config merge.ours.driver true",
+    "predev": "yarn cache:sync"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

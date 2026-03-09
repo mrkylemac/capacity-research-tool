@@ -1,0 +1,36 @@
+{
+  "tab": "CapEx",
+  "headers": ["Category", "Description", "Supplier", "Forecast", "Actual", "Status", "Date", "Notes"],
+  "rows": [
+    { "Category": "Construction", "Description": "Demolition & structural prep", "Supplier": "Demo Co", "Forecast": "42000", "Actual": "48500", "Status": "paid", "Date": "2024-08-15", "Notes": "Additional structural work required for plumbing access" },
+    { "Category": "Construction", "Description": "Sauna room framing & insulation", "Supplier": "BuildRight", "Forecast": "65000", "Actual": "62000", "Status": "paid", "Date": "2024-10-20", "Notes": "" },
+    { "Category": "Construction", "Description": "Plumbing rough-in", "Supplier": "PipeWorks Plumbing", "Forecast": "35000", "Actual": "38000", "Status": "paid", "Date": "2024-11-10", "Notes": "Additional runs for cold plunge" },
+    { "Category": "Construction", "Description": "Electrical rough-in", "Supplier": "Sparks Electrical", "Forecast": "28000", "Actual": "27500", "Status": "paid", "Date": "2024-11-25", "Notes": "" },
+    { "Category": "Construction", "Description": "Waterproofing — wet areas", "Supplier": "AquaSeal", "Forecast": "22000", "Actual": "22000", "Status": "paid", "Date": "2024-12-05", "Notes": "" },
+    { "Category": "Construction", "Description": "Wall & floor tiling", "Supplier": "TileMasters", "Forecast": "45000", "Actual": "45000", "Status": "invoiced", "Date": "2025-01-20", "Notes": "Invoice received, awaiting payment" },
+    { "Category": "Construction", "Description": "Joinery & cabinetry", "Supplier": "CraftJoinery", "Forecast": "38000", "Actual": "0", "Status": "quoted", "Date": "", "Notes": "Quote accepted, work Q1 2025" },
+    { "Category": "Construction", "Description": "Painting & finishing", "Supplier": "TBD", "Forecast": "18000", "Actual": "0", "Status": "forecast", "Date": "", "Notes": "" },
+
+    { "Category": "Equipment", "Description": "Sauna heaters × 4 (Harvia)", "Supplier": "Nordic Sauna Co", "Forecast": "28000", "Actual": "28000", "Status": "paid", "Date": "2024-09-30", "Notes": "" },
+    { "Category": "Equipment", "Description": "Steam generators × 2", "Supplier": "Nordic Sauna Co", "Forecast": "18000", "Actual": "18500", "Status": "paid", "Date": "2024-09-30", "Notes": "Minor spec upgrade" },
+    { "Category": "Equipment", "Description": "Cold plunge pools × 3", "Supplier": "AquaTech", "Forecast": "55000", "Actual": "55000", "Status": "invoiced", "Date": "2025-01-15", "Notes": "Deposit paid, balance on installation" },
+    { "Category": "Equipment", "Description": "HVAC & air handling system", "Supplier": "ClimateControl", "Forecast": "42000", "Actual": "0", "Status": "quoted", "Date": "", "Notes": "" },
+    { "Category": "Equipment", "Description": "AV & ambient sound system", "Supplier": "SoundScape", "Forecast": "15000", "Actual": "0", "Status": "forecast", "Date": "", "Notes": "" },
+    { "Category": "Equipment", "Description": "Lighting control system", "Supplier": "LightDesign", "Forecast": "12000", "Actual": "0", "Status": "quoted", "Date": "", "Notes": "" },
+
+    { "Category": "Consultants", "Description": "Architect fees", "Supplier": "Studio B Architects", "Forecast": "35000", "Actual": "31500", "Status": "paid", "Date": "2024-07-01", "Notes": "Final invoice pending" },
+    { "Category": "Consultants", "Description": "Structural engineer", "Supplier": "StructEng", "Forecast": "12000", "Actual": "12000", "Status": "paid", "Date": "2024-08-01", "Notes": "" },
+    { "Category": "Consultants", "Description": "Building surveyor", "Supplier": "SurveyPro", "Forecast": "8000", "Actual": "8500", "Status": "paid", "Date": "2024-09-01", "Notes": "Fee increase on resubmission" },
+    { "Category": "Consultants", "Description": "Interior designer", "Supplier": "Design Studio X", "Forecast": "18000", "Actual": "18000", "Status": "invoiced", "Date": "2025-02-01", "Notes": "" },
+
+    { "Category": "Permits", "Description": "Building permit", "Supplier": "Local Council", "Forecast": "4500", "Actual": "4800", "Status": "paid", "Date": "2024-07-15", "Notes": "Fee increase" },
+    { "Category": "Permits", "Description": "Health dept. approval", "Supplier": "Local Council", "Forecast": "3500", "Actual": "3500", "Status": "paid", "Date": "2024-08-20", "Notes": "" },
+    { "Category": "Permits", "Description": "Liquor licence application", "Supplier": "Liquor Licensing", "Forecast": "8000", "Actual": "0", "Status": "forecast", "Date": "", "Notes": "Application to be lodged Q2 2025" },
+
+    { "Category": "FF&E", "Description": "Towels, robes & initial linen stock", "Supplier": "LinenHouse", "Forecast": "12000", "Actual": "0", "Status": "forecast", "Date": "", "Notes": "" },
+    { "Category": "FF&E", "Description": "Lounge furniture & seating", "Supplier": "TBD", "Forecast": "22000", "Actual": "0", "Status": "forecast", "Date": "", "Notes": "" },
+    { "Category": "FF&E", "Description": "Decorative lighting & accessories", "Supplier": "LightDesign", "Forecast": "8000", "Actual": "0", "Status": "forecast", "Date": "", "Notes": "" },
+
+    { "Category": "Contingency", "Description": "Construction contingency (10%)", "Supplier": "", "Forecast": "28000", "Actual": "0", "Status": "forecast", "Date": "", "Notes": "Reserve — not yet drawn" }
+  ]
+}

@@ -10,8 +10,18 @@ import {
 } from '@/lib/metricsCalculator';
 import { sanitizeSessions, logDataQuality, normalizeCapacity, type OperatingHoursBounds } from '@/lib/utils';
 import { inferOperatingHours, calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
-import { API_CONFIG } from '@/config/api';
+import { API_CONFIG, INNER_STUDIO_CONFIG } from '@/config/api';
 import type { MomenceSession, SessionsQueryParams } from '@/types/momence';
+
+export interface MomenceLocationConfig {
+  hostId: string;
+  name: string;
+}
+
+/** Multi-location Momence configs keyed by combined venue id */
+const MULTI_LOCATION_MOMENCE: Record<string, { name: string; locations: readonly MomenceLocationConfig[] }> = {
+  innerstudio: INNER_STUDIO_CONFIG,
+};
 
 function filterByDateRange(sessions: MomenceSession[], fromDate: string, toDate: string): MomenceSession[] {
   const from = new Date(fromDate).getTime();
@@ -65,6 +75,50 @@ export function useSessions() {
   const [fetchingCount, setFetchingCount] = useState(0);
   const [dataRange, setDataRange] = useState<DataRange>({ from: null, to: null, rawFrom: null, rawTo: null, effectiveFromISO: null, effectiveToISO: null });
 
+  /** Fetch all paginated sessions for a single Momence hostId */
+  const fetchAllPagesForHost = useCallback(async (
+    params: Omit<SessionsQueryParams, 'page' | 'pageSize'>,
+    onProgress: (count: number) => void,
+  ): Promise<{ sessions: MomenceSession[]; hostInfo: HostInfo | null }> => {
+    const [fetchedHostInfo, firstResponse] = await Promise.all([
+      momenceClient.fetchHostInfo(params.hostId),
+      momenceClient.fetchSessions({ ...params, page: 1, pageSize: API_CONFIG.pageSize }),
+    ]);
+
+    const sessions: MomenceSession[] = [...firstResponse.sessions];
+    onProgress(sessions.length);
+
+    const apiTotalPages = firstResponse.totalPages;
+    const totalPagesFromAPI = apiTotalPages > 1
+      ? Math.min(apiTotalPages, API_CONFIG.maxPages)
+      : API_CONFIG.maxPages;
+
+    if (firstResponse.sessions.length === API_CONFIG.pageSize) {
+      for (let batchStart = 2; batchStart <= totalPagesFromAPI; batchStart += API_CONFIG.batchSize) {
+        const batchEnd = Math.min(batchStart + API_CONFIG.batchSize - 1, totalPagesFromAPI);
+        const pageNumbers = Array.from({ length: batchEnd - batchStart + 1 }, (_, i) => batchStart + i);
+
+        const batchResults = await Promise.all(
+          pageNumbers.map(p => momenceClient.fetchSessions({ ...params, page: p, pageSize: API_CONFIG.pageSize }))
+        );
+
+        let reachedEnd = false;
+        for (const result of batchResults) {
+          sessions.push(...result.sessions);
+          if (result.sessions.length < API_CONFIG.pageSize) {
+            reachedEnd = true;
+            break;
+          }
+        }
+
+        onProgress(sessions.length);
+        if (reachedEnd) break;
+      }
+    }
+
+    return { sessions, hostInfo: fetchedHostInfo };
+  }, []);
+
   const fetchData = useCallback(async (params: Omit<SessionsQueryParams, 'page' | 'pageSize'>) => {
     setIsLoading(true);
     setFetchPhase('fetching');
@@ -73,51 +127,44 @@ export function useSessions() {
     setQueryParams({ ...params, page: 1, pageSize: API_CONFIG.pageSize });
 
     try {
-      // Fetch host info and page 1 in parallel
-      const [fetchedHostInfo, firstResponse] = await Promise.all([
-        momenceClient.fetchHostInfo(params.hostId),
-        momenceClient.fetchSessions({ ...params, page: 1, pageSize: API_CONFIG.pageSize }),
-      ]);
+      const multiConfig = MULTI_LOCATION_MOMENCE[params.hostId];
+      let allData: MomenceSession[];
+      let fetchedHostInfo: HostInfo | null;
+
+      if (multiConfig) {
+        // Multi-location Momence venue: fetch all locations in parallel
+        const locationCounts = new Map<string, number>();
+        const results = await Promise.all(
+          multiConfig.locations.map(loc =>
+            fetchAllPagesForHost(
+              { ...params, hostId: loc.hostId },
+              (count) => {
+                locationCounts.set(loc.hostId, count);
+                let total = 0;
+                locationCounts.forEach(v => { total += v; });
+                setFetchingCount(total);
+              },
+            ).then(({ sessions, hostInfo }) => ({
+              sessions: sessions.map(s => ({ ...s, location: loc.name })),
+              hostInfo,
+            }))
+          )
+        );
+        allData = results.flatMap(r => r.sessions);
+        fetchedHostInfo = results[0]?.hostInfo ?? null;
+        // Use the config name for multi-location venues (not the first location's API name)
+        if (fetchedHostInfo) {
+          fetchedHostInfo = { ...fetchedHostInfo, name: multiConfig.name };
+        }
+        setFetchingCount(allData.length);
+      } else {
+        // Single-location Momence venue
+        const result = await fetchAllPagesForHost(params, setFetchingCount);
+        allData = result.sessions;
+        fetchedHostInfo = result.hostInfo;
+      }
 
       setHostInfo(fetchedHostInfo);
-
-      const allData: MomenceSession[] = [...firstResponse.sessions];
-      setFetchingCount(allData.length);
-
-      // Fetch remaining pages in parallel batches of 10.
-      // Use totalPages from the API response as an upper bound if reliable (> 1).
-      // Momence may not return an accurate totalPages, so if it resolves to 1 but
-      // the first page is full, fall back to MAX_PAGES and rely on partial-page
-      // detection (result.sessions.length < pageSize) to terminate naturally.
-      const MAX_PAGES = 250;
-      const BATCH_SIZE = 10;
-      const apiTotalPages = firstResponse.totalPages;
-      const totalPagesFromAPI = apiTotalPages > 1
-        ? Math.min(apiTotalPages, MAX_PAGES)
-        : MAX_PAGES;
-
-      if (firstResponse.sessions.length === API_CONFIG.pageSize) {
-        for (let batchStart = 2; batchStart <= totalPagesFromAPI; batchStart += BATCH_SIZE) {
-          const batchEnd = Math.min(batchStart + BATCH_SIZE - 1, totalPagesFromAPI);
-          const pageNumbers = Array.from({ length: batchEnd - batchStart + 1 }, (_, i) => batchStart + i);
-
-          const batchResults = await Promise.all(
-            pageNumbers.map(p => momenceClient.fetchSessions({ ...params, page: p, pageSize: API_CONFIG.pageSize }))
-          );
-
-          let reachedEnd = false;
-          for (const result of batchResults) {
-            allData.push(...result.sessions);
-            if (result.sessions.length < API_CONFIG.pageSize) {
-              reachedEnd = true;
-              break;
-            }
-          }
-
-          setFetchingCount(allData.length);
-          if (reachedEnd) break;
-        }
-      }
 
       const pagesLoaded = Math.ceil(allData.length / API_CONFIG.pageSize);
 

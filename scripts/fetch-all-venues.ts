@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { format, subYears } from 'date-fns';
-import { VENUES, GLOFOX_CONFIG, MARIANATEK_CONFIG, type VenueConfig } from '../src/config/api';
+import { VENUES, getGlofoxConfig, MARIANATEK_CONFIG, type VenueConfig } from '../src/config/api';
 import { momenceClient } from '../src/lib/momenceClient';
 import { fetchMarianaTekSessions } from '../src/lib/marianatekClient';
 import { sanitizeSessions, logDataQuality } from '../src/lib/utils';
@@ -68,15 +68,33 @@ async function fetchGlofoxPage(
   return res.json();
 }
 
-async function fetchAllGlofoxEvents(venue: VenueConfig): Promise<MomenceSession[]> {
-  const config = GLOFOX_CONFIG.loreBathingClub;
+/** Fetch a fresh Glofox guest token (public endpoint, no credentials). */
+async function fetchGlofoxGuestToken(branchId: string): Promise<string> {
+  const res = await fetch('https://api.glofox.com/2.0/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-glofox-source': 'webportal' },
+    body: JSON.stringify({ branch_id: branchId, login: 'GUEST', password: 'GUEST' }),
+  });
+  if (!res.ok) throw new Error(`Glofox guest login failed: ${res.status} ${res.statusText}`);
+  const data = await res.json();
+  if (!data.token) throw new Error('Glofox guest login returned no token');
+  return data.token;
+}
 
-  // Check token expiry
-  if (new Date() > new Date(config.tokenExpiry)) {
-    throw new Error(
-      `Glofox token expired on ${config.tokenExpiry}. Obtain a new token from the Lore Bathing Club booking page.`,
-    );
-  }
+/** Return a valid token, auto-refreshing if expired or expiring within 24h. */
+async function getValidGlofoxToken(branchId: string, storedToken: string, tokenExpiry: string): Promise<string> {
+  const expiresAt = new Date(tokenExpiry).getTime();
+  const oneDayFromNow = Date.now() + 24 * 60 * 60 * 1000;
+  if (storedToken && expiresAt > oneDayFromNow) return storedToken;
+  console.log(`  [Glofox] Token expired or expiring soon, auto-refreshing...`);
+  return fetchGlofoxGuestToken(branchId);
+}
+
+async function fetchAllGlofoxEvents(venue: VenueConfig): Promise<MomenceSession[]> {
+  const config = getGlofoxConfig(venue.id);
+
+  // Auto-refresh token if expired or expiring soon (no manual intervention needed)
+  const token = await getValidGlofoxToken(config.branchId, config.token, config.tokenExpiry);
 
   const startDate = new Date(config.operatingSince);
   const endDate = new Date();
@@ -87,7 +105,7 @@ async function fetchAllGlofoxEvents(venue: VenueConfig): Promise<MomenceSession[
   let page = 1;
 
   while (true) {
-    const response = await fetchGlofoxPage(startTs, endTs, config.token, config.branchId, config.timezone, page);
+    const response = await fetchGlofoxPage(startTs, endTs, token, config.branchId, config.timezone, page);
     allEvents.push(...response.data);
     console.log(`  Glofox page ${page}: ${response.data.length} events (total: ${allEvents.length}/${response.total_count})`);
     if (!response.has_more || page >= 100) break;
