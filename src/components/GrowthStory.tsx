@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, type DotProps } from 'recharts';
 import type { MonthlyData } from '@/types/momence';
-import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
+import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
 import { isPartialMonth } from '@/lib/venueInsights';
 
 interface GrowthStoryProps {
@@ -119,6 +119,8 @@ export function GrowthStory({ monthlyData }: GrowthStoryProps) {
           <Tooltip
             contentStyle={chartTooltipContentStyle}
             labelStyle={chartTooltipLabelStyle}
+            itemStyle={chartTooltipItemStyle}
+            separator=": "
             formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
           />
           <Area

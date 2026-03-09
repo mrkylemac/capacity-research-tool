@@ -15,7 +15,7 @@ import { GrowthStory } from '@/components/GrowthStory';
 import { UtilisationTrend } from '@/components/UtilisationTrend';
 import { VenueComparisonChart } from '@/components/VenueComparisonChart';
 import { buildCapacityString, computeMonthlyTrajectory } from '@/lib/venueInsights';
-import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
+import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
 
 // ── Private helpers ──────────────────────────────────────────────────────────
 
@@ -229,6 +229,9 @@ function SnapshotSection({
                   <Tooltip
                     contentStyle={chartTooltipContentStyle}
                     labelStyle={chartTooltipLabelStyle}
+                    itemStyle={chartTooltipItemStyle}
+                    separator=": "
+                    cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                     formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
                   />
                   <Bar dataKey="visitors" fill="var(--color-gray-2)" radius={[4, 4, 0, 0]} />
@@ -253,6 +256,8 @@ function SnapshotSection({
                   <Tooltip
                     contentStyle={chartTooltipContentStyle}
                     labelStyle={chartTooltipLabelStyle}
+                    itemStyle={chartTooltipItemStyle}
+                    separator=": "
                     formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
                   />
                   <Area
@@ -397,6 +402,9 @@ function CapacitySection({
                 <Tooltip
                   contentStyle={chartTooltipContentStyle}
                   labelStyle={chartTooltipLabelStyle}
+                  itemStyle={chartTooltipItemStyle}
+                  separator=": "
+                  cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                   formatter={(value: number, name: string, props: { payload: { occupancyPct: number; isPartial: boolean } }) => {
                     if (name === 'visitors') {
                       const { occupancyPct, isPartial } = props.payload;
@@ -562,7 +570,7 @@ export function ReportSections({
   hostId,
 }: ReportSectionsProps) {
   return (
-    <div className="flex flex-col gap-5 sm:gap-8">
+    <div className="flex flex-col gap-5 sm:gap-8 mb-12">
       <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '0ms' }}>
         <SnapshotSection sessions={sessions} metrics={metrics} monthlyData={monthlyData} period={period} platform={platform} />
       </div>
@@ -574,11 +582,11 @@ export function ReportSections({
           <DemandSection sessions={sessions} metrics={metrics} period={period} />
         </div>
       )}
-      {hostId && (
+      {/* {hostId && (
         <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '180ms' }}>
           <VenueComparisonChart currentVenueId={hostId} />
         </div>
-      )}
+      )} */}
     </div>
   );
 }

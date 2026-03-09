@@ -7,7 +7,7 @@ import {
   type DotProps,
 } from 'recharts';
 import type { MonthlyData } from '@/types/momence';
-import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
+import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
 import { isPartialMonth } from '@/lib/venueInsights';
 
 interface UtilisationTrendProps {
@@ -87,6 +87,8 @@ export function UtilisationTrend({ monthlyData }: UtilisationTrendProps) {
           <Tooltip
             contentStyle={chartTooltipContentStyle}
             labelStyle={chartTooltipLabelStyle}
+            itemStyle={chartTooltipItemStyle}
+            separator=": "
             formatter={(value: number, name: string) => {
               if (name === 'occupancy') return [`${value.toFixed(1)}%`, 'Occupancy'];
               return [value.toLocaleString(), name];

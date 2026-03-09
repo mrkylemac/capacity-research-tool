@@ -5,7 +5,7 @@ import {
   ResponsiveContainer, ReferenceLine, Cell,
 } from 'recharts';
 import type { MonthlyData, MomenceSession } from '@/types/momence';
-import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
+import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -342,6 +342,9 @@ export function MonthlyTable({ data, sessions, collapsible = false }: MonthlyTab
                 <Tooltip
                   contentStyle={chartTooltipContentStyle}
                   labelStyle={chartTooltipLabelStyle}
+                  itemStyle={chartTooltipItemStyle}
+                  separator=": "
+                  cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                   formatter={(value: number, name: string) => [
                     name === 'occupancy' ? `${value}%` : value.toLocaleString(),
                     name === 'occupancy' ? 'Occupancy' : 'Visitors',

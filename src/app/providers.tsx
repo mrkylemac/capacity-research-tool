@@ -23,6 +23,7 @@ export function Providers({ children }: PropsWithChildren) {
         <NextThemeProvider
           attribute="class"
           value={{ light: 'light-mode', dark: 'dark-mode' }}
+          forcedTheme="light"
           disableTransitionOnChange
         >
           {children}

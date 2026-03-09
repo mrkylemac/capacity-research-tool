@@ -474,40 +474,8 @@ export function ReportClient() {
     });
   }, [entry?.hostId, entry?.monthlyData, venueSearches]);
 
-  // ── Available months span ────────────────────────────────────────────────
-  const availableMonths = useMemo<number | null>(() => {
-    if (allCachedSessions.length === 0) return null;
-    let minTs = Infinity;
-    for (const s of allCachedSessions) {
-      const t = new Date(s.startsAt).getTime();
-      if (t < minTs) minTs = t;
-    }
-    return (Date.now() - minTs) / (1000 * 60 * 60 * 24 * 30.44);
-  }, [allCachedSessions]);
-
-  // Auto-correct period if it exceeds available data
-  useEffect(() => {
-    if (availableMonths === null) return;
-    const opt = PERIOD_OPTIONS.find(o => o.value === period);
-    if (!opt || opt.months === null || opt.months <= availableMonths) return;
-    const valid = PERIOD_OPTIONS.filter(o => o.months !== null && o.months <= availableMonths);
-    setPeriod(valid.length > 0 ? valid[valid.length - 1].value : 'all');
-  }, [availableMonths, period]);
-
-  // ── Period-filtered data ─────────────────────────────────────────────────
-  const periodRange = useMemo(() => getPeriodRange(period), [period]);
-
-  const periodFilteredSessions = useMemo(() => {
-    if (period === 'all') return allCachedSessions;
-    const fromMs = periodRange.from.getTime();
-    const toMs = periodRange.to.getTime();
-    return allCachedSessions.filter(s => {
-      const ts = new Date(s.startsAt).getTime();
-      return ts >= fromMs && ts <= toMs;
-    });
-  }, [allCachedSessions, period, periodRange]);
-
   // ── Location filter (for multi-location venues like Portal) ──────────────
+  // Location is resolved first so it scopes period options and session types.
   const allLocations = useMemo(() => {
     const locs = new Set(allCachedSessions.map(s => s.location).filter(Boolean));
     return Array.from(locs).sort();
@@ -532,20 +500,55 @@ export function ReportClient() {
     setSelectedLocation(best);
   }, [hasMultipleLocations, selectedLocation, allLocations, allCachedSessions]);
 
-  const locationFilteredSessions = useMemo(() => {
-    if (!hasMultipleLocations || !selectedLocation) return periodFilteredSessions;
-    return periodFilteredSessions.filter(s => s.location === selectedLocation);
-  }, [periodFilteredSessions, selectedLocation, hasMultipleLocations]);
+  // Sessions scoped to the selected location (all-time, before period filter).
+  const locationScopedSessions = useMemo(() => {
+    if (!hasMultipleLocations || !selectedLocation) return allCachedSessions;
+    return allCachedSessions.filter(s => s.location === selectedLocation);
+  }, [allCachedSessions, hasMultipleLocations, selectedLocation]);
+
+  // ── Available months span (scoped to location) ──────────────────────────
+  const availableMonths = useMemo<number | null>(() => {
+    if (locationScopedSessions.length === 0) return null;
+    let minTs = Infinity;
+    for (const s of locationScopedSessions) {
+      const t = new Date(s.startsAt).getTime();
+      if (t < minTs) minTs = t;
+    }
+    return (Date.now() - minTs) / (1000 * 60 * 60 * 24 * 30.44);
+  }, [locationScopedSessions]);
+
+  // Auto-correct period if it exceeds available data for the selected location
+  useEffect(() => {
+    if (availableMonths === null) return;
+    const opt = PERIOD_OPTIONS.find(o => o.value === period);
+    if (!opt || opt.months === null || opt.months <= availableMonths) return;
+    const valid = PERIOD_OPTIONS.filter(o => o.months !== null && o.months <= availableMonths);
+    setPeriod(valid.length > 0 ? valid[valid.length - 1].value : 'all');
+  }, [availableMonths, period]);
+
+  // ── Period-filtered data (from location-scoped sessions) ─────────────────
+  const periodRange = useMemo(() => getPeriodRange(period), [period]);
+
+  const periodFilteredSessions = useMemo(() => {
+    if (period === 'all') return locationScopedSessions;
+    const fromMs = periodRange.from.getTime();
+    const toMs = periodRange.to.getTime();
+    return locationScopedSessions.filter(s => {
+      const ts = new Date(s.startsAt).getTime();
+      return ts >= fromMs && ts <= toMs;
+    });
+  }, [locationScopedSessions, period, periodRange]);
+
+  // For the downstream pipeline, locationFilteredSessions === periodFilteredSessions
+  // because location filtering is already applied above.
+  const locationFilteredSessions = periodFilteredSessions;
 
   // All-time session types (normalised, used to keep the filter visible across period changes).
-  // Scoped to the selected location so multi-location venues only show relevant session types.
+  // Already scoped to the selected location via locationScopedSessions.
   const allSessionTypes = useMemo(() => {
-    const source = hasMultipleLocations && selectedLocation
-      ? allCachedSessions.filter(s => s.location === selectedLocation)
-      : allCachedSessions;
-    const names = new Set(source.map(s => getNorm(s)).filter(Boolean));
+    const names = new Set(locationScopedSessions.map(s => getNorm(s)).filter(Boolean));
     return Array.from(names).sort();
-  }, [allCachedSessions, hasMultipleLocations, selectedLocation, getNorm]);
+  }, [locationScopedSessions, getNorm]);
 
   // Period-scoped session types (normalised, used as dropdown options).
   const sessionTypes = useMemo(() => {
@@ -599,14 +602,14 @@ export function ReportClient() {
       const range = getPeriodRange(p);
       const fromMs = range.from.getTime();
       const toMs = range.to.getTime();
-      const hasActive = allCachedSessions.some(s => {
+      const hasActive = locationScopedSessions.some(s => {
         const ts = new Date(s.startsAt).getTime();
         return ts >= fromMs && ts <= toMs && s.ticketsSold > 0;
       });
       if (!hasActive) disabled.add(p);
     });
     return disabled;
-  }, [allCachedSessions]);
+  }, [locationScopedSessions]);
 
   // ── Empty / loading states ────────────────────────────────────────────────
   if (loadPhase !== 'ready' || !entry) {
@@ -736,18 +739,10 @@ export function ReportClient() {
         ) : <>
 
         {/* ── Filter row ── */}
-        <div className="grid sm:grid-cols-2 gap-3 items-center justify-center grid-cols-1">
+        <div className="grid sm:grid-cols-2 gap-3 items-center justify-center grid-cols-1 sm:items-start">
           <div className="flex flex-col sm:flex-row sm:gap-3 gap-2 w-full">
 
-            <PeriodSelector
-              value={period}
-              onChange={(p) => { startTransition(() => { setPeriod(p); setSelectedTypes(new Set()); }); }}
-              availableMonths={availableMonths}
-              disabledValues={disabledPeriods}
-              className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
-            />
-
-            {/* Location filter — shown when venue has multiple locations (e.g. Portal) */}
+            {/* Location filter — shown first as it scopes period + session options */}
             {hasMultipleLocations && (
               <Popover>
                 <PopoverTrigger asChild>
@@ -782,6 +777,14 @@ export function ReportClient() {
               </Popover>
             )}
 
+            <PeriodSelector
+              value={period}
+              onChange={(p) => { startTransition(() => { setPeriod(p); setSelectedTypes(new Set()); }); }}
+              availableMonths={availableMonths}
+              disabledValues={disabledPeriods}
+              className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
+            />
+
             {/* Session type filter — shown whenever the venue has multiple session types
                 across all time, so it persists through narrow period selections. */}
             {allSessionTypes.length > 1 && (
@@ -789,7 +792,7 @@ export function ReportClient() {
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
+                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto min-w-[120px] max-w-[240px]"
                   >
                     <span className="truncate overflow-hidden w-full text-left">
                     {selectedTypes.size === 0

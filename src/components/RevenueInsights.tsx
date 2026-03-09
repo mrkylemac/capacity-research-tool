@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import type { MomenceSession, MonthlyData } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
-import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
+import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -323,6 +323,9 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
                   <Tooltip
                     contentStyle={chartTooltipContentStyle}
                     labelStyle={chartTooltipLabelStyle}
+                    itemStyle={chartTooltipItemStyle}
+                    separator=": "
+                    cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                     formatter={(value: number, name: string) => {
                       if (name === 'revenue') return [`$${value.toLocaleString()}`, 'Revenue'];
                       return [value, name];
@@ -367,6 +370,9 @@ export function RevenueInsights({ sessions, monthlyData, benchmarkMetrics }: Rev
                 <Tooltip
                   contentStyle={chartTooltipContentStyle}
                   labelStyle={chartTooltipLabelStyle}
+                  itemStyle={chartTooltipItemStyle}
+                  separator=": "
+                  cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                   formatter={(value: number, name: string) => {
                     if (name === 'revenue') return [`$${value.toLocaleString()}`, 'Revenue'];
                     return [value, name];

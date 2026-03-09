@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import type { MonthlyData } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
-import { chartTooltipContentStyle, chartTooltipLabelStyle } from '@/lib/chartTooltip';
+import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
 import { Card, CardContent } from '@/components/ui/card';
 import { StatCard } from '@/components/ui/stat-card';
 
@@ -77,6 +77,9 @@ export function CapacityUtilisation({ metrics, monthlyData }: CapacityUtilisatio
               <Tooltip
                 contentStyle={chartTooltipContentStyle}
                 labelStyle={chartTooltipLabelStyle}
+                itemStyle={chartTooltipItemStyle}
+                separator=": "
+                cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                 formatter={(value: number, name: string) => {
                   if (name === 'visitors') return [value.toLocaleString(), 'Visitors'];
                   if (name === 'unfilled') return [value.toLocaleString(), 'Unfilled'];
