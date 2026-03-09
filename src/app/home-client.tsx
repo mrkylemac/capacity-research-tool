@@ -1,14 +1,20 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { VENUES } from '@/config/api';
+import { VENUES, DEFAULT_VENUE_IDS } from '@/config/api';
 import { getAllCachedEntries, getCacheKey } from '@/lib/venueCache';
 import { Card, CardContent } from '@/components/ui/card';
 
 export function HomeClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const showAll = searchParams.has('all');
+  const venues = useMemo(
+    () => showAll ? VENUES : VENUES.filter(v => DEFAULT_VENUE_IDS.includes(v.id)),
+    [showAll]
+  );
   const [logos, setLogos] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -43,7 +49,7 @@ export function HomeClient() {
       <div className="page-container">
 
         <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">Capacity Reports</h1>
+          {/* <h1 className="text-2xl font-bold tracking-tight">Capacity Reports</h1> */}
         </div>
 
         {/* Financial Tracker entry point */}
@@ -60,7 +66,7 @@ export function HomeClient() {
         </Link> */}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {VENUES.map((venue) => (
+          {venues.map((venue) => (
             <Card
               key={venue.id}
               className="cursor-pointer transition-colors bg-background rounded-2xl shadow-2"
