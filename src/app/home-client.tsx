@@ -1,14 +1,19 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { VENUES } from '@/config/api';
 import { getAllCachedEntries, getCacheKey } from '@/lib/venueCache';
 import { Card, CardContent } from '@/components/ui/card';
 
+const FEATURED_IDS = ['innerstudio', '59636', '49448'];
+
 export function HomeClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const showAll = searchParams?.has('all') ?? false;
+  const visibleVenues = showAll ? VENUES : VENUES.filter(v => FEATURED_IDS.includes(v.id));
   const [logos, setLogos] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -60,7 +65,7 @@ export function HomeClient() {
         </Link> */}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {VENUES.map((venue) => (
+          {visibleVenues.map((venue) => (
             <Card
               key={venue.id}
               className="cursor-pointer transition-colors bg-background rounded-2xl shadow-2"
