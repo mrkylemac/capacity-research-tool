@@ -10,7 +10,7 @@ import { format, getISOWeek, getISOWeekYear } from 'date-fns';
 import type { MomenceSession, MonthlyData } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import { Card, CardContent } from '@/components/ui/card';
-import { DemandIntelligence } from '@/components/DemandIntelligence';
+import { DemandIntelligence } from '@/components/demand';
 import { GrowthStory } from '@/components/GrowthStory';
 import { UtilisationTrend } from '@/components/UtilisationTrend';
 import { VenueComparisonChart } from '@/components/VenueComparisonChart';
