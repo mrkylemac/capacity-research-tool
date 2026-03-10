@@ -165,13 +165,13 @@ describe('getVisitorGrowth', () => {
     expect(getVisitorGrowth(months)).toBe(-50);
   });
 
-  it('returns 0 when only 2 months (windows overlap fully)', () => {
+  it('calculates growth with just 2 months (non-overlapping windows)', () => {
     const months = [
       makeMonth('January', 2026, { ticketsSold: 100, sessions: 30 }),
       makeMonth('February', 2026, { ticketsSold: 200, sessions: 30 }),
     ];
-    // n=2, first avg = (100+200)/2 = 150, last avg = same → 0%
-    expect(getVisitorGrowth(months)).toBe(0);
+    // n = floor(2/2) = 1, first avg = 100, last avg = 200, growth = 100%
+    expect(getVisitorGrowth(months)).toBe(100);
   });
 
   it('returns 0 when first average is zero', () => {
@@ -400,7 +400,7 @@ describe('buildSummary', () => {
     expect(result).toContain('50%');
   });
 
-  it('includes growth info when 3+ months available', () => {
+  it('includes growth info when 3+ full months available', () => {
     const metrics = makeMetrics();
     const months = [
       makeMonth('January', 2026, { ticketsSold: 100, sessions: 30 }),
@@ -409,6 +409,20 @@ describe('buildSummary', () => {
     ];
     const result = buildSummary(metrics, months);
     expect(result).toContain('up');
+  });
+
+  it('omits growth sentence when 3 raw months but fewer than 3 full months', () => {
+    const metrics = makeMetrics();
+    const months = [
+      makeMonth('January', 2026, { ticketsSold: 100, sessions: 30 }),
+      makeMonth('February', 2026, { ticketsSold: 200, sessions: 30 }),
+      makeMonth('March', 2026, { ticketsSold: 5, sessions: 1 }), // partial — will be excluded
+    ];
+    const result = buildSummary(metrics, months);
+    // Only 2 full months, so no growth sentence should appear
+    expect(result).not.toContain('Visitor volume is');
+    expect(result).not.toContain('Volume is');
+    expect(result).not.toContain('Volume has');
   });
 
   it('describes weekend-skewed demand', () => {

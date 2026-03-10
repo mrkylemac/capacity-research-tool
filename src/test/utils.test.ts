@@ -57,6 +57,13 @@ describe('formatDecimalHour', () => {
     expect(formatDecimalHour(23)).toBe('11pm');
     expect(formatDecimalHour(23.5)).toBe('11:30pm');
   });
+
+  it('handles minute-wrap at 60 (rounding boundary)', () => {
+    // 11.999 → Math.round(0.999 * 60) = 60 → should roll to 12pm, not 12am
+    expect(formatDecimalHour(11.999)).toBe('12pm');
+    // 6.999 → should roll to 7am
+    expect(formatDecimalHour(6.999)).toBe('7am');
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -231,6 +238,17 @@ describe('normalizeCapacity', () => {
     const sessions = [makeSession({ capacity: 20 }), makeSession({ capacity: 20 }), original];
     normalizeCapacity(sessions);
     expect(original.capacity).toBe(100);
+  });
+
+  it('handles all-zero capacities without division by zero', () => {
+    const sessions = [
+      makeSession({ capacity: 0 }),
+      makeSession({ capacity: 0 }),
+    ];
+    const result = normalizeCapacity(sessions);
+    expect(result.modalCapacity).toBe(0);
+    expect(result.normalizedCount).toBe(0);
+    expect(result.sessions).toHaveLength(2);
   });
 });
 

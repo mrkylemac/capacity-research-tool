@@ -8,10 +8,11 @@ export function cn(...inputs: ClassValue[]) {
 
 /** Format decimal hours (e.g. 18.083) as readable time (e.g. "6:05pm"). Use for all HOI/operating-hours display. */
 export function formatDecimalHour(hour: number): string {
-  const h = Math.floor(hour);
-  const m = Math.round((hour - h) * 60) % 60;
+  let h = Math.floor(hour);
+  let m = Math.round((hour - h) * 60);
+  if (m === 60) { m = 0; h += 1; }
   const period = h >= 12 ? 'pm' : 'am';
-  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const hour12 = h === 0 || h === 24 ? 12 : h > 12 ? h - 12 : h;
   const minStr = m > 0 ? `:${m.toString().padStart(2, '0')}` : '';
   return `${hour12}${minStr}${period}`;
 }
@@ -128,6 +129,11 @@ export function normalizeCapacity(
       modalCapacity = capacity;
     }
   });
+
+  // Guard against division by zero when all sessions have capacity 0
+  if (modalCapacity === 0) {
+    return { sessions: [...sessions], normalizedCount: 0, modalCapacity: 0 };
+  }
 
   // Normalize sessions that deviate significantly from modal capacity
   let normalizedCount = 0;

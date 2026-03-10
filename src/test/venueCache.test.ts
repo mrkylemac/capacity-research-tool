@@ -150,4 +150,28 @@ describe('error handling', () => {
     const recent = getRecentSearches();
     expect(recent).toHaveLength(0);
   });
+
+  it('does not crash when recent-list write hits QuotaExceededError', () => {
+    // First, allow the cache write to succeed
+    const originalSetItem = localStorageMock.setItem;
+    let callCount = 0;
+    localStorageMock.setItem.mockImplementation((key: string, value: string) => {
+      callCount++;
+      // Let the cache write succeed, but throw on the recent-keys write
+      if (key === 'venue-recent') {
+        const err = new DOMException('quota exceeded', 'QuotaExceededError');
+        throw err;
+      }
+      store[key] = value;
+    });
+
+    // Should not throw — the recent-list write failure is caught
+    expect(() => setCachedEntry(makeEntry('host1'))).not.toThrow();
+
+    // Cache entry should still be retrievable
+    const entry = getCachedEntry('host1|momence');
+    expect(entry).not.toBeNull();
+
+    localStorageMock.setItem.mockImplementation(originalSetItem);
+  });
 });

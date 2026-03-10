@@ -209,6 +209,22 @@ describe('MomenceClient.fetchSessions', () => {
     expect(result.sessions[0].isCancelled).toBe(true);
   });
 
+  it('defaults startsAt/endsAt to empty string when missing from API', async () => {
+    mockFetch.mockReturnValueOnce(jsonResponse({
+      payload: [{ id: 's1', name: 'No dates', spotsTotal: 10, ticketsSold: 5 }],
+      total: 1,
+    }));
+
+    const result = await client.fetchSessions({
+      hostId: 'host1',
+      startsAtFrom: '2026-01-01',
+      startsAtTo: '2026-01-31',
+    });
+
+    expect(result.sessions[0].startsAt).toBe('');
+    expect(result.sessions[0].endsAt).toBe('');
+  });
+
   it('sets correct query parameters', async () => {
     mockFetch.mockReturnValueOnce(jsonResponse({ payload: [], total: 0, totalPages: 0 }));
 
