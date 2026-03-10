@@ -107,7 +107,11 @@ export function setCachedEntry(entry: Omit<CachedVenueEntry, 'key' | 'cachedAt'>
 
   const recent = getRecentKeys();
   const updated = [key, ...recent.filter(k => k !== key)].slice(0, MAX_RECENT);
-  localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+  } catch {
+    // QuotaExceededError — recent list is non-critical, skip silently
+  }
   return full;
 }
 

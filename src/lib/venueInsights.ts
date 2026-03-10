@@ -57,7 +57,8 @@ export function getStrongestMonth(
 export function getVisitorGrowth(data: MonthlyData[]): number {
   const sorted = sortedMonthly(fullMonths(data));
   if (sorted.length < 2) return 0;
-  const n = Math.min(3, sorted.length);
+  // Use non-overlapping windows so growth is meaningful even with 2 months
+  const n = Math.min(3, Math.floor(sorted.length / 2));
   const firstAvg = sorted.slice(0, n).reduce((s, m) => s + m.ticketsSold, 0) / n;
   const lastAvg = sorted.slice(-n).reduce((s, m) => s + m.ticketsSold, 0) / n;
   return firstAvg > 0 ? ((lastAvg - firstAvg) / firstAvg) * 100 : 0;
@@ -187,9 +188,10 @@ export function buildSummary(metrics: BenchmarkMetrics, monthlyData: MonthlyData
       ? `weekend-skewed — ${weekendPct}% of visits Sat–Sun`
       : `evenly split, with ${weekdayPct}% weekday and ${weekendPct}% weekend visits`;
 
-  // Growth sentence (only meaningful with 3+ months of data)
+  // Growth sentence — only meaningful when enough full months exist for non-overlapping windows
+  const fullMonthCount = fullMonths(monthlyData).length;
   let growthSentence = '';
-  if (monthlyData.length >= 3) {
+  if (fullMonthCount >= 3) {
     if (growth >= 10) {
       growthSentence = ` Visitor volume is up ${growth.toFixed(0)}% across the period — strong growth trajectory.`;
     } else if (growth >= 5) {

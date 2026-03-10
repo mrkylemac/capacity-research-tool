@@ -169,8 +169,8 @@ class MomenceClient {
     return {
       id: session.id || session._id || String(Math.random()),
       sessionName: session.name || session.sessionName || session.title || 'Unknown',
-      startsAt: session.startDate || session.startsAt || session.startTime || session.start,
-      endsAt: session.endDate || session.endsAt || session.endTime || session.end,
+      startsAt: session.startDate || session.startsAt || session.startTime || session.start || '',
+      endsAt: session.endDate || session.endsAt || session.endTime || session.end || '',
       durationMinutes: session.duration || session.durationMinutes || 60,
       capacity,
       ticketsSold,
