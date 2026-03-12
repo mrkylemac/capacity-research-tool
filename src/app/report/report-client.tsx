@@ -341,7 +341,7 @@ export function ReportClient() {
       await syncHook.fetchData({
         hostId,
         startsAtFrom: entry.dateRange.from,
-        startsAtTo: entry.dateRange.to,
+        startsAtTo: new Date().toISOString(),
       });
     } catch {
       setIsSyncInProgress(false);
@@ -356,9 +356,9 @@ export function ReportClient() {
     if (!hostId) return;
 
     if (syncHook.allSessions.length > 0) {
-      const dateRange = entry?.dateRange ?? {
-        from: syncHook.dataRange.from?.toISOString() ?? new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
-        to: syncHook.dataRange.to?.toISOString() ?? new Date().toISOString(),
+      const dateRange = {
+        from: syncHook.dataRange.from?.toISOString() ?? entry?.dateRange?.from ?? new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
+        to: syncHook.dataRange.to?.toISOString() ?? entry?.dateRange?.to ?? new Date().toISOString(),
       };
       const venueName = syncHook.hostInfo?.name ?? entry?.venueName ?? VENUES.find(v => v.id === hostId)?.name ?? hostId;
       const saved = setCachedEntry({
