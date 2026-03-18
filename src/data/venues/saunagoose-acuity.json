@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-03-21T01:50:00.000Z"
+    "to": "2026-03-21T22:30:00.000Z"
   },
-  "cachedAt": "2026-03-18T22:12:54.225Z",
+  "cachedAt": "2026-03-18T23:12:36.482Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -1000,7 +1000,7 @@
       "endsAt": "2026-03-19T23:20:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 1,
+      "ticketsSold": 0,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -1012,7 +1012,7 @@
       "endsAt": "2026-03-20T07:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -1086,6 +1086,18 @@
       "capacity": 10,
       "ticketsSold": 0,
       "fixedTicketPrice": 25.55,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-85308919-12953939-2026-03-22T09:30:00+11:00",
+      "sessionName": "Latvian Sauna",
+      "startsAt": "2026-03-21T22:30:00.000Z",
+      "endsAt": "2026-03-22T01:30:00.000Z",
+      "durationMinutes": 180,
+      "capacity": 18,
+      "ticketsSold": 18,
+      "fixedTicketPrice": 97.5,
       "location": "",
       "inPerson": true
     }
