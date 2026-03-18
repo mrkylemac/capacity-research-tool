@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig } from '@/config/api';
+import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG } from '@/config/api';
 import { fetchPortalSessions } from '@/lib/portalClient';
 import { fetchXtraClubsSessions } from '@/lib/xtraClient';
 import { fetchAllAcuitySessions } from '@/lib/acuityClient';
+import { fetchAllHapanaSessions } from '@/lib/hapanaClient';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
@@ -405,6 +406,13 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
       } else if (platform === 'acuity') {
         const cfg = getAcuityConfig(hostId);
         sessions = await fetchAllAcuitySessions(cfg, existingSessions, onProgress);
+        venueName = cfg.name;
+      } else if (platform === 'hapana' && hostId === 'alchemysaunas') {
+        const cfg = HAPANA_CONFIG;
+        sessions = await fetchAllHapanaSessions(
+          cfg.baseUrl, cfg.locations, cfg.securityToken, cfg.origin,
+          cfg.peakPrice, cfg.offPeakPrice, existingSessions, onProgress,
+        );
         venueName = cfg.name;
       } else {
         send({ type: 'error', error: `Unsupported platform/hostId: ${platform}/${hostId}` });

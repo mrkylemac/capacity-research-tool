@@ -20,7 +20,7 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana';
 
 export interface VenueConfig {
   mapsQuery?: string;
@@ -51,6 +51,7 @@ export const VENUES: VenueConfig[] = [
   { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', mapsQuery: 'Wellness Social Club Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', mapsQuery: 'Sauna Goose Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', mapsQuery: 'The Corner Sauna Apollo Bay', timezone: 'Australia/Sydney' },
+  { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', mapsQuery: 'Alchemy Saunas Karrinyup Perth', timezone: 'Australia/Perth' },
 ];
 
 // Glofox configuration
@@ -260,3 +261,38 @@ export function getAcuityConfig(hostId: string): AcuityConfig {
   if (!cfg) throw new Error(`No Acuity config for hostId "${hostId}"`);
   return cfg;
 }
+
+// Hapana configuration (public widget API — security token required)
+//
+// Alchemy Saunas uses Hapana (hapana.com) as their booking platform.
+// The widget API at widgetapi.hapana.com exposes session data including
+// capacity and booking counts. Each location has its own widget ID (siteID).
+//
+// Data availability: ~2-3 months of historical data + future schedule.
+// Past sessions are removed over time, so incremental caching is needed.
+export interface HapanaLocation {
+  widgetId: string;
+  name: string;
+  operatingSince: string;
+}
+
+export const HAPANA_CONFIG = {
+  baseUrl: 'https://widgetapi.hapana.com/v2/wAPI/site/sessions',
+  name: 'Alchemy Saunas',
+  origin: 'https://alchemysaunas.com.au',
+  timezone: 'Australia/Perth',
+  securityToken: 'be8b131fb407a6453482338be91e887a||dfbd7997b824e1f8d0b5446839cab74a4d53f677b420618016455c6c24c74f71be3a60c5623150cbf03fbbfd137aa6b5b4c0bfbc7dc9712a928cc70d8eebe63d4b21e9733dc7aad9c52c08dd47477613f63265fceed7db75a441ef26be896f084c3cc9b26c1ef8fd9fe49dabcbcd3b2cc3f0c890ac33b947c1be4dbdc26c2ac6497f07853fd0edd8d7569d214e77f56494e54de762636c5a466f8126cc75766bdd8ee48acf14141b3beb73975a27687aa9405979515e6f8f28afc7ad29dffa6345902b966dd60e980bbb9ecb3259c24d327528fb5e1a16f4',
+  // Static pricing — Hapana returns casualRate: 0 (credit-based), so we use website pricing
+  peakPrice: 35,
+  offPeakPrice: 20,
+  locations: [
+    { widgetId: 'T204UER6NXhMbHQxemhCSTIxdDU2Zz09', name: 'Karrinyup', operatingSince: '2026-01-01' },
+    { widgetId: 'SlN0WjlHeitPRCtSd1h0K00yTmt3Zz09', name: 'Port Beach', operatingSince: '2025-01-01' },
+    { widgetId: 'bzNBYXpVMkNaT1ltdTcrZFlMSTlaUT09', name: 'Point Walter', operatingSince: '2025-01-01' },
+    { widgetId: 'MEZ6M1FsaXY2QUpEYkFLelpEQ254QT09', name: 'Fremantle', operatingSince: '2025-01-01' },
+    { widgetId: 'bzVBYmt0cm41S3h2WXhQZGdRVHE0Zz09', name: 'West Leederville', operatingSince: '2025-01-01' },
+    { widgetId: 'MTVjN0FsbmZMS0JhcVhzdGwvbUpDZz09', name: 'City Beach', operatingSince: '2025-01-01' },
+    { widgetId: 'a2Z6bVlFU2s4TEE4cmo0L3JIZHBqdz09', name: 'East Fremantle', operatingSince: '2025-01-01' },
+    { widgetId: 'dzBFdU1yRWxBQ2dwNktHVGFPM2dLUT09', name: 'Scarborough', operatingSince: '2025-01-01' },
+  ] as HapanaLocation[],
+} as const;
