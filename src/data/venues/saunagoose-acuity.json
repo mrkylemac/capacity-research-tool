@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-03-20T08:30:00.000Z"
+    "to": "2026-03-20T21:30:00.000Z"
   },
-  "cachedAt": "2026-03-18T07:28:55.830Z",
+  "cachedAt": "2026-03-18T07:53:13.707Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -1038,6 +1038,18 @@
       "capacity": 10,
       "ticketsSold": 4,
       "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-89924356-11913403-2026-03-21T08:30:00+11:00",
+      "sessionName": "Men's Breathwork & Saunagus",
+      "startsAt": "2026-03-20T21:30:00.000Z",
+      "endsAt": "2026-03-20T23:30:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 10,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 66.5,
       "location": "",
       "inPerson": true
     }
