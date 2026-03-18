@@ -410,7 +410,7 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
       } else if (platform === 'hapana' && hostId === 'alchemysaunas') {
         const cfg = HAPANA_CONFIG;
         sessions = await fetchAllHapanaSessions(
-          cfg.baseUrl, cfg.locations, cfg.securityToken, cfg.origin,
+          cfg.baseUrl, cfg.locations, cfg.origin,
           cfg.peakPrice, cfg.offPeakPrice, existingSessions, onProgress,
         );
         venueName = cfg.name;

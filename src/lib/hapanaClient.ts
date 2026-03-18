@@ -54,9 +54,48 @@ interface HapanaResponse {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
+const SETTINGS_URL = 'https://widgetapi.hapana.com/v2/wAPI/site/settings';
 const PAGE_SIZE = 100;
 const MAX_PAGES = 100;
 const CONCURRENCY = 5;
+
+// ── Security token ───────────────────────────────────────────────────────────
+
+interface HapanaSettings {
+  securityToken: string;
+  siteName: string;
+  timezone: string;
+}
+
+/**
+ * Fetch a fresh security token from the Hapana settings endpoint.
+ * No authentication is required — just the widget ID and origin.
+ */
+async function fetchSecurityToken(widgetId: string, origin: string): Promise<string> {
+  const res = await fetch(SETTINGS_URL, {
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      appid: '1',
+      appname: 'embed',
+      bypasstoken: 'true',
+      wid: widgetId,
+      origin,
+      referer: `${origin}/`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Hapana settings API: ${res.status} ${res.statusText}`);
+  }
+
+  const settings: HapanaSettings = await res.json();
+  if (!settings.securityToken) {
+    throw new Error('Hapana settings returned no securityToken');
+  }
+
+  return settings.securityToken;
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -169,17 +208,21 @@ async function fetchHapanaPage(
 
 /**
  * Fetch all sessions for a single Hapana location within a date range.
+ * Dynamically fetches a fresh security token from the settings endpoint.
  */
 async function fetchLocationSessions(
   baseUrl: string,
   location: HapanaLocation,
-  securityToken: string,
   origin: string,
   startDate: string,
   endDate: string,
   peakPrice: number,
   offPeakPrice: number,
 ): Promise<MomenceSession[]> {
+  // Fetch a fresh security token for this location's widget
+  const securityToken = await fetchSecurityToken(location.widgetId, origin);
+  console.log(`[Hapana/${location.name}] Fetched security token`);
+
   const sessions: MomenceSession[] = [];
   let pageIndex = 1;
 
@@ -230,12 +273,12 @@ async function mapConcurrent<T, R>(
 
 /**
  * Fetch all sessions across all Hapana (Alchemy Saunas) locations.
+ * Security tokens are fetched dynamically per-location from the settings endpoint.
  * Merges fresh sessions with previously cached past sessions (incremental).
  */
 export async function fetchAllHapanaSessions(
   baseUrl: string,
   locations: readonly HapanaLocation[],
-  securityToken: string,
   origin: string,
   peakPrice: number,
   offPeakPrice: number,
@@ -260,7 +303,7 @@ export async function fetchAllHapanaSessions(
 
   const locationResults = await mapConcurrent(locations, CONCURRENCY, async (loc) => {
     return fetchLocationSessions(
-      baseUrl, loc, securityToken, origin,
+      baseUrl, loc, origin,
       startStr, endStr, peakPrice, offPeakPrice,
     );
   });

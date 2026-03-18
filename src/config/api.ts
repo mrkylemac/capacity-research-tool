@@ -281,7 +281,9 @@ export const HAPANA_CONFIG = {
   name: 'Alchemy Saunas',
   origin: 'https://alchemysaunas.com.au',
   timezone: 'Australia/Perth',
-  securityToken: 'be8b131fb407a6453482338be91e887a||dfbd7997b824e1f8d0b5446839cab74a4d53f677b420618016455c6c24c74f71be3a60c5623150cbf03fbbfd137aa6b5b4c0bfbc7dc9712a928cc70d8eebe63d4b21e9733dc7aad9c52c08dd47477613f63265fceed7db75a441ef26be896f084c3cc9b26c1ef8fd9fe49dabcbcd3b2cc3f0c890ac33b947c1be4dbdc26c2ac6497f07853fd0edd8d7569d214e77f56494e54de762636c5a466f8126cc75766bdd8ee48acf14141b3beb73975a27687aa9405979515e6f8f28afc7ad29dffa6345902b966dd60e980bbb9ecb3259c24d327528fb5e1a16f4',
+  // Security token is fetched dynamically from the settings endpoint per-location.
+  // No hardcoded token needed — see hapanaClient.ts fetchSecurityToken().
+  //
   // Static pricing — Hapana returns casualRate: 0 (credit-based), so we use website pricing
   peakPrice: 35,
   offPeakPrice: 20,
