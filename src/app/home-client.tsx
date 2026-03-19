@@ -7,7 +7,7 @@ import { VENUES } from '@/config/api';
 import { getAllCachedEntries, getCacheKey } from '@/lib/venueCache';
 import { Card, CardContent } from '@/components/ui/card';
 
-const FEATURED_IDS = ['innerstudio', '59636', '49448'];
+const FEATURED_IDS = ['innerstudio', '59636', '49448', 'alchemysaunas'];
 
 export function HomeClient() {
   const router = useRouter();
