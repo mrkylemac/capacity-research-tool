@@ -20,10 +20,9 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana';
 
 export interface VenueConfig {
-  mapsQuery?: string;
   id: string;
   name: string;
   platform: Platform;
@@ -36,21 +35,22 @@ export interface VenueConfig {
 
 // Venue list
 export const VENUES: VenueConfig[] = [
-  { id: 'innerstudio', name: 'Inner Studio', platform: 'momence', location: 'Melbourne', mapsQuery: 'Inner Studio Collingwood Melbourne', timezone: 'Australia/Melbourne' },
-  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', mapsQuery: 'Sol Sauna Prahran Melbourne', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
-  { id: '49448', name: 'Aalto', platform: 'momence', location: 'Adelaide', mapsQuery: 'Aalto Bathhouse Adelaide', timezone: 'Australia/Adelaide' },
-  { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', mapsQuery: 'EQ Wellness South Melbourne', timezone: 'Australia/Melbourne' },
-  // { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco', mapsQuery: 'Fjord SF San Francisco', timezone: 'America/Los_Angeles' },
-  { id: 'lore', name: 'Lore Bathing Club', platform: 'glofox', location: 'New York', mapsQuery: 'Lore Bathing Club New York', timezone: 'America/New_York' },
-  { id: 'projectmood', name: 'Project Mood', platform: 'marianatek', location: 'Melbourne', mapsQuery: 'Project Mood Melbourne', timezone: 'Australia/Melbourne' },
-  { id: 'aerth', name: 'Ærth Saunas', platform: 'marianatek', location: 'Victoria BC', mapsQuery: 'Aerth Saunas Victoria BC', timezone: 'America/Vancouver' },
-  { id: 'senseofself', name: 'Sense of Self', platform: 'trybe', location: 'Melbourne', mapsQuery: 'Sense of Self Bathhouse Melbourne', timezone: 'Australia/Melbourne' },
-  { id: '40726', name: 'Panda Society', platform: 'momence', location: '', mapsQuery: 'Panda Society', timezone: 'Australia/Melbourne' },
-  { id: 'portal', name: 'PORTAL° Thermaculture', platform: 'portal', location: 'Colorado · Montana · Minnesota', mapsQuery: 'Portal Thermaculture Denver', timezone: 'America/Denver' },
-  { id: 'xtraclubs', name: 'Xtra Clubs', platform: 'xtraclubs', location: 'Sydney', mapsQuery: 'Xtra Clubs Bondi Junction Sydney', timezone: 'Australia/Sydney' },
-  { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', mapsQuery: 'Wellness Social Club Melbourne', timezone: 'Australia/Melbourne' },
-  { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', mapsQuery: 'Sauna Goose Melbourne', timezone: 'Australia/Melbourne' },
-  { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', mapsQuery: 'The Corner Sauna Apollo Bay', timezone: 'Australia/Sydney' },
+  { id: 'innerstudio', name: 'Inner Studio', platform: 'momence', location: 'Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
+  { id: '49448', name: 'Aalto', platform: 'momence', location: 'Adelaide', timezone: 'Australia/Adelaide' },
+  { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', timezone: 'Australia/Melbourne' },
+  // { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco', timezone: 'America/Los_Angeles' },
+  { id: 'lore', name: 'Lore Bathing Club', platform: 'glofox', location: 'New York', timezone: 'America/New_York' },
+  { id: 'projectmood', name: 'Project Mood', platform: 'marianatek', location: 'Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'aerth', name: 'Ærth Saunas', platform: 'marianatek', location: 'Victoria BC', timezone: 'America/Vancouver' },
+  { id: 'senseofself', name: 'Sense of Self', platform: 'trybe', location: 'Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '40726', name: 'Panda Society', platform: 'momence', location: '', timezone: 'Australia/Melbourne' },
+  { id: 'portal', name: 'PORTAL° Thermaculture', platform: 'portal', location: 'Colorado · Montana · Minnesota', timezone: 'America/Denver' },
+  { id: 'xtraclubs', name: 'Xtra Clubs', platform: 'xtraclubs', location: 'Sydney', timezone: 'Australia/Sydney' },
+  { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', timezone: 'Australia/Melbourne' },
+  { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
+  { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },
 ];
 
 // Glofox configuration
@@ -260,3 +260,40 @@ export function getAcuityConfig(hostId: string): AcuityConfig {
   if (!cfg) throw new Error(`No Acuity config for hostId "${hostId}"`);
   return cfg;
 }
+
+// Hapana configuration (public widget API — security token required)
+//
+// Alchemy Saunas uses Hapana (hapana.com) as their booking platform.
+// The widget API at widgetapi.hapana.com exposes session data including
+// capacity and booking counts. Each location has its own widget ID (siteID).
+//
+// Data availability: ~2-3 months of historical data + future schedule.
+// Past sessions are removed over time, so incremental caching is needed.
+export interface HapanaLocation {
+  widgetId: string;
+  name: string;
+  operatingSince: string;
+}
+
+export const HAPANA_CONFIG = {
+  baseUrl: 'https://widgetapi.hapana.com/v2/wAPI/site/sessions',
+  name: 'Alchemy Saunas',
+  origin: 'https://alchemysaunas.com.au',
+  timezone: 'Australia/Perth',
+  // Security token is fetched dynamically from the settings endpoint per-location.
+  // No hardcoded token needed — see hapanaClient.ts fetchSecurityToken().
+  //
+  // Static pricing — Hapana returns casualRate: 0 (credit-based), so we use website pricing
+  peakPrice: 35,
+  offPeakPrice: 20,
+  locations: [
+    { widgetId: 'T204UER6NXhMbHQxemhCSTIxdDU2Zz09', name: 'Karrinyup', operatingSince: '2026-01-01' },
+    { widgetId: 'SlN0WjlHeitPRCtSd1h0K00yTmt3Zz09', name: 'Port Beach', operatingSince: '2025-01-01' },
+    { widgetId: 'bzNBYXpVMkNaT1ltdTcrZFlMSTlaUT09', name: 'Point Walter', operatingSince: '2025-01-01' },
+    { widgetId: 'MEZ6M1FsaXY2QUpEYkFLelpEQ254QT09', name: 'Fremantle', operatingSince: '2025-01-01' },
+    { widgetId: 'bzVBYmt0cm41S3h2WXhQZGdRVHE0Zz09', name: 'West Leederville', operatingSince: '2025-01-01' },
+    { widgetId: 'MTVjN0FsbmZMS0JhcVhzdGwvbUpDZz09', name: 'City Beach', operatingSince: '2025-01-01' },
+    { widgetId: 'a2Z6bVlFU2s4TEE4cmo0L3JIZHBqdz09', name: 'East Fremantle', operatingSince: '2025-01-01' },
+    { widgetId: 'dzBFdU1yRWxBQ2dwNktHVGFPM2dLUT09', name: 'Scarborough', operatingSince: '2025-01-01' },
+  ] as HapanaLocation[],
+} as const;

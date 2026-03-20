@@ -127,7 +127,6 @@ Use `@/*` to import from `src/*` (e.g., `import { something } from '@/lib/utils'
 
 Required variables (see `.env.example`):
 - `VITE_PASSWORD` — password for Forecast/Report pages
-- `GOOGLE_MAPS_API_KEY` — venue metadata lookup
 - `GOOGLE_SHEETS_API_KEY` — CapEx tracker data (optional)
 - `GOOGLE_SHEETS_SPREADSHEET_ID` — CapEx Google Sheet ID (optional)
 

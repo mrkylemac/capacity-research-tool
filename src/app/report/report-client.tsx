@@ -15,7 +15,7 @@ import {
   setCachedEntry,
 } from '@/lib/venueCache';
 import { VENUES, API_CONFIG } from '@/config/api';
-import { useVenueInfo } from '@/hooks/useVenueInfo';
+
 import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -415,9 +415,7 @@ export function ReportClient() {
     });
   }, [loadPhase, hostId, entry, isSyncInProgress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Venue info from Google Maps ──────────────────────────────────────────
   const apiVenueConfig = VENUES.find(v => v.id === (hostId ?? entry?.hostId));
-  const { info: placeInfo } = useVenueInfo(apiVenueConfig?.mapsQuery);
 
   // Parse recent searches once — avoids redundant localStorage reads
   const venueSearches = useMemo(() => {
@@ -674,7 +672,7 @@ export function ReportClient() {
   }
 
   const venueName = apiVenueConfig?.name?.split(',')[0] ?? entry.hostInfo?.name ?? entry.venueName;
-  const venueAddress = placeInfo?.address ?? placeInfo?.suburb ?? apiVenueConfig?.location ?? null;
+  const venueAddress = apiVenueConfig?.location ?? null;
 
   return (
     <div className="min-h-screen">
