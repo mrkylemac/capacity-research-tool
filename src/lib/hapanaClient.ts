@@ -126,8 +126,13 @@ function hapanaSessionToMomence(
     && !session.sessionType.toLowerCase().includes('off-peak');
   const price = isPeak ? peakPrice : offPeakPrice;
 
+  // Hapana sessionIDs are slot-type identifiers, not occurrence identifiers —
+  // the same ID reappears every time that slot runs. Combine with date+time
+  // to get a unique key per occurrence.
+  const occurrenceId = `${session.sessionID}-${session.sessionDate}T${session.startTime}`;
+
   return {
-    id: session.sessionID,
+    id: occurrenceId,
     sessionName: session.sessionName,
     startsAt: toISO(startStr, tz),
     endsAt: toISO(endStr, tz),
