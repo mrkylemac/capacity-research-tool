@@ -5,9 +5,9 @@
   "venueName": "The Corner Sauna",
   "dateRange": {
     "from": "2026-03-06T07:00:00.000Z",
-    "to": "2026-04-05T09:00:00.000Z"
+    "to": "2026-04-07T08:00:00.000Z"
   },
-  "cachedAt": "2026-03-24T07:52:56.029Z",
+  "cachedAt": "2026-03-24T08:21:15.473Z",
   "sessions": [
     {
       "id": "acuity-71669392-11172572-2026-03-06T18:00:00+1100",
@@ -1402,6 +1402,90 @@
       "inPerson": true
     },
     {
+      "id": "acuity-71669392-11172572-2026-03-29T07:00:00+1100",
+      "sessionName": "Single Session",
+      "startsAt": "2026-03-28T20:00:00.000Z",
+      "endsAt": "2026-03-28T21:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-03-29T08:00:00+1100",
+      "sessionName": "Single Session",
+      "startsAt": "2026-03-28T21:00:00.000Z",
+      "endsAt": "2026-03-28T22:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-03-29T09:00:00+1100",
+      "sessionName": "Single Session",
+      "startsAt": "2026-03-28T22:00:00.000Z",
+      "endsAt": "2026-03-28T23:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-03-29T15:00:00+1100",
+      "sessionName": "Single Session",
+      "startsAt": "2026-03-29T04:00:00.000Z",
+      "endsAt": "2026-03-29T05:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-03-29T16:00:00+1100",
+      "sessionName": "Single Session",
+      "startsAt": "2026-03-29T05:00:00.000Z",
+      "endsAt": "2026-03-29T06:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-03-29T17:00:00+1100",
+      "sessionName": "Single Session",
+      "startsAt": "2026-03-29T06:00:00.000Z",
+      "endsAt": "2026-03-29T07:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-03-29T18:00:00+1100",
+      "sessionName": "Single Session",
+      "startsAt": "2026-03-29T07:00:00.000Z",
+      "endsAt": "2026-03-29T08:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
       "id": "acuity-86988395-13261360-2026-03-29T19:00:00+1100",
       "sessionName": "Silent Sauna",
       "startsAt": "2026-03-29T08:00:00.000Z",
@@ -1442,6 +1526,18 @@
       "sessionName": "Silent Sauna",
       "startsAt": "2026-04-05T09:00:00.000Z",
       "endsAt": "2026-04-05T10:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-80179076-11172572-2026-04-07T18:00:00+1000",
+      "sessionName": "Women's Wellness Session",
+      "startsAt": "2026-04-07T08:00:00.000Z",
+      "endsAt": "2026-04-07T09:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
       "ticketsSold": 0,
