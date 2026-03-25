@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-03-30T20:00:00.000Z"
+    "to": "2026-03-30T21:10:00.000Z"
   },
-  "cachedAt": "2026-03-25T20:48:09.015Z",
+  "cachedAt": "2026-03-25T21:16:04.024Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -1745,6 +1745,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 2,
+      "fixedTicketPrice": 25.55,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-83472539-10841888-2026-03-31T08:10:00+11:00",
+      "sessionName": "Sauna Session",
+      "startsAt": "2026-03-30T21:10:00.000Z",
+      "endsAt": "2026-03-30T22:10:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 0,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
