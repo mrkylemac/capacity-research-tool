@@ -5,9 +5,9 @@
   "venueName": "Sense of Self",
   "dateRange": {
     "from": "2026-03-04T14:30:00+11:00",
-    "to": "2026-06-27T20:45:00+10:00"
+    "to": "2026-06-28T20:45:00+10:00"
   },
-  "cachedAt": "2026-03-30T10:34:36.867Z",
+  "cachedAt": "2026-03-31T10:28:01.278Z",
   "sessions": [
     {
       "id": "6900046a85652a9a670c2bbd",
@@ -13504,7 +13504,7 @@
       "endsAt": "2026-04-01T11:00:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -13516,7 +13516,7 @@
       "endsAt": "2026-04-01T11:15:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -13576,7 +13576,7 @@
       "endsAt": "2026-04-01T13:30:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -13588,7 +13588,7 @@
       "endsAt": "2026-04-01T13:45:00+11:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -13624,7 +13624,7 @@
       "endsAt": "2026-04-01T14:45:00+11:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -13648,7 +13648,7 @@
       "endsAt": "2026-04-01T15:30:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -13720,7 +13720,7 @@
       "endsAt": "2026-04-01T17:15:00+11:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -13744,7 +13744,7 @@
       "endsAt": "2026-04-01T18:00:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 4,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -13768,7 +13768,7 @@
       "endsAt": "2026-04-01T18:45:00+11:00",
       "durationMinutes": 120,
       "capacity": 3,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -13792,7 +13792,7 @@
       "endsAt": "2026-04-01T19:30:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -13924,7 +13924,7 @@
       "endsAt": "2026-04-01T22:30:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -13936,7 +13936,7 @@
       "endsAt": "2026-04-01T22:45:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -13972,7 +13972,7 @@
       "endsAt": "2026-04-02T09:30:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -14008,7 +14008,7 @@
       "endsAt": "2026-04-02T10:30:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -14056,7 +14056,7 @@
       "endsAt": "2026-04-02T12:00:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -14140,7 +14140,7 @@
       "endsAt": "2026-04-02T14:45:00+11:00",
       "durationMinutes": 120,
       "capacity": 1,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -14176,7 +14176,7 @@
       "endsAt": "2026-04-02T15:45:00+11:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 4,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -14236,7 +14236,7 @@
       "endsAt": "2026-04-02T17:15:00+11:00",
       "durationMinutes": 120,
       "capacity": 3,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -14284,7 +14284,7 @@
       "endsAt": "2026-04-02T18:45:00+11:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 2,
+      "ticketsSold": 0,
       "fixedTicketPrice": 65,
       "location": "Last Minute BH",
       "inPerson": true
@@ -14860,7 +14860,7 @@
       "endsAt": "2026-04-06T20:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Last Minute BH",
       "inPerson": true
@@ -14956,7 +14956,7 @@
       "endsAt": "2026-04-06T22:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -14968,7 +14968,7 @@
       "endsAt": "2026-04-06T22:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -15052,7 +15052,7 @@
       "endsAt": "2026-04-07T10:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -15064,7 +15064,7 @@
       "endsAt": "2026-04-07T10:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -15076,7 +15076,7 @@
       "endsAt": "2026-04-07T11:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -15484,7 +15484,7 @@
       "endsAt": "2026-04-07T22:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -15496,7 +15496,7 @@
       "endsAt": "2026-04-07T22:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -15508,7 +15508,7 @@
       "endsAt": "2026-04-07T22:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 0,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -15844,7 +15844,7 @@
       "endsAt": "2026-04-08T17:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -15856,7 +15856,7 @@
       "endsAt": "2026-04-08T18:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -15976,7 +15976,7 @@
       "endsAt": "2026-04-08T21:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -16180,7 +16180,7 @@
       "endsAt": "2026-04-09T11:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -16264,7 +16264,7 @@
       "endsAt": "2026-04-09T14:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -16384,7 +16384,7 @@
       "endsAt": "2026-04-09T17:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -16576,7 +16576,7 @@
       "endsAt": "2026-04-09T22:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -16648,7 +16648,7 @@
       "endsAt": "2026-04-10T10:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -16672,7 +16672,7 @@
       "endsAt": "2026-04-10T11:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -16828,7 +16828,7 @@
       "endsAt": "2026-04-10T15:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -17080,7 +17080,7 @@
       "endsAt": "2026-04-10T22:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -17860,7 +17860,7 @@
       "endsAt": "2026-04-12T15:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 4,
+      "ticketsSold": 3,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -18064,7 +18064,7 @@
       "endsAt": "2026-04-12T21:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -18556,7 +18556,7 @@
       "endsAt": "2026-04-14T12:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -19312,7 +19312,7 @@
       "endsAt": "2026-04-16T10:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -19348,7 +19348,7 @@
       "endsAt": "2026-04-16T11:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -19396,7 +19396,7 @@
       "endsAt": "2026-04-16T12:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -19552,7 +19552,7 @@
       "endsAt": "2026-04-16T20:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -19840,7 +19840,7 @@
       "endsAt": "2026-04-17T15:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -20116,7 +20116,7 @@
       "endsAt": "2026-04-18T10:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -20368,7 +20368,7 @@
       "endsAt": "2026-04-18T20:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -20536,7 +20536,7 @@
       "endsAt": "2026-04-19T10:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 75,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -20572,7 +20572,7 @@
       "endsAt": "2026-04-19T11:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -20704,7 +20704,7 @@
       "endsAt": "2026-04-19T17:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 4,
+      "ticketsSold": 3,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -20920,7 +20920,7 @@
       "endsAt": "2026-04-20T16:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -21244,7 +21244,7 @@
       "endsAt": "2026-04-21T11:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -21256,7 +21256,7 @@
       "endsAt": "2026-04-21T12:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -21448,7 +21448,7 @@
       "endsAt": "2026-04-21T20:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -21880,7 +21880,7 @@
       "endsAt": "2026-04-22T21:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -22132,7 +22132,7 @@
       "endsAt": "2026-04-23T12:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -22264,7 +22264,7 @@
       "endsAt": "2026-04-23T19:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -22540,7 +22540,7 @@
       "endsAt": "2026-04-24T14:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -22972,7 +22972,7 @@
       "endsAt": "2026-04-25T15:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -23320,7 +23320,7 @@
       "endsAt": "2026-04-26T12:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 75,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -23632,7 +23632,7 @@
       "endsAt": "2026-04-27T15:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -25348,7 +25348,7 @@
       "endsAt": "2026-05-01T18:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 0,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -25696,7 +25696,7 @@
       "endsAt": "2026-05-02T15:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -25756,7 +25756,7 @@
       "endsAt": "2026-05-02T18:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Bathhouse",
       "inPerson": true
@@ -27676,7 +27676,7 @@
       "endsAt": "2026-05-07T21:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -27880,7 +27880,7 @@
       "endsAt": "2026-05-08T12:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -28036,7 +28036,7 @@
       "endsAt": "2026-05-08T19:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Bathhouse",
       "inPerson": true
@@ -29704,7 +29704,7 @@
       "endsAt": "2026-05-13T11:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Quiet Morning Bathhouse",
       "inPerson": true
@@ -46958,6 +46958,402 @@
       "sessionName": "Bathhouse Session",
       "startsAt": "2026-06-27T20:45:00+10:00",
       "endsAt": "2026-06-27T22:45:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "691bbde06ec82f13a600a94e",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T07:00:00+10:00",
+      "endsAt": "2026-06-28T09:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "691bbdfb76abb74c27046fb7",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T07:15:00+10:00",
+      "endsAt": "2026-06-28T09:15:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae64f293dae4c31305d32b",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T07:30:00+10:00",
+      "endsAt": "2026-06-28T09:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae64ffb2737376490c9c8b",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T07:45:00+10:00",
+      "endsAt": "2026-06-28T09:45:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae650c9b2aa061430248cb",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T08:00:00+10:00",
+      "endsAt": "2026-06-28T10:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae65189966cae1900ee69d",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T08:30:00+10:00",
+      "endsAt": "2026-06-28T10:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae6525a6d049847109a3eb",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T09:00:00+10:00",
+      "endsAt": "2026-06-28T11:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae6531a7cd81ab3c0580cb",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T09:15:00+10:00",
+      "endsAt": "2026-06-28T11:15:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae653e38422febe8076e7b",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T09:30:00+10:00",
+      "endsAt": "2026-06-28T11:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae654e656b1361eb009168",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T10:00:00+10:00",
+      "endsAt": "2026-06-28T12:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae655cb4330d0bbb0090c5",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T10:15:00+10:00",
+      "endsAt": "2026-06-28T12:15:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "68ae6568982711e7db0730a6",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-06-28T10:30:00+10:00",
+      "endsAt": "2026-06-28T12:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Quiet Morning Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "690003b1450346cd8b0bf476",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T12:00:00+10:00",
+      "endsAt": "2026-06-28T14:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "69000438568f537a6605157d",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T12:30:00+10:00",
+      "endsAt": "2026-06-28T14:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "69000447123286db8e0c4391",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T13:00:00+10:00",
+      "endsAt": "2026-06-28T15:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "69000460a23a92e5fa0a7331",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T13:45:00+10:00",
+      "endsAt": "2026-06-28T15:45:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900046f85652a9a670c2c31",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T14:30:00+10:00",
+      "endsAt": "2026-06-28T16:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900047e69c1beec410efe13",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T14:45:00+10:00",
+      "endsAt": "2026-06-28T16:45:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "69000496ac472fca50062031",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T15:00:00+10:00",
+      "endsAt": "2026-06-28T17:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "690004a8e4070c0dac090c01",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T15:45:00+10:00",
+      "endsAt": "2026-06-28T17:45:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "690004b5e6909e985c011ae1",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T16:00:00+10:00",
+      "endsAt": "2026-06-28T18:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "690004c19006f174d80ded71",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T16:15:00+10:00",
+      "endsAt": "2026-06-28T18:15:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "690004cef808cb228c03e6d1",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T17:30:00+10:00",
+      "endsAt": "2026-06-28T19:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "690004db29ce6f4a31068fa1",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T17:45:00+10:00",
+      "endsAt": "2026-06-28T19:45:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "690004e98f5dbb832e094ea2",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T18:00:00+10:00",
+      "endsAt": "2026-06-28T20:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "690004f595df67e28003bc85",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T19:00:00+10:00",
+      "endsAt": "2026-06-28T21:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900050095df67e28003bd8f",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T19:15:00+10:00",
+      "endsAt": "2026-06-28T21:15:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900050eddae0c4a3503d131",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T19:30:00+10:00",
+      "endsAt": "2026-06-28T21:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900051b2f4f0e01d1032ea1",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T19:45:00+10:00",
+      "endsAt": "2026-06-28T21:45:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900052bafa3923f61027b61",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T20:00:00+10:00",
+      "endsAt": "2026-06-28T22:00:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900053a6fc09269d20a4b83",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T20:15:00+10:00",
+      "endsAt": "2026-06-28T22:15:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900054f127b9058f70935a1",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T20:30:00+10:00",
+      "endsAt": "2026-06-28T22:30:00+10:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Bathhouse",
+      "inPerson": true
+    },
+    {
+      "id": "6900057793bb55d51c0d116b",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-06-28T20:45:00+10:00",
+      "endsAt": "2026-06-28T22:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
       "ticketsSold": 0,
