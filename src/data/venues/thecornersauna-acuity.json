@@ -5,9 +5,9 @@
   "venueName": "The Corner Sauna",
   "dateRange": {
     "from": "2026-03-06T07:00:00.000Z",
-    "to": "2026-04-14T08:00:00.000Z"
+    "to": "2026-04-15T09:00:00.000Z"
   },
-  "cachedAt": "2026-04-01T07:37:34.204Z",
+  "cachedAt": "2026-04-01T09:32:02.506Z",
   "sessions": [
     {
       "id": "acuity-71669392-11172572-2026-03-06T18:00:00+1100",
@@ -1552,7 +1552,7 @@
       "endsAt": "2026-04-02T06:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -1720,7 +1720,7 @@
       "endsAt": "2026-04-03T23:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -1958,6 +1958,18 @@
       "sessionName": "Women's Wellness Session",
       "startsAt": "2026-04-14T08:00:00.000Z",
       "endsAt": "2026-04-14T09:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-86988395-13261360-2026-04-15T19:00:00+1000",
+      "sessionName": "Silent Sauna",
+      "startsAt": "2026-04-15T09:00:00.000Z",
+      "endsAt": "2026-04-15T10:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
       "ticketsSold": 0,
