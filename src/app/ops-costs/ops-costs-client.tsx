@@ -108,7 +108,6 @@ function StatTile({ label, value, sub, accent = 'default', hero = false }: StatT
 
 interface Globals {
   electricityRate: number;   // $/kWh
-  gasRate: number;           // $/MJ
   waterRate: number;         // $/kL
   openDaysPerWeek: number;
   openWeeksPerYear: number;
@@ -117,7 +116,6 @@ interface Globals {
 
 const DEFAULT_GLOBALS: Globals = {
   electricityRate: 0.35,     // AUD/kWh commercial Vic retail
-  gasRate: 0.04,             // AUD/MJ commercial gas
   waterRate: 4.5,            // AUD/kL metro water+sewer
   openDaysPerWeek: 6,
   openWeeksPerYear: 50,
@@ -258,14 +256,6 @@ export function OpsCostsClient() {
                   unit="$/kWh"
                   step={0.01}
                   hint="Commercial retail incl. network, ex GST"
-                />
-                <NumberField
-                  label="Gas rate"
-                  value={globals.gasRate}
-                  onChange={setG('gasRate')}
-                  unit="$/MJ"
-                  step={0.005}
-                  hint="Used for HVAC / hot water if gas"
                 />
                 <NumberField
                   label="Water rate"
