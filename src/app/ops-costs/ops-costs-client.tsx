@@ -23,7 +23,7 @@ function fmtNum(n: number, dp = 0) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Reusable: labelled numeric input                                   */
+/* Reusable inputs                                                    */
 /* ------------------------------------------------------------------ */
 
 interface NumberFieldProps {
@@ -33,34 +33,170 @@ interface NumberFieldProps {
   unit?: string;
   step?: number;
   min?: number;
+  max?: number;
   hint?: string;
+  steppers?: boolean;
 }
 
-function NumberField({ label, value, onChange, unit, step = 1, min = 0, hint }: NumberFieldProps) {
+function NumberField({ label, value, onChange, unit, step = 1, min = 0, max, hint, steppers = true }: NumberFieldProps) {
+  const [raw, setRaw] = useState<string>(String(value));
+  const [focused, setFocused] = useState(false);
+
+  // Sync external value → local when not editing
+  const displayed = focused ? raw : String(value);
+
+  const commit = (s: string) => {
+    const v = parseFloat(s);
+    if (Number.isFinite(v)) {
+      const clamped = Math.max(min, max != null ? Math.min(max, v) : v);
+      onChange(clamped);
+    }
+  };
+
+  const nudge = (dir: 1 | -1) => {
+    const next = Math.round((value + step * dir) * 1000) / 1000; // avoid float drift
+    const clamped = Math.max(min, max != null ? Math.min(max, next) : next);
+    onChange(clamped);
+    setRaw(String(clamped));
+  };
+
   return (
     <div>
       <label className="block text-xs text-muted-foreground font-medium mb-1.5 uppercase tracking-wide">
         {label}
       </label>
-      <div className="relative">
-        <Input
-          type="number"
-          value={Number.isFinite(value) ? value : ''}
-          step={step}
-          min={min}
-          onChange={(e) => {
-            const v = parseFloat(e.target.value);
-            onChange(Number.isFinite(v) ? v : 0);
-          }}
-          className={unit ? 'pr-14 tabular-nums' : 'tabular-nums'}
-        />
-        {unit && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium tracking-wide uppercase pointer-events-none">
-            {unit}
-          </span>
+      <div className="flex items-center gap-1.5">
+        {steppers && (
+          <button
+            type="button"
+            onClick={() => nudge(-1)}
+            disabled={value <= min}
+            className="flex items-center justify-center h-10 w-8 rounded-md border border-input bg-background text-muted-foreground hover:text-fg-4 hover:bg-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm font-medium shrink-0"
+          >
+            &minus;
+          </button>
+        )}
+        <div className="relative flex-1">
+          <Input
+            type="text"
+            inputMode="decimal"
+            value={displayed}
+            onFocus={() => { setRaw(String(value)); setFocused(true); }}
+            onBlur={() => { commit(raw); setFocused(false); }}
+            onChange={(e) => {
+              const s = e.target.value;
+              setRaw(s);
+              // Live-update if it's a valid number (but allow empty / partial like "0." while typing)
+              const v = parseFloat(s);
+              if (Number.isFinite(v)) onChange(Math.max(min, max != null ? Math.min(max, v) : v));
+            }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { commit(raw); (e.target as HTMLInputElement).blur(); } }}
+            className={`tabular-nums text-center ${unit ? 'pr-14' : ''}`}
+          />
+          {unit && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium tracking-wide pointer-events-none">
+              {unit}
+            </span>
+          )}
+        </div>
+        {steppers && (
+          <button
+            type="button"
+            onClick={() => nudge(1)}
+            disabled={max != null && value >= max}
+            className="flex items-center justify-center h-10 w-8 rounded-md border border-input bg-background text-muted-foreground hover:text-fg-4 hover:bg-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm font-medium shrink-0"
+          >
+            +
+          </button>
         )}
       </div>
       {hint && <p className="text-xs text-muted-foreground mt-1.5">{hint}</p>}
+    </div>
+  );
+}
+
+/* Segmented picker for small discrete integer ranges (e.g. 1-7 days) */
+
+interface SegmentedFieldProps {
+  label: string;
+  value: number;
+  options: { label: string; value: number }[];
+  onChange: (n: number) => void;
+  hint?: string;
+}
+
+function SegmentedField({ label, value, options, onChange, hint }: SegmentedFieldProps) {
+  return (
+    <div>
+      <label className="block text-xs text-muted-foreground font-medium mb-1.5 uppercase tracking-wide">
+        {label}
+      </label>
+      <div className="flex rounded-md border border-input overflow-hidden">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={[
+              'flex-1 h-10 text-sm font-medium transition-colors',
+              opt.value === value
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-background text-muted-foreground hover:text-fg-4 hover:bg-accent',
+            ].join(' ')}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      {hint && <p className="text-xs text-muted-foreground mt-1.5">{hint}</p>}
+    </div>
+  );
+}
+
+/* Preset buttons — row of quick-pick values with an active state */
+
+interface PresetFieldProps {
+  label: string;
+  value: number;
+  presets: { label: string; value: number }[];
+  onChange: (n: number) => void;
+  unit?: string;
+  step?: number;
+  min?: number;
+  max?: number;
+  hint?: string;
+}
+
+function PresetField({ label, value, presets, onChange, unit, step = 0.05, min = 0, max, hint }: PresetFieldProps) {
+  return (
+    <div>
+      <NumberField
+        label={label}
+        value={value}
+        onChange={onChange}
+        unit={unit}
+        step={step}
+        min={min}
+        max={max}
+        hint={hint}
+      />
+      <div className="flex gap-1.5 mt-2">
+        {presets.map((p) => (
+          <button
+            key={p.label}
+            type="button"
+            onClick={() => onChange(p.value)}
+            className={[
+              'px-2.5 py-1 rounded-md text-xs font-medium transition-colors border',
+              Math.abs(value - p.value) < 0.001
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-gray-2 text-muted-foreground hover:text-fg-4 hover:bg-accent',
+            ].join(' ')}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -266,12 +402,20 @@ export function OpsCostsClient() {
                   hint="Potable + sewer combined"
                 />
                 <NumberField
+                  label="Open hours / day"
+                  value={globals.openHoursPerDay}
+                  onChange={setG('openHoursPerDay')}
+                  unit="hrs"
+                  step={0.5}
+                  min={0}
+                  max={24}
+                  hint="Door open → door closed"
+                />
+                <SegmentedField
                   label="Open days / week"
                   value={globals.openDaysPerWeek}
                   onChange={setG('openDaysPerWeek')}
-                  unit="days"
-                  step={1}
-                  min={0}
+                  options={[1, 2, 3, 4, 5, 6, 7].map((d) => ({ label: String(d), value: d }))}
                 />
                 <NumberField
                   label="Open weeks / year"
@@ -279,17 +423,9 @@ export function OpsCostsClient() {
                   onChange={setG('openWeeksPerYear')}
                   unit="wks"
                   step={1}
-                  min={0}
+                  min={1}
+                  max={52}
                   hint="52 minus closures / holidays"
-                />
-                <NumberField
-                  label="Open hours / day"
-                  value={globals.openHoursPerDay}
-                  onChange={setG('openHoursPerDay')}
-                  unit="hrs"
-                  step={0.5}
-                  min={0}
-                  hint="Door open → door closed"
                 />
               </div>
             </div>
@@ -315,13 +451,11 @@ export function OpsCostsClient() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
-                <NumberField
+                <SegmentedField
                   label="Number of saunas"
                   value={heaters.numSaunas}
                   onChange={setH('numSaunas')}
-                  unit="saunas"
-                  step={1}
-                  min={0}
+                  options={[1, 2, 3, 4, 5].map((n) => ({ label: String(n), value: n }))}
                 />
                 <NumberField
                   label="Heater power (each)"
@@ -329,6 +463,8 @@ export function OpsCostsClient() {
                   onChange={setH('heaterKW')}
                   unit="kW"
                   step={0.5}
+                  min={1}
+                  max={30}
                   hint="Nameplate rating per room"
                 />
                 <NumberField
@@ -337,15 +473,23 @@ export function OpsCostsClient() {
                   onChange={setH('preheatHours')}
                   unit="hrs"
                   step={0.25}
+                  min={0}
+                  max={4}
                   hint="Full-power morning warm-up"
                 />
-                <NumberField
+                <PresetField
                   label="Running duty cycle"
                   value={heaters.dutyCycleRunning}
                   onChange={setH('dutyCycleRunning')}
                   unit="×"
                   step={0.05}
                   min={0}
+                  max={1}
+                  presets={[
+                    { label: 'Low 0.35', value: 0.35 },
+                    { label: 'Med 0.55', value: 0.55 },
+                    { label: 'High 0.75', value: 0.75 },
+                  ]}
                   hint="Fraction of time element is on during open hours"
                 />
                 <NumberField
@@ -354,15 +498,23 @@ export function OpsCostsClient() {
                   onChange={setH('standbyHours')}
                   unit="hrs"
                   step={0.5}
+                  min={0}
+                  max={12}
                   hint="After hours idle-warm (0 = cold overnight)"
                 />
-                <NumberField
+                <PresetField
                   label="Standby duty cycle"
                   value={heaters.dutyCycleStandby}
                   onChange={setH('dutyCycleStandby')}
                   unit="×"
                   step={0.05}
                   min={0}
+                  max={1}
+                  presets={[
+                    { label: 'Off', value: 0 },
+                    { label: 'Trickle 0.1', value: 0.1 },
+                    { label: 'Warm 0.25', value: 0.25 },
+                  ]}
                 />
               </div>
 
