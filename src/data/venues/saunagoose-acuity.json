@@ -7,7 +7,7 @@
     "from": "2026-03-05T20:00:00.000Z",
     "to": "2026-04-26T05:00:00.000Z"
   },
-  "cachedAt": "2026-04-23T05:48:52.618Z",
+  "cachedAt": "2026-04-23T06:46:16.071Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -3256,7 +3256,7 @@
       "endsAt": "2026-04-23T09:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 5,
+      "ticketsSold": 6,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
