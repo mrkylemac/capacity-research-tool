@@ -61,8 +61,8 @@ export const GLOFOX_CONFIG = {
     name: 'Lore Bathing Club',
     timezone: 'America/New_York',
     // Guest token — expires 2026-03-08
-    token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzc5MjU5MDM0LCJpYXQiOjE3NzY2NjcwMzQsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoibG9yZWJhdGhpbmdjbHViIiwiYnJhbmNoX2lkIjoiNjdjNWViMDllZmI0Mjc3YjA2MDg0ZWI2IiwiZmlyc3RfbmFtZSI6Ikd1ZXN0IiwibGFzdF9uYW1lIjoiVXNlciIsInR5cGUiOiJHVUVTVCIsImlzU3VwZXJBZG1pbiI6ZmFsc2V9fQ.jUEglxJSJCp_uv9YjP2A2covQXFSP7jBA-u5ROyTumM',
-    tokenExpiry: '2026-05-20',
+    token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzc5ODY0MzU5LCJpYXQiOjE3NzcyNzIzNTksImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoibG9yZWJhdGhpbmdjbHViIiwiYnJhbmNoX2lkIjoiNjdjNWViMDllZmI0Mjc3YjA2MDg0ZWI2IiwiZmlyc3RfbmFtZSI6Ikd1ZXN0IiwibGFzdF9uYW1lIjoiVXNlciIsInR5cGUiOiJHVUVTVCIsImlzU3VwZXJBZG1pbiI6ZmFsc2V9fQ.-t8fVKmhLQAVKig19VNs1PH1NlnEEHNBFyRdLGHFmU4',
+    tokenExpiry: '2026-05-27',
     operatingSince: '2026-01-01',
   },
   akariSaunas: {
@@ -88,8 +88,8 @@ export const GLOFOX_CONFIG = {
     namespace: "wellnesssocialbusine",
     name: 'Wellness Social Club',
     timezone: 'Australia/Melbourne',
-    token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzc5MjU5MDM1LCJpYXQiOjE3NzY2NjcwMzUsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoid2VsbG5lc3Nzb2NpYWxidXNpbmUiLCJicmFuY2hfaWQiOiI2NzY5YmMwN2RkOTYzZDFiMDEwODgwNGIiLCJmaXJzdF9uYW1lIjoiR3Vlc3QiLCJsYXN0X25hbWUiOiJVc2VyIiwidHlwZSI6IkdVRVNUIiwiaXNTdXBlckFkbWluIjpmYWxzZX19.-CPjH4JVs1bdSHVLOQb1p_eOaPi8b_TDkKmvm5P3c5c',
-    tokenExpiry: '2026-05-20',
+    token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzc5ODY0MzU5LCJpYXQiOjE3NzcyNzIzNTksImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoid2VsbG5lc3Nzb2NpYWxidXNpbmUiLCJicmFuY2hfaWQiOiI2NzY5YmMwN2RkOTYzZDFiMDEwODgwNGIiLCJmaXJzdF9uYW1lIjoiR3Vlc3QiLCJsYXN0X25hbWUiOiJVc2VyIiwidHlwZSI6IkdVRVNUIiwiaXNTdXBlckFkbWluIjpmYWxzZX19.dmzaiP9oTZIOiFu8HHV2m5xUc6csTb-c2ChaHcULLCo',
+    tokenExpiry: '2026-05-27',
     operatingSince: '2025-06-01',
   },
 } as const;
@@ -182,8 +182,8 @@ export const PORTAL_CONFIG = {
       namespace: 'portalthermaculture',
       name: 'Minneapolis',
       timezone: 'America/Chicago',
-      token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzc5MjU5MDM1LCJpYXQiOjE3NzY2NjcwMzUsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoicG9ydGFsdGhlcm1hY3VsdHVyZSIsImJyYW5jaF9pZCI6IjY3ZDlkNWE4YzJkY2U1NDA0YjA4ZWY2OCIsImZpcnN0X25hbWUiOiJHdWVzdCIsImxhc3RfbmFtZSI6IlVzZXIiLCJ0eXBlIjoiR1VFU1QiLCJpc1N1cGVyQWRtaW4iOmZhbHNlfX0.F_YOXhi4Bv5CueZCmIUxa6LYW-p6XmFdEFgQVzMgpco',
-      tokenExpiry: '2026-05-20',
+      token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzc5ODY0MzYwLCJpYXQiOjE3NzcyNzIzNjAsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoicG9ydGFsdGhlcm1hY3VsdHVyZSIsImJyYW5jaF9pZCI6IjY3ZDlkNWE4YzJkY2U1NDA0YjA4ZWY2OCIsImZpcnN0X25hbWUiOiJHdWVzdCIsImxhc3RfbmFtZSI6IlVzZXIiLCJ0eXBlIjoiR1VFU1QiLCJpc1N1cGVyQWRtaW4iOmZhbHNlfX0.BQ2s6G9PwssSspU1JCFWLJDaNX_9SQMwRucE4XXqLD0',
+      tokenExpiry: '2026-05-27',
       operatingSince: '2025-01-01',
     },
   ],
