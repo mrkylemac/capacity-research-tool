@@ -11,6 +11,7 @@ const CATEGORY_LABEL: Record<BOMCategory, string> = {
   tape: 'Foil tape',
   fixings: 'Fixings',
   misc: 'Other',
+  labour: 'Labour (estimate)',
 };
 
 const CATEGORY_ORDER: BOMCategory[] = [
@@ -20,6 +21,7 @@ const CATEGORY_ORDER: BOMCategory[] = [
   'tape',
   'fixings',
   'misc',
+  'labour',
 ];
 
 function fmt(n: number) {

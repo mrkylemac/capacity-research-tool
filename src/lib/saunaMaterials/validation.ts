@@ -66,10 +66,20 @@ const benchSchema = z.object({
   backrestHeight: positiveInt,
   hasEndCap: z.enum(['left', 'right', 'both', 'none']),
   closedFront: z.boolean(),
+  hasSkirting: z.boolean().optional(),
+  skirtingHeight: positiveInt.optional(),
   startOffset: positiveInt.optional(),
   x: xy,
   y: xy,
   rotation,
+});
+
+const benchConstructionSchema = z.object({
+  method: z.enum(['floating', 'legPost', 'bracket', 'hybrid']),
+  frameMaterial: z.enum(['timber', 'steel']),
+  frontStyle: z.enum(['open', 'fascia', 'tiled']),
+  supportSpacing: positiveInt,
+  bearerSpacing: positiveInt,
 });
 
 const constructionSchema = z.object({
@@ -118,6 +128,13 @@ export const projectSchema = z.object({
   columns: z.array(columnSchema),
   benches: z.array(benchSchema),
   construction: constructionSchema,
+  benchConstruction: benchConstructionSchema.default({
+    method: 'hybrid',
+    frameMaterial: 'timber',
+    frontStyle: 'fascia',
+    supportSpacing: 1500,
+    bearerSpacing: 800,
+  }),
   waste: wasteSchema,
   profiles: profileSelectionsSchema,
 });
@@ -147,7 +164,7 @@ const materialLibrarySchema = z.object({
   id: z.string(),
   name: z.string(),
   category: z.enum(['insulation', 'vapourBarrier', 'tape', 'fixings', 'sealant', 'misc']),
-  unit: z.enum(['m2', 'roll', 'box', 'each', 'lm']),
+  unit: z.enum(['m2', 'roll', 'box', 'each', 'lm', 'hr']),
   unitSize: z.number().positive(),
   pricePerUnit: z.number().nullable(),
   supplier: z.string(),

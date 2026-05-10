@@ -45,7 +45,7 @@ export function RoomDiagram() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Plan view</CardTitle>
+        <CardTitle className="text-base">Sauna Plan</CardTitle>
       </CardHeader>
       <CardContent>
         <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full h-auto select-none">

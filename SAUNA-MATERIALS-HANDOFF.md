@@ -80,7 +80,7 @@ length: 5518mm · width: 3830mm · ceilingHeight: 2400mm
 ### Openings
 ```
 - Door   · west  · rectangle · 920×2375mm
-- Window · south · circle    · Ø1530mm
+- Window · south · circle    · Ø1500mm
 ```
 
 ### Heater zone

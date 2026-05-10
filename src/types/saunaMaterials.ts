@@ -87,7 +87,7 @@ export interface Bench {
   id: string;
   tier: BenchTier;
   wall: WallId;
-  /** mm — run along the wall. */
+  /** mm — run along the wall. Auto-set to wall length when using full-wall mode. */
   length: number;
   /** mm — projection from the wall. */
   depth: number;
@@ -99,14 +99,36 @@ export interface Bench {
   hasEndCap: EndCap;
   /** true = front fully clad, false = open slat fascia (uses OPEN_FASCIA_FILL_RATIO). */
   closedFront: boolean;
+  /** Skirting board along the base of the bench front. */
+  hasSkirting?: boolean;
+  /** mm — height of the skirting board. */
+  skirtingHeight?: number;
   /** Optional offset along the wall, mm. Used by the overlap sweep when set. */
   startOffset?: number;
-  /** Free-position top-left X in room coords (mm). Overrides wall layout. */
   x?: number;
-  /** Free-position top-left Y in room coords (mm). Overrides wall layout. */
   y?: number;
-  /** Rotation in degrees, around the item centre. Defaults to 0. */
   rotation?: number;
+}
+
+export type BenchMethod = 'floating' | 'legPost' | 'bracket' | 'hybrid';
+export type FrameMaterial = 'timber' | 'steel';
+export type FrontStyle = 'open' | 'fascia' | 'tiled';
+
+/** How the bench frames are built — drives framing LM and finish choices. */
+export interface BenchConstruction {
+  /** Structural support method. */
+  method: BenchMethod;
+  /** Frame material. */
+  frameMaterial: FrameMaterial;
+  /** How the visible front face is finished. */
+  frontStyle: FrontStyle;
+  /**
+   * mm — centre-to-centre spacing of primary supports along bench length.
+   * Leg centres for legPost/hybrid; cleat/bracket centres for floating/bracket.
+   */
+  supportSpacing: number;
+  /** mm — centre-to-centre cross bearer spacing across bench depth. */
+  bearerSpacing: number;
 }
 
 export type ProfileCategory =
@@ -144,7 +166,7 @@ export type MaterialCategory =
   | 'sealant'
   | 'misc';
 
-export type MaterialUnit = 'm2' | 'roll' | 'box' | 'each' | 'lm';
+export type MaterialUnit = 'm2' | 'roll' | 'box' | 'each' | 'lm' | 'hr';
 
 export interface MaterialItem {
   id: string;
@@ -213,6 +235,7 @@ export interface Project {
   columns: Column[];
   benches: Bench[];
   construction: Construction;
+  benchConstruction: BenchConstruction;
   waste: WasteFactors;
   profiles: ProfileSelections;
 }
@@ -230,7 +253,8 @@ export type BOMCategory =
   | 'vapourBarrier'
   | 'tape'
   | 'fixings'
-  | 'misc';
+  | 'misc'
+  | 'labour';
 
 export type BOMUnit = MaterialUnit;
 
@@ -261,6 +285,8 @@ export interface BOMTotals {
   insulationM2: number;
   vapourBarrierM2: number;
   estimatedTotalCost: number | null;
+  /** Total estimated labour hours. Only present when labour is included. */
+  labourHours?: number;
 }
 
 export interface BOM {

@@ -3,8 +3,12 @@
 import { useMemo, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { BenchConstructionDiagram } from '@/components/sauna-materials/BenchConstructionDiagram';
-import { BenchesEditor } from '@/components/sauna-materials/BenchesEditor';
+import { BenchConstructionMethod, BenchesEditor } from '@/components/sauna-materials/BenchesEditor';
 import { BomSummaryCards } from '@/components/sauna-materials/BomSummaryCards';
 import { BomTable } from '@/components/sauna-materials/BomTable';
 import { ConstructionToggles } from '@/components/sauna-materials/ConstructionToggles';
@@ -39,7 +43,7 @@ function Header() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Sauna materials</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Slow Folk Brunswick · 219 Albion St
+            Slow Folk, 101/219 Albion Street Brunswick VIC
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -62,10 +66,17 @@ function Header() {
 function ContentRouter() {
   const { project, library } = useSaunaMaterials();
   const [section, setSection] = useState<SaunaSection>('setup');
+  const [labourEnabled, setLabourEnabled] = useState(false);
+  const [labourRate, setLabourRate] = useState(100);
 
   const bom = useMemo(
-    () => generateBom(project, library, new Date().toISOString()),
-    [project, library]
+    () => generateBom(
+      project,
+      library,
+      new Date().toISOString(),
+      labourEnabled ? { ratePerHour: labourRate } : undefined,
+    ),
+    [project, library, labourEnabled, labourRate]
   );
 
   return (
@@ -93,6 +104,7 @@ function ContentRouter() {
       {section === 'benches' && (
         <div className="space-y-4 section-animate">
           <BenchesEditor />
+          <BenchConstructionMethod />
           <BenchConstructionDiagram />
         </div>
       )}
@@ -107,17 +119,50 @@ function ContentRouter() {
       {section === 'bom' && (
         <div className="space-y-4">
           <div className="section-animate" style={{ animationDelay: '0ms' }}>
+            <Card>
+              <CardContent className="py-3">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                    <Switch checked={labourEnabled} onCheckedChange={setLabourEnabled} />
+                    <span className="text-sm font-medium text-fg-4">Include labour estimate</span>
+                  </label>
+                  {labourEnabled && (
+                    <div className="flex items-center gap-2 ml-2">
+                      <Label className="text-xs text-muted-foreground whitespace-nowrap">Rate</Label>
+                      <div className="relative w-28">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                        <Input
+                          type="number"
+                          min={0}
+                          className="h-8 pl-6 pr-8 text-sm"
+                          value={labourRate}
+                          onChange={e => setLabourRate(Number(e.target.value) || 0)}
+                        />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">/hr</span>
+                      </div>
+                    </div>
+                  )}
+                  {labourEnabled && (
+                    <p className="text-xs text-muted-foreground ml-auto">
+                      Estimates are indicative — commercial Melbourne rates, 2026
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="section-animate" style={{ animationDelay: '60ms' }}>
             <BomSummaryCards bom={bom} />
           </div>
           {bom.warnings.length > 0 && (
-            <div className="section-animate" style={{ animationDelay: '60ms' }}>
+            <div className="section-animate" style={{ animationDelay: '120ms' }}>
               <WarningsPanel warnings={bom.warnings} />
             </div>
           )}
-          <div className="section-animate" style={{ animationDelay: '120ms' }}>
+          <div className="section-animate" style={{ animationDelay: '180ms' }}>
             <BomTable bom={bom} />
           </div>
-          <div className="flex justify-end section-animate" style={{ animationDelay: '180ms' }}>
+          <div className="flex justify-end section-animate" style={{ animationDelay: '240ms' }}>
             <ExportButton bom={bom} />
           </div>
         </div>

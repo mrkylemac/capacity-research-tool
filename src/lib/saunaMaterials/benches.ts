@@ -1,4 +1,4 @@
-import type { Bench, EndCap } from '@/types/saunaMaterials';
+import type { Bench, BenchConstruction, EndCap } from '@/types/saunaMaterials';
 import {
   BENCH_BEARER_SPACING_MM,
   BENCH_LEG_SPACING_MM,
@@ -77,23 +77,33 @@ export function totalBenchSlatFaceM2(benches: Bench[]): number {
 /**
  * Bench framing lineal metres for a single bench. Captures:
  *   - perimeter rails: 2 × (length + depth)
- *   - intermediate bearers across the depth at BENCH_BEARER_SPACING_MM centres
- *   - legs (front + back per position) at BENCH_LEG_SPACING_MM centres
+ *   - intermediate bearers across the depth at bearerSpacing centres
+ *   - legs (front + back per position) at legSpacing centres
+ * Falls back to module constants when construction config is omitted.
  */
-export function benchFramingLM(bench: Bench): number {
+export function benchFramingLM(
+  bench: Bench,
+  bc?: Pick<BenchConstruction, 'supportSpacing' | 'bearerSpacing'>
+): number {
+  const legSpacing = bc?.supportSpacing ?? BENCH_LEG_SPACING_MM;
+  const bearerSpacing = bc?.bearerSpacing ?? BENCH_BEARER_SPACING_MM;
+
   const perimeterMm = 2 * (bench.length + bench.depth);
 
-  const bearerCount = Math.max(0, Math.ceil(bench.length / BENCH_BEARER_SPACING_MM) - 1);
+  const bearerCount = Math.max(0, Math.ceil(bench.length / bearerSpacing) - 1);
   const bearersMm = bearerCount * bench.depth;
 
-  const legPositions = Math.max(2, Math.ceil(bench.length / BENCH_LEG_SPACING_MM) + 1);
+  const legPositions = Math.max(2, Math.ceil(bench.length / legSpacing) + 1);
   const legsMm = legPositions * 2 * bench.topHeight;
 
   return mm(perimeterMm + bearersMm + legsMm);
 }
 
-export function totalBenchFramingLM(benches: Bench[]): number {
-  return benches.reduce((sum, b) => sum + benchFramingLM(b), 0);
+export function totalBenchFramingLM(
+  benches: Bench[],
+  bc?: Pick<BenchConstruction, 'supportSpacing' | 'bearerSpacing'>
+): number {
+  return benches.reduce((sum, b) => sum + benchFramingLM(b, bc), 0);
 }
 
 /** Lineal metres of dedicated backrest profile, length-only across benches. */

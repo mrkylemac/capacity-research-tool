@@ -22,7 +22,13 @@ import {
   vapourBarrierM2,
 } from './envelope';
 import { ceilingNetCladdingM2, totalWallNetCladdingM2 } from './geometry';
+import { estimateLabourPhases, totalLabourHours } from './labour';
 import { collectWarnings } from './validation';
+
+export interface LabourConfig {
+  /** AUD per hour applied to each labour phase. */
+  ratePerHour: number;
+}
 
 function findProfile(library: Library, id: string): Profile | undefined {
   return library.profiles.find(p => p.id === id);
@@ -40,14 +46,15 @@ function priceTotal(qty: number, unit: number | null): number | null {
 export function generateBom(
   project: Project,
   library: Library,
-  generatedAt: string
+  generatedAt: string,
+  labourConfig?: LabourConfig
 ): BOM {
   const lineItems: BOMLineItem[] = [];
 
   const wallResult = totalWallNetCladdingM2(project);
   const ceilingNet = ceilingNetCladdingM2(project);
   const benchFace = totalBenchSlatFaceM2(project.benches);
-  const benchFraming = totalBenchFramingLM(project.benches);
+  const benchFraming = totalBenchFramingLM(project.benches, project.benchConstruction);
   const backrestLM = totalBackrestLM(project.benches);
   const battenLM = totalBattenLM(project.room, project.construction);
 
@@ -274,6 +281,25 @@ export function generateBom(
     });
   }
 
+  // ── Labour ────────────────────────────────────────────────────────────────
+  if (labourConfig) {
+    const phases = estimateLabourPhases(project);
+    for (const phase of phases) {
+      lineItems.push({
+        id: phase.id,
+        category: 'labour',
+        description: phase.description,
+        profileOrMaterialName: '—',
+        quantity: phase.hours,
+        unit: 'hr',
+        wasteApplied: 0,
+        unitPrice: labourConfig.ratePerHour,
+        totalPrice: phase.hours * labourConfig.ratePerHour,
+        notes: '',
+      });
+    }
+  }
+
   // ── Totals ────────────────────────────────────────────────────────────────
   const timberLM = lineItems
     .filter(li => li.category === 'timber')
@@ -287,11 +313,16 @@ export function generateBom(
     ? pricedItems.reduce((sum, li) => sum + (li.totalPrice ?? 0), 0)
     : null;
 
+  const labourHours = labourConfig
+    ? totalLabourHours(estimateLabourPhases(project))
+    : undefined;
+
   const totals: BOMTotals = {
     timberLM: round1(timberLM),
     insulationM2: round2(insulationM2Total),
     vapourBarrierM2: round2(vbM2),
     estimatedTotalCost,
+    ...(labourHours !== undefined && { labourHours }),
   };
 
   const warnings = collectWarnings(project, library);

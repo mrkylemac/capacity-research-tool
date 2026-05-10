@@ -37,15 +37,25 @@ function Card({ label, value, sub, hero }: CardProps) {
 
 export function BomSummaryCards({ bom }: { bom: BOM }) {
   const t = bom.totals;
+  const hasLabour = t.labourHours !== undefined;
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className={`grid grid-cols-2 gap-3 ${hasLabour ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}>
       <Card label="Timber" value={fmt(t.timberLM, 'lm')} sub="Cladding · bench · battens" hero />
       <Card label="Insulation" value={fmt(t.insulationM2, 'm²')} sub="Walls + ceiling" />
       <Card label="Vapour barrier" value={fmt(t.vapourBarrierM2, 'm²')} sub="With 10% overlap" />
+      {hasLabour && (
+        <Card label="Labour" value={fmt(t.labourHours!, 'hrs')} sub="Estimate · not priced in library" />
+      )}
       <Card
         label="Cost"
         value={t.estimatedTotalCost === null ? '—' : fmtAUD(t.estimatedTotalCost)}
-        sub={t.estimatedTotalCost === null ? 'Set prices in library' : 'Priced lines only'}
+        sub={
+          t.estimatedTotalCost === null
+            ? 'Set prices in library'
+            : hasLabour
+              ? 'Materials + labour'
+              : 'Priced lines only'
+        }
       />
     </div>
   );

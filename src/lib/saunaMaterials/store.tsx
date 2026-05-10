@@ -13,6 +13,7 @@ import {
 } from 'react';
 import type {
   Bench,
+  BenchConstruction,
   Column,
   Construction,
   HeaterZone,
@@ -38,14 +39,14 @@ const SLOW_FOLK_DEMO: Project = {
   location: '219 Albion Street Brunswick VIC',
   createdAt: '2026-05-05T00:00:00.000Z',
   updatedAt: '2026-05-05T00:00:00.000Z',
-  room: { length: 5518, width: 3830, ceilingHeight: 2400 },
+  room: { length: 5548, width: 3638, ceilingHeight: 2400 },
   openings: [
     {
       id: 'door-west',
       type: 'door',
       wall: 'west',
       shape: 'rectangle',
-      width: 920,
+      width: 990,
       height: 2375,
     },
     {
@@ -53,8 +54,8 @@ const SLOW_FOLK_DEMO: Project = {
       type: 'window',
       wall: 'south',
       shape: 'circle',
-      width: 1530,
-      height: 1530,
+      width: 1500,
+      height: 1500,
     },
   ],
   heaterZone: {
@@ -67,8 +68,8 @@ const SLOW_FOLK_DEMO: Project = {
     {
       id: 'column-south',
       wall: 'south',
-      width: 290,
-      depth: 290,
+      width: 500,
+      depth: 920,
       height: 2400,
       finish: 'tile',
       extendsToCeiling: true,
@@ -79,7 +80,7 @@ const SLOW_FOLK_DEMO: Project = {
       id: 'climb-step-north',
       tier: 'climbStep',
       wall: 'north',
-      length: 3771,
+      length: 3638,
       depth: 300,
       topHeight: 300,
       hasBackrest: false,
@@ -91,7 +92,7 @@ const SLOW_FOLK_DEMO: Project = {
       id: 'foot-bench-north',
       tier: 'foot',
       wall: 'north',
-      length: 3771,
+      length: 3638,
       depth: 600,
       topHeight: 750,
       hasBackrest: false,
@@ -103,7 +104,7 @@ const SLOW_FOLK_DEMO: Project = {
       id: 'upper-bench-north',
       tier: 'upper',
       wall: 'north',
-      length: 3771,
+      length: 3638,
       depth: 600,
       topHeight: 1200,
       hasBackrest: true,
@@ -115,7 +116,7 @@ const SLOW_FOLK_DEMO: Project = {
       id: 'accessible-bench-east',
       tier: 'accessible',
       wall: 'east',
-      length: 5266,
+      length: 5548,
       depth: 600,
       topHeight: 450,
       hasBackrest: false,
@@ -133,6 +134,13 @@ const SLOW_FOLK_DEMO: Project = {
     ceilingInsulationDepth: 140,
     fixingsDensityCladding: 20,
     fixingsDensityBench: 8,
+  },
+  benchConstruction: {
+    method: 'hybrid',
+    frameMaterial: 'timber',
+    frontStyle: 'fascia',
+    supportSpacing: 1500,
+    bearerSpacing: 800,
   },
   waste: {
     cladding: 0.12,
@@ -164,6 +172,7 @@ export type ProjectAction =
   | { type: 'UPDATE_CONSTRUCTION'; patch: Partial<Construction> }
   | { type: 'UPDATE_WASTE'; patch: Partial<WasteFactors> }
   | { type: 'UPDATE_PROFILES'; patch: Partial<ProfileSelections> }
+  | { type: 'UPDATE_BENCH_CONSTRUCTION'; patch: Partial<BenchConstruction> }
   | { type: 'RESET_TO_DEMO' };
 
 function touch<T extends Project>(project: T): T {
@@ -222,6 +231,11 @@ function projectReducer(state: Project, action: ProjectAction): Project {
       return touch({ ...state, waste: { ...state.waste, ...action.patch } });
     case 'UPDATE_PROFILES':
       return touch({ ...state, profiles: { ...state.profiles, ...action.patch } });
+    case 'UPDATE_BENCH_CONSTRUCTION':
+      return touch({
+        ...state,
+        benchConstruction: { ...state.benchConstruction, ...action.patch },
+      });
     case 'RESET_TO_DEMO':
       return SLOW_FOLK_DEMO;
     default:
