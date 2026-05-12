@@ -13,6 +13,7 @@ import { BomSummaryCards } from '@/components/sauna-materials/BomSummaryCards';
 import { BomTable } from '@/components/sauna-materials/BomTable';
 import { ConstructionToggles } from '@/components/sauna-materials/ConstructionToggles';
 import { ExportButton } from '@/components/sauna-materials/ExportButton';
+import { FloorPlanEditor } from '@/components/sauna-materials/FloorPlanEditor';
 import { HeaterColumnsEditor } from '@/components/sauna-materials/HeaterColumnsEditor';
 import { LibraryManagerSheet } from '@/components/sauna-materials/LibraryManagerSheet';
 import { OpeningsEditor } from '@/components/sauna-materials/OpeningsEditor';
@@ -91,6 +92,12 @@ function ContentRouter() {
           <div className="section-animate" style={{ animationDelay: '60ms' }}>
             <RoomDiagram />
           </div>
+        </div>
+      )}
+
+      {section === 'floorplan' && (
+        <div className="space-y-4 section-animate">
+          <FloorPlanEditor />
         </div>
       )}
 
