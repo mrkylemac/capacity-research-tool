@@ -83,6 +83,20 @@ export interface Column {
 export type BenchTier = 'climbStep' | 'foot' | 'upper' | 'accessible';
 export type EndCap = 'left' | 'right' | 'both' | 'none';
 
+/**
+ * How the slat cross-section is constructed.
+ *
+ * - `wallMounted` — front fascia + slats + rear ventilation gap at the wall.
+ *   Used for standard benches fixed to a wall (foot, upper, accessible).
+ * - `box` — two side pieces enclosing the slats with uniform gaps on all sides.
+ *   Used for freestanding step elements (climb step).
+ *
+ * When undefined on a Bench, the type is derived from the tier via
+ * `resolvedSlatConstructionType()`. The explicit field allows future overrides
+ * without changing the tier (e.g. a box-built foot bench in an unusual design).
+ */
+export type SlatConstructionType = 'wallMounted' | 'box';
+
 export interface Bench {
   id: string;
   tier: BenchTier;
@@ -108,6 +122,17 @@ export interface Bench {
   x?: number;
   y?: number;
   rotation?: number;
+  /** Number of slats across bench depth — when set, depth is derived from slat geometry. */
+  slatCount?: number;
+  /** mm gap between adjacent slats. Defaults to 10 when slatCount is set. */
+  slatGap?: number;
+  /** mm rear ventilation gap at wall. Defaults to slatGap (lower tiers) or 25 (upper). Only applies to wallMounted construction. */
+  rearVentilation?: number;
+  /**
+   * Explicit slat construction type override. When undefined, derived from tier:
+   * climbStep → 'box', all others → 'wallMounted'.
+   */
+  slatConstructionType?: SlatConstructionType;
 }
 
 export type BenchMethod = 'floating' | 'legPost' | 'bracket' | 'hybrid';

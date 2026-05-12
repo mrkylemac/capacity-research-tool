@@ -420,6 +420,148 @@ const SDS_CEDAR_PROFILES: Profile[] = [
 ];
 
 // ───────────────────────────────────────────────────────────────────────────
+// SDS Australia — Accoya (acetylated radiata pine), May 2026 
+//
+// Accoya is Accsys Technologies' acetylated pine, distinct from heat-treated
+// timbers. The acetylation process makes the wood hydrophobic, dimensionally
+// stable, and Class 1 durable without the tannin or resin bleed of WRC.
+// Odourless once cured — better than heat-treated species in that respect.
+// Suitable for high-humidity, high-temperature sauna cycling.
+//
+// "Slate Grey" is Accoya Colour — through-colour (not a surface treatment),
+// engineered by Accsys alongside the acetylation process. Colour is stable.
+//
+// Pricing inc-GST; derived from per-piece prices on product listings (May 2026).
+// 67mm/65mm variants confirmed. 145mm variants price null — updates in the
+// variation picker (JS-driven). Request quote: 1800 737 777.
+// Lead time: 1–3 weeks (made to order).
+//
+// Cover width 60mm for 67mm cladding (7mm T&G tongue, confirmed via
+// $366.67/m² installed rate ÷ $22.00/lm). 145mm cover = 138mm same tongue.
+// Bench boards are smooth machined DAR — coverWidth = faceWidth.
+// ───────────────────────────────────────────────────────────────────────────
+
+const SDS_ACCOYA_TONGUE_MM = 7;
+
+const SDS_ACCOYA_PROFILES: Profile[] = [
+  // ── Cladding — Natural ──────────────────────────────────────────────────
+
+  {
+    id: 'sds-accoya-clad-67x15',
+    name: 'Accoya Cladding 67×15mm',
+    category: 'wallCladding',
+    species: 'Accoya (acetylated radiata pine)',
+    faceWidth: 67,
+    coverWidth: 67 - SDS_ACCOYA_TONGUE_MM,
+    thickness: 15,
+    stockLengths: [2.4],
+    pricePerLM: 22.00,
+    supplier: 'SDS Australia',
+    notes: 'SKU AC67152400 · T&G profile · $366.67/m² installed · Class 1 · 1–3 wk lead time',
+  },
+  {
+    id: 'sds-accoya-clad-145x19',
+    name: 'Accoya Cladding 145×19mm',
+    category: 'wallCladding',
+    species: 'Accoya (acetylated radiata pine)',
+    faceWidth: 145,
+    coverWidth: 145 - SDS_ACCOYA_TONGUE_MM,
+    thickness: 19,
+    stockLengths: [2.4],
+    pricePerLM: null,
+    supplier: 'SDS Australia',
+    notes: 'SKU AC145192400 · T&G profile · Class 1 · request quote · 1–3 wk lead time',
+  },
+
+  // ── Cladding — Slate Grey ───────────────────────────────────────────────
+
+  {
+    id: 'sds-accoya-clad-67x15-grey',
+    name: 'Accoya Cladding 67×15mm — Slate Grey',
+    category: 'wallCladding',
+    species: 'Accoya Colour (acetylated radiata pine, through-colour)',
+    faceWidth: 67,
+    coverWidth: 67 - SDS_ACCOYA_TONGUE_MM,
+    thickness: 15,
+    stockLengths: [2.4],
+    pricePerLM: 31.17,
+    supplier: 'SDS Australia',
+    notes: 'SKU AC67152400G · T&G · through-colour slate grey · $519.44/m² installed · Class 1 · 1–3 wk lead',
+  },
+  {
+    id: 'sds-accoya-clad-145x19-grey',
+    name: 'Accoya Cladding 145×19mm — Slate Grey',
+    category: 'wallCladding',
+    species: 'Accoya Colour (acetylated radiata pine, through-colour)',
+    faceWidth: 145,
+    coverWidth: 145 - SDS_ACCOYA_TONGUE_MM,
+    thickness: 19,
+    stockLengths: [2.4],
+    pricePerLM: null,
+    supplier: 'SDS Australia',
+    notes: 'SKU AC145192400G · T&G · through-colour slate grey · Class 1 · request quote · 1–3 wk lead',
+  },
+
+  // ── Bench Board — Natural ───────────────────────────────────────────────
+
+  {
+    id: 'sds-accoya-bench-65x21',
+    name: 'Accoya Bench Board 65×21mm',
+    category: 'benchSlat',
+    species: 'Accoya (acetylated radiata pine)',
+    faceWidth: 65,
+    coverWidth: 65,
+    thickness: 21,
+    stockLengths: [2.4, 3.0],
+    pricePerLM: 21.54,
+    supplier: 'SDS Australia',
+    notes: 'SKU AC65212400 / AC65213000 · smooth DAR · bench tops and fascia · Class 1',
+  },
+  {
+    id: 'sds-accoya-bench-145x21',
+    name: 'Accoya Bench Board 145×21mm',
+    category: 'benchSlat',
+    species: 'Accoya (acetylated radiata pine)',
+    faceWidth: 145,
+    coverWidth: 145,
+    thickness: 21,
+    stockLengths: [2.4, 3.0],
+    pricePerLM: null,
+    supplier: 'SDS Australia',
+    notes: 'SKU AC145212400 / AC145213000 · smooth DAR · wide bench top · Class 1 · request quote',
+  },
+
+  // ── Bench Board — Slate Grey ────────────────────────────────────────────
+
+  {
+    id: 'sds-accoya-bench-65x21-grey',
+    name: 'Accoya Bench Board 65×21mm — Slate Grey',
+    category: 'benchSlat',
+    species: 'Accoya Colour (acetylated radiata pine, through-colour)',
+    faceWidth: 65,
+    coverWidth: 65,
+    thickness: 21,
+    stockLengths: [2.4, 3.0],
+    pricePerLM: 31.17,
+    supplier: 'SDS Australia',
+    notes: 'SKU AC65212400G / AC6521300GA · smooth DAR · through-colour slate grey · Class 1',
+  },
+  {
+    id: 'sds-accoya-bench-145x21-grey',
+    name: 'Accoya Bench Board 145×21mm — Slate Grey',
+    category: 'benchSlat',
+    species: 'Accoya Colour (acetylated radiata pine, through-colour)',
+    faceWidth: 145,
+    coverWidth: 145,
+    thickness: 21,
+    stockLengths: [2.4, 3.0],
+    pricePerLM: null,
+    supplier: 'SDS Australia',
+    notes: 'SKU AC145212400G / AC145213000G · smooth DAR · through-colour slate grey · Class 1 · request quote',
+  },
+];
+
+// ───────────────────────────────────────────────────────────────────────────
 // Kosny — Sauna Timbers price list, April 2026
 // All prices inc-GST per supplier header.
 // Tongue allowance for T&G / shiplap / castellated profiles: 6mm.
@@ -1516,9 +1658,117 @@ export const SEED_PROFILES: Profile[] = [
   ...ORIGINAL_PROFILES,
   ...SDS_AUSTRALIA_PROFILES,
   ...SDS_CEDAR_PROFILES,
+  ...SDS_ACCOYA_PROFILES,
   ...KOSNY_CEDAR_PROFILES,
   ...KOSNY_HINOKI_PROFILES,
   ...KOSNY_SUGI_PROFILES,
+];
+
+// ───────────────────────────────────────────────────────────────────────────
+// Pricewise Insulation — pricewise.com.au, May 2026
+// All prices are inc-GST "from" rates (minimum size / entry pack).
+// unit: 'm2', unitSize: 1  →  pricePerUnit is effectively the $/m² rate.
+// BOM will compute ceil(requiredM2 / 1) × pricePerUnit for material cost.
+// ───────────────────────────────────────────────────────────────────────────
+
+const PRICEWISE_INSULATION_MATERIALS: MaterialItem[] = [
+  {
+    id: 'pricewise-knauf-earthwool-ceiling',
+    name: 'Knauf Earthwool Ceiling Batts',
+    category: 'insulation',
+    unit: 'm2',
+    unitSize: 1,
+    pricePerUnit: 9.20,
+    supplier: 'Pricewise Insulation',
+    notes: 'From $9.20/m² inc. GST · ceiling application',
+  },
+  {
+    id: 'pricewise-knauf-earthwool-wall',
+    name: 'Knauf Earthwool Sound Shield Wall Batts',
+    category: 'insulation',
+    unit: 'm2',
+    unitSize: 1,
+    pricePerUnit: 9.33,
+    supplier: 'Pricewise Insulation',
+    notes: 'From $9.33/m² inc. GST · acoustic wall batt',
+  },
+  {
+    id: 'pricewise-bradford-soundscreen-wall',
+    name: 'Bradford SoundScreen Acoustic Batts',
+    category: 'insulation',
+    unit: 'm2',
+    unitSize: 1,
+    pricePerUnit: 15.63,
+    supplier: 'Pricewise Insulation',
+    notes: 'From $15.63/m² inc. GST · acoustic wall application',
+  },
+  {
+    id: 'pricewise-bradford-hipg-ceiling',
+    name: 'Bradford Hi-Performance Gold Ceiling Batts',
+    category: 'insulation',
+    unit: 'm2',
+    unitSize: 1,
+    pricePerUnit: 15.63,
+    supplier: 'Pricewise Insulation',
+    notes: 'From $15.63/m² inc. GST · high-performance ceiling batt',
+  },
+  {
+    id: 'pricewise-pink-soundbreak-wall',
+    name: 'Pink Soundbreak Batts',
+    category: 'insulation',
+    unit: 'm2',
+    unitSize: 1,
+    pricePerUnit: 14.42,
+    supplier: 'Pricewise Insulation',
+    notes: 'From $14.42/m² inc. GST · acoustic wall batt',
+  },
+  {
+    id: 'pricewise-knauf-earthwool-r70-ceiling',
+    name: 'R7.0 Earthwool Ceiling Batts',
+    category: 'insulation',
+    unit: 'm2',
+    unitSize: 1,
+    pricePerUnit: 19.27,
+    supplier: 'Pricewise Insulation',
+    notes: 'From $19.27/m² inc. GST · R7.0 ceiling batt',
+  },
+  {
+    id: 'pricewise-knauf-earthwool-r80-ceiling',
+    name: 'R8.0 Earthwool Ceiling Batts',
+    category: 'insulation',
+    unit: 'm2',
+    unitSize: 1,
+    pricePerUnit: 25.21,
+    supplier: 'Pricewise Insulation',
+    notes: 'From $25.21/m² inc. GST · R8.0 ceiling batt',
+  },
+];
+
+// ───────────────────────────────────────────────────────────────────────────
+// Bunnings — May 2026, inc-GST
+// ───────────────────────────────────────────────────────────────────────────
+
+const BUNNINGS_FIXINGS_MATERIALS: MaterialItem[] = [
+  {
+    id: 'bunnings-paslode-40x28-ss-nail',
+    name: 'Paslode 40 × 2.8mm SS Fibre Cement Nails',
+    category: 'fixings',
+    unit: 'box',
+    unitSize: 440,
+    pricePerUnit: 56.10,
+    supplier: 'Bunnings',
+    notes: '1 kg / 440-pack · 304 SS · cladding nails · inc. GST',
+  },
+  {
+    id: 'bunnings-spax-5x60-ss-screw',
+    name: 'SPAX 5 × 60mm CSK 304 SS Screw',
+    category: 'fixings',
+    unit: 'box',
+    unitSize: 100,
+    pricePerUnit: 37.50,
+    supplier: 'Bunnings',
+    notes: '100/box · countersunk · full thread · 304 SS · bench & framing · inc. GST',
+  },
 ];
 
 export const SEED_MATERIALS: MaterialItem[] = [
@@ -1612,6 +1862,8 @@ export const SEED_MATERIALS: MaterialItem[] = [
     supplier: 'Local fastener supplier',
     notes: 'per box of 250',
   },
+  ...PRICEWISE_INSULATION_MATERIALS,
+  ...BUNNINGS_FIXINGS_MATERIALS,
 ];
 
 export const SEED_LIBRARY: Library = {

@@ -72,6 +72,10 @@ const benchSchema = z.object({
   x: xy,
   y: xy,
   rotation,
+  slatCount: positiveInt.optional(),
+  slatGap: positiveInt.optional(),
+  rearVentilation: positiveInt.optional(),
+  slatConstructionType: z.enum(['wallMounted', 'box']).optional(),
 });
 
 const benchConstructionSchema = z.object({

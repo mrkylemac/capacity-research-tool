@@ -1,4 +1,4 @@
-import type { Bench, BenchConstruction, EndCap } from '@/types/saunaMaterials';
+import type { Bench, BenchConstruction, BenchTier, EndCap, SlatConstructionType } from '@/types/saunaMaterials';
 import {
   BENCH_BEARER_SPACING_MM,
   BENCH_LEG_SPACING_MM,
@@ -111,4 +111,181 @@ export function totalBackrestLM(benches: Bench[]): number {
   return benches
     .filter(b => b.hasBackrest)
     .reduce((sum, b) => sum + mm(b.length), 0);
+}
+
+// ── Slat depth calculator ────────────────────────────────────────────────────
+
+/**
+ * Wall-mounted bench depth from slat count and profile dimensions.
+ *
+ * Cross-section layout (wall → room, back to front):
+ *   rearVentilation | slat₁ | gap | slat₂ | gap | … | slatN | gap | fascia (thickness)
+ *
+ * There is a ventilation gap on BOTH sides of the slat array:
+ *   - at the back: rearVentilation (10 mm for lower tiers, 25 mm for upper)
+ *   - at the front: slatGap (between last slat and the fascia board)
+ *
+ * Formula: rearVentilation + N × (faceWidth + slatGap) + thickness
+ *
+ * Example — Slow Folk upper bench (6 slats, 90 mm face, 21 mm fascia, 10 mm gap):
+ *   10 + 6 × (90 + 10) + 21 = 631 mm  ✓
+ */
+export function benchDepthFromSlats(
+  faceWidth: number,
+  thickness: number,
+  slatCount: number,
+  slatGap: number,
+  rearVentilation: number,
+): number {
+  return Math.round(rearVentilation + slatCount * (faceWidth + slatGap) + thickness);
+}
+
+/**
+ * Back-calculate slat count for a wall-mounted bench from a known depth.
+ *
+ * Derivation:
+ *   depth = rearVentilation + N × (faceWidth + slatGap) + thickness
+ *   → N = (depth − rearVentilation − thickness) / (faceWidth + slatGap)
+ */
+export function slatCountFromDepth(
+  depth: number,
+  faceWidth: number,
+  thickness: number,
+  slatGap: number,
+  rearVentilation: number,
+): number {
+  return Math.max(1, Math.round(
+    (depth - rearVentilation - thickness) / (faceWidth + slatGap),
+  ));
+}
+
+/**
+ * Climb-step depth from slat count — BOX construction.
+ *
+ * The climb step has no wall attachment and no rear ventilation gap.
+ * Instead, two side pieces (same profile, set vertically) form the ends,
+ * with uniform gaps between every element including the outer faces.
+ *
+ * Cross-section layout (left side → right side):
+ *   side (thickness) | gap | slat₁ | gap | slat₂ | … | slatN | gap | side (thickness)
+ *
+ * Formula: 2 × thickness + (N + 1) × slatGap + N × faceWidth
+ *
+ * Example — Slow Folk climb step (3 slats, 90 mm face, 21 mm side, 10 mm gap):
+ *   2 × 21 + (3 + 1) × 10 + 3 × 90 = 352 mm  ✓
+ */
+export function climbStepDepthFromSlats(
+  faceWidth: number,
+  thickness: number,
+  slatCount: number,
+  slatGap: number,
+): number {
+  return Math.round(2 * thickness + (slatCount + 1) * slatGap + slatCount * faceWidth);
+}
+
+/**
+ * Back-calculate slat count for a climb-step (box construction) from a known depth.
+ *
+ * Derivation:
+ *   depth = 2 × thickness + (N + 1) × slatGap + N × faceWidth
+ *   → N = (depth − 2 × thickness − slatGap) / (faceWidth + slatGap)
+ */
+export function slatCountFromClimbStepDepth(
+  depth: number,
+  faceWidth: number,
+  thickness: number,
+  slatGap: number,
+): number {
+  return Math.max(1, Math.round(
+    (depth - 2 * thickness - slatGap) / (faceWidth + slatGap),
+  ));
+}
+
+// ── Construction-type resolution + unified dispatch ──────────────────────────
+
+/**
+ * Derive the default slat construction type from a bench tier.
+ * The climb step is a freestanding box; all wall-fixed tiers are wallMounted.
+ * Add new tiers here if their default construction differs.
+ */
+export function defaultSlatConstructionType(tier: BenchTier): SlatConstructionType {
+  return tier === 'climbStep' ? 'box' : 'wallMounted';
+}
+
+/**
+ * Resolved construction type for a bench — single source of truth.
+ * Uses the explicit `slatConstructionType` override when present,
+ * otherwise falls back to the tier-derived default.
+ */
+export function resolvedSlatConstructionType(
+  bench: Pick<Bench, 'tier' | 'slatConstructionType'>,
+): SlatConstructionType {
+  return bench.slatConstructionType ?? defaultSlatConstructionType(bench.tier);
+}
+
+/** Default number of slats for a given construction type. */
+export function defaultSlatCount(constructionType: SlatConstructionType): number {
+  return constructionType === 'box' ? 3 : 6;
+}
+
+/**
+ * Default rear-ventilation gap for a wall-mounted bench tier.
+ * Upper tier gets 25 mm for heat circulation clearance; all others use the slat gap.
+ * Not applicable to box construction.
+ */
+export function defaultRearVentilation(tier: BenchTier, slatGap: number): number {
+  return tier === 'upper' ? 25 : slatGap;
+}
+
+/**
+ * Compute bench depth for any slat construction type.
+ * Dispatches to the appropriate formula based on constructionType.
+ * rearVentilation is ignored for 'box' construction.
+ */
+export function computeSlatDepth(
+  faceWidth: number,
+  thickness: number,
+  slatCount: number,
+  slatGap: number,
+  constructionType: SlatConstructionType,
+  rearVentilation?: number,
+): number {
+  if (constructionType === 'box') {
+    return climbStepDepthFromSlats(faceWidth, thickness, slatCount, slatGap);
+  }
+  return benchDepthFromSlats(faceWidth, thickness, slatCount, slatGap, rearVentilation ?? slatGap);
+}
+
+/**
+ * Back-calculate slat count from a known depth for any slat construction type.
+ * Dispatches to the appropriate inverse formula.
+ */
+export function computeSlatCountFromDepth(
+  depth: number,
+  faceWidth: number,
+  thickness: number,
+  slatGap: number,
+  constructionType: SlatConstructionType,
+  rearVentilation?: number,
+): number {
+  if (constructionType === 'box') {
+    return slatCountFromClimbStepDepth(depth, faceWidth, thickness, slatGap);
+  }
+  return slatCountFromDepth(depth, faceWidth, thickness, slatGap, rearVentilation ?? slatGap);
+}
+
+/** Stock yield for cutting bench slats (each slat = bench depth mm) from a board. */
+export interface SlatYield {
+  stockLengthMm: number;
+  cutsPerBoard: number;
+  offcutMm: number;
+  wastePercent: number;
+}
+
+export function slatYieldPerBoard(benchDepthMm: number, stockLengthM: number): SlatYield {
+  const stockLengthMm = Math.round(stockLengthM * 1000);
+  const cutsPerBoard = Math.max(0, Math.floor(stockLengthMm / benchDepthMm));
+  const offcutMm = stockLengthMm - cutsPerBoard * benchDepthMm;
+  const wastePercent = cutsPerBoard === 0 ? 100 : Math.round((offcutMm / stockLengthMm) * 100);
+  return { stockLengthMm, cutsPerBoard, offcutMm, wastePercent };
 }

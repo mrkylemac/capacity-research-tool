@@ -47,6 +47,7 @@ export const VENUES: VenueConfig[] = [
   { id: '40726', name: 'Panda Society', platform: 'momence', location: '', timezone: 'Australia/Melbourne' },
   { id: 'portal', name: 'PORTAL° Thermaculture', platform: 'portal', location: 'Colorado · Montana · Minnesota', timezone: 'America/Denver' },
   { id: 'xtraclubs', name: 'Xtra Clubs', platform: 'xtraclubs', location: 'Sydney', timezone: 'Australia/Sydney' },
+  { id: 'akari', name: 'Akari Saunas', platform: 'glofox', location: 'Brooklyn', timezone: 'America/New_York' },
   { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
