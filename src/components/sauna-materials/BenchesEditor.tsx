@@ -47,6 +47,15 @@ const TIER_LABEL: Record<BenchTier, string> = {
   accessible: 'Accessible',
 };
 
+const WALL_ORDER: WallId[] = ['north', 'east', 'south', 'west'];
+
+const WALL_LABEL: Record<WallId, string> = {
+  north: 'North',
+  east:  'East',
+  south: 'South',
+  west:  'West',
+};
+
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
     <Label className="text-[11px] uppercase tracking-wide text-muted-foreground">
@@ -266,9 +275,8 @@ export function BenchesEditor() {
   const { project, library, dispatchProject } = useSaunaMaterials();
   const genId = useGenerateId();
 
-  const addBench = () => {
+  const addBench = (wall: WallId = 'north') => {
     const tier: BenchTier = 'foot';
-    const wall: WallId = 'north';
     const d = TIER_DEFAULTS[tier];
     dispatchProject({
       type: 'ADD_BENCH',
@@ -341,7 +349,7 @@ export function BenchesEditor() {
               Each bench spans the full length of its wall
             </p>
           </div>
-          <Button size="sm" variant="outline" onClick={addBench} className="gap-1">
+          <Button size="sm" variant="outline" onClick={() => addBench()} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Add bench
           </Button>
         </div>
@@ -350,16 +358,45 @@ export function BenchesEditor() {
         {project.benches.length === 0 ? (
           <p className="text-sm text-muted-foreground">No benches yet.</p>
         ) : (
-          <div className="space-y-3">
-            {project.benches.map(b => {
-              const wallLen = wallLengthMm(b.wall, project.room);
+          <div className="space-y-5">
+            {WALL_ORDER
+              .map(wall => ({
+                wall,
+                wallLen: wallLengthMm(wall, project.room),
+                benches: project.benches
+                  .filter(b => b.wall === wall)
+                  .sort((a, b) => a.topHeight - b.topHeight),
+              }))
+              .filter(group => group.benches.length > 0)
+              .map(({ wall, wallLen, benches }) => (
+              <div key={wall} className="space-y-2">
+                <div className="flex items-center justify-between pb-1.5 border-b border-gray-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm font-semibold text-fg-4">
+                      {WALL_LABEL[wall]} wall
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {(wallLen / 1000).toFixed(2)} m · {benches.length} {benches.length === 1 ? 'bench' : 'benches'}
+                    </span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => addBench(wall)}
+                    className="gap-1 h-7 text-xs"
+                  >
+                    <Plus className="h-3 w-3" /> Add to {WALL_LABEL[wall].toLowerCase()}
+                  </Button>
+                </div>
+                <div className="space-y-3">
+            {benches.map(b => {
               const slatMode = b.slatCount != null;
               return (
                 <div key={b.id} className="rounded-xl border border-gray-2 p-3 space-y-3 bg-card">
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-fg-4">
-                      {TIER_LABEL[b.tier]} · {b.wall.charAt(0).toUpperCase() + b.wall.slice(1)} wall · {(wallLen / 1000).toFixed(2)} m
+                      {TIER_LABEL[b.tier]} · top at {b.topHeight} mm
                     </span>
                     <Button
                       size="icon"
@@ -529,6 +566,9 @@ export function BenchesEditor() {
                 </div>
               );
             })}
+                </div>
+              </div>
+            ))}
 
             {/* Material efficiency note — shown when benches are present */}
             <MaterialEfficiencyNote />
