@@ -1665,82 +1665,29 @@ export const SEED_PROFILES: Profile[] = [
 ];
 
 // ───────────────────────────────────────────────────────────────────────────
-// Pricewise Insulation — pricewise.com.au, May 2026
-// All prices are inc-GST "from" rates (minimum size / entry pack).
-// unit: 'm2', unitSize: 1  →  pricePerUnit is effectively the $/m² rate.
-// BOM will compute ceil(requiredM2 / 1) × pricePerUnit for material cost.
+// Insulation — single product, sauna-grade, Melbourne availability.
+//
+// Rockwool RWA45 is the de-facto Australian sauna insulation: stone wool,
+// non-combustible to ~1000 °C, density 45 kg/m³, dimensionally stable at
+// elevated temperature and unaffected by transient moisture. Imported into
+// Melbourne by Pricewise Insulation (pricewise.com.au) and stocked through
+// trade channels. The 75 mm batt friction-fits 90 mm wall studs and stacks
+// in ceilings. Residential glasswool products (Knauf Earthwool, Pink
+// Batts, Bradford Hi-Performance Gold etc.) are intentionally not listed
+// — their max service temperature is too low for sauna walls.
 // ───────────────────────────────────────────────────────────────────────────
 
-const PRICEWISE_INSULATION_MATERIALS: MaterialItem[] = [
+const SAUNA_INSULATION_MATERIALS: MaterialItem[] = [
   {
-    id: 'pricewise-knauf-earthwool-ceiling',
-    name: 'Knauf Earthwool Ceiling Batts',
+    id: 'rockwool-rwa45-75',
+    name: 'Rockwool RWA45 75mm Stone Wool Batts',
     category: 'insulation',
     unit: 'm2',
-    unitSize: 1,
-    pricePerUnit: 9.20,
-    supplier: 'Pricewise Insulation',
-    notes: 'From $9.20/m² inc. GST · ceiling application',
-  },
-  {
-    id: 'pricewise-knauf-earthwool-wall',
-    name: 'Knauf Earthwool Sound Shield Wall Batts',
-    category: 'insulation',
-    unit: 'm2',
-    unitSize: 1,
-    pricePerUnit: 9.33,
-    supplier: 'Pricewise Insulation',
-    notes: 'From $9.33/m² inc. GST · acoustic wall batt',
-  },
-  {
-    id: 'pricewise-bradford-soundscreen-wall',
-    name: 'Bradford SoundScreen Acoustic Batts',
-    category: 'insulation',
-    unit: 'm2',
-    unitSize: 1,
-    pricePerUnit: 15.63,
-    supplier: 'Pricewise Insulation',
-    notes: 'From $15.63/m² inc. GST · acoustic wall application',
-  },
-  {
-    id: 'pricewise-bradford-hipg-ceiling',
-    name: 'Bradford Hi-Performance Gold Ceiling Batts',
-    category: 'insulation',
-    unit: 'm2',
-    unitSize: 1,
-    pricePerUnit: 15.63,
-    supplier: 'Pricewise Insulation',
-    notes: 'From $15.63/m² inc. GST · high-performance ceiling batt',
-  },
-  {
-    id: 'pricewise-pink-soundbreak-wall',
-    name: 'Pink Soundbreak Batts',
-    category: 'insulation',
-    unit: 'm2',
-    unitSize: 1,
-    pricePerUnit: 14.42,
-    supplier: 'Pricewise Insulation',
-    notes: 'From $14.42/m² inc. GST · acoustic wall batt',
-  },
-  {
-    id: 'pricewise-knauf-earthwool-r70-ceiling',
-    name: 'R7.0 Earthwool Ceiling Batts',
-    category: 'insulation',
-    unit: 'm2',
-    unitSize: 1,
-    pricePerUnit: 19.27,
-    supplier: 'Pricewise Insulation',
-    notes: 'From $19.27/m² inc. GST · R7.0 ceiling batt',
-  },
-  {
-    id: 'pricewise-knauf-earthwool-r80-ceiling',
-    name: 'R8.0 Earthwool Ceiling Batts',
-    category: 'insulation',
-    unit: 'm2',
-    unitSize: 1,
-    pricePerUnit: 25.21,
-    supplier: 'Pricewise Insulation',
-    notes: 'From $25.21/m² inc. GST · R8.0 ceiling batt',
+    unitSize: 4.32,
+    pricePerUnit: null,
+    supplier: 'Pricewise Insulation (Melbourne)',
+    notes:
+      'Stone wool batts 1200 × 600 × 75 mm, 6 per pack (4.32 m²). Non-combustible to ~1000 °C, 45 kg/m³ — sauna-grade. Friction-fits 90 mm wall studs; stack two in 140 mm ceiling cavities.',
   },
 ];
 
@@ -1772,26 +1719,7 @@ const BUNNINGS_FIXINGS_MATERIALS: MaterialItem[] = [
 ];
 
 export const SEED_MATERIALS: MaterialItem[] = [
-  {
-    id: 'rockwool-rwa45-75',
-    name: 'Rockwool RWA45 75mm',
-    category: 'insulation',
-    unit: 'm2',
-    unitSize: 4.32,
-    pricePerUnit: null,
-    supplier: 'Rockwool',
-    notes: 'Stone wool batts (1.2 × 0.6 × 0.075m), 4 batts per pack',
-  },
-  {
-    id: 'rockwool-rwa45-100',
-    name: 'Rockwool RWA45 100mm',
-    category: 'insulation',
-    unit: 'm2',
-    unitSize: 3.6,
-    pricePerUnit: null,
-    supplier: 'Rockwool',
-    notes: '',
-  },
+  ...SAUNA_INSULATION_MATERIALS,
   {
     id: 'sauna-foil-paper',
     name: 'Sauna foil paper backed',
@@ -1862,7 +1790,6 @@ export const SEED_MATERIALS: MaterialItem[] = [
     supplier: 'Local fastener supplier',
     notes: 'per box of 250',
   },
-  ...PRICEWISE_INSULATION_MATERIALS,
   ...BUNNINGS_FIXINGS_MATERIALS,
 ];
 
@@ -1885,7 +1812,7 @@ export const DEFAULT_PROFILE_SELECTIONS = {
   batten: 'sds-euro-framing-70x19-batten',
   backrest: 'sds-alder-ht-65x21-fascia',
   insulation: 'rockwool-rwa45-75',
-  ceilingInsulation: 'rockwool-rwa45-100',
+  ceilingInsulation: 'rockwool-rwa45-75',
   vapourBarrier: 'sds-foil-reflector',
   tape: 'sds-ametalin-tape-48',
   claddingScrews: 'ss-cladding-nail',
@@ -1901,7 +1828,7 @@ export const THERMO_ASPEN_REFERENCE_SELECTIONS = {
   batten: 'pine-22x42-batten',
   backrest: 'thermo-aspen-backrest',
   insulation: 'rockwool-rwa45-75',
-  ceilingInsulation: 'rockwool-rwa45-100',
+  ceilingInsulation: 'rockwool-rwa45-75',
   vapourBarrier: 'sauna-foil-paper',
   tape: 'foil-tape-50',
   claddingScrews: 'ss-cladding-nail',

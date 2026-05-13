@@ -7,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { BenchConstructionDiagram } from '@/components/sauna-materials/BenchConstructionDiagram';
 import { BenchConstructionMethod, BenchesEditor } from '@/components/sauna-materials/BenchesEditor';
 import { BomSummaryCards } from '@/components/sauna-materials/BomSummaryCards';
 import { BomTable } from '@/components/sauna-materials/BomTable';
@@ -19,7 +18,6 @@ import { LibraryManagerSheet } from '@/components/sauna-materials/LibraryManager
 import { OpeningsEditor } from '@/components/sauna-materials/OpeningsEditor';
 import { ProfilesPanel } from '@/components/sauna-materials/ProfilesPanel';
 import { ProjectSetupForm } from '@/components/sauna-materials/ProjectSetupForm';
-import { RoomDiagram } from '@/components/sauna-materials/RoomDiagram';
 import {
   SaunaMaterialsNav,
   type SaunaSection,
@@ -89,9 +87,6 @@ function ContentRouter() {
           <div className="section-animate" style={{ animationDelay: '0ms' }}>
             <ProjectSetupForm />
           </div>
-          <div className="section-animate" style={{ animationDelay: '60ms' }}>
-            <RoomDiagram />
-          </div>
         </div>
       )}
 
@@ -112,7 +107,6 @@ function ContentRouter() {
         <div className="space-y-4 section-animate">
           <BenchesEditor />
           <BenchConstructionMethod />
-          <BenchConstructionDiagram />
         </div>
       )}
 
