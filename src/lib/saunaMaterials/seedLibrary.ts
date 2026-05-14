@@ -1651,6 +1651,34 @@ const KOSNY_SUGI_PROFILES: Profile[] = [
 ];
 
 // ───────────────────────────────────────────────────────────────────────────
+// MD Facade — prefinished cork panels, Melbourne supply
+//
+// Amorim MD Facade cork: 1000 × 500 × 50 mm tiles, 6 per bundle (3 m²).
+// Internal/external wall finish — heat-resistant, naturally insulating
+// (~R2.5 at 50 mm), moisture-tolerant. List $129/m² + GST; quoted
+// installed rate ~$169/m² + GST with 10% waste allowance.
+// Modelled as a 500 mm "cover-width" profile in 1 m stock lengths so the
+// existing cladding LM math gives a realistic order quantity.
+// ───────────────────────────────────────────────────────────────────────────
+
+const MD_FACADE_PROFILES: Profile[] = [
+  {
+    id: 'md-facade-cork-50',
+    name: 'MD Facade Cork — 50 mm prefinished',
+    category: 'wallCladding',
+    species: 'Cork (Amorim agglomerated)',
+    faceWidth: 500,
+    coverWidth: 500,
+    thickness: 50,
+    stockLengths: [1.0],
+    pricePerLM: 64.50,
+    supplier: 'MD Facade',
+    notes:
+      '1000 × 500 × 50 mm tiles, 6 per bundle (3 m²). $129/m² list / $169/m² quoted inc-waste, ex-GST. Sauna-rated to ~120 °C; doubles as ~R2.5 thermal layer.',
+  },
+];
+
+// ───────────────────────────────────────────────────────────────────────────
 // Combined export
 // ───────────────────────────────────────────────────────────────────────────
 
@@ -1662,6 +1690,7 @@ export const SEED_PROFILES: Profile[] = [
   ...KOSNY_CEDAR_PROFILES,
   ...KOSNY_HINOKI_PROFILES,
   ...KOSNY_SUGI_PROFILES,
+  ...MD_FACADE_PROFILES,
 ];
 
 // ───────────────────────────────────────────────────────────────────────────
