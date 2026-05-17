@@ -84,10 +84,10 @@ describe('wallNetArea', () => {
     expect(south.gross).toBeCloseTo(13.2432, 3);
     // Heater tile zone: 1.5 × 2.4 = 3.6 m²
     expect(south.heater).toBeCloseTo(3.6, 3);
-    // Tile column on south: 0.29 × 2.4 = 0.696 m²
-    expect(south.columns).toBeCloseTo(0.696, 3);
-    // Circle window 1530mm: π × 0.765² ≈ 1.838 m²
-    expect(south.openings).toBeCloseTo(Math.PI * 0.765 * 0.765, 3);
+    // Tile column on south: 0.5 × 2.4 = 1.2 m²
+    expect(south.columns).toBeCloseTo(1.2, 3);
+    // Circle window 1500mm diameter: π × 0.75² ≈ 1.767 m²
+    expect(south.openings).toBeCloseTo(Math.PI * 0.75 * 0.75, 3);
     expect(south.clamped).toBe(false);
     expect(south.net).toBeGreaterThan(0);
   });
@@ -129,8 +129,8 @@ describe('totalWallNetCladdingM2 — Slow Folk', () => {
     const byWall = Object.fromEntries(result.perWall.map(w => [w.wall, w.net]));
     expect(byWall.north).toBeCloseTo(13.24, 1);
     expect(byWall.east).toBeCloseTo(9.19, 1);
-    // South: gross 13.24 minus window (~1.84) minus heater tile (3.6) minus column (0.70) ≈ 7.11
-    expect(byWall.south).toBeCloseTo(7.11, 1);
+    // South: gross 13.24 minus window (~1.77) minus heater tile (3.6) minus column (1.2) ≈ 6.68
+    expect(byWall.south).toBeCloseTo(6.68, 1);
     // West: gross 9.19 minus door (~2.19) ≈ 7.0
     expect(byWall.west).toBeCloseTo(7.0, 1);
   });

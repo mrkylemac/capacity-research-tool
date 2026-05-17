@@ -77,7 +77,7 @@ export function sanitizeSessions(
     // Drop sessions outside operating hours (if bounds provided)
     if (operatingHoursBounds) {
       const startDate = new Date(s.startsAt);
-      const startHour = startDate.getHours() + startDate.getMinutes() / 60;
+      const startHour = startDate.getUTCHours() + startDate.getUTCMinutes() / 60;
       if (startHour < operatingHoursBounds.earliestStart || startHour > operatingHoursBounds.latestEnd) {
         report.dropped.outsideOperatingHours++;
         return acc;
