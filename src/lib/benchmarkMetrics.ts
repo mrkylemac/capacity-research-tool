@@ -71,6 +71,10 @@ export interface BenchmarkMetrics {
   operatingHours: OperatingHours;
   weeklyOpenHours: number;
   visitsPerOpenHour: number;
+  /** Distinct Mon–Fri days-of-week that had ≥1 session in the data. */
+  openWeekdaysCount: number;
+  /** Distinct Sat/Sun days-of-week that had ≥1 session in the data. */
+  openWeekendDaysCount: number;
 
   // Demand distribution
   weekdayVisits: number;
@@ -168,11 +172,21 @@ export function inferOperatingHours(sessions: MomenceSession[], timezone?: strin
 }
 
 /**
- * Calculate weekly open hours from operating hours
+ * Calculate weekly open hours from operating hours and the number of
+ * weekdays/weekend-days the venue actually runs sessions on.
+ *
+ * Earlier this assumed a 5-weekday, 2-weekend week — which over-counted open
+ * hours for any venue closed on certain days, deflating visitsPerOpenHour.
+ * (For a Mon/Wed/Fri venue the bug was ~11×.) Counting only days-of-week
+ * that have ≥1 session in the data gives an honest denominator.
  */
-function calculateWeeklyOpenHours(hours: OperatingHours): number {
-  const weekdayHours = (hours.weekdayEnd - hours.weekdayStart) * 5;
-  const weekendHours = (hours.weekendEnd - hours.weekendStart) * 2;
+function calculateWeeklyOpenHours(
+  hours: OperatingHours,
+  openWeekdaysCount: number,
+  openWeekendDaysCount: number,
+): number {
+  const weekdayHours = (hours.weekdayEnd - hours.weekdayStart) * openWeekdaysCount;
+  const weekendHours = (hours.weekendEnd - hours.weekendStart) * openWeekendDaysCount;
   return weekdayHours + weekendHours;
 }
 
@@ -207,7 +221,21 @@ export function calculateBenchmarkMetrics(
 
   // Operating hours (use venue-local timezone so inferred times are meaningful)
   const operatingHours = operatingHoursOverride || inferOperatingHours(sessions, timezone);
-  const weeklyOpenHours = calculateWeeklyOpenHours(operatingHours);
+
+  // Count distinct days-of-week the venue actually ran sessions on. This is
+  // the denominator for weeklyOpenHours — a Mon/Wed/Fri venue runs 3, not 5.
+  const dowsWithSessions = new Set<number>();
+  sessions.forEach(s => dowsWithSessions.add(getLocalDayOfWeek(s.startsAt, timezone)));
+  let openWeekdaysCount = 0;
+  let openWeekendDaysCount = 0;
+  dowsWithSessions.forEach(dow => {
+    if (dow === 0 || dow === 6) openWeekendDaysCount += 1;
+    else openWeekdaysCount += 1;
+  });
+
+  const weeklyOpenHours = calculateWeeklyOpenHours(
+    operatingHours, openWeekdaysCount, openWeekendDaysCount,
+  );
   const visitsPerOpenHour = weeklyOpenHours > 0 ? weeklyVisits / weeklyOpenHours : 0;
 
   // Weekday vs Weekend (timezone-aware)
@@ -239,15 +267,22 @@ export function calculateBenchmarkMetrics(
   const weekendShare = totalVisits > 0 ? weekendVisits / totalVisits : 0;
 
   // Pricing
-  const pricesWithVolume = sessions
-    .filter(s => s.fixedTicketPrice > 0 && s.ticketsSold > 0)
-    .map(s => ({ price: s.fixedTicketPrice, volume: s.ticketsSold }));
+  // avgPrice — the unweighted average list price across PAID sessions.
+  // Excluding $0 sessions (free trials, comps) keeps the number honest:
+  // a venue with one $35 session and 4 free intro sessions still has a
+  // $35 list price, not $7.
+  const paidSessions = sessions.filter(s => s.fixedTicketPrice > 0);
+  const avgPrice = paidSessions.length > 0
+    ? paidSessions.reduce((sum, s) => sum + s.fixedTicketPrice, 0) / paidSessions.length
+    : 0;
 
+  // impliedArpv — revenue ÷ paid visits. Volume-weighted, so high-traffic
+  // price points dominate. Falls back to avgPrice when no paid volume.
+  const pricesWithVolume = paidSessions
+    .filter(s => s.ticketsSold > 0)
+    .map(s => ({ price: s.fixedTicketPrice, volume: s.ticketsSold }));
   const totalPriceVolume = pricesWithVolume.reduce((sum, p) => sum + p.price * p.volume, 0);
   const totalVolume = pricesWithVolume.reduce((sum, p) => sum + p.volume, 0);
-  const avgPrice = sessions.length > 0
-    ? sessions.reduce((sum, s) => sum + s.fixedTicketPrice, 0) / sessions.length
-    : 0;
   const impliedArpv = totalVolume > 0 ? totalPriceVolume / totalVolume : avgPrice;
 
   return {
@@ -263,6 +298,8 @@ export function calculateBenchmarkMetrics(
     operatingHours,
     weeklyOpenHours,
     visitsPerOpenHour,
+    openWeekdaysCount,
+    openWeekendDaysCount,
     weekdayVisits,
     weekendVisits,
     weekdayShare,
@@ -279,6 +316,55 @@ export function calculateBenchmarkMetrics(
 function statusFromDeltaPercent(deltaPercent: number): 'above' | 'below' | 'on-target' {
   if (Math.abs(deltaPercent) <= 5) return 'on-target';
   return deltaPercent > 0 ? 'above' : 'below';
+}
+
+/**
+ * Sanity-check the metrics object for arithmetic drift. Returns a list of
+ * human-readable violations — empty list means everything ties out. Used
+ * by the report client in development to surface bugs the moment they appear,
+ * rather than waiting for a stakeholder to spot a wrong number on a card.
+ *
+ * The invariants encode definitional truths of the metric pipeline:
+ *   - weeklyVisits × weeksInRange must equal totalVisits
+ *   - dailyVisits × daysInRange must equal totalVisits
+ *   - weekdayShare + weekendShare must equal 1 (when visits > 0)
+ *   - weekdayVisits + weekendVisits must equal totalVisits
+ */
+export function checkMetricInvariants(metrics: BenchmarkMetrics): string[] {
+  const violations: string[] = [];
+  const EPSILON = 0.01;
+
+  const weeklyDrift = Math.abs(metrics.weeklyVisits * metrics.weeksInRange - metrics.totalVisits);
+  if (weeklyDrift > EPSILON) {
+    violations.push(
+      `weeklyVisits × weeksInRange (${metrics.weeklyVisits.toFixed(3)} × ${metrics.weeksInRange.toFixed(3)} = ${(metrics.weeklyVisits * metrics.weeksInRange).toFixed(3)}) ≠ totalVisits (${metrics.totalVisits}) — drift ${weeklyDrift.toFixed(3)}`,
+    );
+  }
+
+  const dailyDrift = Math.abs(metrics.dailyVisits * metrics.daysInRange - metrics.totalVisits);
+  if (dailyDrift > EPSILON) {
+    violations.push(
+      `dailyVisits × daysInRange (${metrics.dailyVisits.toFixed(3)} × ${metrics.daysInRange} = ${(metrics.dailyVisits * metrics.daysInRange).toFixed(3)}) ≠ totalVisits (${metrics.totalVisits}) — drift ${dailyDrift.toFixed(3)}`,
+    );
+  }
+
+  if (metrics.totalVisits > 0) {
+    const shareDrift = Math.abs(metrics.weekdayShare + metrics.weekendShare - 1);
+    if (shareDrift > EPSILON) {
+      violations.push(
+        `weekdayShare + weekendShare (${metrics.weekdayShare.toFixed(4)} + ${metrics.weekendShare.toFixed(4)}) ≠ 1 — drift ${shareDrift.toFixed(4)}`,
+      );
+    }
+  }
+
+  const splitDrift = Math.abs(metrics.weekdayVisits + metrics.weekendVisits - metrics.totalVisits);
+  if (splitDrift > EPSILON) {
+    violations.push(
+      `weekdayVisits + weekendVisits (${metrics.weekdayVisits} + ${metrics.weekendVisits}) ≠ totalVisits (${metrics.totalVisits}) — drift ${splitDrift}`,
+    );
+  }
+
+  return violations;
 }
 
 /**

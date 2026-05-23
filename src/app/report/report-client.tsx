@@ -7,7 +7,7 @@ import { ReportSections } from '@/components/ReportSections';
 import { ReportSkeleton, ReportCardsSkeleton } from '@/components/ReportSkeleton';
 import { SessionTicker } from '@/components/SessionTicker';
 import { DinoLoader } from '@/components/DinoLoader';
-import { calculateBenchmarkMetrics } from '@/lib/benchmarkMetrics';
+import { calculateBenchmarkMetrics, checkMetricInvariants } from '@/lib/benchmarkMetrics';
 import {
   getCachedEntry,
   getCacheKey,
@@ -525,7 +525,14 @@ export function ReportClient() {
   }, [availableMonths, period]);
 
   // ── Period-filtered data (from location-scoped sessions) ─────────────────
-  const periodRange = useMemo(() => getPeriodRange(period), [period]);
+  // Pass venue timezone so "This month" snaps to the venue's local clock
+  // (e.g. May 1 00:00 Adelaide), not the viewer's. Without this, sessions
+  // in the venue's early-morning hours of the first day of a period are
+  // silently excluded for viewers west of the venue.
+  const periodRange = useMemo(
+    () => getPeriodRange(period, apiVenueConfig?.timezone),
+    [period, apiVenueConfig?.timezone],
+  );
 
   const periodFilteredSessions = useMemo(() => {
     if (period === 'all') return locationScopedSessions;
@@ -591,13 +598,23 @@ export function ReportClient() {
     ? formatComputedRange(benchmarkMetrics.computedFrom, benchmarkMetrics.computedTo)
     : '';
 
+  // Dev-mode sanity check — surfaces metric drift the instant it appears
+  // rather than waiting for someone to notice a wrong number on a card.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development' || !benchmarkMetrics) return;
+    const violations = checkMetricInvariants(benchmarkMetrics);
+    if (violations.length > 0) {
+      console.warn('[benchmarkMetrics] invariant violations:', violations);
+    }
+  }, [benchmarkMetrics]);
+
   // Periods that have no active sessions — disable in the selector to prevent empty reports.
   // Only check short periods (today, yesterday, 1w) since longer ones almost always have data.
   const disabledPeriods = useMemo<Set<PeriodOption>>(() => {
     const shortPeriods: PeriodOption[] = ['today', 'yesterday', '1w'];
     const disabled = new Set<PeriodOption>();
     shortPeriods.forEach(p => {
-      const range = getPeriodRange(p);
+      const range = getPeriodRange(p, apiVenueConfig?.timezone);
       const fromMs = range.from.getTime();
       const toMs = range.to.getTime();
       const hasActive = locationScopedSessions.some(s => {
@@ -607,7 +624,7 @@ export function ReportClient() {
       if (!hasActive) disabled.add(p);
     });
     return disabled;
-  }, [locationScopedSessions]);
+  }, [locationScopedSessions, apiVenueConfig?.timezone]);
 
   // ── Empty / loading states ────────────────────────────────────────────────
   if (loadPhase !== 'ready' || !entry) {

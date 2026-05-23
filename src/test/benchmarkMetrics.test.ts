@@ -176,17 +176,21 @@ describe('calculateBenchmarkMetrics', () => {
     expect(m.impliedArpv).toBe(35);
   });
 
-  it('uses operating hours override when provided', () => {
+  it('uses operating hours override when provided, scaled by open days-of-week', () => {
     const override: OperatingHours = {
       weekdayStart: 6,
       weekdayEnd: 22,
       weekendStart: 7,
       weekendEnd: 21,
     };
+    // Single Monday session → 1 weekday DOW with data, 0 weekend DOWs.
     const sessions = [makeSession({ ticketsSold: 100 })];
     const m = calculateBenchmarkMetrics(sessions, '2025-03-01', '2025-03-14', override);
-    // Weekday hours: (22-6)*5 = 80, Weekend: (21-7)*2 = 28 → total = 108
-    expect(m.weeklyOpenHours).toBe(108);
+    // Open weekdays = 1 (Mon), open weekend days = 0.
+    // weeklyOpenHours = (22-6)*1 + (21-7)*0 = 16
+    expect(m.openWeekdaysCount).toBe(1);
+    expect(m.openWeekendDaysCount).toBe(0);
+    expect(m.weeklyOpenHours).toBe(16);
   });
 
   it('calculates visitsPerOpenHour correctly', () => {
@@ -197,13 +201,14 @@ describe('calculateBenchmarkMetrics', () => {
       weekendEnd: 16,  // 8hrs
     };
     const sessions = [
-      makeSession({ ticketsSold: 100, startsAt: '2025-03-10T08:00:00Z' }),
+      makeSession({ ticketsSold: 100, startsAt: '2025-03-10T08:00:00Z' }), // Monday
     ];
     const m = calculateBenchmarkMetrics(sessions, '2025-03-01', '2025-03-07', override);
-    // weeklyOpenHours = 12*5 + 8*2 = 76
-    // weeksInRange = 1, weeklyVisits = 100
-    expect(m.weeklyOpenHours).toBe(76);
-    expect(m.visitsPerOpenHour).toBeCloseTo(100 / 76, 5);
+    // Single Mon session → 1 weekday DOW, 0 weekend DOWs.
+    // weeklyOpenHours = 12*1 + 8*0 = 12
+    // weeksInRange = 1, weeklyVisits = 100 → visitsPerOpenHour = 100/12
+    expect(m.weeklyOpenHours).toBe(12);
+    expect(m.visitsPerOpenHour).toBeCloseTo(100 / 12, 5);
   });
 });
 

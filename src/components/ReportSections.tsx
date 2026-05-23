@@ -109,6 +109,39 @@ function MetricTile({ value, label }: { value: string; label: string }) {
   );
 }
 
+/**
+ * Short caption surfaced beneath the headline metrics — communicates the
+ * sample size (so a viewer knows "506/wk" is built on real density) and
+ * flags when data is stale (last session > 12hrs ago) so the rate isn't
+ * mistaken for a live read.
+ */
+function DataDensityCaption({ metrics }: { metrics: BenchmarkMetrics }) {
+  const lastSession = parseISO(metrics.computedTo);
+  const hoursAgo = (Date.now() - lastSession.getTime()) / (1000 * 60 * 60);
+
+  const sessionCount = metrics.totalSessions.toLocaleString();
+  const dayCount = metrics.daysInRange;
+  const dayLabel = dayCount === 1 ? 'day' : 'days';
+  const base = `Based on ${sessionCount} session${metrics.totalSessions === 1 ? '' : 's'} across ${dayCount} ${dayLabel}`;
+
+  // Only flag freshness when the gap is meaningful (>12 hrs).
+  let freshness: string | null = null;
+  if (hoursAgo > 12) {
+    if (hoursAgo < 48) {
+      freshness = `data through ${format(lastSession, 'EEE d MMM')} (${Math.round(hoursAgo)}h ago)`;
+    } else {
+      const daysAgo = Math.round(hoursAgo / 24);
+      freshness = `data through ${format(lastSession, 'EEE d MMM')} (${daysAgo}d ago)`;
+    }
+  }
+
+  return (
+    <p className="text-xs text-muted-foreground mt-3 leading-snug">
+      {base}{freshness ? ` · ${freshness}` : ''}
+    </p>
+  );
+}
+
 // ── 1. Snapshot + Visitors per week ──────────────────────────────────────────
 
 function SnapshotSection({
@@ -281,6 +314,8 @@ function SnapshotSection({
             <MetricTile key={item.label} value={item.value} label={item.label} />
           ))}
         </div>
+
+        <DataDensityCaption metrics={metrics} />
 
         {/* Weekday / weekend split */}
         {/* <div className="pt-4 border-t border-border grid grid-cols-2 gap-4">
