@@ -7,7 +7,7 @@
     "from": "2026-03-05T20:00:00.000Z",
     "to": "2026-05-29T09:30:00.000Z"
   },
-  "cachedAt": "2026-05-24T23:26:23.494Z",
+  "cachedAt": "2026-05-25T03:17:34.308Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -4660,7 +4660,7 @@
       "endsAt": "2026-05-25T10:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 9,
+      "ticketsSold": 10,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -4672,7 +4672,7 @@
       "endsAt": "2026-05-25T11:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 4,
+      "ticketsSold": 6,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -4708,7 +4708,7 @@
       "endsAt": "2026-05-26T00:20:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 1,
+      "ticketsSold": 4,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -4720,7 +4720,7 @@
       "endsAt": "2026-05-26T08:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 2,
+      "ticketsSold": 5,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -4804,7 +4804,7 @@
       "endsAt": "2026-05-27T08:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 7,
+      "ticketsSold": 9,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -4816,7 +4816,7 @@
       "endsAt": "2026-05-27T09:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 8,
+      "ticketsSold": 10,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -4828,7 +4828,7 @@
       "endsAt": "2026-05-27T10:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 7,
+      "ticketsSold": 9,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -4912,7 +4912,7 @@
       "endsAt": "2026-05-28T10:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 5,
+      "ticketsSold": 10,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
