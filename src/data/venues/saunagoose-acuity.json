@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-06-05T23:20:00.000Z"
+    "to": "2026-06-06T04:00:00.000Z"
   },
-  "cachedAt": "2026-06-04T07:04:21.603Z",
+  "cachedAt": "2026-06-04T10:23:16.256Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -5422,13 +5422,13 @@
       "inPerson": true
     },
     {
-      "id": "acuity-88489076-12473477-2026-06-04T20:30:00+10:00",
+      "id": "acuity-88489076-12582797-2026-06-04T20:30:00+10:00",
       "sessionName": "Saunagus Session",
       "startsAt": "2026-06-04T10:30:00.000Z",
       "endsAt": "2026-06-04T11:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 5,
+      "ticketsSold": 8,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -5440,7 +5440,7 @@
       "endsAt": "2026-06-04T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 5,
+      "ticketsSold": 8,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -5452,7 +5452,7 @@
       "endsAt": "2026-06-04T23:10:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 4,
+      "ticketsSold": 5,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -5513,6 +5513,30 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 5,
+      "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-69171187-12002100-2026-06-06T11:40:00+10:00",
+      "sessionName": "Saunagus Session",
+      "startsAt": "2026-06-06T01:40:00.000Z",
+      "endsAt": "2026-06-06T02:40:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-69171187-11872240-2026-06-06T14:00:00+10:00",
+      "sessionName": "Saunagus Session",
+      "startsAt": "2026-06-06T04:00:00.000Z",
+      "endsAt": "2026-06-06T05:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 10,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
