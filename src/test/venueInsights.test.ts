@@ -379,6 +379,33 @@ describe('buildCapacityString', () => {
     const result = buildCapacityString(metrics);
     expect(result).toContain('0.0%');
   });
+
+  it('summary seats/week equals tile seats/week for mixed-capacity sessions', () => {
+    // Fixture: 8 sessions @ 4 seats + 2 sessions @ 12 seats over a 7-day week
+    //   totalCapacity = 8*4 + 2*12 = 56
+    //   totalSessions = 10  → 10 sessions/week
+    //   modalCapacity = 4   (most common)
+    //   30 visitors total  → 53.6% occupancy
+    // Old formula (modal × sessions/week) gave 40 seats/week — wrong, dropped the two big rooms.
+    // New formula (totalCapacity / weeksInRange) gives 56 seats/week — matches the Capacity tile.
+    const metrics = makeMetrics({
+      totalSessions: 10,
+      totalVisits: 30,
+      totalCapacity: 56,
+      modalCapacity: 4,
+      weeklyVisits: 30,
+      daysInRange: 7,
+      weeksInRange: 1,
+      occupancyRate: 30 / 56,
+    });
+    const result = buildCapacityString(metrics);
+    expect(result).toContain('30 visitors/week');
+    expect(result).toContain('56 seats/week');
+    expect(result).toContain('53.6% seat occupancy');
+    // The displayed seats/week MUST be reproducible from the other displayed numbers:
+    // visitors/week ÷ seats/week ≈ occupancy %  (within 0.1 pp)
+    expect((30 / 56) * 100).toBeCloseTo(53.6, 1);
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════

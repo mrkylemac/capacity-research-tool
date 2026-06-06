@@ -578,22 +578,38 @@ export function ReportClient() {
   }, [allVenueMonthlyData, period, periodRange]);
 
   const benchmarkMetrics = useMemo(() => {
-    const activeSessions = filteredSessions.filter(s => s.ticketsSold > 0);
-    if (activeSessions.length === 0) return null;
-    const sorted = [...activeSessions].sort(
+    // Eligible = past, non-cancelled. Excludes Momence's future bookings
+    // (which arrive with ticketsSold=0) but keeps historical empty sessions
+    // so "Seat occupancy" reflects seats offered, not seats sold among
+    // sessions that already had at least one booking.
+    const nowMs = Date.now();
+    const eligible = filteredSessions.filter(
+      s => new Date(s.startsAt).getTime() <= nowMs && !s.isCancelled,
+    );
+    if (eligible.length === 0) return null;
+    const sorted = [...eligible].sort(
       (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
     );
+    // Clamp the computation window to the operating window:
+    //   from = max(period start, first session in scope)
+    //   to   = min(period end, now)
+    // For "All time" this becomes "first session → today", so per-day and
+    // per-week averages divide by the venue's full operating span rather
+    // than first-active to last-active (which silently shortened the window).
+    const firstEligibleMs = new Date(sorted[0].startsAt).getTime();
+    const fromMs = Math.max(periodRange.from.getTime(), firstEligibleMs);
+    const toMs = Math.min(periodRange.to.getTime(), nowMs);
     return calculateBenchmarkMetrics(
-      activeSessions,
-      sorted[0].startsAt,
-      sorted[sorted.length - 1].startsAt,
+      eligible,
+      new Date(fromMs).toISOString(),
+      new Date(toMs).toISOString(),
       undefined,
       apiVenueConfig?.timezone,
     );
-  }, [filteredSessions, apiVenueConfig?.timezone]);
+  }, [filteredSessions, periodRange, apiVenueConfig?.timezone]);
 
-  // Derive label from the actual computation window (first → last active session),
-  // not the filter range, so any reader can independently verify the displayed rates.
+  // Derive label from the clamped computation window so any reader can
+  // independently verify the displayed per-week and per-day rates.
   const dateRangeLabel = benchmarkMetrics
     ? formatComputedRange(benchmarkMetrics.computedFrom, benchmarkMetrics.computedTo)
     : '';

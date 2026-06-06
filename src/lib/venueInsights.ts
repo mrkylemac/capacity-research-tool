@@ -89,11 +89,10 @@ export function getTimeToPeak(data: MonthlyData[]): number {
  * For single-day filters: "110 visitors vs 60 seats → 183.3% seat occupancy"
  * For multi-day filters:  "259 visitors/week vs 560 seats/week → 46.3% seat occupancy"
  *
- * The trailing % always uses totalVisits/totalCapacity so it matches the headline
- * occupancy figure shown in SnapshotSection and CapacitySection.
+ * seats/week uses totalCapacity/weeksInRange so it matches the Capacity tile and
+ * the occupancy % is reproducible from the two numbers shown on the same line.
  */
 export function buildCapacityString(metrics: BenchmarkMetrics): string {
-  // Consistent aggregate occupancy — matches occupancyRate on BenchmarkMetrics
   const occ = metrics.totalCapacity > 0 ? (metrics.totalVisits / metrics.totalCapacity) * 100 : 0;
 
   if (metrics.daysInRange <= 1) {
@@ -104,8 +103,7 @@ export function buildCapacityString(metrics: BenchmarkMetrics): string {
     );
   }
 
-  const sessionsPerWeek = metrics.totalSessions / metrics.weeksInRange;
-  const seatCapPerWeek = metrics.modalCapacity * sessionsPerWeek;
+  const seatCapPerWeek = metrics.weeksInRange > 0 ? metrics.totalCapacity / metrics.weeksInRange : 0;
   return (
     `${Math.round(metrics.weeklyVisits).toLocaleString()} visitors/week` +
     ` vs ${Math.round(seatCapPerWeek).toLocaleString()} seats/week` +
