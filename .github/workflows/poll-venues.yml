@@ -11,6 +11,13 @@ on:
 permissions:
   contents: write
 
+# Prevent overlapping runs (e.g. workflow_dispatch racing a scheduled poll).
+# cancel-in-progress: false — let the in-flight run finish its merge+push
+# rather than killing it mid-write to the cache.
+concurrency:
+  group: poll-venues
+  cancel-in-progress: false
+
 jobs:
   gate:
     runs-on: ubuntu-latest
@@ -63,11 +70,11 @@ jobs:
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: 20
+          node-version: 22
           cache: yarn
 
       - run: yarn install --frozen-lockfile
@@ -87,8 +94,18 @@ jobs:
           git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
-          else
-            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-            git commit -m "chore: poll Acuity + TryBe session data ($TIMESTAMP) [skip ci]"
-            git push
+            exit 0
           fi
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+          git commit -m "chore: poll Acuity + TryBe session data ($TIMESTAMP) [skip ci]"
+          # Rebase against any commits that landed during the run (e.g. token
+          # refresh workflow) so the push doesn't lose to a race condition.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed; rebasing and retrying"
+            git pull --rebase origin main
+          done
+          echo "Push failed after 3 attempts" >&2
+          exit 1

@@ -9,15 +9,19 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: refresh-glofox-tokens
+  cancel-in-progress: false
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: 20
+          node-version: 22
           cache: yarn
 
       - run: yarn install --frozen-lockfile
@@ -32,8 +36,18 @@ jobs:
           git add src/config/api.ts
           if git diff --staged --quiet; then
             echo "No token changes to commit"
-          else
-            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-            git commit -m "chore: refresh Glofox guest tokens ($TIMESTAMP) [skip ci]"
-            git push
+            exit 0
           fi
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+          git commit -m "chore: refresh Glofox guest tokens ($TIMESTAMP) [skip ci]"
+          # Rebase against any commits that landed during the run (e.g. a
+          # concurrent venue poll) so the push doesn't lose to a race.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed; rebasing and retrying"
+            git pull --rebase origin main
+          done
+          echo "Push failed after 3 attempts" >&2
+          exit 1
