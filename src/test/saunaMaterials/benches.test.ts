@@ -86,10 +86,10 @@ describe('benchSurfaceAreas', () => {
 describe('totalBenchSlatFaceM2 — Slow Folk', () => {
   it('produces total bench face area roughly in line with the spec', () => {
     const total = totalBenchSlatFaceM2(SLOW_FOLK_PROJECT.benches);
-    // Spec sense check: ~25 m² total face including tops/fronts/ends/backrests.
-    // The actual model is closer to 20–25 m² depending on stacking math.
-    expect(total).toBeGreaterThan(15);
-    expect(total).toBeLessThan(30);
+    // Spec sense check: ~30–40 m² total face including tops/fronts/ends/backrests.
+    // Updated for 4-tier bench bank (climbStep/foot/upper/high).
+    expect(total).toBeGreaterThan(20);
+    expect(total).toBeLessThan(45);
   });
 });
 

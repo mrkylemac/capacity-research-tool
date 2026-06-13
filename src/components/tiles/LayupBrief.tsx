@@ -343,7 +343,7 @@ function FindingField({
   label: string;
   value: string;
   emphasis?: boolean;
-  tone?: 'red' | 'amber';
+  tone?: 'red' | 'amber' | 'green';
 }) {
   const text = emphasis && tone ? SEVERITY_TONE[tone].text : 'text-fg-4';
   return (

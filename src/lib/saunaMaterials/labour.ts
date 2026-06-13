@@ -14,6 +14,7 @@ const TIER_BASE_HOURS: Record<BenchTier, number> = {
   climbStep:  6,
   foot:       10,
   upper:      13,
+  high:       15,
   accessible: 10,
 };
 

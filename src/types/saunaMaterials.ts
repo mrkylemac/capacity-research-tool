@@ -80,7 +80,7 @@ export interface Column {
   rotation?: number;
 }
 
-export type BenchTier = 'climbStep' | 'foot' | 'upper' | 'accessible';
+export type BenchTier = 'climbStep' | 'foot' | 'upper' | 'high' | 'accessible';
 export type EndCap = 'left' | 'right' | 'both' | 'none';
 
 /**

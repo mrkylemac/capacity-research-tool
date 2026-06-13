@@ -57,7 +57,7 @@ const columnSchema = z.object({
 
 const benchSchema = z.object({
   id: z.string(),
-  tier: z.enum(['climbStep', 'foot', 'upper', 'accessible']),
+  tier: z.enum(['climbStep', 'foot', 'upper', 'high', 'accessible']),
   wall: wallSchema,
   length: positiveInt,
   depth: positiveInt,

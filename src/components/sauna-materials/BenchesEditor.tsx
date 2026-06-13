@@ -34,9 +34,10 @@ import type {
 } from '@/types/saunaMaterials';
 
 const TIER_DEFAULTS: Record<BenchTier, { topHeight: number; depth: number }> = {
-  climbStep:  { topHeight: 300,  depth: 300 },
-  foot:       { topHeight: 750,  depth: 600 },
-  upper:      { topHeight: 1200, depth: 600 },
+  climbStep:  { topHeight: 415,  depth: 300 },
+  foot:       { topHeight: 690,  depth: 600 },
+  upper:      { topHeight: 1140, depth: 600 },
+  high:       { topHeight: 1590, depth: 600 },
   accessible: { topHeight: 450,  depth: 600 },
 };
 
@@ -44,6 +45,7 @@ const TIER_LABEL: Record<BenchTier, string> = {
   climbStep:  'Climb step',
   foot:       'Foot bench',
   upper:      'Upper bench',
+  high:       'High bench',
   accessible: 'Accessible',
 };
 

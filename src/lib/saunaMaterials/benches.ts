@@ -234,7 +234,7 @@ export function defaultSlatCount(constructionType: SlatConstructionType): number
  * Not applicable to box construction.
  */
 export function defaultRearVentilation(tier: BenchTier, slatGap: number): number {
-  return tier === 'upper' ? 25 : slatGap;
+  return (tier === 'upper' || tier === 'high') ? 25 : slatGap;
 }
 
 /**

@@ -40,7 +40,7 @@ describe('generateBom — Slow Folk fixture', () => {
     const slat = bom.lineItems.find(li => li.id === 'bench-slat')!;
     expect(slat.unit).toBe('lm');
     expect(slat.quantity).toBeGreaterThanOrEqual(150);
-    expect(slat.quantity).toBeLessThanOrEqual(350);
+    expect(slat.quantity).toBeLessThanOrEqual(450);
   });
 
   it('vapour barrier resolves to 3 rolls', () => {
