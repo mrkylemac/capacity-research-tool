@@ -35,7 +35,7 @@ function SlotBar({ slot }: { slot: AggregatedSlot }) {
     <div className="relative h-8 rounded-lg overflow-hidden flex items-center px-3">
       <div className="absolute inset-0 bg" />
       <div
-        className="absolute inset-y-0 left-0 rounded-lg transition-all duration-300"
+        className="absolute inset-y-0 left-0 rounded-lg transition-[width,background-color] duration-300"
         style={{
           width: `${pct}%`,
           backgroundColor: 'color-mix(in srgb, var(--chart-fill) 18%, transparent)',
@@ -119,11 +119,11 @@ function MonthlyGroupedList({ groups }: { groups: MonthGroup[] }) {
             <button
               type="button"
               onClick={() => toggle(month.monthKey)}
-              className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left hover:opacity-80 transition-opacity"
+              className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left hover:opacity-80 active:scale-[0.98] transition-[opacity,transform]"
             >
               <div className="absolute inset-0 bg" />
               <div
-                className="absolute inset-y-0 left-0 rounded-lg transition-all duration-300"
+                className="absolute inset-y-0 left-0 rounded-lg transition-[width,background-color] duration-300"
                 style={{
                   width: `${pct}%`,
                   backgroundColor: 'color-mix(in srgb, var(--chart-fill) 14%, transparent)',

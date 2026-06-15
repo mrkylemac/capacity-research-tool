@@ -64,7 +64,7 @@ function PeakSlotList({
             <div key={s.slot} className="relative h-8 rounded-lg overflow-hidden flex items-center px-3">
               <div className="absolute inset-0 bg" />
               <div
-                className="absolute inset-y-0 left-0 transition-all duration-300 rounded-lg"
+                className="absolute inset-y-0 left-0 transition-[width,background-color] duration-300 rounded-lg"
                 style={{
                   width: `${Math.min(s.utilisation, 100)}%`,
                   backgroundColor: aboveAvg ? 'color-mix(in srgb, var(--chart-fill) 18%, transparent)' : 'color-mix(in srgb, var(--chart-fill) 8%, transparent)',
@@ -190,11 +190,11 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
                 <button
                   type="button"
                   onClick={() => setExpandedDay(isExpanded ? null : d.name)}
-                  className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left hover:opacity-80 transition-opacity"
+                  className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left hover:opacity-80 active:scale-[0.98] transition-[opacity,transform]"
                 >
                   <div className="absolute inset-0 bg" />
                   <div
-                    className="absolute inset-y-0 left-0 transition-all duration-500 rounded-lg"
+                    className="absolute inset-y-0 left-0 transition-[width,background-color] duration-500 rounded-lg"
                     style={{
                       width: `${d.pctOfPeak}%`,
                       backgroundColor: d.visitors === 0

@@ -16,6 +16,7 @@ import { UtilisationTrend } from '@/components/UtilisationTrend';
 import { VenueComparisonChart } from '@/components/VenueComparisonChart';
 import { buildCapacityString, computeMonthlyTrajectory } from '@/lib/venueInsights';
 import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
+import { OperatingModel } from '@/components/OperatingModel';
 
 // ── Private helpers ──────────────────────────────────────────────────────────
 
@@ -615,6 +616,11 @@ export function ReportSections({
       {sessions.length > 0 && (
         <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '120ms' }}>
           <DemandSection sessions={sessions} metrics={metrics} period={period} />
+        </div>
+      )}
+      {sessions.length > 0 && (
+        <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '180ms' }}>
+          <OperatingModel sessions={sessions} metrics={metrics} hostId={hostId} />
         </div>
       )}
       {/* {hostId && (

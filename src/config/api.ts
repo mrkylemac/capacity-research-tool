@@ -22,6 +22,25 @@ export const API_CONFIG = {
 // Platform types for venue identification
 export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana';
 
+export interface VenuePricingTier {
+  label: string;
+  casualRate: number;       // single-visit price
+  pack5PerVisit?: number;   // per-visit rate on a 5-pack
+  pack10PerVisit?: number;  // per-visit rate on a 10-pack
+}
+
+export interface VenueMembership {
+  label: string;            // e.g. "Studio Membership"
+  price: string;            // e.g. "$75 / week"
+  description?: string;
+}
+
+export interface VenuePricingConfig {
+  tiers: VenuePricingTier[];
+  memberships?: VenueMembership[];
+  note?: string;
+}
+
 export interface VenueConfig {
   id: string;
   name: string;
@@ -31,11 +50,27 @@ export interface VenueConfig {
   timezone?: string;
   /** Short positive descriptor shown beneath the venue name on the report header. */
   tagline?: string;
+  /** Known pricing tiers for display in the Operating Model section. */
+  pricing?: VenuePricingConfig;
 }
 
 // Venue list
 export const VENUES: VenueConfig[] = [
-  { id: 'innerstudio', name: 'Inner Studio', platform: 'momence', location: 'Melbourne', timezone: 'Australia/Melbourne' },
+  {
+    id: 'innerstudio', name: 'Inner Studio', platform: 'momence', location: 'Melbourne', timezone: 'Australia/Melbourne',
+    pricing: {
+      tiers: [
+        { label: 'Sauna & Cold Plunge', casualRate: 45, pack5PerVisit: 40, pack10PerVisit: 35 },
+        { label: 'Class+', casualRate: 45, pack5PerVisit: 40, pack10PerVisit: 35 },
+        { label: 'Class Only', casualRate: 30 },
+      ],
+      memberships: [
+        { label: 'Class Only Membership', price: '$50 / week', description: 'Unlimited class bookings + bath at $35/visit' },
+        { label: 'Studio Membership', price: '$75 / week', description: 'Unlimited all sauna & plunge and Class+ sessions' },
+      ],
+      note: 'Pack credits valid across Sauna & Cold Plunge and Class+ sessions.',
+    },
+  },
   { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
   { id: '49448', name: 'Aalto', platform: 'momence', location: 'Adelaide', timezone: 'Australia/Adelaide' },
   { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', timezone: 'Australia/Melbourne' },
