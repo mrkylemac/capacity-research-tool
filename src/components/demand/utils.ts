@@ -29,6 +29,15 @@ export interface DetailTarget {
   dateCount: number;
 }
 
+export interface MonthGroup {
+  monthKey: string;
+  monthLabel: string;
+  dateGroups: { date: string; sessions: MomenceSession[] }[];
+  avgOccupancyPct: number;
+  totalVisitors: number;
+  sessionCount: number;
+}
+
 export interface DayOfWeekEntry {
   name: string;
   dayIndex: number;
@@ -104,14 +113,20 @@ export function buildSessionsForDay(sessions: MomenceSession[], dayIndex: number
 }
 
 export function buildAggregatedSlots(sessions: MomenceSession[], dayIndex: number): AggregatedSlot[] {
-  const bySlot = new Map<string, { totalBooked: number; totalCapacity: number; count: number; duration: number; capacity: number[] }>();
+  const bySlot = new Map<string, {
+    totalBooked: number; totalCapacity: number; count: number;
+    duration: number; capacity: number[];
+    minutesSinceMidnight: number;
+  }>();
 
   sessions
     .filter(s => getDay(parseISO(s.startsAt)) === dayIndex)
     .forEach(s => {
-      const key = format(parseISO(s.startsAt), 'h:mmaaa');
+      const parsed = parseISO(s.startsAt);
+      const key = format(parsed, 'h:mmaaa');
+      const mins = getHours(parsed) * 60 + getMinutes(parsed);
       if (!bySlot.has(key)) {
-        bySlot.set(key, { totalBooked: 0, totalCapacity: 0, count: 0, duration: s.durationMinutes, capacity: [] });
+        bySlot.set(key, { totalBooked: 0, totalCapacity: 0, count: 0, duration: s.durationMinutes, capacity: [], minutesSinceMidnight: mins });
       }
       const slot = bySlot.get(key)!;
       slot.totalBooked += s.ticketsSold;
@@ -121,13 +136,7 @@ export function buildAggregatedSlots(sessions: MomenceSession[], dayIndex: numbe
     });
 
   return Array.from(bySlot.entries())
-    .sort(([a], [b]) => {
-      const toMins = (label: string) => {
-        const d = new Date(`2000-01-01 ${label}`);
-        return isNaN(d.getTime()) ? 0 : d.getHours() * 60 + d.getMinutes();
-      };
-      return toMins(a) - toMins(b);
-    })
+    .sort(([, a], [, b]) => a.minutesSinceMidnight - b.minutesSinceMidnight)
     .map(([time, data]) => {
       const capCounts = new Map<number, number>();
       data.capacity.forEach(c => capCounts.set(c, (capCounts.get(c) ?? 0) + 1));
@@ -144,6 +153,42 @@ export function buildAggregatedSlots(sessions: MomenceSession[], dayIndex: numbe
         capacity: modalCap,
       };
     });
+}
+
+export function buildMonthlyGroupedSessions(sessions: MomenceSession[], dayIndex: number): MonthGroup[] {
+  const dateGroups = buildSessionsForDay(sessions, dayIndex);
+
+  const monthMap = new Map<string, {
+    dateGroups: { date: string; sessions: MomenceSession[] }[];
+    totalBooked: number;
+    totalCap: number;
+    sessionCount: number;
+  }>();
+
+  dateGroups.forEach(group => {
+    const monthKey = group.date.substring(0, 7);
+    if (!monthMap.has(monthKey)) {
+      monthMap.set(monthKey, { dateGroups: [], totalBooked: 0, totalCap: 0, sessionCount: 0 });
+    }
+    const month = monthMap.get(monthKey)!;
+    month.dateGroups.push(group);
+    group.sessions.forEach(s => {
+      month.totalBooked += s.ticketsSold;
+      month.totalCap += s.capacity;
+      month.sessionCount += 1;
+    });
+  });
+
+  return Array.from(monthMap.entries())
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([monthKey, data]) => ({
+      monthKey,
+      monthLabel: format(parseISO(`${monthKey}-01`), 'MMMM yyyy'),
+      dateGroups: data.dateGroups,
+      avgOccupancyPct: data.totalCap > 0 ? (data.totalBooked / data.totalCap) * 100 : 0,
+      totalVisitors: data.totalBooked,
+      sessionCount: data.sessionCount,
+    }));
 }
 
 export function buildSlotSummaries(
