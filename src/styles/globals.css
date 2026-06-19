@@ -106,7 +106,7 @@
   --popover: var(--bg-1);
   --popover-foreground: var(--fg-4);
   --foreground: var(--fg-4);
-  --primary: var(--purple-4);
+  --primary: var(--fg-4);
   --primary-foreground: #fff;
   --secondary: var(--bg-2);
   --secondary-foreground: var(--fg-4);

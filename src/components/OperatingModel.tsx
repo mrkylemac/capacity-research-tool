@@ -62,8 +62,8 @@ function buildComposition(sessions: MomenceSession[], modalDuration: number): Co
   const total = sessions.length;
   const LABELS: Record<SessionKind, string> = {
     bath: 'Sauna & bath sessions',
-    class: 'Class+ sessions (incl. bath)',
-    short: 'Short / crossover sessions',
+    class: 'Class sessions',
+    short: 'Short sessions',
   };
   return (['bath', 'class', 'short'] as SessionKind[])
     .filter(k => buckets[k].count > 0)
@@ -259,7 +259,7 @@ function DerivedPricingDisplay({ sessions, metrics }: { sessions: MomenceSession
     }));
   }, [sessions]);
 
-  if (tiers.length === 0) return <p className="text-sm text-muted-foreground">No price data in this dataset.</p>;
+  if (tiers.length === 0) return <p className="text-sm text-muted-foreground">No pricing data available.</p>;
 
   return (
     <div className="space-y-1">
@@ -268,12 +268,12 @@ function DerivedPricingDisplay({ sessions, metrics }: { sessions: MomenceSession
           key={t.price}
           label={`$${t.price}`}
           pct={(t.pct / t.maxPct) * 100}
-          right={`${t.pct.toFixed(0)}% of sessions`}
+          right={`${t.pct.toFixed(0)}% of listings`}
         />
       ))}
       {metrics.avgPrice > 0 && (
         <p className="text-xs text-muted-foreground mt-2">
-          Avg listed price ${metrics.avgPrice.toFixed(0)} · actual ARPV will be lower where packs and memberships are used.
+          Average listed price ${metrics.avgPrice.toFixed(0)} — actual revenue per guest is lower when packs or memberships apply.
         </p>
       )}
     </div>
@@ -321,7 +321,7 @@ export function OperatingModel({ sessions, metrics, hostId }: OperatingModelProp
             <p className="text-[22px] font-semibold tabular-nums leading-none tracking-[-0.03em]">
               {avgOccupancy.toFixed(1)}%
             </p>
-            <p className="text-xs text-muted-foreground mt-0.5">avg occupancy</p>
+            <p className="text-xs text-muted-foreground mt-0.5">average occupancy</p>
           </div>
         </div>
 
@@ -329,33 +329,33 @@ export function OperatingModel({ sessions, metrics, hostId }: OperatingModelProp
         <div className="mb-6">
           <SectionLabel>Structure</SectionLabel>
           <div className="space-y-1">
-            <StatRow label="Session duration (modal)" pct={100} right={`${modalDuration} min`} />
+            <StatRow label="Typical session length" pct={100} right={`${modalDuration} min`} />
             {increment !== null && (
               <StatRow
-                label="Session increment"
+                label="Time between sessions"
                 pct={(increment / modalDuration) * 100}
                 right={`Every ${increment} min`}
               />
             )}
             <StatRow
-              label="Sessions per day (avg)"
+              label="Sessions per day"
               pct={Math.min((sessionsPerDay / 25) * 100, 100)}
               right={sessionsPerDay.toFixed(1)}
             />
             {metrics.modalCapacity > 0 && (
               <StatRow
-                label="Guests per session start (modal)"
+                label="Guests per session"
                 pct={Math.min((metrics.modalCapacity / (concurrent.peak || metrics.modalCapacity)) * 100, 100)}
                 right={`${metrics.modalCapacity} guests`}
               />
             )}
             <StatRow
-              label="Peak concurrent guests"
+              label="Peak simultaneous guests"
               pct={100}
               right={`${concurrent.peak}`}
             />
             <StatRow
-              label="Typical busy concurrent"
+              label="Typical simultaneous guests"
               pct={(concurrent.p75 / Math.max(concurrent.peak, 1)) * 100}
               right={`${concurrent.p75}`}
             />
@@ -365,7 +365,7 @@ export function OperatingModel({ sessions, metrics, hostId }: OperatingModelProp
               ? `${fmtHour(weekdayStart)}–${fmtHour(weekdayEnd)} daily`
               : `Weekday ${fmtHour(weekdayStart)}–${fmtHour(weekdayEnd)} · Weekend ${fmtHour(weekendStart)}–${fmtHour(weekendEnd)}`
             }
-            {' · '}Peak concurrent = all-time maximum. Typical busy = 75th-percentile at session starts.
+            {' · '}Peak = all-time high. Typical = 75th-percentile load.
           </p>
         </div>
 
@@ -381,7 +381,7 @@ export function OperatingModel({ sessions, metrics, hostId }: OperatingModelProp
                   label={c.label}
                   pct={(c.sessionPct / maxSessionPct) * 100}
                   right={`${c.sessionPct.toFixed(0)}%`}
-                  subRight={`${c.totalVisitors.toLocaleString()} visits · ${fillPct.toFixed(0)}% fill`}
+                  subRight={`${c.totalVisitors.toLocaleString()} guests · ${fillPct.toFixed(0)}% fill`}
                   dimBar={c.kind !== 'bath'}
                 />
               );
@@ -389,16 +389,16 @@ export function OperatingModel({ sessions, metrics, hostId }: OperatingModelProp
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 mb-4">
-            <Stat label="Total visits" value={metrics.totalVisits.toLocaleString()} />
-            <Stat label="Avg fill rate" value={`${avgOccupancy.toFixed(1)}%`} />
+            <Stat label="Total guests" value={metrics.totalVisits.toLocaleString()} />
+            <Stat label="Average fill" value={`${avgOccupancy.toFixed(1)}%`} />
             {hasMembershipSignal && (
-              <Stat label="Overbooked sessions" value={`${overbooking.count} (${overbooking.pct.toFixed(0)}%)`} />
+              <Stat label="Above-cap bookings" value={`${overbooking.count} (${overbooking.pct.toFixed(0)}%)`} />
             )}
           </div>
 
           {hasMembershipSignal && (
             <p className="text-xs text-muted-foreground">
-              {overbooking.pct.toFixed(0)}% of sessions had more bookings than the configured session cap — a floor-level membership signal. The real membership share is significantly higher: members who book within capacity are indistinguishable from casual visitors in this dataset.
+              {overbooking.pct.toFixed(0)}% of sessions were booked beyond the session cap — a sign of membership use. The real share is higher: members who book within capacity are indistinguishable from casual guests in this data.
             </p>
           )}
         </div>

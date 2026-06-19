@@ -58,7 +58,7 @@ function SlotBar({ slot }: { slot: AggregatedSlot }) {
 
 function AggregatedSlotList({ slots }: { slots: AggregatedSlot[] }) {
   if (slots.length === 0) {
-    return <p className="text-sm text-muted-foreground py-4">No session data available</p>;
+    return <p className="text-sm text-muted-foreground py-4">No sessions recorded</p>;
   }
   return (
     <div className="space-y-1">
@@ -87,7 +87,7 @@ function SessionRow({ s }: { s: MomenceSession }) {
       </span>
       <span className="relative z-10 ml-auto text-sm tabular-nums font-medium shrink-0">
         {s.ticketsSold}
-        <span className="text-muted-foreground font-normal">/{s.capacity} spots</span>
+        <span className="text-muted-foreground font-normal"> / {s.capacity}</span>
       </span>
     </div>
   );
@@ -119,7 +119,7 @@ function MonthlyGroupedList({ groups }: { groups: MonthGroup[] }) {
             <button
               type="button"
               onClick={() => toggle(month.monthKey)}
-              className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left hover:opacity-80 active:scale-[0.98] transition-[opacity,transform]"
+              className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left cursor-pointer hover:opacity-80 active:scale-[0.98] transition-[opacity,transform]"
             >
               <div className="absolute inset-0 bg" />
               <div
@@ -165,7 +165,7 @@ function SegmentedToggle({ value, onChange }: { value: ViewMode; onChange: (v: V
     <div className="flex items-center rounded-full bg-muted p-0.5 gap-px" data-vaul-no-drag>
       <button
         type="button"
-        className={`flex-1 px-2.5 py-1 text-xs font-medium rounded-full transition-colors ${
+        className={`flex-1 px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer transition-colors ${
           value === 'average'
             ? 'bg-background text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'
@@ -176,14 +176,14 @@ function SegmentedToggle({ value, onChange }: { value: ViewMode; onChange: (v: V
       </button>
       <button
         type="button"
-        className={`flex-1 px-2.5 py-1 text-xs font-medium rounded-full transition-colors ${
+        className={`flex-1 px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer transition-colors ${
           value === 'by-date'
             ? 'bg-background text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'
         }`}
         onPointerDown={(e) => { e.stopPropagation(); onChange('by-date'); }}
       >
-        By Date
+        By date
       </button>
     </div>
   );
@@ -236,7 +236,7 @@ export function DayDetailPanel({ target, onClose, sessions, isSingleDay }: DayDe
   const open = target !== null;
 
   const subtitle = target
-    ? `${target.visitors.toLocaleString()} total visitors${target.dateCount > 1 ? ` · Avg across ${target.dateCount} ${target.name}s` : ''}`
+    ? `${target.visitors.toLocaleString()} guests${target.dateCount > 1 ? ` · avg across ${target.dateCount} ${target.name}s` : ''}`
     : '';
 
   if (isMobile) {

@@ -431,7 +431,7 @@ export function ReportClient() {
     const seen = new Set<string>();
     const result: MomenceSession[] = [];
     venueSearches.forEach(search => {
-      search.sessions.forEach(s => {
+      (search.sessions ?? []).forEach(s => {
         if (!seen.has(s.id)) { seen.add(s.id); result.push(s); }
       });
     });
@@ -460,7 +460,7 @@ export function ReportClient() {
     if (venueSearches.length === 0) return entry?.monthlyData ?? [];
     const merged = new Map<string, MonthlyData>();
     venueSearches.forEach(search => {
-      search.monthlyData.forEach(m => {
+      (search.monthlyData ?? []).forEach(m => {
         const key = `${m.year}-${m.month}`;
         const existing = merged.get(key);
         if (!existing || m.ticketsSold > existing.ticketsSold) merged.set(key, m);

@@ -48,13 +48,13 @@ function PeakSlotList({
       <div className="flex items-baseline justify-between mb-6 flex-col">
         <p className="text-sm font-medium">{title}</p>
         <p className="text-sm text-muted-foreground">
-          Avg{' '}
+          Average{' '}
           <span className="font-semibold text-foreground tabular-nums">
             {avgOccupancyPct.toFixed(0)}%
           </span>
           {' '}
         </p>
-        <span className="text-xs opacity-40">(session occupancy, this period)</span>
+        <span className="text-xs opacity-40">occupancy this period</span>
       </div>
 
       <div className="space-y-1.5">
@@ -92,7 +92,7 @@ function PeakSlotList({
 
       {hasOverbooked && (
         <p className="text-xs text-muted-foreground mt-2">
-          Values above 100% indicate sessions booked beyond configured capacity.
+          Values above 100% mean more bookings than the session cap.
         </p>
       )}
     </div>
@@ -137,21 +137,21 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
       <div>
         <div className="flex items-start justify-between mb-5">
           <div>
-            <p className="text-sm font-medium">Visitors by day</p>
+            <p className="text-sm font-medium">Guests by day</p>
             <p className="text-sm text-muted-foreground">
               {isSingleDay ? 'Selected date' : 'Total across period'}
             </p>
           </div>
           <div className="flex gap-5 text-right shrink-0 items-end">
             <div>
-              <p className="text-sm font-medium">Weekday</p>
+              <p className="text-sm font-medium">Weekdays</p>
               <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="cursor-pointer">
                   <p className="text-lg font-semibold tabular-nums leading-none tracking-[-0.02em]">{weekdayPct.toFixed(0)}%</p>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Total visitors: {weekdayTotal.toLocaleString()}</p>
+                    <p>Total guests: {weekdayTotal.toLocaleString()}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -164,7 +164,7 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
                   <p className="text-lg font-semibold tabular-nums leading-none tracking-[-0.02em]">{weekendPct.toFixed(0)}%</p>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Total visitors: {weekendTotal.toLocaleString()}</p>
+                    <p>Total guests: {weekendTotal.toLocaleString()}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -190,7 +190,7 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
                 <button
                   type="button"
                   onClick={() => setExpandedDay(isExpanded ? null : d.name)}
-                  className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left hover:opacity-80 active:scale-[0.98] transition-[opacity,transform]"
+                  className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left cursor-pointer hover:opacity-80 active:scale-[0.98] transition-[opacity,transform]"
                 >
                   <div className="absolute inset-0 bg" />
                   <div
@@ -240,12 +240,12 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
       <div className="pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
         <PeakSlotList
           slots={weekdaySlots}
-          title="Weekday Peak"
+          title="Weekday peak"
           avgOccupancyPct={weekdayAvgOccupancyPct}
         />
         <PeakSlotList
           slots={weekendSlots}
-          title="Weekend Peak"
+          title="Weekend peak"
           avgOccupancyPct={weekendAvgOccupancyPct}
         />
       </div>

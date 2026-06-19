@@ -16,7 +16,7 @@ export function HeatmapStrip({ slots, dateCount, dayName, isSingleDay, onOpenDet
   if (slots.length === 0) {
     return (
       <div className="py-1">
-        <p className="text-sm text-muted-foreground">No sessions for this day</p>
+        <p className="text-sm text-muted-foreground">No sessions</p>
       </div>
     );
   }
@@ -26,7 +26,7 @@ export function HeatmapStrip({ slots, dateCount, dayName, isSingleDay, onOpenDet
       {/* Heatmap cell row — cells stretch to fill available width */}
       <TooltipProvider delayDuration={100}>
         <div
-          className="flex items-center gap-0.5 cursor-pointer py-1"
+          className="flex items-center gap-0.5 cursor-pointer py-1 select-none"
           onClick={onOpenDetail}
           role="img"
           aria-label={`Occupancy by time slot for ${dayName}s`}
@@ -61,7 +61,7 @@ export function HeatmapStrip({ slots, dateCount, dayName, isSingleDay, onOpenDet
       {/* Subtitle + detail CTA */}
       <div className="flex items-center justify-between mt-2">
         <p className="text-xs text-muted-foreground">
-          {isSingleDay ? 'Selected date' : `Avg across ${dateCount} ${dayName}s`}
+          {isSingleDay ? 'Selected date' : `Average across ${dateCount} ${dayName}s`}
         </p>
         <Button
           variant="ghost"
@@ -69,7 +69,7 @@ export function HeatmapStrip({ slots, dateCount, dayName, isSingleDay, onOpenDet
           className="text-xs h-7 px-2"
           onClick={onOpenDetail}
         >
-          View sessions &rarr;
+          View detail &rarr;
         </Button>
       </div>
     </div>

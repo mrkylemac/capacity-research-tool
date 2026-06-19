@@ -1,6 +1,6 @@
 'use client';
 
-export type SaunaSection = 'setup' | 'geometry' | 'benches' | 'profiles' | 'bom';
+export type SaunaSection = 'room' | 'benches' | 'walls' | 'supplies' | 'drawings' | 'takeoff';
 
 interface NavTab {
   id: SaunaSection;
@@ -8,11 +8,12 @@ interface NavTab {
 }
 
 const TABS: NavTab[] = [
-  { id: 'setup',    label: 'Room' },
-  { id: 'geometry', label: 'Openings' },
+  { id: 'room',     label: 'Room & Openings' },
   { id: 'benches',  label: 'Benches' },
-  { id: 'profiles', label: 'Profiles' },
-  { id: 'bom',      label: 'BOM' },
+  { id: 'walls',    label: 'Walls & Ceiling' },
+  { id: 'supplies', label: 'Supplies' },
+  { id: 'drawings', label: 'Drawings' },
+  { id: 'takeoff',  label: 'Take-off' },
 ];
 
 interface SaunaMaterialsNavProps {

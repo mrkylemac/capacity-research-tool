@@ -269,17 +269,13 @@ export function LibraryManagerSheet() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <LibraryIcon className="h-4 w-4" />
-          Library
+        <Button variant="ghost" size="sm" className="gap-2">
+          Materials Library
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Profile & material library</SheetTitle>
-          <SheetDescription>
-            Edit profiles and materials. Prices flow into the BOM total when set.
-          </SheetDescription>
+          <SheetTitle>Materials Library</SheetTitle>
         </SheetHeader>
 
         <div className="flex items-center gap-1 border-b border-gray-2 my-4">
@@ -289,7 +285,7 @@ export function LibraryManagerSheet() {
               type="button"
               onClick={() => setTab(t)}
               className={[
-                'flex items-center px-4 py-2.5 text-sm font-medium transition-colors',
+                'flex items-center px-4 py-2.5 text-sm font-medium ',
                 tab === t
                   ? 'text-primary border-b-2 border-primary -mb-px'
                   : 'text-muted-foreground hover:text-fg-4',
