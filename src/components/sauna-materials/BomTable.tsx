@@ -98,7 +98,14 @@ export function BomTable({ bom }: { bom: BOM }) {
                           )}
                         </td>
                         <td className="text-sm text-muted-foreground">{item.profileOrMaterialName}</td>
-                        <td className="text-right text-sm font-semibold tabular-nums">{fmt(item.quantity)}</td>
+                        <td className="text-right text-sm font-semibold tabular-nums">
+                          {fmt(item.quantity)}
+                          {item.areaM2 != null && item.unit === 'lm' && (
+                            <span className="block text-xs font-normal text-muted-foreground whitespace-nowrap">
+                              ({fmt(item.areaM2)} m²)
+                            </span>
+                          )}
+                        </td>
                         <td className="text-sm text-muted-foreground">{item.unit}</td>
                         <td className="text-right text-sm text-muted-foreground tabular-nums">
                           {item.wasteApplied > 0 ? `${Math.round(item.wasteApplied * 100)}%` : '—'}

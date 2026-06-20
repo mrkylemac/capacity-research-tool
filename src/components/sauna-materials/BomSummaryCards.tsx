@@ -13,11 +13,12 @@ function fmtAUD(n: number) {
 interface CardProps {
   label: string;
   value: string;
+  badge?: string;
   sub?: string;
   hero?: boolean;
 }
 
-function Card({ label, value, sub, hero }: CardProps) {
+function Card({ label, value, badge, sub, hero }: CardProps) {
   return (
     <div
       className="bg-card rounded-2xl border border-gray-2 shadow-1 px-5 py-4"
@@ -30,6 +31,9 @@ function Card({ label, value, sub, hero }: CardProps) {
       >
         {value}
       </p>
+      {badge && (
+        <p className="text-sm font-normal text-muted-foreground mt-0.5">({badge})</p>
+      )}
       {sub && <p className="text-xs text-muted-foreground mt-1.5">{sub}</p>}
     </div>
   );
@@ -40,9 +44,23 @@ export function BomSummaryCards({ bom }: { bom: BOM }) {
   const hasLabour = t.labourHours !== undefined;
   return (
     <div className={`grid grid-cols-2 gap-3 ${hasLabour ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}>
-      <Card label="Timber" value={fmt(t.timberLM, 'lm')} sub="Cladding · bench · battens" hero />
-      <Card label="Insulation" value={fmt(t.insulationM2, 'm²')} sub="Walls + ceiling" />
-      <Card label="Vapour barrier" value={fmt(t.vapourBarrierM2, 'm²')} sub="With 10% overlap" />
+      <Card
+        label="Timber"
+        value={fmt(t.timberLM, 'lm')}
+        badge={t.timberM2 > 0 ? fmt(t.timberM2, 'm²') : undefined}
+        sub="Cladding · bench · battens"
+        hero
+      />
+      <Card
+        label="Insulation"
+        value={fmt(t.insulationM2, 'm²')}
+        sub="Walls + ceiling"
+      />
+      <Card
+        label="Vapour barrier"
+        value={fmt(t.vapourBarrierM2, 'm²')}
+        sub="With 10% overlap"
+      />
       {hasLabour && (
         <Card label="Labour" value={fmt(t.labourHours!, 'hrs')} sub="Estimate · not priced in library" />
       )}

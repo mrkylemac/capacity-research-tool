@@ -73,6 +73,7 @@ export function generateBom(
       unitPrice: wallProfile.pricePerLM,
       totalPrice: priceTotal(round1(lm), wallProfile.pricePerLM),
       notes: `${(project.waste.cladding * 100).toFixed(0)}% waste applied`,
+      areaM2: round2(wallResult.total),
     });
   }
 
@@ -90,6 +91,7 @@ export function generateBom(
       unitPrice: ceilingProfile.pricePerLM,
       totalPrice: priceTotal(round1(lm), ceilingProfile.pricePerLM),
       notes: `${(project.waste.cladding * 100).toFixed(0)}% waste applied`,
+      areaM2: round2(ceilingNet),
     });
   }
 
@@ -107,6 +109,7 @@ export function generateBom(
       unitPrice: slatProfile.pricePerLM,
       totalPrice: priceTotal(round1(lm), slatProfile.pricePerLM),
       notes: `${(project.waste.benchSlat * 100).toFixed(0)}% waste applied`,
+      areaM2: round2(benchFace),
     });
   }
 
@@ -183,6 +186,7 @@ export function generateBom(
       unitPrice: wallInsulation.pricePerUnit,
       totalPrice: priceTotal(packs, wallInsulation.pricePerUnit),
       notes: `${wallInsulation.unitSize} m² per ${wallInsulation.unit}`,
+      areaM2: round2(wallInsM2),
     });
   }
 
@@ -200,6 +204,7 @@ export function generateBom(
       unitPrice: ceilingInsulation.pricePerUnit,
       totalPrice: priceTotal(packs, ceilingInsulation.pricePerUnit),
       notes: `${ceilingInsulation.unitSize} m² per ${ceilingInsulation.unit}`,
+      areaM2: round2(ceilingInsM2),
     });
   }
 
@@ -219,6 +224,7 @@ export function generateBom(
       unitPrice: vbMaterial.pricePerUnit,
       totalPrice: priceTotal(rolls, vbMaterial.pricePerUnit),
       notes: `${vbMaterial.unitSize} m² per ${vbMaterial.unit}`,
+      areaM2: round2(vbM2),
     });
   }
 
@@ -305,6 +311,10 @@ export function generateBom(
     .filter(li => li.category === 'timber')
     .reduce((sum, li) => sum + li.quantity, 0);
 
+  const timberM2 = lineItems
+    .filter(li => li.category === 'timber')
+    .reduce((sum, li) => sum + (li.areaM2 ?? 0), 0);
+
   const insulationM2Total = wallInsM2 + ceilingInsM2;
 
   const pricedItems = lineItems.filter(li => li.totalPrice != null);
@@ -319,6 +329,7 @@ export function generateBom(
 
   const totals: BOMTotals = {
     timberLM: round1(timberLM),
+    timberM2: round2(timberM2),
     insulationM2: round2(insulationM2Total),
     vapourBarrierM2: round2(vbM2),
     estimatedTotalCost,

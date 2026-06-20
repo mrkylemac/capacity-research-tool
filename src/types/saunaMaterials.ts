@@ -295,6 +295,8 @@ export interface BOMLineItem {
   unitPrice: number | null;
   totalPrice: number | null;
   notes: string;
+  /** Net area in m² before conversion to ordered units (lm, rolls, packs). Present for cladding, insulation, VB. */
+  areaM2?: number;
 }
 
 export type WarningSeverity = 'info' | 'warning';
@@ -307,6 +309,7 @@ export interface BOMWarning {
 
 export interface BOMTotals {
   timberLM: number;
+  timberM2: number;
   insulationM2: number;
   vapourBarrierM2: number;
   estimatedTotalCost: number | null;

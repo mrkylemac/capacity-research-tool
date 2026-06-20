@@ -20,8 +20,8 @@ import type { ICircleEntity } from 'dxf-parser';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type DxfEntity = IEntity & {
-  handle?: string;
+type DxfEntity = Omit<IEntity, 'handle'> & {
+  handle?: string | number;
   layer?: string;
 };
 
@@ -145,8 +145,8 @@ function entityPoints(ent: DxfEntity): IPoint[] {
       const e = ent as DxfEntity & IArcEntity;
       const r = e.radius ?? 0;
       return [
-        { x: e.center.x - r, y: e.center.y - r },
-        { x: e.center.x + r, y: e.center.y + r },
+        { x: e.center.x - r, y: e.center.y - r, z: 0 },
+        { x: e.center.x + r, y: e.center.y + r, z: 0 },
       ];
     }
     default:
@@ -375,7 +375,7 @@ export function DxfViewer() {
     if (!parsed) return;
 
     const layers = new Set<string>();
-    const entities: DxfEntity[] = (parsed.entities ?? []).filter((e: DxfEntity) => {
+    const entities = ((parsed.entities ?? []) as unknown as DxfEntity[]).filter((e) => {
       if (e.layer) layers.add(e.layer);
       return ['LINE', 'LWPOLYLINE', 'ARC', 'CIRCLE'].includes(e.type);
     });
@@ -434,7 +434,7 @@ export function DxfViewer() {
 
     const annotation: Annotation = {
       id: crypto.randomUUID(),
-      entityHandle: selected.handle ?? '',
+      entityHandle: String(selected.handle ?? ''),
       layerName: selected.layer ?? '0',
       lengthMm: mm,
       target: t,
