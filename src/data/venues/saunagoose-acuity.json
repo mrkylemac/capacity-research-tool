@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-06-26T09:30:00.000Z"
+    "to": "2026-06-26T23:20:00.000Z"
   },
-  "cachedAt": "2026-06-22T08:19:38.382Z",
+  "cachedAt": "2026-06-22T10:27:11.325Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -6700,7 +6700,7 @@
       "endsAt": "2026-06-22T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -6724,7 +6724,7 @@
       "endsAt": "2026-06-23T00:20:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 3,
+      "ticketsSold": 5,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -6748,7 +6748,7 @@
       "endsAt": "2026-06-23T09:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -6856,7 +6856,7 @@
       "endsAt": "2026-06-24T11:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -7002,6 +7002,30 @@
       "capacity": 10,
       "ticketsSold": 5,
       "fixedTicketPrice": 56.25,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-69170578-10841888-2026-06-27T08:10:00+10:00",
+      "sessionName": "Sauna Session",
+      "startsAt": "2026-06-26T22:10:00.000Z",
+      "endsAt": "2026-06-26T23:10:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 25.55,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-69171187-12473477-2026-06-27T09:20:00+10:00",
+      "sessionName": "Saunagus Session",
+      "startsAt": "2026-06-26T23:20:00.000Z",
+      "endsAt": "2026-06-27T00:20:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
     }
