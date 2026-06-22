@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-06-26T23:20:00.000Z"
+    "to": "2026-06-27T01:40:00.000Z"
   },
-  "cachedAt": "2026-06-22T10:27:11.325Z",
+  "cachedAt": "2026-06-22T22:14:20.286Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -6724,7 +6724,7 @@
       "endsAt": "2026-06-23T00:20:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 5,
+      "ticketsSold": 7,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -6748,7 +6748,7 @@
       "endsAt": "2026-06-23T09:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -6772,7 +6772,7 @@
       "endsAt": "2026-06-23T11:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 4,
+      "ticketsSold": 5,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -6784,7 +6784,7 @@
       "endsAt": "2026-06-23T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 3,
+      "ticketsSold": 5,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -6928,7 +6928,7 @@
       "endsAt": "2026-06-25T10:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 8,
+      "ticketsSold": 9,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -7025,6 +7025,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 5,
+      "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-69171187-10841888-2026-06-27T11:40:00+10:00",
+      "sessionName": "Saunagus Session",
+      "startsAt": "2026-06-27T01:40:00.000Z",
+      "endsAt": "2026-06-27T02:40:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 10,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
