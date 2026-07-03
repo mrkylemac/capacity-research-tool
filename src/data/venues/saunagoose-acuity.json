@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-07-05T01:40:00.000Z"
+    "to": "2026-07-05T04:00:00.000Z"
   },
-  "cachedAt": "2026-07-03T05:28:42.743Z",
+  "cachedAt": "2026-07-03T08:37:57.580Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -7492,7 +7492,7 @@
       "endsAt": "2026-07-03T23:10:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -7516,7 +7516,7 @@
       "endsAt": "2026-07-04T05:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 7,
+      "ticketsSold": 8,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -7541,6 +7541,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-69171187-12582797-2026-07-05T14:00:00+10:00",
+      "sessionName": "Saunagus Session",
+      "startsAt": "2026-07-05T04:00:00.000Z",
+      "endsAt": "2026-07-05T05:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 4,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
