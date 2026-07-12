@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-07-13T09:30:00.000Z"
+    "to": "2026-07-13T22:10:00.000Z"
   },
-  "cachedAt": "2026-07-11T23:57:57.724Z",
+  "cachedAt": "2026-07-12T03:23:49.132Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -8056,7 +8056,7 @@
       "endsAt": "2026-07-12T05:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 6,
+      "ticketsSold": 10,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -8080,7 +8080,7 @@
       "endsAt": "2026-07-12T10:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 8,
+      "ticketsSold": 10,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -8092,7 +8092,7 @@
       "endsAt": "2026-07-12T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -8154,6 +8154,42 @@
       "capacity": 10,
       "ticketsSold": 5,
       "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-69171187-13505082-2026-07-13T20:30:00+10:00",
+      "sessionName": "Saunagus Session",
+      "startsAt": "2026-07-13T10:30:00.000Z",
+      "endsAt": "2026-07-13T11:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-83472539-10841888-2026-07-14T07:00:00+10:00",
+      "sessionName": "Sauna Session",
+      "startsAt": "2026-07-13T21:00:00.000Z",
+      "endsAt": "2026-07-13T22:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 25.55,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-83472539-10841888-2026-07-14T08:10:00+10:00",
+      "sessionName": "Sauna Session",
+      "startsAt": "2026-07-13T22:10:00.000Z",
+      "endsAt": "2026-07-13T23:10:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
     }
