@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-07-16T22:10:00.000Z"
+    "to": "2026-07-14T10:30:00.000Z"
   },
-  "cachedAt": "2026-07-12T08:39:02.230Z",
+  "cachedAt": "2026-07-12T20:52:28.369Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -8092,7 +8092,7 @@
       "endsAt": "2026-07-12T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -8104,7 +8104,7 @@
       "endsAt": "2026-07-12T23:10:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -8116,7 +8116,7 @@
       "endsAt": "2026-07-13T00:20:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 5,
+      "ticketsSold": 6,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -8128,7 +8128,7 @@
       "endsAt": "2026-07-13T08:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -8152,7 +8152,7 @@
       "endsAt": "2026-07-13T10:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 9,
+      "ticketsSold": 10,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -8176,7 +8176,7 @@
       "endsAt": "2026-07-13T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -8248,164 +8248,8 @@
       "endsAt": "2026-07-14T11:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 2,
+      "ticketsSold": 5,
       "fixedTicketPrice": 35.78,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-83472539-10841888-2026-07-15T08:10:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-14T22:10:00.000Z",
-      "endsAt": "2026-07-14T23:10:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-83472539-10841888-2026-07-15T09:20:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-14T23:20:00.000Z",
-      "endsAt": "2026-07-15T00:20:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 1,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-69170578-10841888-2026-07-15T17:30:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-15T07:30:00.000Z",
-      "endsAt": "2026-07-15T08:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-69170578-10841888-2026-07-15T18:30:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-15T08:30:00.000Z",
-      "endsAt": "2026-07-15T09:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-69171187-12473477-2026-07-15T19:30:00+10:00",
-      "sessionName": "Saunagus Session",
-      "startsAt": "2026-07-15T09:30:00.000Z",
-      "endsAt": "2026-07-15T10:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 2,
-      "fixedTicketPrice": 35.78,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-69171187-11854765-2026-07-15T20:30:00+10:00",
-      "sessionName": "Saunagus Session",
-      "startsAt": "2026-07-15T10:30:00.000Z",
-      "endsAt": "2026-07-15T11:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 35.78,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-83472539-10841888-2026-07-16T07:00:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-15T21:00:00.000Z",
-      "endsAt": "2026-07-15T22:00:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-83472539-10841888-2026-07-16T08:10:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-15T22:10:00.000Z",
-      "endsAt": "2026-07-15T23:10:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-83472539-10841888-2026-07-16T09:20:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-15T23:20:00.000Z",
-      "endsAt": "2026-07-16T00:20:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-88489132-10841888-2026-07-16T17:30:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-16T07:30:00.000Z",
-      "endsAt": "2026-07-16T08:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 1,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-88489132-10841888-2026-07-16T18:30:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-16T08:30:00.000Z",
-      "endsAt": "2026-07-16T09:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-69171187-12473472-2026-07-17T07:00:00+10:00",
-      "sessionName": "Saunagus Session",
-      "startsAt": "2026-07-16T21:00:00.000Z",
-      "endsAt": "2026-07-16T22:00:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 2,
-      "fixedTicketPrice": 35.78,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-83472539-10841888-2026-07-17T08:10:00+10:00",
-      "sessionName": "Sauna Session",
-      "startsAt": "2026-07-16T22:10:00.000Z",
-      "endsAt": "2026-07-16T23:10:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
     }
