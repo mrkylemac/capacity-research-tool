@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-07-15T23:20:00.000Z"
+    "to": "2026-07-16T07:30:00.000Z"
   },
-  "cachedAt": "2026-07-13T22:28:51.189Z",
+  "cachedAt": "2026-07-13T23:28:31.594Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -8212,32 +8212,8 @@
       "endsAt": "2026-07-14T09:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 6,
-      "fixedTicketPrice": 25.55,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-69171187-11864080-2026-07-14T19:30:00+10:00",
-      "sessionName": "Saunagus Session",
-      "startsAt": "2026-07-14T09:30:00.000Z",
-      "endsAt": "2026-07-14T10:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 4,
-      "fixedTicketPrice": 35.78,
-      "location": "",
-      "inPerson": true
-    },
-    {
-      "id": "acuity-69171187-11864080-2026-07-14T20:30:00+10:00",
-      "sessionName": "Saunagus Session",
-      "startsAt": "2026-07-14T10:30:00.000Z",
-      "endsAt": "2026-07-14T11:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
       "ticketsSold": 7,
-      "fixedTicketPrice": 35.78,
+      "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
     },
@@ -8296,7 +8272,7 @@
       "endsAt": "2026-07-15T10:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 4,
+      "ticketsSold": 6,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -8342,6 +8318,18 @@
       "sessionName": "Sauna Session",
       "startsAt": "2026-07-15T23:20:00.000Z",
       "endsAt": "2026-07-16T00:20:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 25.55,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-88489132-10841888-2026-07-16T17:30:00+10:00",
+      "sessionName": "Sauna Session",
+      "startsAt": "2026-07-16T07:30:00.000Z",
+      "endsAt": "2026-07-16T08:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
