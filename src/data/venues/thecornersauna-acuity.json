@@ -7,7 +7,7 @@
     "from": "2026-03-06T07:00:00.000Z",
     "to": "2026-08-11T08:00:00.000Z"
   },
-  "cachedAt": "2026-07-15T05:54:05.067Z",
+  "cachedAt": "2026-07-15T08:14:06.804Z",
   "sessions": [
     {
       "id": "acuity-71669392-11172572-2026-03-06T18:00:00+1100",
@@ -6688,7 +6688,7 @@
       "endsAt": "2026-07-16T07:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -6712,7 +6712,7 @@
       "endsAt": "2026-07-16T09:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -6724,7 +6724,7 @@
       "endsAt": "2026-07-16T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -6934,6 +6934,42 @@
       "inPerson": true
     },
     {
+      "id": "acuity-71669392-11172572-2026-07-21T15:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-07-21T05:00:00.000Z",
+      "endsAt": "2026-07-21T06:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-07-21T16:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-07-21T06:00:00.000Z",
+      "endsAt": "2026-07-21T07:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-07-21T17:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-07-21T07:00:00.000Z",
+      "endsAt": "2026-07-21T08:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
       "id": "acuity-80179076-11172572-2026-07-21T18:00:00+1000",
       "sessionName": "Women's Wellness Session",
       "startsAt": "2026-07-21T08:00:00.000Z",
@@ -6962,6 +6998,18 @@
       "sessionName": "Silent Sauna",
       "startsAt": "2026-07-24T21:00:00.000Z",
       "endsAt": "2026-07-24T22:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-86988395-13261360-2026-07-26T18:00:00+1000",
+      "sessionName": "Silent Sauna",
+      "startsAt": "2026-07-26T08:00:00.000Z",
+      "endsAt": "2026-07-26T09:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
       "ticketsSold": 0,
