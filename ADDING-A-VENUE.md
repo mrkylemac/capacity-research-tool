@@ -17,6 +17,7 @@ Check their booking widget URL or page source. Common tells:
 | Glofox | `glofox.com` |
 | Mindbody | `mindbodyonline.com` |
 | Rezdy | `rezdy.com` |
+| bsport | `bsport.io` |
 
 ---
 
@@ -107,6 +108,15 @@ In `ReportSections.tsx`, the `SnapshotSection` accepts a `platform` prop and ren
 - Tokens expire — check `tokenExpiry` in config and refresh periodically
 - Full history available via `/2.0/events` with Unix timestamp range
 - `ticketsSold = booked`; `capacity = size`
+
+### bsport
+- Public API, no auth required (`api.production.bsport.io/book/v1/offer/`)
+- Full history available via `min_date`/`max_date` pagination (`page`/`page_size`)
+- `capacity = effectif`; `ticketsSold = validated_booking_count`
+- Filter by `activity__in` (meta-activity IDs) — an unfiltered fetch includes
+  corporate events and partner pop-ups
+- Pricing is credit-based; use a static per-visit rate from the venue's website
+- `establishment` ID maps to a location name (multi-location venues)
 
 ### Zenoti (paused)
 - Public `getTokenForV2` token works for Services, Centers, Therapists only

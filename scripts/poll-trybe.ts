@@ -40,6 +40,7 @@ async function fetchOfferingSessions(
   venueId: string,
   offeringId: string,
   offeringName: string,
+  locationName: string | undefined,
   from: Date,
   to: Date,
 ): Promise<MomenceSession[]> {
@@ -60,7 +61,9 @@ async function fetchOfferingSessions(
     capacity: s.capacity,
     ticketsSold: Math.max(0, s.capacity - s.remaining_capacity),
     fixedTicketPrice: s.price / 100,
-    location: s.room.name,
+    // TryBe room names are booking channels, not physical locations — collapse
+    // to the configured location name so the report aggregates them.
+    location: locationName ?? s.room.name,
     inPerson: true,
   }));
 }
@@ -103,7 +106,7 @@ async function pollVenue(hostId: string): Promise<number> {
   const freshIds = new Set<string>();
 
   for (const offering of cfg.offerings) {
-    const sessions = await fetchOfferingSessions(cfg.venueId, offering.id, offering.name, now, fetchTo);
+    const sessions = await fetchOfferingSessions(cfg.venueId, offering.id, offering.name, cfg.locationName, now, fetchTo);
     console.log(`  Offering "${offering.name}": ${sessions.length} upcoming sessions`);
     for (const s of sessions) {
       if (!freshIds.has(s.id)) {
@@ -113,8 +116,12 @@ async function pollVenue(hostId: string): Promise<number> {
     }
   }
 
-  // Preserve cached past sessions (TryBe removes them from the API once started)
-  const past = existingSessions.filter(s => new Date(s.startsAt) < now && !freshIds.has(s.id));
+  // Preserve cached past sessions (TryBe removes them from the API once started),
+  // normalising their location to the configured name so history cached before
+  // the location consolidation converges too.
+  const past = existingSessions
+    .filter(s => new Date(s.startsAt) < now && !freshIds.has(s.id))
+    .map(s => (cfg.locationName ? { ...s, location: cfg.locationName } : s));
   console.log(`  Retaining ${past.length} cached past sessions`);
 
   const merged = [...past, ...fresh].sort((a, b) => a.startsAt.localeCompare(b.startsAt));

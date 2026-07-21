@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG } from '@/config/api';
+import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig } from '@/config/api';
 import { fetchPortalSessions } from '@/lib/portalClient';
 import { fetchXtraClubsSessions } from '@/lib/xtraClient';
 import { fetchAllAcuitySessions } from '@/lib/acuityClient';
 import { fetchAllHapanaSessions } from '@/lib/hapanaClient';
+import { fetchAllBsportSessions } from '@/lib/bsportClient';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
@@ -228,6 +229,7 @@ async function fetchTrybeOfferingSessions(
   venueId: string,
   offeringId: string,
   offeringName: string,
+  locationName: string | undefined,
   from: Date,
   to: Date,
 ): Promise<MomenceSession[]> {
@@ -249,7 +251,9 @@ async function fetchTrybeOfferingSessions(
     capacity: s.capacity,
     ticketsSold: Math.max(0, s.capacity - s.remaining_capacity),
     fixedTicketPrice: s.price / 100,
-    location: s.room.name,
+    // TryBe room names are booking channels, not physical locations — collapse
+    // to the configured location name so the report aggregates them.
+    location: locationName ?? s.room.name,
     inPerson: true,
   }));
 }
@@ -257,6 +261,7 @@ async function fetchTrybeOfferingSessions(
 async function fetchAllTrybeSessions(
   venueId: string,
   offerings: readonly { id: string; name: string }[],
+  locationName: string | undefined,
   from: Date,
   to: Date,
   venueName: string,
@@ -269,7 +274,7 @@ async function fetchAllTrybeSessions(
   const now = new Date();
 
   for (const offering of offerings) {
-    const sessions = await fetchTrybeOfferingSessions(venueId, offering.id, offering.name, from, to);
+    const sessions = await fetchTrybeOfferingSessions(venueId, offering.id, offering.name, locationName, from, to);
     console.log(`[${venueName}] Offering "${offering.name}": ${sessions.length} upcoming sessions`);
     for (const s of sessions) {
       if (!freshIds.has(s.id)) {
@@ -280,8 +285,12 @@ async function fetchAllTrybeSessions(
     onProgress?.(fresh.length);
   }
 
-  // Preserve previously cached sessions that have now passed (TryBe removes them from the API)
-  const past = existingSessions.filter(s => new Date(s.startsAt) < now && !freshIds.has(s.id));
+  // Preserve previously cached sessions that have now passed (TryBe removes them
+  // from the API), normalising their location to the configured name so history
+  // cached before the location consolidation converges too.
+  const past = existingSessions
+    .filter(s => new Date(s.startsAt) < now && !freshIds.has(s.id))
+    .map(s => (locationName ? { ...s, location: locationName } : s));
   console.log(`[${venueName}] Retaining ${past.length} cached past sessions`);
 
   return [...past, ...fresh].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
@@ -366,7 +375,7 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
         const fetchTo = new Date();
         fetchTo.setDate(fetchTo.getDate() + 90);
         sessions = await fetchAllTrybeSessions(
-          cfg.venueId, cfg.offerings, fetchFrom, fetchTo,
+          cfg.venueId, cfg.offerings, cfg.locationName, fetchFrom, fetchTo,
           cfg.name, existingSessions, onProgress,
         );
         venueName = cfg.name;
@@ -412,6 +421,12 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
         sessions = await fetchAllHapanaSessions(
           cfg.baseUrl, cfg.locations, cfg.origin,
           cfg.peakPrice, cfg.offPeakPrice, existingSessions, onProgress,
+        );
+        venueName = cfg.name;
+      } else if (platform === 'bsport') {
+        const cfg = getBsportConfig(hostId);
+        sessions = await fetchAllBsportSessions(
+          cfg, new Date(cfg.operatingSince), toDate, onProgress,
         );
         venueName = cfg.name;
       } else {
