@@ -10,6 +10,9 @@
  *   rate from config is applied instead
  * - Sessions run across multiple establishments (flagship, Utoquai, pop-ups);
  *   the establishment name becomes the session `location`
+ * - All public offers are included; the venue rotates meta_activity IDs as it
+ *   introduces new class formats, so no activity allowlist is applied — only
+ *   `manager_only` offers and excluded establishments are dropped
  */
 
 import type { MomenceSession } from '@/types/momence';
@@ -79,7 +82,6 @@ async function fetchBsportPage(
   url.searchParams.set('only_future_strict', 'false');
   url.searchParams.set('min_date', minDate);
   url.searchParams.set('max_date', maxDate);
-  url.searchParams.set('activity__in', cfg.activityIds.join(','));
   url.searchParams.set('page_size', String(PAGE_SIZE));
   url.searchParams.set('page', String(page));
 
@@ -113,13 +115,14 @@ export async function fetchAllBsportSessions(
 
   const sessions: MomenceSession[] = [];
   const seenIds = new Set<number>();
+  const excludedEstablishments = new Set(cfg.excludedEstablishmentIds);
   let page = 1;
 
   while (true) {
     const response = await fetchBsportPage(cfg, minDate, maxDate, page);
 
     for (const offer of response.results ?? []) {
-      if (offer.manager_only || seenIds.has(offer.id)) continue;
+      if (offer.manager_only || excludedEstablishments.has(offer.establishment) || seenIds.has(offer.id)) continue;
       seenIds.add(offer.id);
       sessions.push(bsportOfferToSession(offer, cfg));
     }

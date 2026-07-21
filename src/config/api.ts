@@ -39,6 +39,8 @@ export interface VenuePricingConfig {
   tiers: VenuePricingTier[];
   memberships?: VenueMembership[];
   note?: string;
+  /** Currency prefix for tier rates (e.g. 'CHF '). Defaults to '$'. */
+  currency?: string;
 }
 
 export interface VenueConfig {
@@ -90,6 +92,7 @@ export const VENUES: VenueConfig[] = [
   {
     id: 'keenwellbeing', name: 'KEEN Wellbeing', platform: 'bsport', location: 'Zurich', timezone: 'Europe/Zurich',
     pricing: {
+      currency: 'CHF ',
       tiers: [
         { label: 'Journeys (group & solo)', casualRate: 27, pack10PerVisit: 27 },
       ],
@@ -321,6 +324,12 @@ export function getAcuityConfig(hostId: string): AcuityConfig {
 // and booking counts (`validated_booking_count`) — fetched via date-range
 // pagination like Momence.
 //
+// All public offers are included (matching the Momence/Glofox convention) —
+// the venue regularly retires and introduces meta_activity IDs, so an activity
+// allowlist would silently drop new class types. Only `manager_only` offers
+// and excluded establishments (Mindbody-mirror placeholders with zero real
+// bookings) are filtered out.
+//
 // Pricing on bsport is credit-based (1 credit per session), so `sessionPriceChf`
 // carries a static per-visit rate derived from their website (10-pack CHF 270).
 export interface BsportConfig {
@@ -332,12 +341,8 @@ export interface BsportConfig {
   operatingSince: string;
   /** Static per-visit price in CHF (bsport bookings are credit-based). */
   sessionPriceChf: number;
-  /**
-   * meta_activity IDs to include (the venue's own schedule tabs plus retired
-   * predecessors). Fetching without this filter would pull in corporate events
-   * and partner pop-ups.
-   */
-  activityIds: number[];
+  /** Establishment IDs to exclude (e.g. third-party booking mirrors). */
+  excludedEstablishmentIds: number[];
   /** establishment ID → display name, used as the session `location`. */
   establishments: Record<number, string>;
 }
@@ -350,26 +355,9 @@ export const BSPORT_CONFIG: Record<string, BsportConfig> = {
     timezone: 'Europe/Zurich',
     operatingSince: '2024-11-23',
     sessionPriceChf: 27,
-    activityIds: [
-      // Group journeys (schedule widget tab 1)
-      151228, // ENERGIZE
-      151229, // RELAX
-      151230, // RECHARGE (retired)
-      151231, // CHALLENGE
-      151232, // ATHLETIC RECOVERY
-      151233, // SOUND IMMERSION
-      163664, // Mindful Run & Athletic Recovery with On
-      195797, // HEAT + BEAT
-      195799, // JOURNEY INWARD
-      195800, // DEEP BREATH
-      212011, // UTOQUAI: DEEP BREATH
-      // Solo journeys (schedule widget tab 2)
-      151234, // SOLO JOURNEY (90°C) (retired)
-      152219, // SOLO JOURNEY (60°C | 40%) (retired)
-      165366, // SOLO JOURNEY
-      165367, // SOLO JOURNEY (60°C | 40%)
-      209370, // SOCIAL SOLO JOURNEY
-    ],
+    // 12232 "MBO: KEEN Wellbeing" holds Mindbody-sync placeholder offers with
+    // zero real bookings — excluding it keeps utilisation honest.
+    excludedEstablishmentIds: [12232],
     establishments: {
       11743: 'KEEN Zurich',
       12232: 'MBO: KEEN Wellbeing',

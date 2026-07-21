@@ -7,7 +7,7 @@
     "from": "2024-11-22T23:00:00.000Z",
     "to": "2026-07-21T19:30:00.000Z"
   },
-  "cachedAt": "2026-07-21T06:59:40.107Z",
+  "cachedAt": "2026-07-21T07:50:46.340Z",
   "sessions": [
     {
       "id": "22288594",
@@ -250,6 +250,18 @@
       "inPerson": true
     },
     {
+      "id": "24226675",
+      "sessionName": "FUNCTIONAL MOBILITY",
+      "startsAt": "2025-02-15T12:00:00.000Z",
+      "endsAt": "2025-02-15T12:50:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 10,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "24226754",
       "sessionName": "RECHARGE",
       "startsAt": "2025-02-15T14:00:00.000Z",
@@ -274,6 +286,18 @@
       "inPerson": true
     },
     {
+      "id": "24269888",
+      "sessionName": "UNPLUGGED LIVE CONCERT",
+      "startsAt": "2025-02-15T19:00:00.000Z",
+      "endsAt": "2025-02-15T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 70,
+      "ticketsSold": 58,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "24226908",
       "sessionName": "ATHLETIC RECOVERY",
       "startsAt": "2025-02-16T09:30:00.000Z",
@@ -281,6 +305,18 @@
       "durationMinutes": 60,
       "capacity": 16,
       "ticketsSold": 15,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24226679",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-02-16T12:00:00.000Z",
+      "endsAt": "2025-02-16T12:50:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 10,
+      "ticketsSold": 9,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -305,6 +341,18 @@
       "durationMinutes": 60,
       "capacity": 16,
       "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24269940",
+      "sessionName": "KASHEME x KEEN: CONSCIOUS LISTENING",
+      "startsAt": "2025-02-16T18:30:00.000Z",
+      "endsAt": "2025-02-16T20:00:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 24,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -406,6 +454,18 @@
       "inPerson": true
     },
     {
+      "id": "24295551",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-02-19T11:05:00.000Z",
+      "endsAt": "2025-02-19T11:55:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 8,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "24424573",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-02-19T12:00:00.000Z",
@@ -449,6 +509,30 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24295559",
+      "sessionName": "FUNCTIONAL MOBILITY",
+      "startsAt": "2025-02-20T11:05:00.000Z",
+      "endsAt": "2025-02-20T11:55:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 8,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24295566",
+      "sessionName": "Redefining Workplace Wellbeing",
+      "startsAt": "2025-02-20T17:00:00.000Z",
+      "endsAt": "2025-02-20T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 17,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -509,6 +593,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24119754",
+      "sessionName": "KEEN SOCIAL | Founder's Night",
+      "startsAt": "2025-02-21T18:00:00.000Z",
+      "endsAt": "2025-02-21T20:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 24,
+      "ticketsSold": 17,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -766,6 +862,18 @@
       "inPerson": true
     },
     {
+      "id": "24295552",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-02-26T11:05:00.000Z",
+      "endsAt": "2025-02-26T11:55:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 8,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "24424575",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-02-26T12:00:00.000Z",
@@ -826,6 +934,18 @@
       "inPerson": true
     },
     {
+      "id": "24295560",
+      "sessionName": "FUNCTIONAL MOBILITY",
+      "startsAt": "2025-02-27T11:05:00.000Z",
+      "endsAt": "2025-02-27T11:55:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 8,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "24424576",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-02-27T12:00:00.000Z",
@@ -833,6 +953,18 @@
       "durationMinutes": 60,
       "capacity": 16,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24119793",
+      "sessionName": "Future Proof | Redefining the Path to Longevity",
+      "startsAt": "2025-02-27T17:00:00.000Z",
+      "endsAt": "2025-02-27T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 24,
+      "ticketsSold": 15,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -1174,6 +1306,18 @@
       "inPerson": true
     },
     {
+      "id": "24295553",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-03-05T11:05:00.000Z",
+      "endsAt": "2025-03-05T11:55:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 8,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "24424577",
       "sessionName": "SOLO JOURNEY (90°C)",
       "startsAt": "2025-03-05T12:00:00.000Z",
@@ -1409,6 +1553,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24660545",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2025-03-08T17:00:00.000Z",
+      "endsAt": "2025-03-08T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 6,
+      "ticketsSold": 6,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -1882,6 +2038,18 @@
       "inPerson": true
     },
     {
+      "id": "24660534",
+      "sessionName": "KEEN SOCIAL | AFTER HOUR",
+      "startsAt": "2025-03-18T16:00:00.000Z",
+      "endsAt": "2025-03-18T18:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 11,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "24988925",
       "sessionName": "SOLO JOURNEY (60°C | 40%)",
       "startsAt": "2025-03-18T19:00:00.000Z",
@@ -1912,6 +2080,18 @@
       "endsAt": "2025-03-19T08:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24295555",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-03-19T11:05:00.000Z",
+      "endsAt": "2025-03-19T11:55:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 8,
       "ticketsSold": 1,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -1984,6 +2164,18 @@
       "endsAt": "2025-03-20T08:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24295563",
+      "sessionName": "FUNCTIONAL MOBILITY",
+      "startsAt": "2025-03-20T11:05:00.000Z",
+      "endsAt": "2025-03-20T11:55:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 8,
       "ticketsSold": 1,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -2242,6 +2434,18 @@
       "inPerson": true
     },
     {
+      "id": "24837446",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2025-03-22T17:00:00.000Z",
+      "endsAt": "2025-03-22T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "24424521",
       "sessionName": "ENERGIZE",
       "startsAt": "2025-03-23T09:00:00.000Z",
@@ -2458,6 +2662,18 @@
       "inPerson": true
     },
     {
+      "id": "24912424",
+      "sessionName": "KEEN SOCIAL | RUN & PLUNGE",
+      "startsAt": "2025-03-25T17:30:00.000Z",
+      "endsAt": "2025-03-25T19:30:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 20,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25016693",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-03-25T19:15:00.000Z",
@@ -2548,6 +2764,18 @@
       "endsAt": "2025-03-27T08:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24295564",
+      "sessionName": "FUNCTIONAL MOBILITY",
+      "startsAt": "2025-03-27T11:05:00.000Z",
+      "endsAt": "2025-03-27T11:55:00.000Z",
+      "durationMinutes": 50,
+      "capacity": 8,
       "ticketsSold": 1,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -3070,6 +3298,18 @@
       "inPerson": true
     },
     {
+      "id": "25016718",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-04-02T10:15:00.000Z",
+      "endsAt": "2025-04-02T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25016723",
       "sessionName": "SOLO JOURNEY (90°C)",
       "startsAt": "2025-04-02T11:00:00.000Z",
@@ -3137,6 +3377,18 @@
       "durationMinutes": 60,
       "capacity": 1,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25016746",
+      "sessionName": "FUNCTIONAL MOBILITY",
+      "startsAt": "2025-04-03T10:15:00.000Z",
+      "endsAt": "2025-04-03T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -3365,6 +3617,18 @@
       "durationMinutes": 60,
       "capacity": 16,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24837447",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2025-04-05T16:00:00.000Z",
+      "endsAt": "2025-04-05T17:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 32,
+      "ticketsSold": 7,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -3718,6 +3982,18 @@
       "inPerson": true
     },
     {
+      "id": "25016719",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-04-09T10:15:00.000Z",
+      "endsAt": "2025-04-09T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25016724",
       "sessionName": "SOLO JOURNEY (60°C | 40%)",
       "startsAt": "2025-04-09T11:15:00.000Z",
@@ -3953,6 +4229,18 @@
       "durationMinutes": 60,
       "capacity": 24,
       "ticketsSold": 26,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25307452",
+      "sessionName": "SALTY SPORTS CLUB x KEEN",
+      "startsAt": "2025-04-12T08:30:00.000Z",
+      "endsAt": "2025-04-12T12:00:00.000Z",
+      "durationMinutes": 210,
+      "capacity": 60,
+      "ticketsSold": 33,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -4301,6 +4589,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25016701",
+      "sessionName": "KEEN SOCIAL | AFTER HOUR",
+      "startsAt": "2025-04-15T15:05:00.000Z",
+      "endsAt": "2025-04-15T17:35:00.000Z",
+      "durationMinutes": 150,
+      "capacity": 32,
+      "ticketsSold": 5,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -5158,6 +5458,30 @@
       "inPerson": true
     },
     {
+      "id": "25597327",
+      "sessionName": "BLG x KEEN | Yoga & Recovery",
+      "startsAt": "2025-04-24T17:00:00.000Z",
+      "endsAt": "2025-04-24T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25597326",
+      "sessionName": "BLG x KEEN | Hyrox & Recovery",
+      "startsAt": "2025-04-24T17:00:00.000Z",
+      "endsAt": "2025-04-24T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 7,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25016758",
       "sessionName": "ENERGIZE",
       "startsAt": "2025-04-25T05:00:00.000Z",
@@ -5213,6 +5537,18 @@
       "durationMinutes": 60,
       "capacity": 16,
       "ticketsSold": 7,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "24530174",
+      "sessionName": "Founder's Night | April Edition",
+      "startsAt": "2025-04-25T17:00:00.000Z",
+      "endsAt": "2025-04-25T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 25,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -5309,6 +5645,18 @@
       "durationMinutes": 60,
       "capacity": 16,
       "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25065990",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2025-04-26T16:00:00.000Z",
+      "endsAt": "2025-04-26T18:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 19,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -5633,6 +5981,18 @@
       "durationMinutes": 60,
       "capacity": 16,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25016722",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-04-30T10:15:00.000Z",
+      "endsAt": "2025-04-30T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 1,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -6178,6 +6538,18 @@
       "inPerson": true
     },
     {
+      "id": "25439644",
+      "sessionName": "KEEN SOCIAL | RUN & PLUNGE",
+      "startsAt": "2025-05-06T16:15:00.000Z",
+      "endsAt": "2025-05-06T18:15:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 30,
+      "ticketsSold": 23,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25708755",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-05-06T18:00:00.000Z",
@@ -6221,6 +6593,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25566081",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-05-07T10:15:00.000Z",
+      "endsAt": "2025-05-07T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -6538,6 +6922,18 @@
       "inPerson": true
     },
     {
+      "id": "25813862",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2025-05-10T16:00:00.000Z",
+      "endsAt": "2025-05-10T18:30:00.000Z",
+      "durationMinutes": 150,
+      "capacity": 14,
+      "ticketsSold": 14,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25559840",
       "sessionName": "ENERGIZE",
       "startsAt": "2025-05-11T07:30:00.000Z",
@@ -6617,6 +7013,18 @@
       "durationMinutes": 60,
       "capacity": 28,
       "ticketsSold": 19,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25813908",
+      "sessionName": "KASHEME x KEEN: CONSCIOUS LISTENING",
+      "startsAt": "2025-05-11T17:00:00.000Z",
+      "endsAt": "2025-05-11T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 35,
+      "ticketsSold": 36,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -6718,6 +7126,18 @@
       "inPerson": true
     },
     {
+      "id": "25728668",
+      "sessionName": "ON x KEEN | Lunch Class for Mental Health Awareness Month",
+      "startsAt": "2025-05-13T10:15:00.000Z",
+      "endsAt": "2025-05-13T11:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 32,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25708674",
       "sessionName": "SOLO JOURNEY (90°C)",
       "startsAt": "2025-05-13T11:15:00.000Z",
@@ -6809,6 +7229,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25566082",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-05-14T10:15:00.000Z",
+      "endsAt": "2025-05-14T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -7330,6 +7762,18 @@
       "inPerson": true
     },
     {
+      "id": "25728669",
+      "sessionName": "ON x KEEN | Lunch Class for Mental Health Awareness Month",
+      "startsAt": "2025-05-20T10:15:00.000Z",
+      "endsAt": "2025-05-20T11:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 32,
+      "ticketsSold": 12,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25708675",
       "sessionName": "SOLO JOURNEY (90°C)",
       "startsAt": "2025-05-20T11:00:00.000Z",
@@ -7337,6 +7781,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25799317",
+      "sessionName": "KEEN SOCIAL | AFTER HOUR",
+      "startsAt": "2025-05-20T15:05:00.000Z",
+      "endsAt": "2025-05-20T17:05:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 4,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -7397,6 +7853,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25566083",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-05-21T10:15:00.000Z",
+      "endsAt": "2025-05-21T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 3,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -7906,6 +8374,18 @@
       "inPerson": true
     },
     {
+      "id": "25728670",
+      "sessionName": "ON x KEEN | Lunch Class for Mental Health Awareness Month",
+      "startsAt": "2025-05-27T10:15:00.000Z",
+      "endsAt": "2025-05-27T11:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 32,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25708676",
       "sessionName": "SOLO JOURNEY (90°C)",
       "startsAt": "2025-05-27T11:00:00.000Z",
@@ -7973,6 +8453,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25566084",
+      "sessionName": "HOT STRETCHING",
+      "startsAt": "2025-05-28T10:15:00.000Z",
+      "endsAt": "2025-05-28T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 4,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -8362,6 +8854,18 @@
       "inPerson": true
     },
     {
+      "id": "25566050",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-06-02T17:30:00.000Z",
+      "endsAt": "2025-06-02T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
+      "ticketsSold": 19,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26174672",
       "sessionName": "SOLO JOURNEY (90°C)",
       "startsAt": "2025-06-02T19:00:00.000Z",
@@ -8381,6 +8885,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 23,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26125403",
+      "sessionName": "KEEN SOCIAL | RUN & PLUNGE",
+      "startsAt": "2025-06-03T16:15:00.000Z",
+      "endsAt": "2025-06-03T17:45:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 30,
+      "ticketsSold": 13,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -8441,6 +8957,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25566085",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-06-04T10:15:00.000Z",
+      "endsAt": "2025-06-04T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -8590,6 +9118,18 @@
       "inPerson": true
     },
     {
+      "id": "25559799",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-06-06T10:15:00.000Z",
+      "endsAt": "2025-06-06T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25559808",
       "sessionName": "CHALLENGE",
       "startsAt": "2025-06-06T15:30:00.000Z",
@@ -8693,6 +9233,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26153971",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2025-06-07T16:00:00.000Z",
+      "endsAt": "2025-06-07T18:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 15,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -8830,13 +9382,13 @@
       "inPerson": true
     },
     {
-      "id": "26179892",
-      "sessionName": "SOLO JOURNEY (90°C)",
-      "startsAt": "2025-06-09T18:30:00.000Z",
-      "endsAt": "2025-06-09T19:30:00.000Z",
+      "id": "25566051",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-06-09T17:00:00.000Z",
+      "endsAt": "2025-06-09T18:00:00.000Z",
       "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 5,
+      "capacity": 24,
+      "ticketsSold": 17,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -8849,6 +9401,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26179892",
+      "sessionName": "SOLO JOURNEY (90°C)",
+      "startsAt": "2025-06-09T18:30:00.000Z",
+      "endsAt": "2025-06-09T19:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 5,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -8957,6 +9521,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25566086",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-06-11T10:15:00.000Z",
+      "endsAt": "2025-06-11T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 3,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -9101,6 +9677,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25559800",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-06-13T10:15:00.000Z",
+      "endsAt": "2025-06-13T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 4,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -9514,6 +10102,18 @@
       "inPerson": true
     },
     {
+      "id": "25566087",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-06-18T10:15:00.000Z",
+      "endsAt": "2025-06-18T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25566070",
       "sessionName": "RECHARGE",
       "startsAt": "2025-06-18T15:30:00.000Z",
@@ -9569,6 +10169,18 @@
       "durationMinutes": 45,
       "capacity": 16,
       "ticketsSold": 11,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26176454",
+      "sessionName": "KEEN SOCIAL | RUN & PLUNGE",
+      "startsAt": "2025-06-19T05:00:00.000Z",
+      "endsAt": "2025-06-19T06:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 5,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -9641,6 +10253,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25559801",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-06-20T10:15:00.000Z",
+      "endsAt": "2025-06-20T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 4,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -9982,6 +10606,18 @@
       "inPerson": true
     },
     {
+      "id": "26775024",
+      "sessionName": "COLD SOLO JOURNEY",
+      "startsAt": "2025-06-23T11:15:00.000Z",
+      "endsAt": "2025-06-23T12:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25566044",
       "sessionName": "RECHARGE",
       "startsAt": "2025-06-23T16:00:00.000Z",
@@ -9989,6 +10625,18 @@
       "durationMinutes": 60,
       "capacity": 24,
       "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25566053",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-06-23T17:30:00.000Z",
+      "endsAt": "2025-06-23T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 20,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -10042,6 +10690,18 @@
       "inPerson": true
     },
     {
+      "id": "26523758",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-06-24T17:00:00.000Z",
+      "endsAt": "2025-06-24T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 10,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "25708762",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-06-24T18:00:00.000Z",
@@ -10090,6 +10750,18 @@
       "inPerson": true
     },
     {
+      "id": "26175278",
+      "sessionName": "BREATHE + ICE @JOSEFWIESE",
+      "startsAt": "2025-06-25T05:00:00.000Z",
+      "endsAt": "2025-06-25T06:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "Josefwiese (Outdoor)",
+      "inPerson": true
+    },
+    {
       "id": "25708909",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-06-25T06:00:00.000Z",
@@ -10097,6 +10769,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25566088",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-06-25T10:15:00.000Z",
+      "endsAt": "2025-06-25T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 7,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -10282,6 +10966,18 @@
       "inPerson": true
     },
     {
+      "id": "26177834",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-06-27T05:00:00.000Z",
+      "endsAt": "2025-06-27T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
+      "inPerson": true
+    },
+    {
       "id": "25709236",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-06-27T06:00:00.000Z",
@@ -10289,6 +10985,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "25894337",
+      "sessionName": "Founder's Night | June Edition",
+      "startsAt": "2025-06-27T17:00:00.000Z",
+      "endsAt": "2025-06-27T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 16,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -10558,6 +11266,18 @@
       "inPerson": true
     },
     {
+      "id": "25566054",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-06-30T17:30:00.000Z",
+      "endsAt": "2025-06-30T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26174676",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-06-30T19:00:00.000Z",
@@ -10671,6 +11391,18 @@
       "startsAt": "2025-07-02T06:00:00.000Z",
       "endsAt": "2025-07-02T07:00:00.000Z",
       "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189488",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-02T10:15:00.000Z",
+      "endsAt": "2025-07-02T11:00:00.000Z",
+      "durationMinutes": 45,
       "capacity": 10,
       "ticketsSold": 2,
       "fixedTicketPrice": 27,
@@ -10870,6 +11602,18 @@
       "inPerson": true
     },
     {
+      "id": "26177835",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-07-04T05:00:00.000Z",
+      "endsAt": "2025-07-04T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
+      "inPerson": true
+    },
+    {
       "id": "26190069",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-04T06:00:00.000Z",
@@ -10877,6 +11621,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189621",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-04T10:15:00.000Z",
+      "endsAt": "2025-07-04T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 7,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -11242,6 +11998,18 @@
       "inPerson": true
     },
     {
+      "id": "26174820",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-07-07T17:30:00.000Z",
+      "endsAt": "2025-07-07T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26174677",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-07T19:00:00.000Z",
@@ -11422,6 +12190,18 @@
       "inPerson": true
     },
     {
+      "id": "26176457",
+      "sessionName": "KEEN SOCIAL | RUN & PLUNGE (WITH ADIDAS RUNNERS) ",
+      "startsAt": "2025-07-10T05:00:00.000Z",
+      "endsAt": "2025-07-10T06:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26189542",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-10T06:00:00.000Z",
@@ -11482,6 +12262,30 @@
       "inPerson": true
     },
     {
+      "id": "27372920",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2025-07-10T18:00:00.000Z",
+      "endsAt": "2025-07-10T19:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 10,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "27372974",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2025-07-10T19:00:00.000Z",
+      "endsAt": "2025-07-10T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26189560",
       "sessionName": "ENERGIZE",
       "startsAt": "2025-07-11T04:45:00.000Z",
@@ -11494,6 +12298,18 @@
       "inPerson": true
     },
     {
+      "id": "26177836",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-07-11T05:00:00.000Z",
+      "endsAt": "2025-07-11T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 11,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
+      "inPerson": true
+    },
+    {
       "id": "26190070",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-11T06:00:00.000Z",
@@ -11501,6 +12317,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189622",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-11T10:15:00.000Z",
+      "endsAt": "2025-07-11T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 4,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -11722,6 +12550,18 @@
       "inPerson": true
     },
     {
+      "id": "26189881",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-13T09:15:00.000Z",
+      "endsAt": "2025-07-13T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26189890",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-13T10:30:00.000Z",
@@ -11842,6 +12682,18 @@
       "inPerson": true
     },
     {
+      "id": "26174821",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-07-14T17:30:00.000Z",
+      "endsAt": "2025-07-14T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 17,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26174678",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-14T19:00:00.000Z",
@@ -11957,6 +12809,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189490",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-16T10:15:00.000Z",
+      "endsAt": "2025-07-16T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 3,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -12130,6 +12994,18 @@
       "inPerson": true
     },
     {
+      "id": "26177837",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-07-18T05:00:00.000Z",
+      "endsAt": "2025-07-18T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 11,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
+      "inPerson": true
+    },
+    {
       "id": "26190071",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-18T06:00:00.000Z",
@@ -12137,6 +13013,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189623",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-18T10:15:00.000Z",
+      "endsAt": "2025-07-18T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -12346,6 +13234,18 @@
       "inPerson": true
     },
     {
+      "id": "26189882",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-20T09:15:00.000Z",
+      "endsAt": "2025-07-20T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26189891",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-20T10:30:00.000Z",
@@ -12454,6 +13354,18 @@
       "inPerson": true
     },
     {
+      "id": "26174822",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-07-21T17:30:00.000Z",
+      "endsAt": "2025-07-21T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 15,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26174679",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-21T19:00:00.000Z",
@@ -12514,6 +13426,18 @@
       "inPerson": true
     },
     {
+      "id": "27432153",
+      "sessionName": "KEEN SOCIAL | RUN & PLUNGE",
+      "startsAt": "2025-07-22T17:00:00.000Z",
+      "endsAt": "2025-07-22T18:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 10,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26189380",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-22T18:00:00.000Z",
@@ -12569,6 +13493,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189491",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-23T10:15:00.000Z",
+      "endsAt": "2025-07-23T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 7,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -12706,6 +13642,18 @@
       "inPerson": true
     },
     {
+      "id": "27465302",
+      "sessionName": "KEEN SOCIAL | CARE X KEEN",
+      "startsAt": "2025-07-24T17:15:00.000Z",
+      "endsAt": "2025-07-24T18:45:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26176812",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-24T19:00:00.000Z",
@@ -12730,6 +13678,18 @@
       "inPerson": true
     },
     {
+      "id": "26177838",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-07-25T05:00:00.000Z",
+      "endsAt": "2025-07-25T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
+      "inPerson": true
+    },
+    {
       "id": "26190072",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-25T06:00:00.000Z",
@@ -12737,6 +13697,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189624",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-25T10:15:00.000Z",
+      "endsAt": "2025-07-25T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 11,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -13126,6 +14098,18 @@
       "inPerson": true
     },
     {
+      "id": "26174823",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-07-28T17:30:00.000Z",
+      "endsAt": "2025-07-28T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 22,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26174680",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-07-28T19:00:00.000Z",
@@ -13258,6 +14242,18 @@
       "inPerson": true
     },
     {
+      "id": "26189492",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-07-30T10:15:00.000Z",
+      "endsAt": "2025-07-30T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26189507",
       "sessionName": "RECHARGE",
       "startsAt": "2025-07-30T16:30:00.000Z",
@@ -13375,6 +14371,30 @@
       "ticketsSold": 19,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "27876987",
+      "sessionName": "KEEN SOCIAL | with MIKE CHANG",
+      "startsAt": "2025-07-31T17:30:00.000Z",
+      "endsAt": "2025-07-31T19:00:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 40,
+      "ticketsSold": 38,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26177839",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-08-01T05:00:00.000Z",
+      "endsAt": "2025-08-01T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
       "inPerson": true
     },
     {
@@ -13786,6 +14806,18 @@
       "inPerson": true
     },
     {
+      "id": "26174825",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-08-11T17:30:00.000Z",
+      "endsAt": "2025-08-11T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28561864",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-08-11T17:30:00.000Z",
@@ -13937,6 +14969,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189494",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-08-13T10:15:00.000Z",
+      "endsAt": "2025-08-13T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -14122,6 +15166,18 @@
       "inPerson": true
     },
     {
+      "id": "26177841",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-08-15T05:00:00.000Z",
+      "endsAt": "2025-08-15T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 7,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
+      "inPerson": true
+    },
+    {
       "id": "26190075",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-08-15T06:00:00.000Z",
@@ -14129,6 +15185,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189627",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-08-15T10:15:00.000Z",
+      "endsAt": "2025-08-15T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -14381,6 +15449,18 @@
       "durationMinutes": 60,
       "capacity": 24,
       "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189886",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-08-17T09:00:00.000Z",
+      "endsAt": "2025-08-17T10:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -14878,6 +15958,18 @@
       "inPerson": true
     },
     {
+      "id": "26177842",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-08-22T05:00:00.000Z",
+      "endsAt": "2025-08-22T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
+      "inPerson": true
+    },
+    {
       "id": "26190076",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-08-22T06:00:00.000Z",
@@ -15226,6 +16318,18 @@
       "inPerson": true
     },
     {
+      "id": "26174827",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2025-08-25T17:30:00.000Z",
+      "endsAt": "2025-08-25T18:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 22,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "26174684",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-08-25T19:00:00.000Z",
@@ -15514,6 +16618,18 @@
       "inPerson": true
     },
     {
+      "id": "26177843",
+      "sessionName": "BREATH + STRETCH @LAKE",
+      "startsAt": "2025-08-29T05:00:00.000Z",
+      "endsAt": "2025-08-29T05:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 10,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "Bootsvermietung Enge",
+      "inPerson": true
+    },
+    {
       "id": "26190077",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-08-29T06:00:00.000Z",
@@ -15761,6 +16877,18 @@
       "durationMinutes": 60,
       "capacity": 24,
       "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "26189888",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2025-08-31T09:00:00.000Z",
+      "endsAt": "2025-08-31T10:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -16906,6 +18034,18 @@
       "inPerson": true
     },
     {
+      "id": "26730566",
+      "sessionName": "KEEN SOCIAL | Founder's Night",
+      "startsAt": "2025-09-12T17:00:00.000Z",
+      "endsAt": "2025-09-12T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 19,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28915684",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-09-12T19:15:00.000Z",
@@ -17830,18 +18970,6 @@
       "inPerson": true
     },
     {
-      "id": "28916272",
-      "sessionName": "SOLO JOURNEY",
-      "startsAt": "2025-09-20T19:00:00.000Z",
-      "endsAt": "2025-09-20T20:00:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 15,
-      "ticketsSold": 2,
-      "fixedTicketPrice": 27,
-      "location": "KEEN Zurich",
-      "inPerson": true
-    },
-    {
       "id": "28916381",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-09-20T19:00:00.000Z",
@@ -17849,6 +18977,18 @@
       "durationMinutes": 60,
       "capacity": 15,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "28916272",
+      "sessionName": "SOLO JOURNEY",
+      "startsAt": "2025-09-20T19:00:00.000Z",
+      "endsAt": "2025-09-20T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 15,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -18298,6 +19438,18 @@
       "inPerson": true
     },
     {
+      "id": "28915370",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2025-09-25T18:00:00.000Z",
+      "endsAt": "2025-09-25T19:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 23,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28915691",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-09-25T19:15:00.000Z",
@@ -18562,7 +19714,7 @@
       "inPerson": true
     },
     {
-      "id": "28916274",
+      "id": "28916382",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-09-27T19:00:00.000Z",
       "endsAt": "2025-09-27T20:00:00.000Z",
@@ -18574,7 +19726,7 @@
       "inPerson": true
     },
     {
-      "id": "28916382",
+      "id": "28916274",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-09-27T19:00:00.000Z",
       "endsAt": "2025-09-27T20:00:00.000Z",
@@ -19121,6 +20273,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 22,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "29911057",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2025-10-03T17:30:00.000Z",
+      "endsAt": "2025-10-03T19:00:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 16,
+      "ticketsSold": 33,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -20422,6 +21586,18 @@
       "inPerson": true
     },
     {
+      "id": "28915373",
+      "sessionName": "CONNECT (COMMUNITY-ONLY) with Frankie + David ",
+      "startsAt": "2025-10-16T18:00:00.000Z",
+      "endsAt": "2025-10-16T19:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 24,
+      "ticketsSold": 23,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28915703",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-10-16T19:30:00.000Z",
@@ -21142,6 +22318,18 @@
       "inPerson": true
     },
     {
+      "id": "28915374",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2025-10-23T18:00:00.000Z",
+      "endsAt": "2025-10-23T19:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 26,
+      "ticketsSold": 24,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28914801",
       "sessionName": "ENERGIZE",
       "startsAt": "2025-10-24T05:00:00.000Z",
@@ -21197,6 +22385,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 20,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "28915426",
+      "sessionName": "KEEN SOCIAL | HEAT w/ Daniel Gufler ",
+      "startsAt": "2025-10-24T17:45:00.000Z",
+      "endsAt": "2025-10-24T19:15:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 32,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -22654,6 +23854,18 @@
       "inPerson": true
     },
     {
+      "id": "28915428",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2025-11-07T18:30:00.000Z",
+      "endsAt": "2025-11-07T20:30:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 14,
+      "ticketsSold": 32,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28915716",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2025-11-07T20:30:00.000Z",
@@ -22673,6 +23885,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 15,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "30549993",
+      "sessionName": "VVOO X KEEN / YOGA X RECOVERY",
+      "startsAt": "2025-11-08T09:15:00.000Z",
+      "endsAt": "2025-11-08T11:15:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 32,
+      "ticketsSold": 32,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -24070,6 +25294,18 @@
       "inPerson": true
     },
     {
+      "id": "32073736",
+      "sessionName": "PADEL + RECOVERY",
+      "startsAt": "2025-11-20T15:00:00.000Z",
+      "endsAt": "2025-11-20T18:00:00.000Z",
+      "durationMinutes": 180,
+      "capacity": 20,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "31127341",
       "sessionName": "SOLO JOURNEY (60°C | 40%)",
       "startsAt": "2025-11-20T15:45:00.000Z",
@@ -24221,6 +25457,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 15,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "28915430",
+      "sessionName": "CONNECT (COMMUNITY-ONLY)",
+      "startsAt": "2025-11-21T19:00:00.000Z",
+      "endsAt": "2025-11-21T20:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 26,
+      "ticketsSold": 28,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -24898,6 +26146,18 @@
       "inPerson": true
     },
     {
+      "id": "31291361",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2025-11-27T19:00:00.000Z",
+      "endsAt": "2025-11-27T20:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 30,
+      "ticketsSold": 28,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28915727",
       "sessionName": "SOCIAL SOLO JOURNEY (90°C) with LIVE MUSIC ",
       "startsAt": "2025-11-27T20:30:00.000Z",
@@ -25397,6 +26657,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32460817",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2025-12-02T09:15:00.000Z",
+      "endsAt": "2025-12-02T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -25918,6 +27190,18 @@
       "inPerson": true
     },
     {
+      "id": "32074011",
+      "sessionName": "PADEL + RECOVERY",
+      "startsAt": "2025-12-06T15:00:00.000Z",
+      "endsAt": "2025-12-06T18:00:00.000Z",
+      "durationMinutes": 180,
+      "capacity": 20,
+      "ticketsSold": 20,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28915595",
       "sessionName": "JOURNEY INWARD",
       "startsAt": "2025-12-06T15:30:00.000Z",
@@ -26249,6 +27533,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32460818",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2025-12-09T09:15:00.000Z",
+      "endsAt": "2025-12-09T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -26710,6 +28006,18 @@
       "inPerson": true
     },
     {
+      "id": "28915433",
+      "sessionName": "BALBOA X KEEN | 100% ZERO w/ Patrischa",
+      "startsAt": "2025-12-12T18:30:00.000Z",
+      "endsAt": "2025-12-12T19:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "28915736",
       "sessionName": "OPEN SPACE PARTY w/ Patrischa ",
       "startsAt": "2025-12-12T20:00:00.000Z",
@@ -27118,6 +28426,18 @@
       "inPerson": true
     },
     {
+      "id": "32460819",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2025-12-16T09:15:00.000Z",
+      "endsAt": "2025-12-16T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 0,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "30849598",
       "sessionName": "SOLO JOURNEY (60°C | 40%)",
       "startsAt": "2025-12-16T09:45:00.000Z",
@@ -27430,6 +28750,18 @@
       "inPerson": true
     },
     {
+      "id": "28915382",
+      "sessionName": "CONNECT (XMAS SPECIAL KEEN COMMUNITY) ",
+      "startsAt": "2025-12-18T19:00:00.000Z",
+      "endsAt": "2025-12-18T22:00:00.000Z",
+      "durationMinutes": 180,
+      "capacity": 50,
+      "ticketsSold": 34,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "31399277",
       "sessionName": "UTOQUAI: DEEP BREATH",
       "startsAt": "2025-12-19T05:45:00.000Z",
@@ -27545,6 +28877,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 18,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "28915434",
+      "sessionName": "KEEN SOCIAL | HEAT w/ Daniel Gufler ",
+      "startsAt": "2025-12-19T19:00:00.000Z",
+      "endsAt": "2025-12-19T20:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 31,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -29458,6 +30802,18 @@
       "inPerson": true
     },
     {
+      "id": "33329663",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-01-06T09:15:00.000Z",
+      "endsAt": "2026-01-06T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "34169985",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-01-06T11:00:00.000Z",
@@ -30202,6 +31558,18 @@
       "inPerson": true
     },
     {
+      "id": "34165887",
+      "sessionName": "KEEN SELECTED w/ GAETAN",
+      "startsAt": "2026-01-10T19:00:00.000Z",
+      "endsAt": "2026-01-10T21:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 43,
+      "ticketsSold": 41,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "33444974",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-01-10T20:30:00.000Z",
@@ -30521,6 +31889,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "33329664",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-01-13T09:15:00.000Z",
+      "endsAt": "2026-01-13T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 7,
+      "ticketsSold": 7,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -31378,6 +32758,18 @@
       "inPerson": true
     },
     {
+      "id": "34213426",
+      "sessionName": "RECOVERY, CHESS & CULTURE",
+      "startsAt": "2026-01-18T11:30:00.000Z",
+      "endsAt": "2026-01-18T14:00:00.000Z",
+      "durationMinutes": 150,
+      "capacity": 50,
+      "ticketsSold": 33,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32455002",
       "sessionName": "SOCIAL SOLO JOURNEY",
       "startsAt": "2026-01-18T12:00:00.000Z",
@@ -31426,6 +32818,18 @@
       "inPerson": true
     },
     {
+      "id": "34089328",
+      "sessionName": "JOURNEY INWARD (AT INDIGO)",
+      "startsAt": "2026-01-18T17:45:00.000Z",
+      "endsAt": "2026-01-18T18:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
+      "ticketsSold": 18,
+      "fixedTicketPrice": 27,
+      "location": "Indigo Fitness Club Zürich",
+      "inPerson": true
+    },
+    {
       "id": "32240122",
       "sessionName": "SOUND IMMERSION",
       "startsAt": "2026-01-18T18:15:00.000Z",
@@ -31435,6 +32839,18 @@
       "ticketsSold": 22,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "34089440",
+      "sessionName": "JOURNEY INWARD (AT INDIGO)",
+      "startsAt": "2026-01-18T18:45:00.000Z",
+      "endsAt": "2026-01-18T19:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
+      "ticketsSold": 17,
+      "fixedTicketPrice": 27,
+      "location": "Indigo Fitness Club Zürich",
       "inPerson": true
     },
     {
@@ -31649,6 +33065,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "33329665",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-01-20T09:15:00.000Z",
+      "endsAt": "2026-01-20T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -32362,6 +33790,18 @@
       "inPerson": true
     },
     {
+      "id": "32455814",
+      "sessionName": "KEEN SELECTED",
+      "startsAt": "2026-01-24T19:00:00.000Z",
+      "endsAt": "2026-01-24T21:30:00.000Z",
+      "durationMinutes": 150,
+      "capacity": 45,
+      "ticketsSold": 45,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32239888",
       "sessionName": "ENERGIZE",
       "startsAt": "2026-01-25T08:15:00.000Z",
@@ -32674,6 +34114,18 @@
       "inPerson": true
     },
     {
+      "id": "33329666",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-01-27T09:15:00.000Z",
+      "endsAt": "2026-01-27T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 6,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32240269",
       "sessionName": "DEEP BREATH",
       "startsAt": "2026-01-27T11:15:00.000Z",
@@ -32842,6 +34294,18 @@
       "inPerson": true
     },
     {
+      "id": "32240320",
+      "sessionName": "CONNECT w/ PUNNU WASU",
+      "startsAt": "2026-01-28T19:15:00.000Z",
+      "endsAt": "2026-01-28T21:15:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 35,
+      "ticketsSold": 36,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32451715",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-01-28T20:30:00.000Z",
@@ -32993,6 +34457,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 26,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32240356",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2026-01-29T19:00:00.000Z",
+      "endsAt": "2026-01-29T20:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 30,
+      "ticketsSold": 25,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -33466,6 +34942,18 @@
       "inPerson": true
     },
     {
+      "id": "34697379",
+      "sessionName": "JOURNEY INWARD (AT INDIGO)",
+      "startsAt": "2026-02-01T18:00:00.000Z",
+      "endsAt": "2026-02-01T19:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "Indigo Fitness Club Zürich",
+      "inPerson": true
+    },
+    {
       "id": "32240124",
       "sessionName": "SOUND IMMERSION",
       "startsAt": "2026-02-01T18:15:00.000Z",
@@ -33475,6 +34963,18 @@
       "ticketsSold": 25,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "34697401",
+      "sessionName": "JOURNEY INWARD (AT INDIGO)",
+      "startsAt": "2026-02-01T19:00:00.000Z",
+      "endsAt": "2026-02-01T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
+      "ticketsSold": 7,
+      "fixedTicketPrice": 27,
+      "location": "Indigo Fitness Club Zürich",
       "inPerson": true
     },
     {
@@ -33689,6 +35189,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "33329667",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-02-03T09:15:00.000Z",
+      "endsAt": "2026-02-03T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 3,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -33977,6 +35489,18 @@
       "durationMinutes": 60,
       "capacity": 15,
       "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32734608",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-02-05T14:00:00.000Z",
+      "endsAt": "2026-02-05T15:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -34726,6 +36250,18 @@
       "inPerson": true
     },
     {
+      "id": "33329668",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-02-10T09:15:00.000Z",
+      "endsAt": "2026-02-10T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32240271",
       "sessionName": "DEEP BREATH",
       "startsAt": "2026-02-10T11:15:00.000Z",
@@ -35086,6 +36622,18 @@
       "inPerson": true
     },
     {
+      "id": "32734609",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-02-12T14:00:00.000Z",
+      "endsAt": "2026-02-12T15:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32451634",
       "sessionName": "SOLO JOURNEY (60°C | 40%)",
       "startsAt": "2026-02-12T15:45:00.000Z",
@@ -35290,6 +36838,18 @@
       "inPerson": true
     },
     {
+      "id": "32240504",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2026-02-13T18:30:00.000Z",
+      "endsAt": "2026-02-13T19:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 36,
+      "ticketsSold": 36,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32451727",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-02-13T20:30:00.000Z",
@@ -35429,6 +36989,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 25,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35032604",
+      "sessionName": "KEEN SELECTED",
+      "startsAt": "2026-02-14T19:00:00.000Z",
+      "endsAt": "2026-02-14T21:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 40,
+      "ticketsSold": 39,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -35717,6 +37289,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "33329669",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-02-17T09:15:00.000Z",
+      "endsAt": "2026-02-17T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 9,
+      "ticketsSold": 9,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -36082,6 +37666,18 @@
       "inPerson": true
     },
     {
+      "id": "32734610",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-02-19T14:00:00.000Z",
+      "endsAt": "2026-02-19T15:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32451636",
       "sessionName": "SOLO JOURNEY (60°C | 40%)",
       "startsAt": "2026-02-19T15:45:00.000Z",
@@ -36442,6 +38038,18 @@
       "inPerson": true
     },
     {
+      "id": "33444986",
+      "sessionName": "KEEN SELECTED",
+      "startsAt": "2026-02-21T19:00:00.000Z",
+      "endsAt": "2026-02-21T21:30:00.000Z",
+      "durationMinutes": 150,
+      "capacity": 40,
+      "ticketsSold": 39,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32455826",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-02-21T20:00:00.000Z",
@@ -36550,6 +38158,18 @@
       "inPerson": true
     },
     {
+      "id": "35034460",
+      "sessionName": "JOURNEY INWARD (AT INDIGO)",
+      "startsAt": "2026-02-22T18:00:00.000Z",
+      "endsAt": "2026-02-22T19:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
+      "ticketsSold": 12,
+      "fixedTicketPrice": 27,
+      "location": "Indigo Fitness Club Zürich",
+      "inPerson": true
+    },
+    {
       "id": "32240127",
       "sessionName": "SOUND IMMERSION",
       "startsAt": "2026-02-22T18:15:00.000Z",
@@ -36559,6 +38179,18 @@
       "ticketsSold": 27,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35034461",
+      "sessionName": "JOURNEY INWARD (AT INDIGO)",
+      "startsAt": "2026-02-22T19:00:00.000Z",
+      "endsAt": "2026-02-22T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "Indigo Fitness Club Zürich",
       "inPerson": true
     },
     {
@@ -36737,6 +38369,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "33329670",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-02-24T09:15:00.000Z",
+      "endsAt": "2026-02-24T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 6,
+      "ticketsSold": 6,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -37102,6 +38746,18 @@
       "inPerson": true
     },
     {
+      "id": "32734611",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-02-26T14:00:00.000Z",
+      "endsAt": "2026-02-26T15:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32451638",
       "sessionName": "SOLO JOURNEY (60°C | 40%)",
       "startsAt": "2026-02-26T15:45:00.000Z",
@@ -37337,6 +38993,90 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32239840",
+      "sessionName": "RITUAL FEAT. PRISZILLA (LIVE)  ",
+      "startsAt": "2026-02-28T08:00:00.000Z",
+      "endsAt": "2026-02-28T09:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 17,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32455239",
+      "sessionName": "RITUAL FEAT. MAGDA DROZD (LIVE) ",
+      "startsAt": "2026-02-28T10:00:00.000Z",
+      "endsAt": "2026-02-28T11:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 31,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32455290",
+      "sessionName": "HEAT + BEAT FEAT. AISSA ",
+      "startsAt": "2026-02-28T12:00:00.000Z",
+      "endsAt": "2026-02-28T13:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 19,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32239854",
+      "sessionName": "HEAT + BEAT FEAT. MOLEKÜHL",
+      "startsAt": "2026-02-28T14:00:00.000Z",
+      "endsAt": "2026-02-28T15:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 34,
+      "ticketsSold": 34,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32239867",
+      "sessionName": "RITUAL FEAT. R.EK",
+      "startsAt": "2026-02-28T16:00:00.000Z",
+      "endsAt": "2026-02-28T17:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 32,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32239880",
+      "sessionName": "HEAT + BEAT FEAT. SOMA SOUL",
+      "startsAt": "2026-02-28T18:00:00.000Z",
+      "endsAt": "2026-02-28T19:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 32,
+      "ticketsSold": 31,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32455920",
+      "sessionName": "SOCIAL SOLO JOURNEY FEAT. ONUR ÖZMAN (LIVE) ",
+      "startsAt": "2026-02-28T20:00:00.000Z",
+      "endsAt": "2026-02-28T22:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 40,
+      "ticketsSold": 22,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -37637,6 +39377,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "33329671",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-03-03T09:15:00.000Z",
+      "endsAt": "2026-03-03T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 6,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -38069,6 +39821,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32734612",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-03-05T14:00:00.000Z",
+      "endsAt": "2026-03-05T15:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -38758,6 +40522,18 @@
       "inPerson": true
     },
     {
+      "id": "33329672",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-03-10T09:15:00.000Z",
+      "endsAt": "2026-03-10T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32240275",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-03-10T11:00:00.000Z",
@@ -39130,6 +40906,18 @@
       "inPerson": true
     },
     {
+      "id": "32959515",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-03-12T14:00:00.000Z",
+      "endsAt": "2026-03-12T15:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 0,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32240211",
       "sessionName": "ATHLETIC RECOVERY",
       "startsAt": "2026-03-12T15:45:00.000Z",
@@ -39334,6 +41122,18 @@
       "inPerson": true
     },
     {
+      "id": "32240508",
+      "sessionName": "BALBOA X KEEN | 100% ZERO",
+      "startsAt": "2026-03-13T18:30:00.000Z",
+      "endsAt": "2026-03-13T20:00:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 12,
+      "ticketsSold": 10,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32451747",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-03-13T20:30:00.000Z",
@@ -39478,6 +41278,18 @@
       "inPerson": true
     },
     {
+      "id": "35194428",
+      "sessionName": "KEEN SELECTED w/ Anso ",
+      "startsAt": "2026-03-14T19:00:00.000Z",
+      "endsAt": "2026-03-14T21:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 41,
+      "ticketsSold": 40,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "32239895",
       "sessionName": "ENERGIZE",
       "startsAt": "2026-03-15T08:15:00.000Z",
@@ -39485,6 +41297,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 26,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35942167",
+      "sessionName": "RECOVERY, CHESS & CULTURE",
+      "startsAt": "2026-03-15T09:00:00.000Z",
+      "endsAt": "2026-03-15T12:45:00.000Z",
+      "durationMinutes": 225,
+      "capacity": 37,
+      "ticketsSold": 37,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -39754,6 +41578,18 @@
       "inPerson": true
     },
     {
+      "id": "33329673",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-03-17T09:15:00.000Z",
+      "endsAt": "2026-03-17T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 6,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "36143227",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-03-17T11:00:00.000Z",
@@ -39821,6 +41657,18 @@
       "durationMinutes": 60,
       "capacity": 14,
       "ticketsSold": 14,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "32240248",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-03-17T17:15:00.000Z",
+      "endsAt": "2026-03-17T18:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 24,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -40450,6 +42298,18 @@
       "inPerson": true
     },
     {
+      "id": "35194429",
+      "sessionName": "CONNECT",
+      "startsAt": "2026-03-21T19:00:00.000Z",
+      "endsAt": "2026-03-21T20:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 30,
+      "ticketsSold": 28,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "33444994",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-03-21T19:30:00.000Z",
@@ -40757,6 +42617,18 @@
       "durationMinutes": 60,
       "capacity": 10,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "33329674",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-03-24T09:15:00.000Z",
+      "endsAt": "2026-03-24T10:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 5,
+      "ticketsSold": 5,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -41482,6 +43354,18 @@
       "inPerson": true
     },
     {
+      "id": "35194430",
+      "sessionName": "KEEN SELECTED",
+      "startsAt": "2026-03-28T19:00:00.000Z",
+      "endsAt": "2026-03-28T20:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 40,
+      "ticketsSold": 35,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "33444996",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-03-28T19:45:00.000Z",
@@ -41789,6 +43673,18 @@
       "durationMinutes": 75,
       "capacity": 10,
       "ticketsSold": 7,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "33329675",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-03-31T08:15:00.000Z",
+      "endsAt": "2026-03-31T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "ticketsSold": 1,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -42478,6 +44374,18 @@
       "inPerson": true
     },
     {
+      "id": "36121770",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-04-05T17:00:00.000Z",
+      "endsAt": "2026-04-05T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 23,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971918",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-04-05T18:30:00.000Z",
@@ -42694,6 +44602,18 @@
       "inPerson": true
     },
     {
+      "id": "35970272",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-04-07T08:15:00.000Z",
+      "endsAt": "2026-04-07T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971475",
       "sessionName": "SOCIAL SOLO JOURNEY",
       "startsAt": "2026-04-07T10:15:00.000Z",
@@ -42706,24 +44626,24 @@
       "inPerson": true
     },
     {
-      "id": "35970754",
-      "sessionName": "SOLO JOURNEY",
-      "startsAt": "2026-04-07T11:30:00.000Z",
-      "endsAt": "2026-04-07T12:45:00.000Z",
-      "durationMinutes": 75,
-      "capacity": 15,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 27,
-      "location": "KEEN Zurich",
-      "inPerson": true
-    },
-    {
       "id": "36706302",
       "sessionName": "ATHLETIC RECOVERY",
       "startsAt": "2026-04-07T11:30:00.000Z",
       "endsAt": "2026-04-07T12:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 0,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35970754",
+      "sessionName": "SOLO JOURNEY",
+      "startsAt": "2026-04-07T11:30:00.000Z",
+      "endsAt": "2026-04-07T12:45:00.000Z",
+      "durationMinutes": 75,
+      "capacity": 15,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -43354,6 +45274,18 @@
       "inPerson": true
     },
     {
+      "id": "36121771",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-04-12T17:00:00.000Z",
+      "endsAt": "2026-04-12T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 25,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971919",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-04-12T18:30:00.000Z",
@@ -43534,13 +45466,13 @@
       "inPerson": true
     },
     {
-      "id": "35971476",
-      "sessionName": "DEEP BREATH",
-      "startsAt": "2026-04-14T10:15:00.000Z",
-      "endsAt": "2026-04-14T11:00:00.000Z",
-      "durationMinutes": 45,
-      "capacity": 16,
-      "ticketsSold": 0,
+      "id": "35970273",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-04-14T08:15:00.000Z",
+      "endsAt": "2026-04-14T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 10,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -43552,6 +45484,18 @@
       "endsAt": "2026-04-14T11:30:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971476",
+      "sessionName": "DEEP BREATH",
+      "startsAt": "2026-04-14T10:15:00.000Z",
+      "endsAt": "2026-04-14T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -44218,6 +46162,18 @@
       "inPerson": true
     },
     {
+      "id": "36121772",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-04-19T17:00:00.000Z",
+      "endsAt": "2026-04-19T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 27,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971920",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-04-19T18:30:00.000Z",
@@ -44398,6 +46354,18 @@
       "inPerson": true
     },
     {
+      "id": "35970274",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-04-21T08:15:00.000Z",
+      "endsAt": "2026-04-21T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 5,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "37118487",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-04-21T10:15:00.000Z",
@@ -44453,6 +46421,18 @@
       "durationMinutes": 60,
       "capacity": 15,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971458",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-04-21T16:15:00.000Z",
+      "endsAt": "2026-04-21T17:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 28,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -44518,18 +46498,6 @@
       "inPerson": true
     },
     {
-      "id": "37150704",
-      "sessionName": "SOLO JOURNEY",
-      "startsAt": "2026-04-22T10:15:00.000Z",
-      "endsAt": "2026-04-22T11:30:00.000Z",
-      "durationMinutes": 75,
-      "capacity": 15,
-      "ticketsSold": 1,
-      "fixedTicketPrice": 27,
-      "location": "KEEN Zurich",
-      "inPerson": true
-    },
-    {
       "id": "36250290",
       "sessionName": "RELAX",
       "startsAt": "2026-04-22T10:15:00.000Z",
@@ -44537,6 +46505,18 @@
       "durationMinutes": 45,
       "capacity": 16,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37150704",
+      "sessionName": "SOLO JOURNEY",
+      "startsAt": "2026-04-22T10:15:00.000Z",
+      "endsAt": "2026-04-22T11:30:00.000Z",
+      "durationMinutes": 75,
+      "capacity": 15,
+      "ticketsSold": 1,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -44681,6 +46661,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971273",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2026-04-23T18:00:00.000Z",
+      "endsAt": "2026-04-23T19:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 23,
+      "ticketsSold": 24,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -44938,6 +46930,18 @@
       "inPerson": true
     },
     {
+      "id": "35971815",
+      "sessionName": "KEEN SELECTED",
+      "startsAt": "2026-04-25T18:00:00.000Z",
+      "endsAt": "2026-04-25T20:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 35,
+      "ticketsSold": 32,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35969648",
       "sessionName": "ENERGIZE",
       "startsAt": "2026-04-26T07:15:00.000Z",
@@ -45010,6 +47014,18 @@
       "inPerson": true
     },
     {
+      "id": "36121773",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-04-26T17:00:00.000Z",
+      "endsAt": "2026-04-26T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 24,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971921",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-04-26T18:30:00.000Z",
@@ -45076,6 +47092,18 @@
       "endsAt": "2026-04-27T07:45:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969851",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-04-27T10:15:00.000Z",
+      "endsAt": "2026-04-27T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -45178,11 +47206,35 @@
       "inPerson": true
     },
     {
+      "id": "35970275",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-04-28T08:15:00.000Z",
+      "endsAt": "2026-04-28T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "37330117",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-04-28T10:15:00.000Z",
       "endsAt": "2026-04-28T11:30:00.000Z",
       "durationMinutes": 75,
+      "capacity": 16,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971478",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-04-28T10:15:00.000Z",
+      "endsAt": "2026-04-28T11:00:00.000Z",
+      "durationMinutes": 45,
       "capacity": 16,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
@@ -45298,6 +47350,18 @@
       "inPerson": true
     },
     {
+      "id": "36250291",
+      "sessionName": "RELAX  (45')",
+      "startsAt": "2026-04-29T10:15:00.000Z",
+      "endsAt": "2026-04-29T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "37402296",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-04-29T10:15:00.000Z",
@@ -45401,6 +47465,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971140",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-04-30T10:15:00.000Z",
+      "endsAt": "2026-04-30T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 10,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -45730,6 +47806,18 @@
       "inPerson": true
     },
     {
+      "id": "36985033",
+      "sessionName": "KEEN SELECTED",
+      "startsAt": "2026-05-02T18:00:00.000Z",
+      "endsAt": "2026-05-02T20:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 35,
+      "ticketsSold": 25,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35969649",
       "sessionName": "ENERGIZE",
       "startsAt": "2026-05-03T07:15:00.000Z",
@@ -45802,6 +47890,18 @@
       "inPerson": true
     },
     {
+      "id": "36121774",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-05-03T17:00:00.000Z",
+      "endsAt": "2026-05-03T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 26,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971922",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-03T18:30:00.000Z",
@@ -45869,6 +47969,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969852",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-04T10:15:00.000Z",
+      "endsAt": "2026-05-04T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 6,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -45970,6 +48082,30 @@
       "inPerson": true
     },
     {
+      "id": "35970276",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-05-05T08:15:00.000Z",
+      "endsAt": "2026-05-05T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971479",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-05-05T10:15:00.000Z",
+      "endsAt": "2026-05-05T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970774",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-05T11:30:00.000Z",
@@ -46066,6 +48202,18 @@
       "inPerson": true
     },
     {
+      "id": "36250292",
+      "sessionName": "RELAX  (45')",
+      "startsAt": "2026-05-06T10:15:00.000Z",
+      "endsAt": "2026-05-06T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 12,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970775",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-06T11:30:00.000Z",
@@ -46157,6 +48305,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971141",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-07T10:15:00.000Z",
+      "endsAt": "2026-05-07T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -46277,6 +48437,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969253",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-08T10:15:00.000Z",
+      "endsAt": "2026-05-08T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 16,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -46570,6 +48742,18 @@
       "inPerson": true
     },
     {
+      "id": "36121775",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-05-10T17:00:00.000Z",
+      "endsAt": "2026-05-10T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 25,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971923",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-10T18:30:00.000Z",
@@ -46637,6 +48821,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969853",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-11T10:15:00.000Z",
+      "endsAt": "2026-05-11T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 13,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -46733,6 +48929,30 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35970277",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-05-12T08:15:00.000Z",
+      "endsAt": "2026-05-12T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971480",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-05-12T10:15:00.000Z",
+      "endsAt": "2026-05-12T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -47110,6 +49330,18 @@
       "inPerson": true
     },
     {
+      "id": "35969254",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-15T10:15:00.000Z",
+      "endsAt": "2026-05-15T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 14,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970782",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-15T11:30:00.000Z",
@@ -47278,6 +49510,18 @@
       "inPerson": true
     },
     {
+      "id": "35971818",
+      "sessionName": "AMONG WOMEN",
+      "startsAt": "2026-05-16T18:00:00.000Z",
+      "endsAt": "2026-05-16T19:30:00.000Z",
+      "durationMinutes": 90,
+      "capacity": 24,
+      "ticketsSold": 23,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970863",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-16T19:30:00.000Z",
@@ -47362,6 +49606,18 @@
       "inPerson": true
     },
     {
+      "id": "36121776",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-05-17T17:00:00.000Z",
+      "endsAt": "2026-05-17T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 25,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971924",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-17T18:30:00.000Z",
@@ -47428,6 +49684,18 @@
       "endsAt": "2026-05-18T07:45:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969854",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-18T10:15:00.000Z",
+      "endsAt": "2026-05-18T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -47530,6 +49798,30 @@
       "inPerson": true
     },
     {
+      "id": "35970278",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-05-19T08:15:00.000Z",
+      "endsAt": "2026-05-19T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971481",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-05-19T10:15:00.000Z",
+      "endsAt": "2026-05-19T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970784",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-19T11:30:00.000Z",
@@ -47609,6 +49901,18 @@
       "durationMinutes": 75,
       "capacity": 10,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "36250294",
+      "sessionName": "RELAX  (45')",
+      "startsAt": "2026-05-20T10:15:00.000Z",
+      "endsAt": "2026-05-20T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -47710,6 +50014,18 @@
       "inPerson": true
     },
     {
+      "id": "35971143",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-21T10:15:00.000Z",
+      "endsAt": "2026-05-21T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 9,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970786",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-21T11:30:00.000Z",
@@ -47739,6 +50055,18 @@
       "startsAt": "2026-05-21T16:15:00.000Z",
       "endsAt": "2026-05-21T17:15:00.000Z",
       "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 22,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37509279",
+      "sessionName": "RUN & RECOVER",
+      "startsAt": "2026-05-21T18:00:00.000Z",
+      "endsAt": "2026-05-21T20:00:00.000Z",
+      "durationMinutes": 120,
       "capacity": 26,
       "ticketsSold": 22,
       "fixedTicketPrice": 27,
@@ -47825,6 +50153,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969256",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-22T10:15:00.000Z",
+      "endsAt": "2026-05-22T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 10,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -48118,6 +50458,18 @@
       "inPerson": true
     },
     {
+      "id": "36121777",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-05-24T17:00:00.000Z",
+      "endsAt": "2026-05-24T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971925",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-24T18:30:00.000Z",
@@ -48334,6 +50686,18 @@
       "inPerson": true
     },
     {
+      "id": "35970279",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-05-26T08:15:00.000Z",
+      "endsAt": "2026-05-26T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38184607",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-26T10:15:00.000Z",
@@ -48341,6 +50705,18 @@
       "durationMinutes": 75,
       "capacity": 10,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971482",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-05-26T10:15:00.000Z",
+      "endsAt": "2026-05-26T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -48358,24 +50734,24 @@
       "inPerson": true
     },
     {
-      "id": "38217940",
-      "sessionName": "SOLO JOURNEY",
-      "startsAt": "2026-05-26T14:45:00.000Z",
-      "endsAt": "2026-05-26T15:45:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 20,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 27,
-      "location": "KEEN Zurich",
-      "inPerson": true
-    },
-    {
       "id": "35971436",
       "sessionName": "SOUND IMMERSION",
       "startsAt": "2026-05-26T14:45:00.000Z",
       "endsAt": "2026-05-26T15:45:00.000Z",
       "durationMinutes": 60,
       "capacity": 26,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38217940",
+      "sessionName": "SOLO JOURNEY",
+      "startsAt": "2026-05-26T14:45:00.000Z",
+      "endsAt": "2026-05-26T15:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 20,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -48442,6 +50818,18 @@
       "inPerson": true
     },
     {
+      "id": "36250295",
+      "sessionName": "RELAX  (45')",
+      "startsAt": "2026-05-27T10:15:00.000Z",
+      "endsAt": "2026-05-27T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970790",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-05-27T11:30:00.000Z",
@@ -48478,6 +50866,18 @@
       "inPerson": true
     },
     {
+      "id": "37982386",
+      "sessionName": "RED (OFFICIAL LAUNCH)",
+      "startsAt": "2026-05-27T15:00:00.000Z",
+      "endsAt": "2026-05-27T16:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "Secret Location",
+      "inPerson": true
+    },
+    {
       "id": "35968510",
       "sessionName": "RELAX",
       "startsAt": "2026-05-27T16:15:00.000Z",
@@ -48490,6 +50890,18 @@
       "inPerson": true
     },
     {
+      "id": "37508795",
+      "sessionName": "RED (OFFICIAL LAUNCH) ",
+      "startsAt": "2026-05-27T16:30:00.000Z",
+      "endsAt": "2026-05-27T17:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "Secret Location",
+      "inPerson": true
+    },
+    {
       "id": "35971537",
       "sessionName": "JOURNEY INWARD",
       "startsAt": "2026-05-27T18:00:00.000Z",
@@ -48499,6 +50911,30 @@
       "ticketsSold": 20,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37508841",
+      "sessionName": "RED (OFFICIAL LAUNCH)",
+      "startsAt": "2026-05-27T18:00:00.000Z",
+      "endsAt": "2026-05-27T19:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "Secret Location",
+      "inPerson": true
+    },
+    {
+      "id": "37508955",
+      "sessionName": "RED (OFFICIAL LAUNCH)",
+      "startsAt": "2026-05-27T19:15:00.000Z",
+      "endsAt": "2026-05-27T20:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 16,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "Secret Location",
       "inPerson": true
     },
     {
@@ -48545,6 +50981,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971144",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-28T10:15:00.000Z",
+      "endsAt": "2026-05-28T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 6,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -48665,6 +51113,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969258",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-05-29T10:15:00.000Z",
+      "endsAt": "2026-05-29T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 11,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -48934,6 +51394,42 @@
       "inPerson": true
     },
     {
+      "id": "36121778",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-05-31T17:00:00.000Z",
+      "endsAt": "2026-05-31T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 26,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971926",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2026-05-31T18:30:00.000Z",
+      "endsAt": "2026-05-31T20:30:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 22,
+      "ticketsSold": 15,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35970878",
+      "sessionName": "DEEP LISTENING",
+      "startsAt": "2026-05-31T19:30:00.000Z",
+      "endsAt": "2026-05-31T20:45:00.000Z",
+      "durationMinutes": 75,
+      "capacity": 10,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35969804",
       "sessionName": "ENERGIZE (45') ",
       "startsAt": "2026-06-01T04:45:00.000Z",
@@ -48965,6 +51461,30 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37515403",
+      "sessionName": "RED",
+      "startsAt": "2026-06-01T09:45:00.000Z",
+      "endsAt": "2026-06-01T10:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969856",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-01T10:45:00.000Z",
+      "endsAt": "2026-06-01T11:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49006,6 +51526,18 @@
       "inPerson": true
     },
     {
+      "id": "35970199",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-06-01T19:00:00.000Z",
+      "endsAt": "2026-06-01T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970264",
       "sessionName": "ENERGIZE (45') ",
       "startsAt": "2026-06-02T04:45:00.000Z",
@@ -49042,6 +51574,18 @@
       "inPerson": true
     },
     {
+      "id": "35970280",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-06-02T08:15:00.000Z",
+      "endsAt": "2026-06-02T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38497123",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-02T10:15:00.000Z",
@@ -49049,6 +51593,18 @@
       "durationMinutes": 60,
       "capacity": 20,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971483",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-06-02T10:15:00.000Z",
+      "endsAt": "2026-06-02T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49121,6 +51677,18 @@
       "durationMinutes": 75,
       "capacity": 10,
       "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "36250296",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-06-03T10:15:00.000Z",
+      "endsAt": "2026-06-03T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 9,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49210,6 +51778,18 @@
       "inPerson": true
     },
     {
+      "id": "35971145",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-04T10:15:00.000Z",
+      "endsAt": "2026-06-04T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 15,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970796",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-04T11:30:00.000Z",
@@ -49258,6 +51838,18 @@
       "inPerson": true
     },
     {
+      "id": "38136244",
+      "sessionName": "RUN & RECOVER",
+      "startsAt": "2026-06-04T18:00:00.000Z",
+      "endsAt": "2026-06-04T20:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 26,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38601233",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-04T19:30:00.000Z",
@@ -49265,6 +51857,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37515417",
+      "sessionName": "RED",
+      "startsAt": "2026-06-05T04:45:00.000Z",
+      "endsAt": "2026-06-05T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 12,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49301,6 +51905,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969260",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-05T10:15:00.000Z",
+      "endsAt": "2026-06-05T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 12,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49594,6 +52210,18 @@
       "inPerson": true
     },
     {
+      "id": "36121779",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-06-07T17:00:00.000Z",
+      "endsAt": "2026-06-07T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 14,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971927",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-07T18:30:00.000Z",
@@ -49666,6 +52294,30 @@
       "inPerson": true
     },
     {
+      "id": "37515404",
+      "sessionName": "RED",
+      "startsAt": "2026-06-08T09:45:00.000Z",
+      "endsAt": "2026-06-08T10:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969857",
+      "sessionName": "RED",
+      "startsAt": "2026-06-08T10:45:00.000Z",
+      "endsAt": "2026-06-08T11:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970688",
       "sessionName": "ATHLETIC RECOVERY",
       "startsAt": "2026-06-08T15:30:00.000Z",
@@ -49685,6 +52337,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 18,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35970200",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-06-08T19:00:00.000Z",
+      "endsAt": "2026-06-08T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 12,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49721,6 +52385,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35970281",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-06-09T08:15:00.000Z",
+      "endsAt": "2026-06-09T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49810,6 +52486,18 @@
       "inPerson": true
     },
     {
+      "id": "36250297",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-06-10T10:15:00.000Z",
+      "endsAt": "2026-06-10T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 10,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970800",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-10T11:30:00.000Z",
@@ -49870,6 +52558,30 @@
       "inPerson": true
     },
     {
+      "id": "38141711",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-06-11T04:45:00.000Z",
+      "endsAt": "2026-06-11T05:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
+      "id": "38141723",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-06-11T05:45:00.000Z",
+      "endsAt": "2026-06-11T06:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
       "id": "35969060",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-11T06:00:00.000Z",
@@ -49889,6 +52601,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971146",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-11T10:15:00.000Z",
+      "endsAt": "2026-06-11T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 13,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49930,6 +52654,18 @@
       "inPerson": true
     },
     {
+      "id": "38597558",
+      "sessionName": "RUN & RECOVER",
+      "startsAt": "2026-06-11T18:00:00.000Z",
+      "endsAt": "2026-06-11T20:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 24,
+      "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971280",
       "sessionName": "JOURNEY INWARD",
       "startsAt": "2026-06-11T18:00:00.000Z",
@@ -49937,6 +52673,30 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 15,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37515418",
+      "sessionName": "RED",
+      "startsAt": "2026-06-12T04:45:00.000Z",
+      "endsAt": "2026-06-12T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 9,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35967892",
+      "sessionName": "RED",
+      "startsAt": "2026-06-12T06:00:00.000Z",
+      "endsAt": "2026-06-12T06:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -49961,6 +52721,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969262",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-12T10:15:00.000Z",
+      "endsAt": "2026-06-12T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 15,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -50290,6 +53062,30 @@
       "inPerson": true
     },
     {
+      "id": "37515405",
+      "sessionName": "RED",
+      "startsAt": "2026-06-15T09:45:00.000Z",
+      "endsAt": "2026-06-15T10:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969858",
+      "sessionName": "RED",
+      "startsAt": "2026-06-15T10:45:00.000Z",
+      "endsAt": "2026-06-15T11:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970690",
       "sessionName": "ATHLETIC RECOVERY",
       "startsAt": "2026-06-15T15:30:00.000Z",
@@ -50309,6 +53105,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 18,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35970201",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-06-15T19:00:00.000Z",
+      "endsAt": "2026-06-15T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 12,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -50345,6 +53153,30 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35970282",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-06-16T08:15:00.000Z",
+      "endsAt": "2026-06-16T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971485",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-06-16T10:15:00.000Z",
+      "endsAt": "2026-06-16T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -50422,6 +53254,18 @@
       "inPerson": true
     },
     {
+      "id": "36250298",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-06-17T10:15:00.000Z",
+      "endsAt": "2026-06-17T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970805",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-17T11:30:00.000Z",
@@ -50482,6 +53326,30 @@
       "inPerson": true
     },
     {
+      "id": "38141712",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-06-18T04:45:00.000Z",
+      "endsAt": "2026-06-18T05:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 9,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
+      "id": "38141724",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-06-18T05:45:00.000Z",
+      "endsAt": "2026-06-18T06:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 7,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
       "id": "35969065",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-18T06:00:00.000Z",
@@ -50500,6 +53368,18 @@
       "endsAt": "2026-06-18T07:45:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971147",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-18T10:15:00.000Z",
+      "endsAt": "2026-06-18T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -50566,6 +53446,30 @@
       "inPerson": true
     },
     {
+      "id": "37515419",
+      "sessionName": "RED",
+      "startsAt": "2026-06-19T04:45:00.000Z",
+      "endsAt": "2026-06-19T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 1,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35967893",
+      "sessionName": "RED",
+      "startsAt": "2026-06-19T06:00:00.000Z",
+      "endsAt": "2026-06-19T06:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 3,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971382",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-19T07:00:00.000Z",
@@ -50584,6 +53488,18 @@
       "endsAt": "2026-06-19T08:45:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969264",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-19T10:15:00.000Z",
+      "endsAt": "2026-06-19T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -50878,6 +53794,18 @@
       "inPerson": true
     },
     {
+      "id": "36121781",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-06-21T17:00:00.000Z",
+      "endsAt": "2026-06-21T18:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971929",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-21T18:30:00.000Z",
@@ -50914,6 +53842,18 @@
       "inPerson": true
     },
     {
+      "id": "35969807",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-22T04:45:00.000Z",
+      "endsAt": "2026-06-22T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35969067",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-22T06:00:00.000Z",
@@ -50933,6 +53873,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37515406",
+      "sessionName": "RED",
+      "startsAt": "2026-06-22T09:45:00.000Z",
+      "endsAt": "2026-06-22T10:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 5,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -50974,6 +53926,18 @@
       "inPerson": true
     },
     {
+      "id": "35970202",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-06-22T19:00:00.000Z",
+      "endsAt": "2026-06-22T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970267",
       "sessionName": "ENERGIZE (45') ",
       "startsAt": "2026-06-23T04:45:00.000Z",
@@ -50993,6 +53957,18 @@
       "durationMinutes": 60,
       "capacity": 16,
       "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35970283",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-06-23T08:15:00.000Z",
+      "endsAt": "2026-06-23T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 1,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -51106,6 +54082,18 @@
       "inPerson": true
     },
     {
+      "id": "36250299",
+      "sessionName": "DEEP BREATH  (45')",
+      "startsAt": "2026-06-24T10:15:00.000Z",
+      "endsAt": "2026-06-24T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "39262615",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-24T10:30:00.000Z",
@@ -51178,6 +54166,18 @@
       "inPerson": true
     },
     {
+      "id": "38141713",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-06-25T04:45:00.000Z",
+      "endsAt": "2026-06-25T05:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 18,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
       "id": "35967856",
       "sessionName": "CHALLENGE (45') ",
       "startsAt": "2026-06-25T04:45:00.000Z",
@@ -51187,6 +54187,18 @@
       "ticketsSold": 7,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38141725",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-06-25T05:45:00.000Z",
+      "endsAt": "2026-06-25T06:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 10,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
       "inPerson": true
     },
     {
@@ -51208,6 +54220,18 @@
       "endsAt": "2026-06-25T07:45:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35971148",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-25T10:15:00.000Z",
+      "endsAt": "2026-06-25T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -51262,6 +54286,42 @@
       "inPerson": true
     },
     {
+      "id": "38136246",
+      "sessionName": "RUN & RECOVER",
+      "startsAt": "2026-06-25T18:00:00.000Z",
+      "endsAt": "2026-06-25T20:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 26,
+      "ticketsSold": 10,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37515420",
+      "sessionName": "RED",
+      "startsAt": "2026-06-26T04:45:00.000Z",
+      "endsAt": "2026-06-26T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35967894",
+      "sessionName": "RED",
+      "startsAt": "2026-06-26T06:00:00.000Z",
+      "endsAt": "2026-06-26T06:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971383",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-06-26T07:00:00.000Z",
@@ -51281,6 +54341,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "35969265",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-26T10:15:00.000Z",
+      "endsAt": "2026-06-26T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -51550,6 +54622,18 @@
       "inPerson": true
     },
     {
+      "id": "36121782",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-06-28T16:30:00.000Z",
+      "endsAt": "2026-06-28T17:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 9,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38973256",
       "sessionName": "JOURNEY INWARD",
       "startsAt": "2026-06-28T18:15:00.000Z",
@@ -51569,6 +54653,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38968972",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-06-29T10:15:00.000Z",
+      "endsAt": "2026-06-29T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -51634,6 +54730,18 @@
       "inPerson": true
     },
     {
+      "id": "35970203",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-06-29T19:00:00.000Z",
+      "endsAt": "2026-06-29T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 12,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35970268",
       "sessionName": "ENERGIZE (45') ",
       "startsAt": "2026-06-30T04:45:00.000Z",
@@ -51670,6 +54778,42 @@
       "inPerson": true
     },
     {
+      "id": "35970284",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-06-30T08:15:00.000Z",
+      "endsAt": "2026-06-30T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38970146",
+      "sessionName": "RED",
+      "startsAt": "2026-06-30T09:45:00.000Z",
+      "endsAt": "2026-06-30T10:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 8,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38970172",
+      "sessionName": "RED",
+      "startsAt": "2026-06-30T10:45:00.000Z",
+      "endsAt": "2026-06-30T11:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "35971468",
       "sessionName": "SOUND IMMERSION",
       "startsAt": "2026-06-30T16:15:00.000Z",
@@ -51701,6 +54845,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 7,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38625703",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-01T04:45:00.000Z",
+      "endsAt": "2026-07-01T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 6,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -51790,6 +54946,30 @@
       "inPerson": true
     },
     {
+      "id": "38141714",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-07-02T04:45:00.000Z",
+      "endsAt": "2026-07-02T05:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
+      "id": "38141726",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-07-02T05:45:00.000Z",
+      "endsAt": "2026-07-02T06:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
       "id": "38081297",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-02T06:00:00.000Z",
@@ -51809,6 +54989,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38081536",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-02T10:15:00.000Z",
+      "endsAt": "2026-07-02T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 6,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -51862,6 +55054,18 @@
       "inPerson": true
     },
     {
+      "id": "38136248",
+      "sessionName": "RUN & RECOVER",
+      "startsAt": "2026-07-02T17:00:00.000Z",
+      "endsAt": "2026-07-02T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 26,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38082508",
       "sessionName": "JOURNEY INWARD",
       "startsAt": "2026-07-02T18:00:00.000Z",
@@ -51880,6 +55084,30 @@
       "endsAt": "2026-07-02T20:45:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37515421",
+      "sessionName": "RED",
+      "startsAt": "2026-07-03T04:45:00.000Z",
+      "endsAt": "2026-07-03T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38991858",
+      "sessionName": "RED",
+      "startsAt": "2026-07-03T06:00:00.000Z",
+      "endsAt": "2026-07-03T06:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -51905,6 +55133,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38084112",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-03T10:15:00.000Z",
+      "endsAt": "2026-07-03T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 8,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -52162,6 +55402,18 @@
       "inPerson": true
     },
     {
+      "id": "38528206",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-07-05T18:15:00.000Z",
+      "endsAt": "2026-07-05T19:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 18,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38528503",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-05T19:45:00.000Z",
@@ -52169,6 +55421,18 @@
       "durationMinutes": 75,
       "capacity": 10,
       "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38968973",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-06T10:15:00.000Z",
+      "endsAt": "2026-07-06T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 9,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -52210,6 +55474,30 @@
       "inPerson": true
     },
     {
+      "id": "38528797",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-07-06T19:00:00.000Z",
+      "endsAt": "2026-07-06T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38528807",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-07T04:45:00.000Z",
+      "endsAt": "2026-07-07T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38534839",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-07T06:00:00.000Z",
@@ -52234,6 +55522,18 @@
       "inPerson": true
     },
     {
+      "id": "38534858",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-07-07T08:15:00.000Z",
+      "endsAt": "2026-07-07T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38970147",
       "sessionName": "ATHLETIC RECOVERY (PRIVATE)",
       "startsAt": "2026-07-07T09:45:00.000Z",
@@ -52252,6 +55552,18 @@
       "endsAt": "2026-07-07T12:30:00.000Z",
       "durationMinutes": 75,
       "capacity": 12,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38535442",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-07-07T13:00:00.000Z",
+      "endsAt": "2026-07-07T14:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 0,
       "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -52288,6 +55600,18 @@
       "endsAt": "2026-07-07T20:45:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 7,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "39542297",
+      "sessionName": "EXTRA COLD",
+      "startsAt": "2026-07-08T04:45:00.000Z",
+      "endsAt": "2026-07-08T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
       "ticketsSold": 7,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -52390,6 +55714,18 @@
       "inPerson": true
     },
     {
+      "id": "38141715",
+      "sessionName": "SUNRISE ICE BATH CLUB (OUTDOOR)",
+      "startsAt": "2026-07-09T04:45:00.000Z",
+      "endsAt": "2026-07-09T05:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
       "id": "38081260",
       "sessionName": "CHALLENGE",
       "startsAt": "2026-07-09T04:45:00.000Z",
@@ -52399,6 +55735,18 @@
       "ticketsSold": 10,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "39430443",
+      "sessionName": "SUNRISE ICE BATH CLUB (OUTDOOR)",
+      "startsAt": "2026-07-09T05:45:00.000Z",
+      "endsAt": "2026-07-09T06:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 26,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
       "inPerson": true
     },
     {
@@ -52420,6 +55768,18 @@
       "endsAt": "2026-07-09T07:45:00.000Z",
       "durationMinutes": 75,
       "capacity": 15,
+      "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38081537",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-09T10:15:00.000Z",
+      "endsAt": "2026-07-09T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
       "ticketsSold": 4,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
@@ -52462,6 +55822,18 @@
       "inPerson": true
     },
     {
+      "id": "38082509",
+      "sessionName": "AMONG WOMEN",
+      "startsAt": "2026-07-09T18:00:00.000Z",
+      "endsAt": "2026-07-09T19:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 8,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "39431507",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-09T19:30:00.000Z",
@@ -52469,6 +55841,30 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37515422",
+      "sessionName": "RED",
+      "startsAt": "2026-07-10T04:45:00.000Z",
+      "endsAt": "2026-07-10T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38083858",
+      "sessionName": "RED",
+      "startsAt": "2026-07-10T06:00:00.000Z",
+      "endsAt": "2026-07-10T06:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 2,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -52493,6 +55889,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "39542424",
+      "sessionName": "EXTRA COLD",
+      "startsAt": "2026-07-10T10:15:00.000Z",
+      "endsAt": "2026-07-10T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 13,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -52565,6 +55973,18 @@
       "durationMinutes": 60,
       "capacity": 26,
       "ticketsSold": 13,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "39558721",
+      "sessionName": "RUN & RECOVER (10KM)",
+      "startsAt": "2026-07-11T07:30:00.000Z",
+      "endsAt": "2026-07-11T10:00:00.000Z",
+      "durationMinutes": 150,
+      "capacity": 26,
+      "ticketsSold": 10,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -52798,6 +56218,18 @@
       "inPerson": true
     },
     {
+      "id": "38968974",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-13T10:15:00.000Z",
+      "endsAt": "2026-07-13T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38969103",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-13T11:30:00.000Z",
@@ -52834,6 +56266,30 @@
       "inPerson": true
     },
     {
+      "id": "38528798",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-07-13T19:00:00.000Z",
+      "endsAt": "2026-07-13T20:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 11,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38528808",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-14T04:45:00.000Z",
+      "endsAt": "2026-07-14T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38534840",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-14T06:00:00.000Z",
@@ -52853,6 +56309,54 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38534859",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-07-14T08:15:00.000Z",
+      "endsAt": "2026-07-14T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38970148",
+      "sessionName": "RED",
+      "startsAt": "2026-07-14T09:45:00.000Z",
+      "endsAt": "2026-07-14T10:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38970174",
+      "sessionName": "RED",
+      "startsAt": "2026-07-14T10:45:00.000Z",
+      "endsAt": "2026-07-14T11:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38535443",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-07-14T13:00:00.000Z",
+      "endsAt": "2026-07-14T14:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 0,
+      "ticketsSold": 0,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -52889,6 +56393,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 4,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "39542298",
+      "sessionName": "EXTRA COLD",
+      "startsAt": "2026-07-15T04:45:00.000Z",
+      "endsAt": "2026-07-15T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 12,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -53014,6 +56530,30 @@
       "inPerson": true
     },
     {
+      "id": "38141716",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-07-16T04:45:00.000Z",
+      "endsAt": "2026-07-16T05:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 16,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
+      "id": "38141728",
+      "sessionName": "SUNRISE ICE BATH CLUB (SAMIGO)",
+      "startsAt": "2026-07-16T05:45:00.000Z",
+      "endsAt": "2026-07-16T06:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "Samigo Sport Club",
+      "inPerson": true
+    },
+    {
       "id": "38081299",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-16T06:00:00.000Z",
@@ -53033,6 +56573,18 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38081538",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-16T10:15:00.000Z",
+      "endsAt": "2026-07-16T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 14,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -53074,6 +56626,18 @@
       "inPerson": true
     },
     {
+      "id": "38136249",
+      "sessionName": "RUN & RECOVER",
+      "startsAt": "2026-07-16T17:00:00.000Z",
+      "endsAt": "2026-07-16T19:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 26,
+      "ticketsSold": 10,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38082510",
       "sessionName": "JOURNEY INWARD",
       "startsAt": "2026-07-16T18:00:00.000Z",
@@ -53093,6 +56657,30 @@
       "durationMinutes": 75,
       "capacity": 15,
       "ticketsSold": 6,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "37515423",
+      "sessionName": "RED",
+      "startsAt": "2026-07-17T04:45:00.000Z",
+      "endsAt": "2026-07-17T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38083859",
+      "sessionName": "RED",
+      "startsAt": "2026-07-17T06:00:00.000Z",
+      "endsAt": "2026-07-17T06:45:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 4,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -53374,6 +56962,18 @@
       "inPerson": true
     },
     {
+      "id": "38528208",
+      "sessionName": "STILLNESS",
+      "startsAt": "2026-07-19T18:15:00.000Z",
+      "endsAt": "2026-07-19T19:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 26,
+      "ticketsSold": 9,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38528505",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-19T19:45:00.000Z",
@@ -53381,6 +56981,18 @@
       "durationMinutes": 75,
       "capacity": 10,
       "ticketsSold": 3,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38968975",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-20T10:15:00.000Z",
+      "endsAt": "2026-07-20T11:00:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 9,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -53422,6 +57034,30 @@
       "inPerson": true
     },
     {
+      "id": "38528799",
+      "sessionName": "KEEN LAB",
+      "startsAt": "2026-07-20T19:00:00.000Z",
+      "endsAt": "2026-07-20T20:15:00.000Z",
+      "durationMinutes": 75,
+      "capacity": 26,
+      "ticketsSold": 20,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38528809",
+      "sessionName": "ENERGIZE  (45')",
+      "startsAt": "2026-07-21T04:45:00.000Z",
+      "endsAt": "2026-07-21T05:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 16,
+      "ticketsSold": 5,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38534841",
       "sessionName": "SOLO JOURNEY",
       "startsAt": "2026-07-21T06:00:00.000Z",
@@ -53446,13 +57082,61 @@
       "inPerson": true
     },
     {
+      "id": "38534860",
+      "sessionName": "MAMAKLUB x KEEN",
+      "startsAt": "2026-07-21T08:15:00.000Z",
+      "endsAt": "2026-07-21T09:15:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 3,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38970149",
+      "sessionName": "RED",
+      "startsAt": "2026-07-21T09:45:00.000Z",
+      "endsAt": "2026-07-21T10:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38970175",
+      "sessionName": "RED",
+      "startsAt": "2026-07-21T10:45:00.000Z",
+      "endsAt": "2026-07-21T11:30:00.000Z",
+      "durationMinutes": 45,
+      "capacity": 12,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
+      "id": "38535444",
+      "sessionName": "POSTNATAL RECOVERY BY MAMAKLUB",
+      "startsAt": "2026-07-21T13:00:00.000Z",
+      "endsAt": "2026-07-21T14:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 0,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 27,
+      "location": "KEEN Zurich",
+      "inPerson": true
+    },
+    {
       "id": "38535453",
       "sessionName": "SOUND IMMERSION",
       "startsAt": "2026-07-21T16:15:00.000Z",
       "endsAt": "2026-07-21T17:15:00.000Z",
       "durationMinutes": 60,
       "capacity": 26,
-      "ticketsSold": 10,
+      "ticketsSold": 11,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
@@ -53464,7 +57148,7 @@
       "endsAt": "2026-07-21T19:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 26,
-      "ticketsSold": 12,
+      "ticketsSold": 13,
       "fixedTicketPrice": 27,
       "location": "KEEN Zurich",
       "inPerson": true
