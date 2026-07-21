@@ -19,6 +19,7 @@ import portalData from '@/data/venues/portal-portal.json';
 import xtraClubsData from '@/data/venues/xtraclubs-xtraclubs.json';
 import wellnessSocialData from '@/data/venues/wellnesssocial-glofox.json';
 import southYarraData from '@/data/venues/190198-momence.json';
+import keenWellbeingData from '@/data/venues/keenwellbeing-bsport.json';
 
 export interface VenueComparisonEntry {
   venueId: string;
@@ -48,6 +49,7 @@ const VENUE_DATA_MAP: Record<string, VenueDataFile> = {
   portal: portalData as unknown as VenueDataFile,
   xtraclubs: xtraClubsData as unknown as VenueDataFile,
   wellnesssocial: wellnessSocialData as unknown as VenueDataFile,
+  keenwellbeing: keenWellbeingData as unknown as VenueDataFile,
 };
 
 // Inner Studio sub-locations that get merged into the parent

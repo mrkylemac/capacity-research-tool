@@ -20,7 +20,7 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana' | 'bsport';
 
 export interface VenuePricingTier {
   label: string;
@@ -87,6 +87,18 @@ export const VENUES: VenueConfig[] = [
   { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
   { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },
+  {
+    id: 'keenwellbeing', name: 'KEEN Wellbeing', platform: 'bsport', location: 'Zurich', timezone: 'Europe/Zurich',
+    pricing: {
+      tiers: [
+        { label: 'Journeys (group & solo)', casualRate: 27, pack10PerVisit: 27 },
+      ],
+      memberships: [
+        { label: 'Unlimited Membership', price: 'CHF 249 / month', description: 'Unlimited group classes and solo journeys' },
+      ],
+      note: 'Bookings are credit-based on bsport; CHF rates from keenwellbeing.com (10-pack CHF 270). Summer special: 10-pack CHF 200, Unlimited CHF 180/month.',
+    },
+  },
 ];
 
 // Glofox configuration
@@ -152,6 +164,11 @@ export const TRYBE_CONFIG = {
     ],
     name: 'Sense of Self',
     timezone: 'Australia/Melbourne',
+    // TryBe rooms ("Bathhouse", "Last Minute BH", "Quiet Morning Bathhouse") are
+    // booking channels for the same physical venue, not separate locations.
+    // All sessions are labelled with this single location so the report
+    // aggregates them into one total.
+    locationName: 'Collingwood',
     // TryBe only exposes upcoming/current sessions — past sessions are not accessible
     // via the public API. The fetcher merges newly fetched sessions with previously
     // cached past sessions to build up history over time.
@@ -294,6 +311,82 @@ export const ACUITY_CONFIG: Record<string, AcuityConfig> = {
 export function getAcuityConfig(hostId: string): AcuityConfig {
   const cfg = ACUITY_CONFIG[hostId];
   if (!cfg) throw new Error(`No Acuity config for hostId "${hostId}"`);
+  return cfg;
+}
+
+// bsport configuration (public booking API — no auth required)
+//
+// KEEN Wellbeing (Zurich) runs on bsport (bsport.io). The public offer endpoint
+// exposes full session history (back to 2024-11) including capacity (`effectif`)
+// and booking counts (`validated_booking_count`) — fetched via date-range
+// pagination like Momence.
+//
+// Pricing on bsport is credit-based (1 credit per session), so `sessionPriceChf`
+// carries a static per-visit rate derived from their website (10-pack CHF 270).
+export interface BsportConfig {
+  baseUrl: string;
+  companyId: number;
+  name: string;
+  timezone: string;
+  /** Earliest session date to fetch (first flagship session). */
+  operatingSince: string;
+  /** Static per-visit price in CHF (bsport bookings are credit-based). */
+  sessionPriceChf: number;
+  /**
+   * meta_activity IDs to include (the venue's own schedule tabs plus retired
+   * predecessors). Fetching without this filter would pull in corporate events
+   * and partner pop-ups.
+   */
+  activityIds: number[];
+  /** establishment ID → display name, used as the session `location`. */
+  establishments: Record<number, string>;
+}
+
+export const BSPORT_CONFIG: Record<string, BsportConfig> = {
+  keenwellbeing: {
+    baseUrl: 'https://api.production.bsport.io/book/v1',
+    companyId: 3385,
+    name: 'KEEN Wellbeing',
+    timezone: 'Europe/Zurich',
+    operatingSince: '2024-11-23',
+    sessionPriceChf: 27,
+    activityIds: [
+      // Group journeys (schedule widget tab 1)
+      151228, // ENERGIZE
+      151229, // RELAX
+      151230, // RECHARGE (retired)
+      151231, // CHALLENGE
+      151232, // ATHLETIC RECOVERY
+      151233, // SOUND IMMERSION
+      163664, // Mindful Run & Athletic Recovery with On
+      195797, // HEAT + BEAT
+      195799, // JOURNEY INWARD
+      195800, // DEEP BREATH
+      212011, // UTOQUAI: DEEP BREATH
+      // Solo journeys (schedule widget tab 2)
+      151234, // SOLO JOURNEY (90°C) (retired)
+      152219, // SOLO JOURNEY (60°C | 40%) (retired)
+      165366, // SOLO JOURNEY
+      165367, // SOLO JOURNEY (60°C | 40%)
+      209370, // SOCIAL SOLO JOURNEY
+    ],
+    establishments: {
+      11743: 'KEEN Zurich',
+      12232: 'MBO: KEEN Wellbeing',
+      13598: 'KEEN Flagship: Treatment Room',
+      14620: 'Josefwiese (Outdoor)',
+      14621: 'Bootsvermietung Enge',
+      17048: 'Sauna Utoquai',
+      17851: 'Indigo Fitness Club Zürich',
+      19791: 'Secret Location',
+      20188: 'Samigo Sport Club',
+    },
+  },
+};
+
+export function getBsportConfig(hostId: string): BsportConfig {
+  const cfg = BSPORT_CONFIG[hostId];
+  if (!cfg) throw new Error(`No bsport config for hostId "${hostId}"`);
   return cfg;
 }
 

@@ -4,7 +4,7 @@ This file provides context for AI assistants working on the Slow Folk Sauna Capa
 
 ## Project Overview
 
-A Next.js application that compares real venue booking data against financial models. It pulls session data from multiple venue booking platforms (Momence, Glofox, MarianaTeK, TryBe, Acuity, Portal, Xtra Clubs) and provides KPI metrics for sauna/wellness venues.
+A Next.js application that compares real venue booking data against financial models. It pulls session data from multiple venue booking platforms (Momence, Glofox, MarianaTeK, TryBe, Acuity, Portal, Xtra Clubs, Hapana, bsport) and provides KPI metrics for sauna/wellness venues.
 
 The project has three phases:
 - **Phase 1 (in progress):** CapEx Tracker — budget tracking, burn rate, variance analysis
@@ -35,6 +35,7 @@ yarn test:watch       # Run tests in watch mode
 yarn fetch-venues     # Bulk fetch all venue data
 yarn poll:acuity      # Poll Acuity venues (used by GitHub Actions)
 yarn poll:trybe       # Poll TryBe venues (used by GitHub Actions)
+yarn poll:bsport      # Refresh bsport venues (full-history refetch)
 yarn refresh:glofox   # Refresh Glofox guest tokens
 yarn cache:sync       # Sync venue cache from origin/main
 ```

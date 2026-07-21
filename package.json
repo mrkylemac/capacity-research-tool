@@ -17,6 +17,7 @@
     "generate:references": "tsx scripts/generate-venue-references.ts",
     "poll:acuity": "tsx scripts/poll-acuity.ts",
     "poll:trybe": "tsx scripts/poll-trybe.ts",
+    "poll:bsport": "tsx scripts/poll-bsport.ts",
     "refresh:glofox": "tsx scripts/refresh-glofox-tokens.ts",
     "cache:sync": "git fetch origin main && git checkout origin/main -- src/data/venues/",
     "cache:setup": "git config merge.ours.driver true",
