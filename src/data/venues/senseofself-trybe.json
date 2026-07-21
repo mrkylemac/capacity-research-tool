@@ -4,6 +4,7 @@
   "platform": "trybe",
   "venueName": "Sense of Self",
   "dateRange": {
+<<<<<<< Updated upstream
     "from": "2026-03-04T14:30:00+11:00",
     "to": "2026-10-17T20:45:00+11:00"
   },
@@ -107447,6 +107448,25 @@
     }
   ],
   "metrics": null,
+=======
+    "from": "2024-07-21",
+    "to": "2026-07-21"
+  },
+  "cachedAt": "2026-07-21T07:55:08.107Z",
+  "sessions": [],
+  "metrics": {
+    "totalSessions": 0,
+    "totalTicketsSold": 0,
+    "totalCapacity": 0,
+    "avgUtilisation": 0,
+    "totalRevenue": 0,
+    "avgRevenuePerVisit": 0,
+    "avgRevenuePerSession": 0,
+    "sessionsPerDay": 0,
+    "sessionsPerWeek": 0,
+    "operatingSince": "-"
+  },
+>>>>>>> Stashed changes
   "monthlyData": [],
   "venueConfig": null,
   "hostInfo": null
