@@ -88,14 +88,12 @@ export function useSessions() {
     const sessions: MomenceSession[] = [...firstResponse.sessions];
     onProgress(sessions.length);
 
-    const apiTotalPages = firstResponse.totalPages;
-    const totalPagesFromAPI = apiTotalPages > 1
-      ? Math.min(apiTotalPages, API_CONFIG.maxPages)
-      : API_CONFIG.maxPages;
-
+    // Don't trust the API's totalPages — its pagination metadata has changed shape
+    // before and silently reported 1. Keep fetching while pages come back full;
+    // a short page is the real end. maxPages is the hard cap.
     if (firstResponse.sessions.length === API_CONFIG.pageSize) {
-      for (let batchStart = 2; batchStart <= totalPagesFromAPI; batchStart += API_CONFIG.batchSize) {
-        const batchEnd = Math.min(batchStart + API_CONFIG.batchSize - 1, totalPagesFromAPI);
+      for (let batchStart = 2; batchStart <= API_CONFIG.maxPages; batchStart += API_CONFIG.batchSize) {
+        const batchEnd = Math.min(batchStart + API_CONFIG.batchSize - 1, API_CONFIG.maxPages);
         const pageNumbers = Array.from({ length: batchEnd - batchStart + 1 }, (_, i) => batchStart + i);
 
         const batchResults = await Promise.all(

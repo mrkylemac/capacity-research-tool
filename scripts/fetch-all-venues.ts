@@ -153,7 +153,9 @@ async function fetchAllMomenceSessions(venue: VenueConfig, from: Date, to: Date)
     all.push(...response.sessions);
     console.log(`  Momence page ${page}/${response.totalPages}: ${response.sessions.length} sessions (total: ${all.length})`);
 
-    if (response.sessions.length < pageSize || page >= response.totalPages) break;
+    // Keep paginating while pages come back full — the API's totalPages has been
+    // unreliable across response-shape changes; a short page is the real end.
+    if (response.sessions.length < pageSize) break;
     page++;
   }
 
@@ -223,14 +225,26 @@ async function processVenue(venue: VenueConfig): Promise<void> {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
+// Platforms this script can actually fetch. Venues on any other platform are
+// skipped entirely — writing a cache file for them would clobber the good,
+// separately-polled caches (trybe/acuity/bsport/hapana/portal/xtraclubs) with
+// empty session lists.
+const HANDLED_PLATFORMS = new Set(['momence', 'glofox', 'marianatek']);
+
 async function main() {
   console.log('=== Fetching all venue data ===');
   console.log(`Date window: ${DATA_WINDOW_YEARS} years back to today\n`);
 
   let ok = 0;
   let failed = 0;
+  let skipped = 0;
 
   for (const venue of VENUES) {
+    if (!HANDLED_PLATFORMS.has(venue.platform)) {
+      console.log(`\n── ${venue.name} (${venue.platform}) ── skipped (refreshed by its own poller, not this script)`);
+      skipped++;
+      continue;
+    }
     try {
       await processVenue(venue);
       ok++;
@@ -240,7 +254,7 @@ async function main() {
     }
   }
 
-  console.log(`\n=== Done: ${ok} succeeded, ${failed} failed ===`);
+  console.log(`\n=== Done: ${ok} succeeded, ${failed} failed, ${skipped} skipped (other platforms) ===`);
   if (failed > 0) process.exit(1);
 }
 

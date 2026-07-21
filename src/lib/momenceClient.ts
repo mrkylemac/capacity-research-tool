@@ -101,14 +101,25 @@ class MomenceClient {
    * They are filtered out by sanitizeSessions() after all pages are fetched.
    */
   private transformResponse(data: any, params: SessionsQueryParams): MomenceSessionsResponse {
+    // Pagination metadata: current API nests it under `pagination` ({page, pageSize, totalCount});
+    // older shapes carried top-level `page`/`pageSize`/`total`/`totalPages`.
+    const paginate = (items: unknown[]) => {
+      const pg = data.pagination ?? {};
+      const pageSize = pg.pageSize || data.pageSize || params.pageSize || API_CONFIG.pageSize;
+      const totalCount = pg.totalCount ?? data.total ?? data.totalCount ?? items.length;
+      return {
+        totalCount,
+        page: (pg.page ?? data.page ?? 0) + 1,
+        pageSize,
+        totalPages: data.totalPages || Math.max(1, Math.ceil(totalCount / pageSize)),
+      };
+    };
+
     // Handle response with 'payload' array (Momence readonly API format)
     if (data.payload && Array.isArray(data.payload)) {
       return {
         sessions: data.payload.map(this.transformSession),
-        totalCount: data.total || data.payload.length,
-        page: (data.page ?? 0) + 1,
-        pageSize: data.pageSize || params.pageSize || API_CONFIG.pageSize,
-        totalPages: data.totalPages || Math.ceil((data.total || data.payload.length) / (params.pageSize || API_CONFIG.pageSize)),
+        ...paginate(data.payload),
       };
     }
 
@@ -116,10 +127,7 @@ class MomenceClient {
     if (data.data && Array.isArray(data.data)) {
       return {
         sessions: data.data.map(this.transformSession),
-        totalCount: data.total || data.data.length,
-        page: (data.page || 0) + 1,
-        pageSize: data.pageSize || params.pageSize || API_CONFIG.pageSize,
-        totalPages: data.totalPages || Math.ceil((data.total || data.data.length) / (params.pageSize || API_CONFIG.pageSize)),
+        ...paginate(data.data),
       };
     }
 
@@ -127,10 +135,7 @@ class MomenceClient {
     if (data.sessions && Array.isArray(data.sessions)) {
       return {
         sessions: data.sessions.map(this.transformSession),
-        totalCount: data.total || data.totalCount || data.sessions.length,
-        page: (data.page || 0) + 1,
-        pageSize: data.pageSize || params.pageSize || API_CONFIG.pageSize,
-        totalPages: data.totalPages || Math.ceil((data.total || data.sessions.length) / (params.pageSize || API_CONFIG.pageSize)),
+        ...paginate(data.sessions),
       };
     }
 
