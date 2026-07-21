@@ -148,13 +148,11 @@ function DataDensityCaption({ metrics }: { metrics: BenchmarkMetrics }) {
 function SnapshotSection({
   sessions,
   metrics,
-  monthlyData,
   period,
   platform,
 }: {
   sessions: MomenceSession[];
   metrics: BenchmarkMetrics;
-  monthlyData: MonthlyData[];
   period: string;
   platform?: string;
 }) {
@@ -590,7 +588,6 @@ interface ReportSectionsProps {
   sessions: MomenceSession[];
   metrics: BenchmarkMetrics;
   monthlyData: MonthlyData[];
-  allMonthlyData: MonthlyData[];
   period: string;
   platform?: string;
   hostId?: string;
@@ -600,7 +597,6 @@ export function ReportSections({
   sessions,
   metrics,
   monthlyData,
-  allMonthlyData,
   period,
   platform,
   hostId,
@@ -608,7 +604,7 @@ export function ReportSections({
   return (
     <div className="flex flex-col gap-5 sm:gap-8 mb-12">
       <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '0ms' }}>
-        <SnapshotSection sessions={sessions} metrics={metrics} monthlyData={monthlyData} period={period} platform={platform} />
+        <SnapshotSection sessions={sessions} metrics={metrics} period={period} platform={platform} />
       </div>
       <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '60ms' }}>
         <CapacitySection metrics={metrics} monthlyData={monthlyData} />

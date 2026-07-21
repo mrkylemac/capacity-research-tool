@@ -8,6 +8,7 @@ import { ReportSkeleton, ReportCardsSkeleton } from '@/components/ReportSkeleton
 import { SessionTicker } from '@/components/SessionTicker';
 import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics, checkMetricInvariants } from '@/lib/benchmarkMetrics';
+import { calculateMonthlyData } from '@/lib/metricsCalculator';
 import {
   getCachedEntry,
   getCacheKey,
@@ -454,24 +455,6 @@ export function ReportClient() {
     [normalizedNameMap],
   );
 
-  const allVenueMonthlyData = useMemo<MonthlyData[]>(() => {
-    if (!entry?.hostId) return entry?.monthlyData ?? [];
-    // Fall back to the in-memory entry when localStorage is empty (e.g. quota exceeded)
-    if (venueSearches.length === 0) return entry?.monthlyData ?? [];
-    const merged = new Map<string, MonthlyData>();
-    venueSearches.forEach(search => {
-      (search.monthlyData ?? []).forEach(m => {
-        const key = `${m.year}-${m.month}`;
-        const existing = merged.get(key);
-        if (!existing || m.ticketsSold > existing.ticketsSold) merged.set(key, m);
-      });
-    });
-    return Array.from(merged.values()).sort((a, b) => {
-      if (a.year !== b.year) return a.year - b.year;
-      return new Date(`${a.month} 1`).getMonth() - new Date(`${b.month} 1`).getMonth();
-    });
-  }, [entry?.hostId, entry?.monthlyData, venueSearches]);
-
   // ── Location filter (for multi-location venues like Portal) ──────────────
   // Location is resolved first so it scopes period options and session types.
   const allLocations = useMemo(() => {
@@ -569,25 +552,30 @@ export function ReportClient() {
     return locationFilteredSessions.filter(s => selectedTypes.has(getNorm(s)));
   }, [locationFilteredSessions, selectedTypes, getNorm]);
 
-  const filteredMonthlyData = useMemo(() => {
-    if (period === 'all') return allVenueMonthlyData;
-    return allVenueMonthlyData.filter(m => {
-      const monthDate = new Date(`${m.month} 1, ${m.year}`);
-      return monthDate >= periodRange.from && monthDate <= periodRange.to;
-    });
-  }, [allVenueMonthlyData, period, periodRange]);
-
-  const benchmarkMetrics = useMemo(() => {
-    // Eligible = past, non-cancelled. Excludes Momence's future bookings
-    // (which arrive with ticketsSold=0) but keeps historical empty sessions
-    // so "Seat occupancy" reflects seats offered, not seats sold among
-    // sessions that already had at least one booking.
+  // Eligible = past, non-cancelled. Excludes Momence's future bookings
+  // (which arrive with ticketsSold=0) but keeps historical empty sessions
+  // so "Seat occupancy" reflects seats offered, not seats sold among
+  // sessions that already had at least one booking. Shared by the headline
+  // metrics and the Capacity chart's monthly rollup so every number ties out.
+  const eligibleSessions = useMemo(() => {
     const nowMs = Date.now();
-    const eligible = filteredSessions.filter(
+    return filteredSessions.filter(
       s => new Date(s.startsAt).getTime() <= nowMs && !s.isCancelled,
     );
-    if (eligible.length === 0) return null;
-    const sorted = [...eligible].sort(
+  }, [filteredSessions]);
+
+  // Monthly rollup recomputed from the filtered session list so the Capacity
+  // chart is scoped to the selected location, period, and session types like
+  // every other number on the page. The cached venue-wide monthlyData merges
+  // all locations, which leaked other locations' history into the chart.
+  const filteredMonthlyData = useMemo<MonthlyData[]>(
+    () => calculateMonthlyData(eligibleSessions),
+    [eligibleSessions],
+  );
+
+  const benchmarkMetrics = useMemo(() => {
+    if (eligibleSessions.length === 0) return null;
+    const sorted = [...eligibleSessions].sort(
       (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
     );
     // Clamp the computation window to the operating window:
@@ -598,15 +586,15 @@ export function ReportClient() {
     // than first-active to last-active (which silently shortened the window).
     const firstEligibleMs = new Date(sorted[0].startsAt).getTime();
     const fromMs = Math.max(periodRange.from.getTime(), firstEligibleMs);
-    const toMs = Math.min(periodRange.to.getTime(), nowMs);
+    const toMs = Math.min(periodRange.to.getTime(), Date.now());
     return calculateBenchmarkMetrics(
-      eligible,
+      eligibleSessions,
       new Date(fromMs).toISOString(),
       new Date(toMs).toISOString(),
       undefined,
       apiVenueConfig?.timezone,
     );
-  }, [filteredSessions, periodRange, apiVenueConfig?.timezone]);
+  }, [eligibleSessions, periodRange, apiVenueConfig?.timezone]);
 
   // Derive label from the clamped computation window so any reader can
   // independently verify the displayed per-week and per-day rates.
@@ -874,7 +862,7 @@ export function ReportClient() {
                                 startTransition(() => {
                                   setSelectedTypes(prev => {
                                     const next = new Set(prev);
-                                    checked ? next.delete(t) : next.add(t);
+                                    if (checked) next.delete(t); else next.add(t);
                                     return next;
                                   });
                                 });
@@ -919,7 +907,7 @@ export function ReportClient() {
                                     startTransition(() => {
                                       setSelectedTypes(prev => {
                                         const next = new Set(prev);
-                                        checked ? next.delete(t) : next.add(t);
+                                        if (checked) next.delete(t); else next.add(t);
                                         return next;
                                       });
                                     });
@@ -958,7 +946,6 @@ export function ReportClient() {
             sessions={filteredSessions}
             metrics={benchmarkMetrics}
             monthlyData={filteredMonthlyData}
-            allMonthlyData={allVenueMonthlyData}
             period={period}
             platform={platform}
             hostId={hostId ?? entry?.hostId}

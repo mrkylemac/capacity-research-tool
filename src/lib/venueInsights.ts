@@ -325,33 +325,41 @@ export function computeMonthlyTrajectory(
   const fromDate = new Date(dateRange.from);
   const toDate = new Date(dateRange.to);
 
-  return sorted.map((m) => {
+  return sorted.flatMap((m) => {
     const monthDate = new Date(`${m.month} 1, ${m.year}`);
     const monthIdx = monthDate.getMonth();
     const monthYear = monthDate.getFullYear();
 
-    // Calendar boundaries of this month
-    const monthStart = new Date(monthYear, monthIdx, 1);
-    const monthEnd = new Date(monthYear, monthIdx + 1, 0);
+    // Calendar boundaries of this month in UTC — must match calculateMonthlyData,
+    // which buckets sessions by UTC month. Local-time boundaries would disagree
+    // with the buckets for any viewer offset from UTC, dropping edge-of-month
+    // sessions from the chart entirely.
+    const monthStart = new Date(Date.UTC(monthYear, monthIdx, 1));
+    const nextMonthStart = new Date(Date.UTC(monthYear, monthIdx + 1, 1));
 
-    // Partial by boundary: the filter cuts into the first or last calendar month
+    // Months with no overlap with the computation window are excluded, not
+    // just flagged — otherwise other locations' history and fully-future
+    // months render as real bars.
+    if (nextMonthStart <= fromDate || monthStart > toDate) return [];
+
+    // Partial by boundary: the window starts or ends inside this month
     const isPartialByBoundary =
-      (fromDate > monthStart && fromDate <= monthEnd) ||
-      (toDate >= monthStart && toDate < monthEnd);
+      (fromDate > monthStart && fromDate < nextMonthStart) ||
+      (toDate >= monthStart && toDate < nextMonthStart);
     const isPartialByHeuristic = isPartialMonth(m, monthlyData);
     const isPartial = isPartialByBoundary || isPartialByHeuristic;
 
     const occupancy = m.capacity > 0 ? m.ticketsSold / m.capacity : 0;
     const isLowData = isPartial || m.ticketsSold < (thresholds?.minVisitors ?? 50);
 
-    return {
+    return [{
       monthLabel: `${m.month.slice(0, 3)} '${String(m.year).slice(-2)}`,
       visitors: m.ticketsSold,
       seats: m.capacity,
       occupancy,
       isPartial,
       isLowData,
-    };
+    }];
   });
 }
 

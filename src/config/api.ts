@@ -111,7 +111,9 @@ export const GLOFOX_CONFIG = {
     namespace: 'lorebathingclub',
     name: 'Lore Bathing Club',
     timezone: 'America/New_York',
-    // Guest token — expires 2026-03-08
+    // Branch deactivated on Glofox (~June 2026): guest login returns "no active
+    // branch", so the weekly token refresh fails for lore and fetches 401.
+    // Reports serve the git-tracked cache (frozen at 2026-03-03).
     token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzgyODkxMjM1LCJpYXQiOjE3ODAyOTkyMzUsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoibG9yZWJhdGhpbmdjbHViIiwiYnJhbmNoX2lkIjoiNjdjNWViMDllZmI0Mjc3YjA2MDg0ZWI2IiwiZmlyc3RfbmFtZSI6Ikd1ZXN0IiwibGFzdF9uYW1lIjoiVXNlciIsInR5cGUiOiJHVUVTVCIsImlzU3VwZXJBZG1pbiI6ZmFsc2V9fQ.9LaCJTJI4LOk-Y_7HEyQMV46z89deXCX1K774VE8ViI',
     tokenExpiry: '2026-07-01',
     operatingSince: '2026-01-01',
@@ -229,6 +231,8 @@ export const PORTAL_CONFIG = {
   locations: [
     { wixLocationId: '09d22dbe-dae2-4847-b657-90cf03ea5e67', name: 'Denver', operatingSince: '2025-03-26' },
     { wixLocationId: '8ac6d40a-fbbb-4524-9959-33da8cdc67bc', name: 'Boulder', operatingSince: '2025-03-26' },
+    // This Wix record was renamed 'Lyons' Nov 2025 – mid-Jan 2026; sessions
+    // self-label via the API's per-item location.name, so both appear in data.
     { wixLocationId: '44897ca4-c829-4108-8929-60be0a91fe60', name: 'Bozeman', operatingSince: '2025-03-16' },
   ],
   // Minneapolis uses Glofox instead of the Wix booking API — fetched separately and merged

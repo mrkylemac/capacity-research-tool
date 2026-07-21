@@ -352,6 +352,29 @@ describe('computeMonthlyTrajectory', () => {
     const result = computeMonthlyTrajectory(months, { from: '2025-12-01', to: '2026-02-28' });
     expect(result[0].occupancy).toBe(0);
   });
+
+  it('excludes months entirely outside the date range', () => {
+    // Regression: venue-wide monthly data spans back to 2024, but the selected
+    // location only operated from Feb 2026 — earlier months must not render.
+    const months = [
+      makeMonth('July', 2024, { ticketsSold: 4000, capacity: 5800 }),
+      makeMonth('February', 2026, { ticketsSold: 1500, capacity: 3500 }),
+      makeMonth('March', 2026, { ticketsSold: 700, capacity: 1200 }),
+      makeMonth('August', 2026, { ticketsSold: 100, capacity: 900 }), // fully future
+    ];
+    const result = computeMonthlyTrajectory(months, { from: '2026-02-08', to: '2026-07-21' });
+    expect(result.map(r => r.monthLabel)).toEqual(["Feb '26", "Mar '26"]);
+  });
+
+  it('keeps a month that only partially overlaps the range start', () => {
+    const months = [
+      makeMonth('January', 2026, { ticketsSold: 200, capacity: 400 }),
+      makeMonth('February', 2026, { ticketsSold: 300, capacity: 400 }),
+    ];
+    const result = computeMonthlyTrajectory(months, { from: '2026-01-20', to: '2026-02-28' });
+    expect(result).toHaveLength(2);
+    expect(result[0].isPartial).toBe(true);
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -137,18 +137,20 @@ export async function fetchPortalSessions(
   console.log(`[${venueName}] Fetching ${tasks.length} day-location pairs across ${locations.length} locations`);
 
   let totalSoFar = 0;
-  const results = await mapConcurrent(tasks, 10, async ({ loc, date }) => {
+  const itemResults = await mapConcurrent(tasks, 10, async ({ loc, date }) => {
     const items = await fetchDay(baseUrl, loc.wixLocationId, date);
-    const sessions = items.map(toSession);
-    totalSoFar += sessions.length;
+    totalSoFar += items.length;
     onProgress?.(totalSoFar);
-    return sessions;
+    return items;
   });
 
-  // Only keep sessions whose API location.name matches a configured location
-  const allowedNames = new Set(locations.map(l => l.name));
-  const all = results.flat().filter(s => allowedNames.has(s.location));
-  console.log(`[${venueName}] Total: ${all.length} sessions (filtered to configured locations)`);
+  // Only keep sessions from configured location records, matched by Wix id —
+  // never by name: a single record can be renamed over time (Bozeman's record
+  // served as 'Lyons' from Nov 2025 to mid-Jan 2026), and each session's
+  // location.name is the authoritative label for where it actually ran.
+  const allowedIds = new Set(locations.map(l => l.wixLocationId));
+  const all = itemResults.flat().filter(i => allowedIds.has(i.location.id)).map(toSession);
+  console.log(`[${venueName}] Total: ${all.length} sessions (filtered to configured location ids)`);
 
   const { sessions, report } = sanitizeSessions(all);
   logDataQuality('Portal', report);

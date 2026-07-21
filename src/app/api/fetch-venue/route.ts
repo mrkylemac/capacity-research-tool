@@ -118,19 +118,51 @@ async function fetchAllGlofoxSessions(
   endDate: Date,
   onProgress?: (count: number) => void,
 ): Promise<MomenceSession[]> {
+  // Fetch in 60-day chunks. The events endpoint pages 100 items at a time and
+  // this fetcher stops at 100 pages, so a single multi-year window silently
+  // truncates at 10,000 events — sorted ascending, dropping the newest months.
+  const CHUNK_MS = 60 * 24 * 60 * 60 * 1000;
+  const seen = new Set<string>();
   const allEvents: GlofoxEvent[] = [];
-  let page = 1;
+  const cursor = new Date(startDate);
 
-  while (true) {
-    const response = await fetchGlofoxDirect(branchId, token, timezone, startDate, endDate, page, 100);
-    allEvents.push(...response.data);
-    onProgress?.(allEvents.length);
-    console.log(`[Glofox] Page ${page}: ${response.data.length} events (total: ${allEvents.length}/${response.total_count})`);
-    if (!response.has_more || page >= 100) break;
-    page++;
+  while (cursor < endDate) {
+    const chunkEnd = new Date(Math.min(endDate.getTime(), cursor.getTime() + CHUNK_MS));
+    let page = 1;
+    while (true) {
+      const response = await fetchGlofoxDirect(branchId, token, timezone, cursor, chunkEnd, page, 100);
+      for (const event of response.data) {
+        if (!seen.has(event._id)) {
+          seen.add(event._id);
+          allEvents.push(event);
+        }
+      }
+      onProgress?.(allEvents.length);
+      console.log(`[Glofox] ${cursor.toISOString().slice(0, 10)} → ${chunkEnd.toISOString().slice(0, 10)} page ${page}: ${response.data.length} events (total: ${allEvents.length})`);
+      if (!response.has_more) break;
+      if (page >= 100) {
+        console.warn(`[Glofox] Chunk ${cursor.toISOString().slice(0, 10)} → ${chunkEnd.toISOString().slice(0, 10)} hit the 100-page cap — events dropped; reduce CHUNK_MS`);
+        break;
+      }
+      page++;
+    }
+    cursor.setTime(chunkEnd.getTime());
   }
 
   return allEvents.map(glofoxEventToSession);
+}
+
+/**
+ * Retain cached past sessions the fresh fetch no longer returns (windows
+ * beyond API retention, renamed locations); fresh data wins by id.
+ */
+function mergeWithCachedPast(fresh: MomenceSession[], existing: MomenceSession[]): MomenceSession[] {
+  const freshIds = new Set(fresh.map(s => s.id));
+  const nowMs = Date.now();
+  const retained = existing.filter(
+    s => new Date(s.startsAt).getTime() < nowMs && !freshIds.has(s.id),
+  );
+  return [...retained, ...fresh].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 }
 
 // ── Mariana Tek server-side fetcher ──────────────────────────────────────────
@@ -355,10 +387,12 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
     try {
       if (platform === 'glofox') {
         const cfg = getGlofoxConfig(hostId);
-        sessions = await fetchAllGlofoxSessions(
+        const fresh = await fetchAllGlofoxSessions(
           cfg.branchId, glofoxToken!, cfg.timezone,
           new Date(cfg.operatingSince), toDate, onProgress,
         );
+        sessions = mergeWithCachedPast(fresh, existingSessions);
+        console.log(`[Glofox] Retaining ${sessions.length - fresh.length} cached past sessions alongside ${fresh.length} fresh`);
         venueName = cfg.name;
       } else if (platform === 'marianatek' && hostId === 'projectmood') {
         const cfg = MARIANATEK_CONFIG.projectMood;
@@ -401,6 +435,12 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
           }
           sessions.push(...glofoxSessions);
         }
+
+        // Renamed-period locations (Lyons) and dropped past windows would
+        // otherwise be erased by the full-replace cache write below.
+        const freshCount = sessions.length;
+        sessions = mergeWithCachedPast(sessions, existingSessions);
+        console.log(`[Portal] Retaining ${sessions.length - freshCount} cached past sessions alongside ${freshCount} fresh`);
 
         venueName = cfg.name;
       } else if (platform === 'xtraclubs' && hostId === 'xtraclubs') {
