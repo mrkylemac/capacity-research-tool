@@ -113,8 +113,11 @@ In `ReportSections.tsx`, the `SnapshotSection` accepts a `platform` prop and ren
 - Public API, no auth required (`api.production.bsport.io/book/v1/offer/`)
 - Full history available via `min_date`/`max_date` pagination (`page`/`page_size`)
 - `capacity = effectif`; `ticketsSold = validated_booking_count`
-- Filter by `activity__in` (meta-activity IDs) — an unfiltered fetch includes
-  corporate events and partner pop-ups
+- Include **all** public offers — venues rotate `meta_activity` IDs as they
+  introduce new class formats, so an activity allowlist silently drops new
+  classes over time. Exclude `manager_only` offers and any establishments
+  that are third-party booking mirrors (e.g. Mindbody placeholders with zero
+  bookings)
 - Pricing is credit-based; use a static per-visit rate from the venue's website
 - `establishment` ID maps to a location name (multi-location venues)
 

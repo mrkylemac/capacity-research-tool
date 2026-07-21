@@ -5,7 +5,7 @@
  * - Field mapping: effectif → capacity, validated_booking_count → ticketsSold,
  *   static config price, establishment ID → location name.
  * - name_override takes precedence over activity_name when set.
- * - manager_only offers are excluded.
+ * - manager_only offers and excluded establishments are dropped.
  * - Pagination: multiple pages are fetched via next_page and combined.
  * - Duplicate offer IDs across pages are deduplicated.
  * - Results are sorted by start time.
@@ -27,7 +27,7 @@ const TEST_CONFIG: BsportConfig = {
   timezone: 'Europe/Zurich',
   operatingSince: '2024-11-23',
   sessionPriceChf: 27,
-  activityIds: [165366, 195797],
+  excludedEstablishmentIds: [12232],
   establishments: { 11743: 'KEEN Zurich', 17048: 'Sauna Utoquai' },
 };
 
@@ -137,6 +137,18 @@ describe('filtering', () => {
     expect(sessions.map(s => s.id).sort()).toEqual(['1', '3']);
   });
 
+  it('excludes offers at excluded establishments (e.g. Mindbody mirrors)', async () => {
+    mockFetch.mockReturnValueOnce(offerResponse([
+      makeOffer({ id: 1 }),
+      makeOffer({ id: 2, establishment: 12232 }),
+      makeOffer({ id: 3, establishment: 17048 }),
+    ]));
+
+    const sessions = await fetchAllBsportSessions(TEST_CONFIG, FROM, TO);
+
+    expect(sessions.map(s => s.id).sort()).toEqual(['1', '3']);
+  });
+
   it('deduplicates offers repeated across pages', async () => {
     mockFetch
       .mockReturnValueOnce(offerResponse([makeOffer({ id: 1 }), makeOffer({ id: 2 })], 1, 2, 3))
@@ -163,14 +175,14 @@ describe('pagination', () => {
     expect(mockFetch).toHaveBeenCalledTimes(3);
   });
 
-  it('requests the configured company, activity filter and date range', async () => {
+  it('requests the configured company and date range without an activity filter', async () => {
     mockFetch.mockReturnValueOnce(offerResponse([]));
 
     await fetchAllBsportSessions(TEST_CONFIG, FROM, TO);
 
     const url = new URL(mockFetch.mock.calls[0][0] as string);
     expect(url.searchParams.get('company')).toBe('3385');
-    expect(url.searchParams.get('activity__in')).toBe('165366,195797');
+    expect(url.searchParams.get('activity__in')).toBeNull();
     expect(url.searchParams.get('min_date')).toBe('2024-11-23');
     expect(url.searchParams.get('max_date')).toBe('2026-07-21');
     expect(url.searchParams.get('only_future_strict')).toBe('false');

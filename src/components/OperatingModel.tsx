@@ -177,6 +177,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 function PricingTable({ pricing }: { pricing: VenuePricingConfig }) {
   const hasPackRates = pricing.tiers.some(t => t.pack5PerVisit || t.pack10PerVisit);
+  const currency = pricing.currency ?? '$';
 
   return (
     <div>
@@ -197,15 +198,15 @@ function PricingTable({ pricing }: { pricing: VenuePricingConfig }) {
             style={{ gridTemplateColumns: hasPackRates ? '1fr auto auto auto' : '1fr auto' }}
           >
             <span className="font-medium">{tier.label}</span>
-            <span className="tabular-nums text-right">${tier.casualRate}</span>
+            <span className="tabular-nums text-right">{currency}{tier.casualRate}</span>
             {hasPackRates && (
               <span className="tabular-nums text-right pl-4 text-muted-foreground">
-                {tier.pack5PerVisit ? `$${tier.pack5PerVisit}/visit` : '—'}
+                {tier.pack5PerVisit ? `${currency}${tier.pack5PerVisit}/visit` : '—'}
               </span>
             )}
             {hasPackRates && (
               <span className="tabular-nums text-right pl-4 text-muted-foreground">
-                {tier.pack10PerVisit ? `$${tier.pack10PerVisit}/visit` : '—'}
+                {tier.pack10PerVisit ? `${currency}${tier.pack10PerVisit}/visit` : '—'}
               </span>
             )}
           </div>
