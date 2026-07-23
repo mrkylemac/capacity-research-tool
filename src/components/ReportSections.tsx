@@ -84,7 +84,7 @@ function getGranularityConfig(period: string): { options: Granularity[]; default
   if (period === 'yesterday' || period === 'today') return { options: [], default: 'hourly' };
   if (period === '1w') return { options: [], default: 'daily' };
   if (period === '1m' || period === 'last1m') return { options: ['weekly', 'daily'], default: 'weekly' };
-  return { options: ['monthly', 'weekly', 'daily'], default: 'monthly' };
+  return { options: ['monthly', 'weekly', 'daily'], default: 'weekly' };
 }
 
 // ── Shared primitives ────────────────────────────────────────────────────────

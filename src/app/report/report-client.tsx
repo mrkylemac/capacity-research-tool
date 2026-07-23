@@ -834,7 +834,7 @@ export function ReportClient() {
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto min-w-[120px] max-w-[240px]"
+                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto w-full sm:w-auto sm:min-w-[120px] sm:max-w-[240px]"
                   >
                     <span className="truncate overflow-hidden w-full text-left">
                     {selectedTypes.size === 0
