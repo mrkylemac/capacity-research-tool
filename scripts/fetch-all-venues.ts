@@ -192,7 +192,7 @@ async function processVenue(venue: VenueConfig): Promise<void> {
       fromDate: fromStr,
       toDate: toStr,
       venueName: config.name,
-      classTypeFilter: config.classTypeFilter,
+      classTypeFilters: config.classTypeFilters,
     });
   } else {
     // Platforms handled by their own poll scripts (trybe, acuity, portal,

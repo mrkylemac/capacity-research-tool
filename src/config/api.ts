@@ -84,7 +84,10 @@ export const VENUES: VenueConfig[] = [
   { id: '40726', name: 'Panda Society', platform: 'momence', location: '', timezone: 'Australia/Melbourne' },
   { id: 'portal', name: 'PORTAL° Thermaculture', platform: 'portal', location: 'Colorado · Montana · Minnesota', timezone: 'America/Denver' },
   { id: 'xtraclubs', name: 'Xtra Clubs', platform: 'xtraclubs', location: 'Sydney', timezone: 'Australia/Sydney' },
-  { id: 'akari', name: 'Akari Saunas', platform: 'glofox', location: 'Brooklyn', timezone: 'America/New_York' },
+  // Akari uses Glofox for memberships only — no session bookings exist to
+  // report on. Its live feed is a Google Sheets occupancy snapshot (see
+  // GLOFOX_CONFIG.akariSaunas); re-enable if an occupancy view is built.
+  // { id: 'akari', name: 'Akari Saunas', platform: 'glofox', location: 'Brooklyn', timezone: 'America/New_York' },
   { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
@@ -182,6 +185,9 @@ export const TRYBE_CONFIG = {
 } as const;
 
 // Mariana Tek configuration (customer classes endpoint — no auth required)
+// Note: ids are per-tenant — Project Mood and Ærth both having 48717/48541 is
+// coincidence, not a copy-paste error (verified against each tenant's
+// /locations endpoint).
 export const MARIANATEK_CONFIG = {
   projectMood: {
     baseUrl: 'https://projectmood.marianatek.com/api/customer/v1',
@@ -189,7 +195,10 @@ export const MARIANATEK_CONFIG = {
     regionId: '48541',
     name: 'Project Mood',
     timezone: 'Australia/Melbourne',
-    classTypeFilter: 'Open Bathhouse',
+    // Bathhouse sessions only (gym/pilates/reformer classes excluded).
+    // 'Open Bathhouse' is the legacy title-case name; the tenant renamed to
+    // uppercase and split into BATHHOUSE + OPEN BATHHOUSE in 2026.
+    classTypeFilters: ['Open Bathhouse', 'OPEN BATHHOUSE', 'BATHHOUSE'],
   },
   aerthSaunas: {
     baseUrl: 'https://aerthsaunas.marianatek.com/api/customer/v1',
@@ -197,9 +206,27 @@ export const MARIANATEK_CONFIG = {
     regionId: '48541',
     name: 'Ærth Saunas',
     timezone: 'America/Vancouver',
-    classTypeFilter: 'Ærth Cycle (90 min)',
+    // Public group sessions; '90 min' is the legacy name of today's 1h 45min
+    // cycle, kept so historical fetches retain the old era.
+    classTypeFilters: [
+      'Ærth Cycle (90 min)',
+      'Ærth Cycle (1h 45 min)',
+      'Ærth Cycle (1h 45min) - Aufguss',
+      'Twilight Hour (60 min)',
+    ],
   },
 } as const;
+
+/** Resolve the Mariana Tek config entry for a given venue hostId. */
+export function getMarianaTekConfig(hostId: string) {
+  const map: Record<string, (typeof MARIANATEK_CONFIG)[keyof typeof MARIANATEK_CONFIG]> = {
+    projectmood: MARIANATEK_CONFIG.projectMood,
+    aerth: MARIANATEK_CONFIG.aerthSaunas,
+  };
+  const cfg = map[hostId];
+  if (!cfg) throw new Error(`No Mariana Tek config for hostId "${hostId}"`);
+  return cfg;
+}
 
 // Xtra Clubs configuration (public schedule API — no auth required)
 export const XTRA_CLUBS_CONFIG = {

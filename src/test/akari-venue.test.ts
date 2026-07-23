@@ -4,14 +4,11 @@ import { VENUES, GLOFOX_CONFIG } from '@/config/api';
 describe('Akari Saunas venue configuration', () => {
   const venue = VENUES.find(v => v.id === 'akari');
 
-  it('is listed in VENUES', () => {
-    expect(venue).toBeDefined();
-  });
-
-  it('has correct platform and location', () => {
-    expect(venue!.platform).toBe('glofox');
-    expect(venue!.location).toBe('Brooklyn');
-    expect(venue!.timezone).toBe('America/New_York');
+  // Akari's Glofox is memberships-only — no session bookings exist, so the
+  // venue is deliberately excluded from the report grid until an occupancy
+  // view (Google Sheets feed) is built.
+  it('is not listed in VENUES', () => {
+    expect(venue).toBeUndefined();
   });
 
   it('has a Glofox config entry', () => {
@@ -29,8 +26,7 @@ describe('Akari Saunas venue configuration', () => {
     expect(cfg.sheetsRange).toBe('SingleRow!A2:E2');
   });
 
-  it('venue name matches config', () => {
-    expect(venue!.name).toContain('Akari');
+  it('config name identifies the venue', () => {
     expect(GLOFOX_CONFIG.akariSaunas.name).toContain('Akari');
   });
 });

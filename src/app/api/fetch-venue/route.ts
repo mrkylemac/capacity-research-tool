@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getGlofoxConfig, MARIANATEK_CONFIG, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig } from '@/config/api';
+import { getGlofoxConfig, getMarianaTekConfig, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig } from '@/config/api';
 import { fetchPortalSessions } from '@/lib/portalClient';
+import { fetchMarianaTekSessions } from '@/lib/marianatekClient';
 import { fetchXtraClubsSessions } from '@/lib/xtraClient';
 import { fetchAllAcuitySessions } from '@/lib/acuityClient';
 import { fetchAllHapanaSessions } from '@/lib/hapanaClient';
@@ -165,80 +166,6 @@ function mergeWithCachedPast(fresh: MomenceSession[], existing: MomenceSession[]
   return [...retained, ...fresh].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 }
 
-// ── Mariana Tek server-side fetcher ──────────────────────────────────────────
-
-interface MTClass {
-  id: string;
-  name: string;
-  start_datetime: string;
-  capacity: number;
-  available_spot_count: number;
-  class_type?: { name: string; duration: number; is_live_stream: boolean };
-  classroom_name?: string;
-  location?: { name: string };
-  is_free_class: boolean;
-}
-
-interface MTResponse {
-  results: MTClass[];
-  meta?: { pagination?: { pages: number } };
-}
-
-async function fetchAllMarianaTekSessions(
-  baseUrl: string,
-  locationId: string,
-  regionId: string,
-  classTypeFilter: string,
-  fromDate: string,
-  toDate: string,
-  venueName: string,
-  onProgress?: (count: number) => void,
-): Promise<MomenceSession[]> {
-  const all: MomenceSession[] = [];
-  let page = 1;
-
-  while (true) {
-    const url = new URL(`${baseUrl}/classes`);
-    url.searchParams.set('min_start_date', fromDate);
-    url.searchParams.set('max_start_date', toDate);
-    url.searchParams.set('page_size', '500');
-    url.searchParams.set('page', page.toString());
-    url.searchParams.set('location', locationId);
-    url.searchParams.set('region', regionId);
-
-    const res = await fetch(url.toString(), { headers: { accept: 'application/json' } });
-    if (!res.ok) throw new Error(`Mariana Tek API: ${res.status} ${res.statusText}`);
-    const data: MTResponse = await res.json();
-
-    const filtered = (data.results ?? []).filter(c => c.class_type?.name === classTypeFilter);
-    for (const c of filtered) {
-      const start = new Date(c.start_datetime);
-      const durationMs = (c.class_type?.duration ?? 0) * 60 * 1000;
-      all.push({
-        id: c.id,
-        sessionName: c.name,
-        startsAt: start.toISOString(),
-        endsAt: new Date(start.getTime() + durationMs).toISOString(),
-        durationMinutes: c.class_type?.duration ?? 0,
-        capacity: c.capacity,
-        ticketsSold: Math.max(0, c.capacity - c.available_spot_count),
-        fixedTicketPrice: c.is_free_class ? 0 : 0,
-        location: c.location?.name ?? c.classroom_name ?? '',
-        inPerson: !(c.class_type?.is_live_stream ?? false),
-      });
-    }
-
-    onProgress?.(all.length);
-    console.log(`[${venueName}] Page ${page}: ${data.results?.length ?? 0} classes → ${filtered.length} "${classTypeFilter}" (total: ${all.length})`);
-
-    const pages = data.meta?.pagination?.pages ?? 1;
-    if (page >= pages || (data.results?.length ?? 0) === 0) break;
-    page++;
-  }
-
-  return all;
-}
-
 // ── TryBe server-side fetcher ─────────────────────────────────────────────────
 
 interface TBSession {
@@ -394,14 +321,26 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
         sessions = mergeWithCachedPast(fresh, existingSessions);
         console.log(`[Glofox] Retaining ${sessions.length - fresh.length} cached past sessions alongside ${fresh.length} fresh`);
         venueName = cfg.name;
-      } else if (platform === 'marianatek' && hostId === 'projectmood') {
-        const cfg = MARIANATEK_CONFIG.projectMood;
-        const from = fromDate.toISOString().split('T')[0];
-        const to = toDate.toISOString().split('T')[0];
-        sessions = await fetchAllMarianaTekSessions(
-          cfg.baseUrl, cfg.locationId, cfg.regionId, cfg.classTypeFilter,
-          from, to, cfg.name, onProgress,
-        );
+      } else if (platform === 'marianatek') {
+        const cfg = getMarianaTekConfig(hostId);
+        // Mariana Tek zeroes capacity/bookings on past classes for anonymous
+        // callers, so history can only be captured while classes are still
+        // bookable: fetch a month ahead, and let mergeWithCachedPast retain
+        // each snapshot once the classes have run (TryBe/Acuity pattern).
+        const mtTo = new Date(toDate);
+        mtTo.setDate(mtTo.getDate() + 30);
+        const fresh = await fetchMarianaTekSessions({
+          baseUrl: cfg.baseUrl,
+          locationId: cfg.locationId,
+          regionId: cfg.regionId,
+          classTypeFilters: cfg.classTypeFilters,
+          fromDate: fromDate.toISOString().split('T')[0],
+          toDate: mtTo.toISOString().split('T')[0],
+          venueName: cfg.name,
+          onProgress,
+        });
+        sessions = mergeWithCachedPast(fresh, existingSessions);
+        console.log(`[MarianaTek] Retaining ${sessions.length - fresh.length} cached past sessions alongside ${fresh.length} fresh`);
         venueName = cfg.name;
       } else if (platform === 'trybe' && hostId === 'senseofself') {
         const cfg = TRYBE_CONFIG.senseOfSelf;

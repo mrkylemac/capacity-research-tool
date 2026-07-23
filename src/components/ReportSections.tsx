@@ -11,9 +11,6 @@ import type { MomenceSession, MonthlyData } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import { Card, CardContent } from '@/components/ui/card';
 import { DemandIntelligence } from '@/components/demand';
-import { GrowthStory } from '@/components/GrowthStory';
-import { UtilisationTrend } from '@/components/UtilisationTrend';
-import { VenueComparisonChart } from '@/components/VenueComparisonChart';
 import { buildCapacityString, computeMonthlyTrajectory } from '@/lib/venueInsights';
 import { chartTooltipContentStyle, chartTooltipLabelStyle, chartTooltipItemStyle } from '@/lib/chartTooltip';
 import { OperatingModel } from '@/components/OperatingModel';
@@ -117,7 +114,7 @@ function MetricTile({ value, label }: { value: string; label: string }) {
  * mistaken for a live read.
  */
 function DataDensityCaption({ metrics }: { metrics: BenchmarkMetrics }) {
-  const lastSession = parseISO(metrics.computedTo);
+  const lastSession = parseISO(metrics.lastSessionAt);
   const hoursAgo = (Date.now() - lastSession.getTime()) / (1000 * 60 * 60);
 
   const sessionCount = metrics.totalSessions.toLocaleString();
@@ -132,7 +129,10 @@ function DataDensityCaption({ metrics }: { metrics: BenchmarkMetrics }) {
       freshness = `data through ${format(lastSession, 'EEE d MMM')} (${Math.round(hoursAgo)}h ago)`;
     } else {
       const daysAgo = Math.round(hoursAgo / 24);
-      freshness = `data through ${format(lastSession, 'EEE d MMM')} (${daysAgo}d ago)`;
+      freshness = `data through ${format(lastSession, 'EEE d MMM yyyy')} (${daysAgo}d ago)`;
+      // The computation window still runs to today, so the dead tail dilutes
+      // per-week and per-day rates — say so rather than let it read as live.
+      if (daysAgo > 7) freshness += ' — weekly and daily rates include this inactive period';
     }
   }
 
@@ -546,42 +546,6 @@ function DemandSection({
   );
 }
 
-// ── 4. Trajectory & occupancy (merged) ────────────────────────────────────────
-
-function TrendsSection({ monthlyData }: { monthlyData: MonthlyData[] }) {
-  // Build a human-readable range label from the monthly data (e.g. "Jan 2025 – Mar 2026")
-  const rangeLabel = useMemo(() => {
-    if (monthlyData.length === 0) return '';
-    const sorted = [...monthlyData].sort((a, b) => {
-      if (a.year !== b.year) return a.year - b.year;
-      return new Date(`${a.month} 1`).getMonth() - new Date(`${b.month} 1`).getMonth();
-    });
-    const first = sorted[0];
-    const last = sorted[sorted.length - 1];
-    if (first === last) return `${first.month.slice(0, 3)} ${first.year}`;
-    return `${first.month.slice(0, 3)} ${first.year} – ${last.month.slice(0, 3)} ${last.year}`;
-  }, [monthlyData]);
-
-  return (
-    <Card className="print-section shadow-sm">
-      <CardContent className="p-5">
-        <CardHeader
-          title="Trajectory & occupancy"
-          right={
-            rangeLabel
-              ? <p className="text-xs text-muted-foreground">{rangeLabel}</p>
-              : undefined
-          }
-        />
-        <GrowthStory monthlyData={monthlyData} />
-        <div className="mt-12 pt-5">
-          <UtilisationTrend monthlyData={monthlyData} />
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 // ── Main component ────────────────────────────────────────────────────────────
 
 interface ReportSectionsProps {
@@ -619,11 +583,6 @@ export function ReportSections({
           <OperatingModel sessions={sessions} metrics={metrics} hostId={hostId} />
         </div>
       )}
-      {/* {hostId && (
-        <div className="section-animate -mx-4 sm:mx-0" style={{ animationDelay: '180ms' }}>
-          <VenueComparisonChart currentVenueId={hostId} />
-        </div>
-      )} */}
     </div>
   );
 }

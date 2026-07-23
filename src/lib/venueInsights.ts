@@ -239,15 +239,6 @@ export interface MonthlyTrajectoryPoint {
   isLowData: boolean;
 }
 
-export interface CapacityUtilisationBar {
-  totalCapacitySeats: number;
-  usedCapacitySeats: number;
-  occupancyPercent: number;
-  label?: string;
-  subtitle?: string;
-  referenceMarkers?: { label: string; percent: number }[];
-}
-
 export type CapacityStatsGrid = Array<{
   label: string;
   value: string;
@@ -361,20 +352,6 @@ export function computeMonthlyTrajectory(
       isLowData,
     }];
   });
-}
-
-/** Thin wrapper that reads directly from BenchmarkMetrics + PeriodSummary. */
-export function computeCapacityUtilisationBar(
-  metrics: BenchmarkMetrics,
-  periodSummary: PeriodSummary,
-): CapacityUtilisationBar {
-  return {
-    totalCapacitySeats: metrics.totalCapacity,
-    usedCapacitySeats: metrics.totalVisits,
-    occupancyPercent: periodSummary.occupancyPercent,
-    label: `${periodSummary.occupancyPercent.toFixed(1)}% seat occupancy`,
-    subtitle: `Over ${periodSummary.periodLabel} (${periodSummary.startDate} – ${periodSummary.endDate})`,
-  };
 }
 
 /**

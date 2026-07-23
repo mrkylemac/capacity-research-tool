@@ -128,6 +128,10 @@ function pickEntry({
   return recent[0] ?? null;
 }
 
+// Sentinel for a deliberate "all locations" choice — distinct from null,
+// which means "not chosen yet" and lets the auto-select default fire.
+const ALL_LOCATIONS = '__all__';
+
 function formatRelativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
@@ -457,34 +461,43 @@ export function ReportClient() {
 
   // ── Location filter (for multi-location venues like Portal) ──────────────
   // Location is resolved first so it scopes period options and session types.
-  const allLocations = useMemo(() => {
-    const locs = new Set(allCachedSessions.map(s => s.location).filter(Boolean));
-    return Array.from(locs).sort();
+  // Labels are trimmed so stray whitespace in cached data can't split one
+  // physical location into two dropdown entries.
+  const locationCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    allCachedSessions.forEach(s => {
+      const loc = s.location?.trim();
+      if (loc) counts.set(loc, (counts.get(loc) ?? 0) + 1);
+    });
+    return counts;
   }, [allCachedSessions]);
+
+  const allLocations = useMemo(
+    () =>
+      Array.from(locationCounts.keys()).sort(
+        (a, b) => (locationCounts.get(b)! - locationCounts.get(a)!) || a.localeCompare(b),
+      ),
+    [locationCounts],
+  );
 
   const hasMultipleLocations = allLocations.length > 1;
 
   // Auto-select the location with the most sessions as default,
   // or reset if the selected location is no longer in the data.
+  // A deliberate "All locations" choice (sentinel) is never overridden.
   useEffect(() => {
     if (!hasMultipleLocations) return;
+    if (selectedLocation === ALL_LOCATIONS) return;
     if (selectedLocation !== null && allLocations.includes(selectedLocation)) return;
-    const counts = new Map<string, number>();
-    allCachedSessions.forEach(s => {
-      if (s.location) counts.set(s.location, (counts.get(s.location) ?? 0) + 1);
-    });
-    let best = allLocations[0];
-    let bestCount = 0;
-    counts.forEach((count, loc) => {
-      if (count > bestCount) { best = loc; bestCount = count; }
-    });
-    setSelectedLocation(best);
-  }, [hasMultipleLocations, selectedLocation, allLocations, allCachedSessions]);
+    setSelectedLocation(allLocations[0]);
+  }, [hasMultipleLocations, selectedLocation, allLocations]);
 
   // Sessions scoped to the selected location (all-time, before period filter).
   const locationScopedSessions = useMemo(() => {
-    if (!hasMultipleLocations || !selectedLocation) return allCachedSessions;
-    return allCachedSessions.filter(s => s.location === selectedLocation);
+    if (!hasMultipleLocations || !selectedLocation || selectedLocation === ALL_LOCATIONS) {
+      return allCachedSessions;
+    }
+    return allCachedSessions.filter(s => s.location?.trim() === selectedLocation);
   }, [allCachedSessions, hasMultipleLocations, selectedLocation]);
 
   // ── Available months span (scoped to location) ──────────────────────────
@@ -770,28 +783,38 @@ export function ReportClient() {
                     className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
                   >
                     <span className="truncate overflow-hidden w-full text-left">
-                      {selectedLocation ?? 'All locations'}
+                      {selectedLocation === ALL_LOCATIONS ? 'All locations' : selectedLocation ?? 'All locations'}
                     </span>
                     <ChevronsUpDown className="h-4.5 w-4.5 opacity-50" />
                   </button>
                 </PopoverTrigger>
                 <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2">
-                  {allLocations.map(loc => (
-                    <button
-                      key={loc}
-                      type="button"
-                      onClick={() => { startTransition(() => { setSelectedLocation(loc); setSelectedTypes(new Set()); }); }}
-                      className={cn(
-                        'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
-                        selectedLocation === loc ? 'font-medium' : 'text-muted-foreground',
-                      )}
-                    >
-                      <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                        {selectedLocation === loc && <Check className="h-full w-full" />}
-                      </span>
-                      <span className="truncate">{loc}</span>
-                    </button>
-                  ))}
+                  {[ALL_LOCATIONS, ...allLocations].map(loc => {
+                    const isAll = loc === ALL_LOCATIONS;
+                    const count = isAll
+                      ? allCachedSessions.length
+                      : locationCounts.get(loc) ?? 0;
+                    const checked = selectedLocation === loc;
+                    return (
+                      <button
+                        key={loc}
+                        type="button"
+                        onClick={() => { startTransition(() => { setSelectedLocation(loc); setSelectedTypes(new Set()); }); }}
+                        className={cn(
+                          'flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-base transition-colors hover:bg-muted',
+                          checked ? 'font-medium' : 'text-muted-foreground',
+                        )}
+                      >
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                          {checked && <Check className="h-full w-full" />}
+                        </span>
+                        <span className="truncate">{isAll ? 'All locations' : loc}</span>
+                        <span className="ml-auto pl-3 text-sm tabular-nums text-muted-foreground">
+                          {count.toLocaleString()}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </PopoverContent>
               </Popover>
             )}
@@ -950,6 +973,15 @@ export function ReportClient() {
             platform={platform}
             hostId={hostId ?? entry?.hostId}
           />
+        ) : filteredSessions.length > 0 ? (
+          // Sessions exist but none have run yet (e.g. a venue whose platform
+          // only exposes upcoming bookings) — widening the range won't help.
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <p className="text-base font-medium text-foreground">Only upcoming sessions so far</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {filteredSessions.length.toLocaleString()} future sessions are booked in. History builds up here as they run.
+            </p>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <p className="text-base font-medium text-foreground">No sessions found for this period</p>

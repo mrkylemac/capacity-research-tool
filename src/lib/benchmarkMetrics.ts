@@ -90,9 +90,14 @@ export interface BenchmarkMetrics {
   avgPrice: number;
   impliedArpv: number;
 
-  // Exact computation window (first → last active session timestamp)
+  // Exact computation window (period start clamped to first session → period
+  // end clamped to now). computedTo is the WINDOW end — usually "now" — not
+  // the last session; use lastSessionAt for data freshness.
   computedFrom: string;
   computedTo: string;
+  /** Latest startsAt among the sessions in scope — the real "data through"
+   *  timestamp. Falls back to computedTo when no sessions were provided. */
+  lastSessionAt: string;
 }
 
 export interface SlowFolkComparisonMetric {
@@ -310,6 +315,10 @@ export function calculateBenchmarkMetrics(
     impliedArpv,
     computedFrom: fromDate,
     computedTo: toDate,
+    lastSessionAt: sessions.reduce(
+      (max, s) => (s.startsAt > max ? s.startsAt : max),
+      sessions[0]?.startsAt ?? toDate,
+    ),
   };
 }
 

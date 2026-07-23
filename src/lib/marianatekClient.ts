@@ -62,49 +62,79 @@ export interface MarianaTekFetchParams {
   fromDate: string; // YYYY-MM-DD
   toDate: string;
   venueName: string;
-  classTypeFilter: string;
+  classTypeFilters: readonly string[];
   onProgress?: (sessionsFetched: number, pagesLoaded: number) => void;
 }
 
 /**
- * Fetch all classes in the date range, following pagination.
+ * Fetch all classes in the date range, in 90-day chunks with pagination.
  * Calls onProgress after each page so the UI can show loading activity.
+ *
+ * Chunking matters twice over: Mariana Tek fronts the customer API with a
+ * WAF that 403s any request whose min_start_date reaches past the tenant's
+ * history horizon (observed ~6 months). Chunks inside the horizon succeed;
+ * chunks beyond it are skipped with a warning instead of failing the whole
+ * fetch — that history is simply unreachable anonymously.
  */
 export async function fetchMarianaTekSessions(params: MarianaTekFetchParams): Promise<MomenceSession[]> {
-  const { baseUrl, locationId, regionId, fromDate, toDate, venueName, classTypeFilter, onProgress } = params;
+  const { baseUrl, locationId, regionId, fromDate, toDate, venueName, classTypeFilters, onProgress } = params;
 
-  console.log(`[${venueName}] Starting fetch`, { baseUrl, locationId, regionId, fromDate, toDate, classTypeFilter });
+  console.log(`[${venueName}] Starting fetch`, { baseUrl, locationId, regionId, fromDate, toDate, classTypeFilters });
 
+  const CHUNK_MS = 90 * 24 * 60 * 60 * 1000;
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const seen = new Set<string>();
   const all: MomenceSession[] = [];
-  let page = 1;
   const pageSize = 500;
+  let pagesLoaded = 0;
 
-  try {
-    while (true) {
-      const data = await fetchClasses(baseUrl, locationId, regionId, fromDate, toDate, venueName, page, pageSize);
-      const rawResults = data.results || [];
-      const filteredClasses = rawResults.filter(
-        (c) => c.class_type?.name === classTypeFilter,
-      );
-      const sessions = filteredClasses.map(classToSession);
-      all.push(...sessions);
+  const rangeEnd = new Date(toDate);
+  let cursor = new Date(fromDate);
 
-      const pagination = data.meta?.pagination;
-      console.log(`[${venueName}] Page`, page, ':', rawResults.length, 'classes →', filteredClasses.length, `"${classTypeFilter}" (total: ${all.length})`, pagination ? `| ${JSON.stringify(pagination)}` : '');
+  while (cursor <= rangeEnd) {
+    const chunkEnd = new Date(Math.min(rangeEnd.getTime(), cursor.getTime() + CHUNK_MS));
+    const minStr = cursor.toISOString().slice(0, 10);
+    const maxStr = chunkEnd.toISOString().slice(0, 10);
 
-      onProgress?.(all.length, page);
+    try {
+      let page = 1;
+      while (true) {
+        const data = await fetchClasses(baseUrl, locationId, regionId, minStr, maxStr, venueName, page, pageSize);
+        pagesLoaded++;
+        const rawResults = data.results || [];
+        const filteredClasses = rawResults.filter(
+          (c) => c.class_type?.name != null && classTypeFilters.includes(c.class_type.name),
+        );
+        for (const c of filteredClasses) {
+          if (!seen.has(c.id)) {
+            seen.add(c.id);
+            all.push(classToSession(c));
+          }
+        }
 
-      if (!pagination || page >= pagination.pages || sessions.length === 0) {
-        console.log(`[${venueName}] Done. Total sessions:`, all.length);
-        break;
+        const pagination = data.meta?.pagination;
+        console.log(`[${venueName}] ${minStr} → ${maxStr} page`, page, ':', rawResults.length, 'classes →', filteredClasses.length, `matching (total: ${all.length})`, pagination ? `| ${JSON.stringify(pagination)}` : '');
+
+        onProgress?.(all.length, pagesLoaded);
+
+        // Stop on empty RAW page, not empty filtered page — a page of only
+        // non-matching class types must not truncate the fetch.
+        if (!pagination || page >= pagination.pages || rawResults.length === 0) break;
+        page++;
       }
-      page++;
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('403')) {
+        console.warn(`[${venueName}] Chunk ${minStr} → ${maxStr} rejected (403) — beyond the API's history horizon, skipping`);
+      } else {
+        console.error(`[${venueName}] Fetch failed:`, err);
+        throw err;
+      }
     }
-  } catch (err) {
-    console.error(`[${venueName}] Fetch failed:`, err);
-    throw err;
+
+    cursor = new Date(chunkEnd.getTime() + DAY_MS);
   }
 
+  console.log(`[${venueName}] Done. Total sessions:`, all.length);
   const { sessions, report } = sanitizeSessions(all);
   logDataQuality('MarianaTek', report);
   return sessions;

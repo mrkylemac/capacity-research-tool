@@ -18,7 +18,7 @@ The project has three phases:
 - **Styling:** Tailwind CSS 4 with CSS variable-based theming
 - **UI Components:** Shadcn UI (Radix UI primitives + Tailwind)
 - **State Management:** React Query (TanStack Query) for server state, React useState for local state
-- **Charts:** Recharts + Visx
+- **Charts:** Recharts
 - **Forms:** React Hook Form + Zod validation
 - **Testing:** Vitest + Testing Library (jsdom environment)
 - **Package Manager:** Yarn 1.22.22
@@ -56,7 +56,6 @@ src/
 │   └── tracker/            # Financial tracker (CapEx)
 ├── components/             # React components
 │   ├── tracker/            # CapEx tracker components
-│   ├── charts/             # Visualization components
 │   ├── demand/             # Demand analysis components
 │   ├── ui/                 # Shadcn UI primitives (do not edit manually)
 │   └── [shared components] # Feature components (40+)

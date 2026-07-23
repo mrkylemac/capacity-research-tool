@@ -210,6 +210,23 @@ describe('calculateBenchmarkMetrics', () => {
     expect(m.weeklyOpenHours).toBe(12);
     expect(m.visitsPerOpenHour).toBeCloseTo(100 / 12, 5);
   });
+
+  it('sets lastSessionAt to the latest session start, regardless of input order', () => {
+    const sessions = [
+      makeSession({ startsAt: '2025-03-12T08:00:00.000Z' }),
+      makeSession({ startsAt: '2025-03-03T08:00:00.000Z' }),
+      makeSession({ startsAt: '2025-03-10T08:00:00.000Z' }),
+    ];
+    const m = calculateBenchmarkMetrics(sessions, '2025-03-01', '2026-07-22');
+    expect(m.lastSessionAt).toBe('2025-03-12T08:00:00.000Z');
+    // computedTo stays the window end — lastSessionAt is the freshness signal
+    expect(m.computedTo).toBe('2026-07-22');
+  });
+
+  it('falls back lastSessionAt to the window end when no sessions are provided', () => {
+    const m = calculateBenchmarkMetrics([], '2025-03-01', '2025-03-14');
+    expect(m.lastSessionAt).toBe('2025-03-14');
+  });
 });
 
 // ─── compareToSlowFolk ────────────────────────────────────────────────────────
