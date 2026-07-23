@@ -62,15 +62,15 @@ export const VENUES: VenueConfig[] = [
     id: 'innerstudio', name: 'Inner Studio', platform: 'momence', location: 'Melbourne', timezone: 'Australia/Melbourne',
     pricing: {
       tiers: [
-        { label: 'Sauna & Cold Plunge', casualRate: 45, pack5PerVisit: 40, pack10PerVisit: 35 },
-        { label: 'Class+', casualRate: 45, pack5PerVisit: 40, pack10PerVisit: 35 },
+        { label: 'Sauna & Cold Plunge', casualRate: 47, pack5PerVisit: 40, pack10PerVisit: 35 },
+        { label: 'Class+', casualRate: 47, pack5PerVisit: 40, pack10PerVisit: 35 },
         { label: 'Class Only', casualRate: 30 },
       ],
       memberships: [
         { label: 'Class Only Membership', price: '$50 / week', description: 'Unlimited class bookings + bath at $35/visit' },
         { label: 'Studio Membership', price: '$75 / week', description: 'Unlimited all sauna & plunge and Class+ sessions' },
       ],
-      note: 'Pack credits valid across Sauna & Cold Plunge and Class+ sessions.',
+      note: 'Pack credits valid across Sauna & Cold Plunge and Class+ sessions. Single-session rate rose $45→$47 at the FY26 changeover (pack per-visit rates held); verified 23 Jul 2026 against innerstudio.com.au. Locations: Collingwood, South Yarra, Highett (opening 2026).',
     },
   },
   { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
