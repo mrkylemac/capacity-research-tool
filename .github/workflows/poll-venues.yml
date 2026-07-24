@@ -24,6 +24,7 @@ jobs:
     outputs:
       poll-acuity: ${{ steps.check.outputs.acuity }}
       poll-trybe: ${{ steps.check.outputs.trybe }}
+      poll-punchpass: ${{ steps.check.outputs.punchpass }}
     steps:
       - id: check
         run: |
@@ -58,15 +59,27 @@ jobs:
             echo "  TryBe end-of-day window — will poll"
           fi
 
+          # Punchpass (Blue Mountains Sauna, NSW — same clock as Melbourne):
+          # future-only schedule with no total capacity, so we capture snapshots
+          # of remaining-spots as bookings fill. Poll every 2 hours (even hours,
+          # top-of-hour slot) to trace the booking curve before sessions age out.
+          PUNCHPASS=false
+          if [ "$MELB_M" -lt 30 ] && [ $((MELB_H % 2)) -eq 0 ]; then
+            PUNCHPASS=true
+            echo "  Punchpass 2-hourly snapshot window — will poll"
+          fi
+
           echo "acuity=$ACUITY" >> "$GITHUB_OUTPUT"
           echo "trybe=$TRYBE" >> "$GITHUB_OUTPUT"
-          echo "Result — Acuity: $ACUITY, TryBe: $TRYBE"
+          echo "punchpass=$PUNCHPASS" >> "$GITHUB_OUTPUT"
+          echo "Result — Acuity: $ACUITY, TryBe: $TRYBE, Punchpass: $PUNCHPASS"
 
   poll:
     needs: gate
     if: >-
       needs.gate.outputs.poll-acuity == 'true' ||
       needs.gate.outputs.poll-trybe == 'true' ||
+      needs.gate.outputs.poll-punchpass == 'true' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -87,17 +100,21 @@ jobs:
         if: needs.gate.outputs.poll-trybe == 'true' || github.event_name == 'workflow_dispatch'
         run: yarn poll:trybe
 
+      - name: Poll Punchpass venues (Blue Mountains Sauna)
+        if: needs.gate.outputs.poll-punchpass == 'true' || github.event_name == 'workflow_dispatch'
+        run: yarn poll:punchpass
+
       - name: Commit updated cache files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json
+          git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json src/data/venues/bluemountainsauna-punchpass.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-          git commit -m "chore: poll Acuity + TryBe session data ($TIMESTAMP) [skip ci]"
+          git commit -m "chore: poll Acuity + TryBe + Punchpass session data ($TIMESTAMP) [skip ci]"
           # Rebase against any commits that landed during the run (e.g. token
           # refresh workflow) so the push doesn't lose to a race condition.
           for attempt in 1 2 3; do

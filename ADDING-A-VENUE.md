@@ -18,6 +18,7 @@ Check their booking widget URL or page source. Common tells:
 | Mindbody | `mindbodyonline.com` |
 | Rezdy | `rezdy.com` |
 | bsport | `bsport.io` |
+| Punchpass | `punchpass.com` |
 
 ---
 
@@ -120,6 +121,26 @@ In `ReportSections.tsx`, the `SnapshotSection` accepts a `platform` prop and ren
   bookings)
 - Pricing is credit-based; use a static per-visit rate from the venue's website
 - `establishment` ID maps to a location name (multi-location venues)
+
+### Punchpass
+- No public JSON API — the studio schedule (`{studio}.punchpass.com/classes`) is
+  server-rendered HTML, scraped by `punchpassClient.ts`. No auth/cookies needed
+  for the public view.
+- **Future sessions only** — once a session starts, its page stops advertising
+  availability, so past bookings can't be read back. Merge fresh future sessions
+  with previously cached past sessions on each poll (TryBe/Acuity pattern).
+- **No capacity or booked count is exposed** — only "N spots left" (remaining),
+  or "CLASS FULL" (0). Capacity is *inferred* per class (`data-course-id`) as the
+  maximum remaining-spots ever advertised: far-future instances are empty and
+  reveal the room's spot limit. `ticketsSold = capacity - spotsLeft`. The
+  inference ratchets upward and self-corrects as emptier instances appear.
+- Sessions with no availability label (already started) carry no derivable count
+  and are skipped; they're retained from cache if captured on an earlier poll.
+- Schedule pages page forward via a `from_time` cursor; `orgId` is the numeric
+  studio ID from the page source. Pricing is pass-based — use a static per-visit
+  rate from the studio's website.
+- Poll periodically (Blue Mountains Sauna: every 2 hours) to capture the booking
+  curve before sessions age out.
 
 ### Zenoti (paused)
 - Public `getTokenForV2` token works for Services, Centers, Therapists only

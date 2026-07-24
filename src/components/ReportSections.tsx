@@ -221,6 +221,12 @@ function SnapshotSection({
           </p>
         )}
 
+        {platform === 'punchpass' && (
+          <p className="text-sm text-muted-foreground mb-4">
+            Data shows upcoming bookings only. Punchpass exposes future sessions and remaining spots — not total capacity or past attendance — so seat capacity is inferred from the maximum availability advertised per class, and history builds up here over time as you re-sync.
+          </p>
+        )}
+
         {/* Visitors chart */}
         {chartData.length > 1 && (
           <div className="mb-5">

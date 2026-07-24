@@ -196,7 +196,7 @@ async function processVenue(venue: VenueConfig): Promise<void> {
     });
   } else {
     // Platforms handled by their own poll scripts (trybe, acuity, portal,
-    // xtraclubs, hapana, bsport). Writing here would clobber their cache
+    // xtraclubs, hapana, bsport, punchpass). Writing here would clobber their cache
     // files — some of which hold polled history that no API can re-serve —
     // with an empty entry. Skip instead.
     console.log(`  ↷ Skipped: platform "${venue.platform}" is not handled by this script (use its poll/fetch script instead)`);

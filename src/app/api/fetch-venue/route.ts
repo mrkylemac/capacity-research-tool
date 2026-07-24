@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getGlofoxConfig, getMarianaTekConfig, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig } from '@/config/api';
+import { getGlofoxConfig, getMarianaTekConfig, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig, getPunchpassConfig } from '@/config/api';
 import { fetchPortalSessions } from '@/lib/portalClient';
 import { fetchMarianaTekSessions } from '@/lib/marianatekClient';
 import { fetchXtraClubsSessions } from '@/lib/xtraClient';
 import { fetchAllAcuitySessions } from '@/lib/acuityClient';
 import { fetchAllHapanaSessions } from '@/lib/hapanaClient';
 import { fetchAllBsportSessions } from '@/lib/bsportClient';
+import { fetchAllPunchpassSessions } from '@/lib/punchpassClient';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
@@ -406,6 +407,12 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
         const cfg = getBsportConfig(hostId);
         sessions = await fetchAllBsportSessions(
           cfg, new Date(cfg.operatingSince), toDate, onProgress,
+        );
+        venueName = cfg.name;
+      } else if (platform === 'punchpass') {
+        const cfg = getPunchpassConfig(hostId);
+        sessions = await fetchAllPunchpassSessions(
+          cfg, cfg.fetchWindowDays, existingSessions, onProgress,
         );
         venueName = cfg.name;
       } else {
