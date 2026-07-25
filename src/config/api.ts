@@ -20,7 +20,7 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana' | 'bsport';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana' | 'bsport' | 'punchpass';
 
 export interface VenuePricingTier {
   label: string;
@@ -92,6 +92,20 @@ export const VENUES: VenueConfig[] = [
   { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
   { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },
+  {
+    id: 'bluemountainsauna', name: 'Blue Mountains Sauna', platform: 'punchpass', location: 'Leura', timezone: 'Australia/Sydney',
+    tagline: 'Australia\'s new sauna culture — communal heat, cold plunge, and Aufguss infusions in the Blue Mountains.',
+    pricing: {
+      tiers: [
+        { label: 'Off-Peak', casualRate: 45, pack5PerVisit: 42, pack10PerVisit: 40 },
+        { label: 'Peak', casualRate: 55, pack5PerVisit: 53, pack10PerVisit: 52.5 },
+      ],
+      memberships: [
+        { label: 'Season Pass', price: '$699', description: 'Off-peak season pass' },
+      ],
+      note: 'Peak = weekends & evenings; off-peak = weekday daytime. Pack rates are per-visit (5-pack / 10-pack). Punchpass sells passes rather than per-session tickets.',
+    },
+  },
   {
     id: 'keenwellbeing', name: 'KEEN Wellbeing', platform: 'bsport', location: 'Zurich', timezone: 'Europe/Zurich',
     pricing: {
@@ -406,6 +420,57 @@ export const BSPORT_CONFIG: Record<string, BsportConfig> = {
 export function getBsportConfig(hostId: string): BsportConfig {
   const cfg = BSPORT_CONFIG[hostId];
   if (!cfg) throw new Error(`No bsport config for hostId "${hostId}"`);
+  return cfg;
+}
+
+// Punchpass configuration (public studio schedule pages — no auth required)
+//
+// Blue Mountains Sauna (Leura, NSW) runs on Punchpass (punchpass.com). There is
+// no public JSON API — the schedule at bmsauna.punchpass.com/classes is
+// server-rendered HTML, paged forward via a `from_time` cursor and scraped by
+// punchpassClient.ts.
+//
+// Data availability: future sessions only. Each session advertises "N spots
+// left" (remaining) but never a total capacity or booked count, so capacity is
+// inferred as the maximum remaining-spots seen per class ("course") — far-future
+// instances are empty and reveal the room's spot limit. Past sessions drop their
+// availability once started, so history is accumulated by merging fresh future
+// sessions with previously cached past sessions on each poll (TryBe pattern).
+//
+// Pricing is pass-based (not per-session); `sessionPrice` is a static per-visit
+// rate blended across Blue Mountains Sauna's peak ($55) / off-peak ($45) tiers.
+export interface PunchpassConfig {
+  baseUrl: string;
+  /** Punchpass org ID (from the studio URL). */
+  orgId: string;
+  name: string;
+  /** Single physical location — all session types share one room. */
+  location: string;
+  timezone: string;
+  /** Earliest data date (first poll — no history exists before this). */
+  operatingSince: string;
+  /** Static per-visit price used as `fixedTicketPrice`. */
+  sessionPrice: number;
+  /** Forward window (days) to page the schedule. */
+  fetchWindowDays: number;
+}
+
+export const PUNCHPASS_CONFIG: Record<string, PunchpassConfig> = {
+  bluemountainsauna: {
+    baseUrl: 'https://bmsauna.punchpass.com',
+    orgId: '16281',
+    name: 'Blue Mountains Sauna',
+    location: 'Leura',
+    timezone: 'Australia/Sydney',
+    operatingSince: '2026-07-24',
+    sessionPrice: 50,
+    fetchWindowDays: 90,
+  },
+};
+
+export function getPunchpassConfig(hostId: string): PunchpassConfig {
+  const cfg = PUNCHPASS_CONFIG[hostId];
+  if (!cfg) throw new Error(`No Punchpass config for hostId "${hostId}"`);
   return cfg;
 }
 
