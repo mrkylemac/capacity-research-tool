@@ -399,7 +399,7 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
         const cfg = HAPANA_CONFIG;
         sessions = await fetchAllHapanaSessions(
           cfg.baseUrl, cfg.locations, cfg.origin,
-          cfg.peakPrice, cfg.offPeakPrice, existingSessions, onProgress,
+          existingSessions, onProgress,
         );
         venueName = cfg.name;
       } else if (platform === 'bsport') {

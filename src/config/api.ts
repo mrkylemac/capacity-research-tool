@@ -62,8 +62,10 @@ export const VENUES: VenueConfig[] = [
     id: 'innerstudio', name: 'Inner Studio', platform: 'momence', location: 'Melbourne', timezone: 'Australia/Melbourne',
     pricing: {
       tiers: [
-        { label: 'Sauna & Cold Plunge', casualRate: 45, pack5PerVisit: 40, pack10PerVisit: 35 },
-        { label: 'Class+', casualRate: 45, pack5PerVisit: 40, pack10PerVisit: 35 },
+        // Casual rates rose from $45 to $47 on 2026-07-01 at both locations (confirmed in session data).
+        // Pack rates below are from the Inner Studio website and have not been re-checked since that rise.
+        { label: 'Sauna & Cold Plunge', casualRate: 47, pack5PerVisit: 40, pack10PerVisit: 35 },
+        { label: 'Class+', casualRate: 47, pack5PerVisit: 40, pack10PerVisit: 35 },
         { label: 'Class Only', casualRate: 30 },
       ],
       memberships: [
@@ -421,6 +423,10 @@ export interface HapanaLocation {
   widgetId: string;
   name: string;
   operatingSince: string;
+  /** Flat drop-in price for this location (AUD). Alchemy prices by location, not by time. */
+  dropInPrice: number;
+  /** Unlimited weekly membership price for this location (AUD). */
+  membershipWeekly: number;
 }
 
 export const HAPANA_CONFIG = {
@@ -431,17 +437,17 @@ export const HAPANA_CONFIG = {
   // Security token is fetched dynamically from the settings endpoint per-location.
   // No hardcoded token needed — see hapanaClient.ts fetchSecurityToken().
   //
-  // Static pricing — Hapana returns casualRate: 0 (credit-based), so we use website pricing
-  peakPrice: 35,
-  offPeakPrice: 20,
+  // Static pricing — Hapana returns casualRate: 0 (credit-based), so we use website pricing.
+  // Alchemy prices per LOCATION (not by time of day): premium/amenity sites $35 drop-in /
+  // $40 week unlimited; beach & river sites $20 / $30. Confirmed 2026-07 from alchemysaunas.com.au.
   locations: [
-    { widgetId: 'T204UER6NXhMbHQxemhCSTIxdDU2Zz09', name: 'Karrinyup', operatingSince: '2026-01-01' },
-    { widgetId: 'SlN0WjlHeitPRCtSd1h0K00yTmt3Zz09', name: 'Port Beach', operatingSince: '2025-01-01' },
-    { widgetId: 'bzNBYXpVMkNaT1ltdTcrZFlMSTlaUT09', name: 'Point Walter', operatingSince: '2025-01-01' },
-    { widgetId: 'MEZ6M1FsaXY2QUpEYkFLelpEQ254QT09', name: 'Fremantle', operatingSince: '2025-01-01' },
-    { widgetId: 'bzVBYmt0cm41S3h2WXhQZGdRVHE0Zz09', name: 'West Leederville', operatingSince: '2025-01-01' },
-    { widgetId: 'MTVjN0FsbmZMS0JhcVhzdGwvbUpDZz09', name: 'City Beach', operatingSince: '2025-01-01' },
-    { widgetId: 'a2Z6bVlFU2s4TEE4cmo0L3JIZHBqdz09', name: 'East Fremantle', operatingSince: '2025-01-01' },
-    { widgetId: 'dzBFdU1yRWxBQ2dwNktHVGFPM2dLUT09', name: 'Scarborough', operatingSince: '2025-01-01' },
+    { widgetId: 'T204UER6NXhMbHQxemhCSTIxdDU2Zz09', name: 'Karrinyup', operatingSince: '2026-01-01', dropInPrice: 35, membershipWeekly: 40 },
+    { widgetId: 'SlN0WjlHeitPRCtSd1h0K00yTmt3Zz09', name: 'Port Beach', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'bzNBYXpVMkNaT1ltdTcrZFlMSTlaUT09', name: 'Point Walter', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'MEZ6M1FsaXY2QUpEYkFLelpEQ254QT09', name: 'Fremantle', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'bzVBYmt0cm41S3h2WXhQZGdRVHE0Zz09', name: 'West Leederville', operatingSince: '2025-01-01', dropInPrice: 35, membershipWeekly: 40 },
+    { widgetId: 'MTVjN0FsbmZMS0JhcVhzdGwvbUpDZz09', name: 'City Beach', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'a2Z6bVlFU2s4TEE4cmo0L3JIZHBqdz09', name: 'East Fremantle', operatingSince: '2025-01-01', dropInPrice: 35, membershipWeekly: 40 },
+    { widgetId: 'dzBFdU1yRWxBQ2dwNktHVGFPM2dLUT09', name: 'Scarborough', operatingSince: '2025-01-01', dropInPrice: 35, membershipWeekly: 40 },
   ] as HapanaLocation[],
 } as const;

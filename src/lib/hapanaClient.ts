@@ -111,8 +111,7 @@ function parseDurationMinutes(duration: string): number {
 function hapanaSessionToMomence(
   session: HapanaSession,
   locationName: string,
-  peakPrice: number,
-  offPeakPrice: number,
+  dropInPrice: number,
 ): MomenceSession {
   const durationMinutes = parseDurationMinutes(session.duration);
   const tz = session.timezone || 'Australia/Perth';
@@ -121,10 +120,8 @@ function hapanaSessionToMomence(
   const startStr = `${session.sessionDate}T${session.startTime}`;
   const endStr = `${session.sessionDate}T${session.endTime}`;
 
-  // Determine price from session type
-  const isPeak = session.sessionType.toLowerCase().includes('peak')
-    && !session.sessionType.toLowerCase().includes('off-peak');
-  const price = isPeak ? peakPrice : offPeakPrice;
+  // Alchemy charges one flat drop-in price per location (not by time of day).
+  const price = dropInPrice;
 
   // Hapana sessionIDs are slot-type identifiers, not occurrence identifiers —
   // the same ID reappears every time that slot runs. Combine with date+time
@@ -221,8 +218,6 @@ async function fetchLocationSessions(
   origin: string,
   startDate: string,
   endDate: string,
-  peakPrice: number,
-  offPeakPrice: number,
 ): Promise<MomenceSession[]> {
   // Fetch a fresh security token for this location's widget
   const securityToken = await fetchSecurityToken(location.widgetId, origin);
@@ -244,7 +239,7 @@ async function fetchLocationSessions(
     }
 
     for (const s of response.data) {
-      sessions.push(hapanaSessionToMomence(s, location.name, peakPrice, offPeakPrice));
+      sessions.push(hapanaSessionToMomence(s, location.name, location.dropInPrice));
     }
 
     console.log(`[Hapana/${location.name}] Page ${pageIndex}/${response.pagination.noOfPages}: ${response.data.length} sessions (total: ${sessions.length})`);
@@ -285,8 +280,6 @@ export async function fetchAllHapanaSessions(
   baseUrl: string,
   locations: readonly HapanaLocation[],
   origin: string,
-  peakPrice: number,
-  offPeakPrice: number,
   existingSessions: MomenceSession[],
   onProgress?: (count: number) => void,
 ): Promise<MomenceSession[]> {
@@ -309,7 +302,7 @@ export async function fetchAllHapanaSessions(
   const locationResults = await mapConcurrent(locations, CONCURRENCY, async (loc) => {
     return fetchLocationSessions(
       baseUrl, loc, origin,
-      startStr, endStr, peakPrice, offPeakPrice,
+      startStr, endStr,
     );
   });
 

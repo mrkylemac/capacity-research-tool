@@ -5,7 +5,7 @@
  * - Occurrence IDs: Hapana sessionIDs are slot-type identifiers (same ID repeats
  *   each time the slot runs). We must combine with date+time to get a unique key.
  * - Incremental merge: past sessions not returned by fresh API are retained.
- * - Peak/off-peak price selection.
+ * - Per-location drop-in price selection (Alchemy prices by location, not by time).
  * - Pagination: multiple pages are fetched and combined.
  * - "Record not found" response terminates pagination gracefully.
  */
@@ -22,6 +22,8 @@ const TEST_LOCATION = {
   widgetId: 'widget-port-beach',
   name: 'Port Beach',
   operatingSince: '2025-01-01',
+  dropInPrice: 20,
+  membershipWeekly: 30,
 } as const;
 
 const BASE_URL = 'https://widgetapi.hapana.com/v2/wAPI/site/sessions';
@@ -115,7 +117,7 @@ describe('occurrence IDs', () => {
       ]));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [],
+      BASE_URL, [TEST_LOCATION], ORIGIN, [],
     );
 
     expect(sessions).toHaveLength(2);
@@ -132,7 +134,7 @@ describe('occurrence IDs', () => {
       ]));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [],
+      BASE_URL, [TEST_LOCATION], ORIGIN, [],
     );
 
     expect(sessions).toHaveLength(2);
@@ -150,7 +152,7 @@ describe('occurrence IDs', () => {
       ]));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [],
+      BASE_URL, [TEST_LOCATION], ORIGIN, [],
     );
 
     expect(sessions).toHaveLength(1);
@@ -159,33 +161,40 @@ describe('occurrence IDs', () => {
 
 // ── Pricing ───────────────────────────────────────────────────────────────────
 
-describe('peak/off-peak pricing', () => {
-  it('assigns peak price when sessionType contains "peak" but not "off-peak"', async () => {
+describe('per-location pricing', () => {
+  it('uses the location drop-in price regardless of the session-type string', async () => {
+    // Port Beach is a $20 location; the session-type string still says "(peak)"
+    // but price must come from the location, not the string.
     mockFetch
       .mockReturnValueOnce(settingsResponse())
       .mockReturnValueOnce(sessionResponse([
         { sessionID: 'p1', sessionDate: '2025-06-01', startTime: '09:00:00', sessionType: '1hr Session (peak)' },
+        { sessionID: 'p2', sessionDate: '2025-06-01', startTime: '10:00:00', sessionType: '1hr Session (off-peak)' },
       ]));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [],
-    );
-
-    expect(sessions[0].fixedTicketPrice).toBe(35);
-  });
-
-  it('assigns off-peak price when sessionType contains "off-peak"', async () => {
-    mockFetch
-      .mockReturnValueOnce(settingsResponse())
-      .mockReturnValueOnce(sessionResponse([
-        { sessionID: 'p2', sessionDate: '2025-06-01', startTime: '09:00:00', sessionType: '1hr Session (off-peak)' },
-      ]));
-
-    const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [],
+      BASE_URL, [TEST_LOCATION], ORIGIN, [],
     );
 
     expect(sessions[0].fixedTicketPrice).toBe(20);
+    expect(sessions[1].fixedTicketPrice).toBe(20);
+  });
+
+  it('applies each location its own price when fetching several', async () => {
+    const locations = [
+      { widgetId: 'w1', name: 'Port Beach', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
+      { widgetId: 'w2', name: 'East Fremantle', operatingSince: '2025-01-01', dropInPrice: 35, membershipWeekly: 40 },
+    ] as const;
+    mockFetch
+      .mockReturnValueOnce(settingsResponse('tok-1'))
+      .mockReturnValueOnce(settingsResponse('tok-2'))
+      .mockReturnValueOnce(sessionResponse([{ sessionID: 'a', sessionDate: '2025-06-01', startTime: '09:00:00' }]))
+      .mockReturnValueOnce(sessionResponse([{ sessionID: 'b', sessionDate: '2025-06-01', startTime: '09:00:00' }]));
+
+    const sessions = await fetchAllHapanaSessions(BASE_URL, locations, ORIGIN, []);
+
+    expect(sessions.find(s => s.location === 'Port Beach')?.fixedTicketPrice).toBe(20);
+    expect(sessions.find(s => s.location === 'East Fremantle')?.fixedTicketPrice).toBe(35);
   });
 });
 
@@ -202,7 +211,7 @@ describe('incremental merge', () => {
       ]));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, cached,
+      BASE_URL, [TEST_LOCATION], ORIGIN, cached,
     );
 
     expect(sessions.some(s => s.id === 'slot-OLD-2025-01-01T09:00:00')).toBe(true);
@@ -224,7 +233,7 @@ describe('incremental merge', () => {
       ]));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [staleSession],
+      BASE_URL, [TEST_LOCATION], ORIGIN, [staleSession],
     );
 
     const match = sessions.find(s => s.id === occurrenceId);
@@ -255,7 +264,7 @@ describe('incremental merge', () => {
       .mockReturnValueOnce(notFoundResponse());
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [future],
+      BASE_URL, [TEST_LOCATION], ORIGIN, [future],
     );
 
     expect(sessions.some(s => s.id === future.id)).toBe(false);
@@ -272,7 +281,7 @@ describe('incremental merge', () => {
       ]));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, cached,
+      BASE_URL, [TEST_LOCATION], ORIGIN, cached,
     );
 
     for (let i = 1; i < sessions.length; i++) {
@@ -299,7 +308,7 @@ describe('pagination', () => {
       ));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [],
+      BASE_URL, [TEST_LOCATION], ORIGIN, [],
     );
 
     expect(sessions).toHaveLength(2);
@@ -313,7 +322,7 @@ describe('pagination', () => {
       .mockReturnValueOnce(notFoundResponse());
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, [],
+      BASE_URL, [TEST_LOCATION], ORIGIN, [],
     );
 
     expect(sessions).toHaveLength(0);
@@ -325,8 +334,8 @@ describe('pagination', () => {
 
 describe('multi-location', () => {
   const LOCATIONS = [
-    { widgetId: 'w1', name: 'Port Beach', operatingSince: '2025-01-01' },
-    { widgetId: 'w2', name: 'Fremantle', operatingSince: '2025-01-01' },
+    { widgetId: 'w1', name: 'Port Beach', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'w2', name: 'Fremantle', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
   ] as const;
 
   it('fetches all locations and tags sessions with correct location name', async () => {
@@ -341,7 +350,7 @@ describe('multi-location', () => {
       ));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, LOCATIONS, ORIGIN, 35, 20, [],
+      BASE_URL, LOCATIONS, ORIGIN, [],
     );
 
     expect(sessions).toHaveLength(2);
@@ -366,7 +375,7 @@ describe('multi-location', () => {
       ]));
 
     const sessions = await fetchAllHapanaSessions(
-      BASE_URL, LOCATIONS, ORIGIN, 35, 20, [],
+      BASE_URL, LOCATIONS, ORIGIN, [],
     );
 
     // Current behavior: deduplicates, keeps 1. Documented here so a future change is intentional.
@@ -386,7 +395,7 @@ describe('multi-location', () => {
 
     const progressCalls: number[] = [];
     await fetchAllHapanaSessions(
-      BASE_URL, LOCATIONS, ORIGIN, 35, 20, [],
+      BASE_URL, LOCATIONS, ORIGIN, [],
       (count) => progressCalls.push(count),
     );
 
@@ -402,7 +411,7 @@ describe('error handling', () => {
     mockFetch.mockReturnValueOnce({ ok: false, status: 403, statusText: 'Forbidden' });
 
     await expect(
-      fetchAllHapanaSessions(BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, []),
+      fetchAllHapanaSessions(BASE_URL, [TEST_LOCATION], ORIGIN, []),
     ).rejects.toThrow('403');
   });
 
@@ -412,7 +421,7 @@ describe('error handling', () => {
       .mockReturnValueOnce({ ok: false, status: 500, statusText: 'Internal Server Error' });
 
     await expect(
-      fetchAllHapanaSessions(BASE_URL, [TEST_LOCATION], ORIGIN, 35, 20, []),
+      fetchAllHapanaSessions(BASE_URL, [TEST_LOCATION], ORIGIN, []),
     ).rejects.toThrow('500');
   });
 });
