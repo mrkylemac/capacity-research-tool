@@ -24,15 +24,33 @@ yarn test             # Vitest (single run)
 yarn test:watch       # Vitest (watch mode)
 ```
 
+Sign-in requires a Postgres database — see [`AUTH-SETUP.md`](./AUTH-SETUP.md) for
+the local setup.
+
 ### Environment Variables
 
 See `.env.example`:
 
 | Variable | Purpose |
 |---|---|
-| `VITE_PASSWORD` | Password for the Forecast/Report pages (optional — unset means no password) |
+| `DATABASE_URL` | Postgres connection string (required — sign-in fails without it) |
+| `BETTER_AUTH_SECRET` | Signs session cookies (required). `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | Public URL of the app (required in production) |
+| `ADMIN_EMAILS` | Comma-separated addresses auto-approved as admins on signup |
+| `GOOGLE_CLIENT_ID` | Google sign-in (optional — unset hides the Google button) |
+| `GOOGLE_CLIENT_SECRET` | Google sign-in (optional) |
 | `GOOGLE_SHEETS_API_KEY` | CapEx tracker data (optional) |
 | `GOOGLE_SHEETS_SPREADSHEET_ID` | CapEx Google Sheet ID (optional) |
+
+## Access Control
+
+Every page and API route is behind a login. Anyone can request an account at
+`/signup`, but new accounts start unapproved and see nothing until an admin
+approves them at `/admin/users`. Email and password always work; Google sign-in
+appears when the Google credentials are set.
+
+See [`AUTH-SETUP.md`](./AUTH-SETUP.md) for the full setup, including how the
+first admin bootstraps.
 
 ## Tracked Venues
 
@@ -129,16 +147,25 @@ scripts/                    # Polling, token refresh, and utility scripts
 
 ## Deployment
 
-Deploys to Vercel with zero config:
+Deploys to Fly.io. The app has to live on Fly because Fly Managed Postgres is
+only reachable over Fly's private network — it has no public endpoint, so a
+Vercel-hosted copy could not connect to it.
 
-1. Push to GitHub
-2. Import the project in the Vercel dashboard
-3. Deploy
+```bash
+fly deploy
+```
 
-Or via CLI: `yarn build && npx vercel --prod`
+Pushes to `main` deploy automatically via `.github/workflows/deploy.yml`, which
+needs a `FLY_API_TOKEN` repository secret. The venue-polling and token-refresh
+workflows call that deploy workflow directly after they commit, because their
+commits carry `[skip ci]` and the data they write is baked into the image.
+
+First-time setup — creating the database, wiring secrets, creating the auth
+tables — is in [`AUTH-SETUP.md`](./AUTH-SETUP.md).
 
 ## Key Documentation
 
+- [`AUTH-SETUP.md`](./AUTH-SETUP.md) — sign-in, manual approval, Fly + Postgres setup
 - [`ADDING-A-VENUE.md`](./ADDING-A-VENUE.md) — playbook for integrating new booking platforms
 - [`FORECAST-SETUP.md`](./FORECAST-SETUP.md) — Google Sheets forecast integration
 - [`PLAN.md`](./PLAN.md) — CapEx tracker implementation plan

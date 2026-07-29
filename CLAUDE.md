@@ -38,6 +38,8 @@ yarn poll:trybe       # Poll TryBe venues (used by GitHub Actions)
 yarn poll:bsport      # Refresh bsport venues (full-history refetch)
 yarn refresh:glofox   # Refresh Glofox guest tokens
 yarn cache:sync       # Sync venue cache from origin/main
+yarn auth:generate    # Regenerate src/db/auth-schema.sql from src/lib/auth.ts
+yarn auth:migrate     # Apply schema changes to the live database
 ```
 
 ## Project Structure
@@ -123,12 +125,42 @@ Use `@/*` to import from `src/*` (e.g., `import { something } from '@/lib/utils'
 - No need to import `describe`, `it`, `expect` — they are global
 - Run `yarn test` to validate changes
 
+## Authentication
+
+Every page and API route requires a signed-in, **approved** user. Accounts are
+created via signup but start `approved = false` and are switched on by hand at
+`/admin/users`.
+
+- **Server config:** `src/lib/auth.ts` (Better Auth, Postgres via `pg`)
+- **Guards:** `src/lib/auth-guard.ts` — `requireApprovedUser()` in pages,
+  `requireApprovedUserForApi()` in route handlers. These are the security
+  boundary; `src/middleware.ts` only does a cheap cookie check and skips `/api/*`
+  so route handlers can answer with JSON rather than an HTML redirect.
+- **Adding a page:** call `await requireApprovedUser()` first and make the
+  component `async`.
+- **Adding an API route:** start the handler with
+  `const { error } = await requireApprovedUserForApi(); if (error) return error;`
+- `approved` and `role` are `input: false`, so a signup payload cannot set them.
+- Session cookie caching is off on purpose: approving or revoking someone takes
+  effect on their next request.
+- Schema lives in `src/db/auth-schema.sql`; regenerate with `yarn auth:generate`.
+
+See `AUTH-SETUP.md` for the deployment and bootstrap story.
+
 ## Environment Variables
 
 Required variables (see `.env.example`):
-- `VITE_PASSWORD` — password for Forecast/Report pages
+- `DATABASE_URL` — Postgres connection string (auth); required
+- `BETTER_AUTH_SECRET` — session cookie signing secret; required
+- `BETTER_AUTH_URL` — public app URL; required in production
+- `ADMIN_EMAILS` — comma-separated addresses auto-approved as admin on signup
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google sign-in (optional; unset
+  hides the Google button)
 - `GOOGLE_SHEETS_API_KEY` — CapEx tracker data (optional)
 - `GOOGLE_SHEETS_SPREADSHEET_ID` — CapEx Google Sheet ID (optional)
+
+Note: `.env` is git-tracked despite being in `.gitignore` (committed before the
+rule existed). Put local secrets in `.env.local` instead.
 
 ## Caching Strategy
 
@@ -141,6 +173,15 @@ Required variables (see `.env.example`):
 
 - **Venue polling** (`.github/workflows/poll-venues.yml`): every 30 min, timezone-aware gating (Melbourne time), polls Acuity and TryBe, commits updated cache files
 - **Token refresh** (`.github/workflows/refresh-glofox-tokens.yml`): weekly on Mondays, refreshes Glofox guest tokens, commits to `src/config/api.ts`
+- **Deploy** (`.github/workflows/deploy.yml`): deploys to Fly on push to `main`. Both workflows above call it after committing, because their `[skip ci]` commits suppress the push trigger and the data they write is baked into the image.
+
+## Deployment
+
+Fly.io, not Vercel. Fly Managed Postgres has no public endpoint, so the app has
+to run inside the same Fly private network to reach it. `Dockerfile` builds the
+Next standalone output; `fly.toml` holds the app config. `src/data` reaches the
+image via `outputFileTracingIncludes` in `next.config.mjs` — the venue JSON is
+read at request time from `process.cwd()` paths the tracer cannot infer.
 
 ## Key Documentation
 
