@@ -7,7 +7,7 @@
     "from": "2026-03-06T07:00:00.000Z",
     "to": "2026-08-25T08:00:00.000Z"
   },
-  "cachedAt": "2026-07-29T07:20:25.242Z",
+  "cachedAt": "2026-07-29T10:09:55.602Z",
   "sessions": [
     {
       "id": "acuity-71669392-11172572-2026-03-06T18:00:00+1100",
@@ -7694,6 +7694,18 @@
       "sessionName": "Silent Sauna",
       "startsAt": "2026-08-07T21:00:00.000Z",
       "endsAt": "2026-08-07T22:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-86988395-13261360-2026-08-09T18:00:00+1000",
+      "sessionName": "Silent Sauna",
+      "startsAt": "2026-08-09T08:00:00.000Z",
+      "endsAt": "2026-08-09T09:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
       "ticketsSold": 0,
