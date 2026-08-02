@@ -1,7 +1,7 @@
 # Slow Folk Booking Platform — Architecture Plan
 
 > Replaces Momence with a custom booking system + KISI door access integration.
-> Standalone repo: `slow-folk-booking` (separate from `sauna-session-stats`).
+> Standalone repo: `slowfolk-bookings` (separate from `sauna-session-stats`).
 
 ## Decisions
 
@@ -619,7 +619,7 @@ src/inngest/
 ## Project Structure
 
 ```
-slow-folk-booking/
+slowfolk-bookings/
 ├── src/
 │   ├── app/                          # Next.js App Router (see API Routes above)
 │   ├── components/
@@ -735,7 +735,7 @@ NEXT_PUBLIC_APP_URL=                 # e.g. https://book.slowfolk.com.au
 ### Phase 0: Scaffold (1-2 days)
 **Goal: Running Next.js app with database, auth, and empty admin shell.**
 
-- `npx create-next-app@latest slow-folk-booking --ts --tailwind --app --src-dir`
+- `npx create-next-app@latest slowfolk-bookings --ts --tailwind --app --src-dir`
 - Install core deps: `drizzle-orm`, `@neondatabase/serverless`, `drizzle-kit`, `@clerk/nextjs`, `inngest`, `zod`
 - Shadcn UI components: button, card, table, dialog, form, input, select, toast
 - Drizzle config + schema (venues, users tables only)
