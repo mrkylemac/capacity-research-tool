@@ -31,7 +31,54 @@ Approval has a chicken-and-egg problem. Any address listed in `ADMIN_EMAILS`
 (comma separated) is auto-approved and made admin the moment it signs up. Set it
 to your own address, sign up once, and approve everyone else from `/admin/users`.
 
-## One-time setup
+## One-time setup, without a terminal
+
+Everything below can be done from a browser. The CLI version of the same steps
+follows further down.
+
+**1. Create the Postgres cluster.** In the Fly dashboard, go to Managed
+Postgres and create a cluster in the `syd` region. Copy the cluster ID.
+
+**2. Create a deploy token.** In the Fly dashboard, choose your organisation,
+then Tokens, then create a new token.
+
+**3. Add it to GitHub.** In the repository, go to Settings, then Secrets and
+variables, then Actions, and add a secret named `FLY_API_TOKEN` with that
+value.
+
+Optionally add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` for Google
+sign-in, and `GOOGLE_SHEETS_API_KEY` and `GOOGLE_SHEETS_SPREADSHEET_ID` for the
+CapEx tracker. The provisioning workflow picks them up if they exist.
+
+**4. Run the provisioning workflow.** Go to the Actions tab, choose
+**Provision Fly app**, and click Run workflow. Fill in the cluster ID from step
+1 and your admin email. It creates the app, attaches the database, and sets the
+secrets. Re-running it is safe.
+
+**5. Merge the pull request.** That triggers the deploy. The `release_command`
+in `fly.toml` creates the auth tables on the way up, so there is no separate
+migration step.
+
+**6. Turn off Vercel.** In the Vercel dashboard, disconnect the Git integration
+on the project. Otherwise a second copy of the app keeps deploying with no route
+to the database, and every request to it fails.
+
+Then open `/signup` and register with the address you gave in step 4. It is in
+`ADMIN_EMAILS`, so it comes out approved and admin. Everyone else who signs up
+waits in the queue at `/admin/users`.
+
+### Why the tables are created on deploy
+
+Managed Postgres has no public endpoint, so a GitHub Actions runner cannot
+connect to it. Fly's `release_command` runs on a temporary Machine inside the
+private network with the app's secrets attached, which is the one place a
+migration can reach the database. `scripts/migrate-auth.mjs` creates the schema
+on an empty database and does nothing on every later deploy.
+
+Schema *changes* are a different matter: `yarn auth:migrate` diffs a live
+database properly and still needs a terminal with a tunnel open.
+
+## One-time setup, with the CLI
 
 ### 1. Create the database
 
@@ -63,33 +110,27 @@ fly secrets set \
 Add `GOOGLE_SHEETS_API_KEY` and `GOOGLE_SHEETS_SPREADSHEET_ID` too if you use
 the CapEx tracker.
 
-### 4. Create the tables
+### 4. Deploy
+
+```bash
+fly deploy
+```
+
+The tables are created by the release command during this deploy. To do it by
+hand instead:
 
 ```bash
 fly mpg connect --cluster <cluster-id>     # opens psql over the private network
 \i src/db/auth-schema.sql
 ```
 
-Or from your machine with a proxy open:
-
-```bash
-fly mpg proxy --cluster <cluster-id> &
-psql "postgresql://fly-user:PASSWORD@localhost:5432/fly-db" -f src/db/auth-schema.sql
-```
-
-### 5. Deploy
-
-```bash
-fly deploy
-```
-
 Then visit `/signup`, register with the address in `ADMIN_EMAILS`, and you are in
 as an approved admin.
 
-### 6. Automate deploys
+### 5. Automate deploys
 
 Venue polling commits new session data every 30 minutes, and that data is baked
-into the image — so a commit without a deploy changes nothing in production.
+into the image, so a commit without a deploy changes nothing in production.
 `.github/workflows/deploy.yml` handles this, but it needs a token:
 
 ```bash
@@ -102,10 +143,10 @@ Both `poll-venues.yml` and `refresh-glofox-tokens.yml` call the deploy workflow
 after a successful commit. Their commits carry `[skip ci]`, which suppresses the
 ordinary push trigger, so the explicit call is what keeps production current.
 
-### 7. Turn off the Vercel deployment
+### 6. Turn off the Vercel deployment
 
 The project used to deploy to Vercel. Disconnect the Git integration in the
-Vercel dashboard so two copies of the app are not serving at once — the Vercel
+Vercel dashboard so two copies of the app are not serving at once. The Vercel
 one has no route to the database and will fail every request.
 
 ## Google sign-in (optional)

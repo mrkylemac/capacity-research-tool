@@ -4,6 +4,12 @@ primary_region = "syd"
 [build]
   dockerfile = "Dockerfile"
 
+[deploy]
+  # Runs on a temporary Machine inside the private network before the new
+  # version goes live, so it can reach Managed Postgres. Creates the auth
+  # tables on an empty database and is a no-op afterwards.
+  release_command = "node scripts/migrate-auth.mjs"
+
 [env]
   PORT = "3000"
 

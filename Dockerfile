@@ -35,6 +35,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # next.config.mjs already places it inside .next/standalone. Copying it again
 # would duplicate ~115 MB of venue cache into a second layer.
 
+# The Fly release_command runs this against the private-network database before
+# any new Machine goes live. `pg` resolves from the standalone node_modules.
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/migrate-auth.mjs ./scripts/migrate-auth.mjs
+COPY --from=builder --chown=nextjs:nodejs /app/src/db/auth-schema.sql ./src/db/auth-schema.sql
+
 USER nextjs
 EXPOSE 3000
 

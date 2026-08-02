@@ -1,0 +1,103 @@
+name: Provision Fly app
+
+# One-time setup, run from the Actions tab in a browser rather than a terminal.
+# Creates the Fly app, attaches the Managed Postgres cluster, and sets the auth
+# secrets. Safe to re-run: every step is skipped if it has already been done.
+#
+# The database tables are NOT created here — a GitHub runner cannot reach
+# Managed Postgres, which has no public endpoint. They are created by the
+# release_command in fly.toml, which runs inside Fly's private network on the
+# next deploy.
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: "Fly app name (must match the app in fly.toml)"
+        required: true
+        default: slowfolk-sauna-house
+      org:
+        description: "Fly organisation slug"
+        required: true
+        default: personal
+      region:
+        description: "Primary region"
+        required: true
+        default: syd
+      mpg_cluster_id:
+        description: "Managed Postgres cluster ID to attach (from the Fly dashboard)"
+        required: true
+      admin_emails:
+        description: "Comma-separated emails auto-approved as admin on signup"
+        required: true
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Create the app if it does not exist
+        run: |
+          APP="${{ inputs.app_name }}"
+          if flyctl apps list --json | grep -q "\"Name\": *\"$APP\""; then
+            echo "App $APP already exists."
+          else
+            echo "Creating app $APP"
+            flyctl apps create "$APP" --org "${{ inputs.org }}"
+          fi
+
+      - name: Attach Managed Postgres
+        run: |
+          APP="${{ inputs.app_name }}"
+          if flyctl secrets list --app "$APP" | grep -q DATABASE_URL; then
+            echo "DATABASE_URL already set, skipping attach."
+          else
+            flyctl mpg attach "${{ inputs.mpg_cluster_id }}" --app "$APP"
+          fi
+
+      - name: Set auth secrets
+        run: |
+          APP="${{ inputs.app_name }}"
+
+          # Rotating this would sign everyone out, so it is generated once and
+          # then left alone on every later run.
+          if flyctl secrets list --app "$APP" | grep -q BETTER_AUTH_SECRET; then
+            echo "BETTER_AUTH_SECRET already set, leaving it alone."
+          else
+            echo "Generating BETTER_AUTH_SECRET"
+            flyctl secrets set --app "$APP" --stage \
+              "BETTER_AUTH_SECRET=$(openssl rand -base64 32)"
+          fi
+
+          flyctl secrets set --app "$APP" --stage \
+            "BETTER_AUTH_URL=https://$APP.fly.dev" \
+            "ADMIN_EMAILS=${{ inputs.admin_emails }}"
+
+          # Optional. Set these as repository secrets to switch Google sign-in
+          # on; leaving them empty keeps the login page email and password only.
+          if [ -n "${{ secrets.GOOGLE_CLIENT_ID }}" ]; then
+            flyctl secrets set --app "$APP" --stage \
+              "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" \
+              "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}"
+          fi
+
+          if [ -n "${{ secrets.GOOGLE_SHEETS_API_KEY }}" ]; then
+            flyctl secrets set --app "$APP" --stage \
+              "GOOGLE_SHEETS_API_KEY=${{ secrets.GOOGLE_SHEETS_API_KEY }}" \
+              "GOOGLE_SHEETS_SPREADSHEET_ID=${{ secrets.GOOGLE_SHEETS_SPREADSHEET_ID }}"
+          fi
+
+      - name: Summary
+        run: |
+          echo "### Provisioning finished" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "App: \`${{ inputs.app_name }}\` in \`${{ inputs.region }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Secrets are staged and apply on the next deploy." >> "$GITHUB_STEP_SUMMARY"
+          echo "Merge the pull request, or run the **Deploy to Fly** workflow, to go live." >> "$GITHUB_STEP_SUMMARY"
+          echo "The database tables are created automatically by the release command on that deploy." >> "$GITHUB_STEP_SUMMARY"
