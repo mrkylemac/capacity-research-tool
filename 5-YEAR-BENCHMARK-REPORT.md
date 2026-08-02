@@ -2,7 +2,7 @@
 
 **Slow Folk — Neighbourhood Sauna · Benchmark report**
 
-Data to 2026-07-21 · eleven venues · 144,389 recorded sessions · Melbourne, Adelaide, Perth, Sydney, Zurich
+Data to 2026-07-21 · 144,389 recorded sessions · ten Australian venues (Melbourne, Adelaide, Perth, Sydney), plus one northern-hemisphere venue (Zurich) used as an independent seasonal cross-check
 
 This report builds a monthly visit forecast for Slow Folk, from the planned opening in October 2026 to June 2031. The basis is booking data from eleven comparable venues. The data gives three inputs for the financial model: the seasonal pattern, the ramp-up speed after opening, and the mature occupancy level. Section 6 contains the exact numbers for the Volumes tab.
 
@@ -55,7 +55,7 @@ All nine venues from the brief are tracked and current. “Recent occupancy” i
 | **EQ (South Melbourne)** ¹ | Secondary | 2024-10 → 2026-07 | 20/22 | 18% | 237 | $107 |
 | **Xtra Clubs — Bondi Junction** | Secondary | 2024-01 → 2026-03 | 22/27 | 54% | 1,939 | — |
 | **Alchemy Saunas (Perth, 8 locations)** | Secondary | 2024-12 → 2026-04 | 13/17 | 53% | 5,856 | $28 |
-| **KEEN Wellbeing (Zurich)** | Secondary — northern hemisphere | 2024-11 → 2026-07 | 16/20 | 53% | 680 | $27 |
+| **KEEN Wellbeing (Zurich)** | International cross-check — northern-hemisphere seasonal validation; anchors no scenario | 2024-11 → 2026-07 | 16/20 | 53% | 680 | $27 |
 
 ¹ EQ added 55% more seats in Oct 2025. Occupancy fell because of that; visits did not fall. Before the change: ≈25%.
 ² Opened Feb 2026. Still in ramp-up, not mature.
@@ -84,7 +84,9 @@ The pattern was measured on 139 venue-months from 11 locations. Method: a regres
 | Check: occupancy instead of visits | +9% | +10% | +5% | -13% | -11% | -19% | -8% | +0% | +4% | +5% | +10% | +9% |
 | Check: without Bondi and late Collingwood | +6% | +6% | -4% | -6% | -14% | -30% | -3% | +4% | +10% | +11% | +13% | +7% |
 
-October–November are the least certain months. Zurich varies a lot month to month, but after the six-month shift it matches the southern cities (correlation +0.55).
+October–November are the least certain months.
+
+**Global cross-check (for further reading).** The seasonal pattern above holds on each Australian city on its own — Melbourne, Perth and Sydney each show the winter-high, December-low shape independently (rows above), so it does not depend on any single market. As a final, independent test we added one northern-hemisphere venue, KEEN Wellbeing in Zurich. Its seasons are the reverse of ours, so if our pattern is real seasonality rather than an Australian quirk, Zurich should show the same shape shifted six months — and it does, at +0.55 correlation after the shift versus −0.27 without it. Zurich carries the lowest weight in the pooled fit and anchors none of the forecast scenarios; its role is this validation. A clean refit on Australian venues only is a small pending step (see section 7). If we later want deeper international reading for investors, this is where a global market segment would grow.
 
 ## 4 · Ramp-up and mature occupancy
 
@@ -126,7 +128,7 @@ Notes: Collingwood’s “opening” is its first month on the Momence platform 
 
 ## 5 · The five-year forecast
 
-Formula: visits per month = 868 per week × month length × mature occupancy × ramp-up × (1 + seasonal factor) × growth. The result never passes the 70% occupancy limit. Three scenarios, based on Table 4b: 30% (like Sol), 41% (the current target — between Sol and Aalto), and 52% (like KEEN and Alchemy).
+Formula: visits per month = 868 per week × month length × mature occupancy × ramp-up × (1 + seasonal factor) × growth. The result never passes the 70% occupancy limit. Three scenarios, all anchored to Australian venues (Table 4b): 30% (like Sol), 41% (the current target — between Sol and Aalto), and 52% (like Aalto and Alchemy's stronger sites).
 
 The shape matters: the first quarter (Oct–Dec 2026) is slow, because the ramp-up and the December low period happen at the same time. The first winter (Jun–Aug 2027) is the first strong period. The current sheet expects the opposite.
 
@@ -170,7 +172,7 @@ Conservative: 40/60/75/85/95/100. Keep the old 10/25/40/60/80/100 only as a wors
 
 ### 6.4 · Target Occupancy
 
-`41%` stays as the base case. Use 30% and 52% as the low and high scenarios — these are measured levels from Sol and from KEEN/Alchemy, not guesses.
+`41%` stays as the base case. Use 30% and 52% as the low and high scenarios — these are measured levels from Australian venues (Sol at the low end, Aalto and Alchemy's stronger sites at the high end), not guesses.
 
 ### 6.5 · Memberships
 
@@ -191,7 +193,7 @@ Conservative: 40/60/75/85/95/100. Keep the old 10/25/40/60/80/100 only as a wors
 1. Booking data was updated on 2026-07-21. Momence venues were downloaded in full (this also uncovered a data bug in the tracker; the fix is committed separately). TryBe, Acuity and bsport venues were updated with their normal collection scripts.
 2. New and old data were combined, and each session was counted once (matched by session id).
 3. Sessions were grouped by calendar month in each venue’s local time zone. Cancelled sessions and sessions with zero capacity were removed. Where tickets exceeded capacity, tickets were reduced to capacity.
-4. Seasonal pattern: a weighted regression of daily visits on the month of the year, with a separate level and trend per venue. Zurich’s months were shifted six months, because its seasons are opposite.
+4. Seasonal pattern: a weighted regression of daily visits on the month of the year, with a separate level and trend per venue. Zurich’s months were shifted six months, because its seasons are opposite. Zurich sits in the pooled fit at the lowest weight, as a northern-hemisphere control; the Australian cities each show the same shape on their own (Table 3), so the headline factors do not depend on it. A pure Australian-only refit of the factors and ramp is a small pending step, to be run at the next data refresh; it is expected to move the factors by no more than a point or two.
 5. Ramp-up: for each venue with an observed opening, the seasonal pattern was removed and the result was divided by that venue’s own mature level.
 6. All 20 verification checks pass. The strongest check: the model rebuilt Aalto’s and Sol’s real monthly numbers with an average error of 8% and 12%.
 

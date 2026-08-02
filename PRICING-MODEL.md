@@ -2,7 +2,7 @@
 
 **Slow Folk — Neighbourhood Sauna · Pricing concept**
 
-Data to 2026-07-21 · eleven venues · 144,389 recorded sessions · Melbourne, Adelaide, Perth, Sydney, Zurich
+Data to 2026-07-21 · 144,389 recorded sessions · ten Australian venues (Melbourne, Adelaide, Perth, Sydney), plus one northern-hemisphere venue (Zurich) used only as a seasonal cross-check
 
 This document designs a pricing model from the booking data we collect, and from nothing else. No market study, no assumed price sensitivity. Every rule below answers to a number we measured. It is a concept for review, not a final price list. Companion document: [VOLUME-FORECAST.md](VOLUME-FORECAST.md).
 
@@ -41,6 +41,8 @@ Definitions used throughout: occupancy = tickets sold ÷ seats offered. ARPV = a
 Prices are current at 2026-07-21. Inner Studio raised both locations from $45 to $47 on 1 July 2026, and the occupancy shown is measured over the period before that rise. Alchemy prices by location, not by time — see Finding 7.
 
 The conclusion is not that a high price creates demand. It is that in the observed range of $28 to $95, price is not what decides whether a venue fills. Product, location and reputation decide it. A price war is therefore the wrong strategy: it would remove revenue without adding visits.
+
+Xtra Clubs (Sydney), previously excluded for want of a price, is now priced from a published operator brief (Finding 8): $39 casual, or roughly $20–$26 per session once bulk packs and membership are counted, against 54% occupancy in our own data. It sits in the middle of the pattern — more evidence that price does not predict fill. It is not in the +0.16 correlation above, which uses only venues whose price we capture directly in the app.
 
 **Finding 2. Demand is very uneven across the week, and our seats are in the wrong places.** Pooled across all southern-hemisphere venues:
 
@@ -96,6 +98,17 @@ The capped-membership idea directly answers the largest risk in section 8, and t
 | Beach & river ($20) | $20 | Port Beach, Point Walter, City Beach, Fremantle | 56.9% |
 
 The cheaper group is 9 points fuller. This is not proof that a lower price fills a room — the beach sites are also better located and simpler to build, so price and product move together. But it is a clean example of the central point: **Alchemy sets price by what a site costs to build, and demand does not follow that price.** Port Beach at $20 (68% full) outsells every one of its $35 sites. It is the same lesson as Finding 1, now visible inside a single business.
+
+**Finding 8. The fastest-growing operator in the category monetises on exactly the lever this model proposes.** Xtra Clubs runs four recovery clubs in Sydney (a fifth and sixth opening, plus an eleven-site pipeline) and calls itself "Australia's fastest growing wellness brand," two years from its first club. Unlike Alchemy, its pricing is uniform across venues; the *tier*, not the site, decides what you get. Its published structure is almost identical to the design in sections 3–6:
+
+- **Peak versus off-peak is the whole model.** In the operator's own words: off-peak is unlimited on every tier; peak is rationed by tier; peak access is what you pay more for. Their peak window — Mon–Fri 4–9pm, plus weekend middays and evenings — is nearly the same as our Prime band.
+- **Membership tiers cap peak access**, from pay-per-peak-visit ($12.95) on the entry tier, to one peak visit a week, to three, to unlimited on the top tier — priced $19.95 to $54.95 per week. This is our capped ladder (section 4), built on the same peak lever.
+- **Higher tiers unlock multi-location access, longer booking windows, cheaper guest passes and a free monthly friend** — the same access-and-neighbour mechanics as section 5.
+- **Casual entry is a flat $39 regardless of time**, falling to about $20–$26 per session in bulk packs — so the discount is for commitment, not for off-peak, exactly as in our pack design.
+
+Two things follow. First, pairing their published price with *our* captured occupancy is a clean like-for-like: Bondi Junction runs at 54% in our data at an effective entry of $27.95 per week — mid-price, mid-fill, consistent with Finding 1. Second, and more important for the pitch: the operator that has scaled fastest in this category built its entire monetisation on **rationing peak and giving away off-peak** — the core mechanic of this model. That is independent market validation of the architecture, not merely its direction.
+
+A note on sources: unlike the occupancy figures in this report, which we capture directly from booking systems, the Xtra Clubs and Blue Mountains prices are read from published operator material. They are context and validation, labelled as such, and kept out of the computed correlation in Finding 1 — so the line between our proprietary data and external reference stays clean.
 
 A second lesson from Alchemy is about memberships. Its unlimited membership is $30–$40 per week, and its busiest site still only reaches 68% — an unlimited membership at a low price did not cause runaway use. Section 6 recommends capped tiers for Slow Folk anyway, but Finding 7 is the honest counter-argument: most of the market, Alchemy included, sells unlimited memberships and survives. The recommendation for caps rests on bounding *forecast risk*, not on a claim that unlimited memberships fail.
 
@@ -161,7 +174,7 @@ Anchors from our own data: Sol $30 (37% full), Aalto $35 (64%), Inner Studio $47
 | **Household** | **$88** | **4, shared between 2 people** | **2** | $30.56 | 2.84 |
 | **Resident** | **$52** | **3, residents of the building** | 1 | $24.07 | 1.76 |
 
-Effective $/visit assumes members use 72% of their entitlement (section 6). Our own benchmarks span this range: Alchemy charges $30–$40 per week unlimited, Inner Studio $50 (class-only) and $75 (full), KEEN Zurich CHF 249 per month, and Blue Mountains Sauna $56–$91 per week for 2–7 visits. Most of these are unlimited; only Blue Mountains caps by visit, as we propose.
+Effective $/visit assumes members use 72% of their entitlement (section 6). Our own benchmarks span this range: Alchemy $30–$40 per week unlimited, Xtra Clubs $19.95–$54.95 per week (off-peak unlimited, peak capped by tier), Inner Studio $50 (class-only) and $75 (full), and Blue Mountains Sauna $56–$91 per week for 2–7 visits. They split between unlimited and capped; the fastest-growing (Xtra Clubs) caps peak, as we propose.
 
 Two supporting rules, both already sketched in the Pricing tab:
 
@@ -200,7 +213,7 @@ The 1.61 figure in the sheet deserves the attention you gave it. Three separate 
 
 ### The recommended method
 
-Make frequency a **product parameter, not a behavioural guess** — the Blue Mountains structure (Finding 6). Most competitors, including Alchemy, sell unlimited memberships instead (Finding 7), so this is the minority choice; it is made to bound forecast risk, not because unlimited memberships fail. Frequency is then calculated in four steps:
+Make frequency a **product parameter, not a behavioural guess** — the Blue Mountains and Xtra Clubs structure (Findings 6 and 8). The market is split: Alchemy, Inner Studio and KEEN sell unlimited memberships, while Blue Mountains caps by visit and Xtra Clubs — the fastest-growing operator in the category — rations peak access by tier. Capping is therefore not a fringe choice; the operator scaling fastest is built on it. We recommend it here to bound forecast risk, and the market supports it. Frequency is then calculated in four steps:
 
 1. **Cap each tier.** A tier that includes 3 visits per week cannot produce 5. The contract sets the ceiling.
 2. **Estimate one number only: utilisation** — the share of entitled visits a member actually takes. This is the single unknown, and it is measurable from week one.
@@ -286,7 +299,7 @@ The data tells us where demand sits. It cannot tell us how our own customers wil
 
 1. **We have no price experiment.** Every venue in the panel holds its price nearly constant, so we can observe how full venues are at different prices, but not what happens when one venue changes its price. Findings about price levels are comparisons between venues, not proof of how our own demand will respond.
 2. **The demand shape comes from other venues.** Slow Folk's own pattern may differ, especially in the opening months. Table 1 should be rebuilt from our own bookings after 6 months.
-3. **One venue has no price data.** Xtra Clubs publishes no price in its booking data, so it is excluded from the price comparison. Alchemy publishes none either, but its per-location prices are confirmed from its website (Finding 7) and set in our config.
+3. **Some prices are external, not app-captured.** Xtra Clubs and Alchemy publish no price in their booking data. Alchemy's per-location prices come from its website (Finding 7); Xtra Clubs' come from a published operator brief (Finding 8). Both are labelled as published rates and kept separate from the occupancy figures, which we capture directly. The +0.16 correlation in Finding 1 uses only the nine venues whose price we capture, so these external prices inform the narrative without contaminating the computed result.
 4. **The membership mix (45/15/40), the tier mix and utilisation are assumptions.** The booking platforms do not tell us which visits were paid by a membership, so no competitor data can settle them. Section 6 makes them explicit inputs with a stated method, instead of one unexplained number.
 5. **Blue Mountains Sauna is a structural reference only.** It is not in our tracker, so we have its published prices but no occupancy data. Its trade is regional and weekend-led; our bands come from our own venues, not from theirs.
 6. **The simulation holds demand constant when price changes.** Given limit 1, this is the honest default: it neither assumes a discount creates demand, nor that a rise destroys it. Treat the revenue figures as the value of the current demand shape under a new price grid, not as a forecast of how customers will react.
