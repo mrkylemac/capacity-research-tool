@@ -116,9 +116,11 @@ export const GLOFOX_CONFIG = {
     namespace: 'lorebathingclub',
     name: 'Lore Bathing Club',
     timezone: 'America/New_York',
-    // Branch deactivated on Glofox (~June 2026): guest login returns "no active
-    // branch", so the weekly token refresh fails for lore and fetches 401.
-    // Reports serve the git-tracked cache (frozen at 2026-03-03).
+    // Lore moved to a different booking platform (confirmed Aug 2026) and the
+    // Glofox branch was deactivated (~June 2026): guest login returns "no
+    // active branch", so the weekly token refresh fails for lore and fetches
+    // 401. Reports serve the git-tracked cache (frozen at 2026-03-03), which
+    // is the only record of the Glofox era.
     token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzgyODkxMjM1LCJpYXQiOjE3ODAyOTkyMzUsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoibG9yZWJhdGhpbmdjbHViIiwiYnJhbmNoX2lkIjoiNjdjNWViMDllZmI0Mjc3YjA2MDg0ZWI2IiwiZmlyc3RfbmFtZSI6Ikd1ZXN0IiwibGFzdF9uYW1lIjoiVXNlciIsInR5cGUiOiJHVUVTVCIsImlzU3VwZXJBZG1pbiI6ZmFsc2V9fQ.9LaCJTJI4LOk-Y_7HEyQMV46z89deXCX1K774VE8ViI',
     tokenExpiry: '2026-07-01',
     operatingSince: '2026-01-01',
