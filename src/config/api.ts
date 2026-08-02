@@ -192,6 +192,13 @@ export const TRYBE_CONFIG = {
 // Note: ids are per-tenant — Project Mood and Ærth both having 48717/48541 is
 // coincidence, not a copy-paste error (verified against each tenant's
 // /locations endpoint).
+//
+// Data caveats (observed 2026-08-02): the API 403s date chunks older than
+// ~6 months, and the bulk classes endpoint now returns capacity 0 on nearly
+// every session for both tenants, so sanitization drops them. Full refetches
+// therefore yield little or no fresh data; fetch-all-venues merges with the
+// existing cache so the historical data (fetched while capacity was still
+// populated) is preserved rather than overwritten.
 export const MARIANATEK_CONFIG = {
   projectMood: {
     baseUrl: 'https://projectmood.marianatek.com/api/customer/v1',
