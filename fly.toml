@@ -1,4 +1,4 @@
-app = "slowfolk-sauna-house"
+app = "slowfolk-benchmark-app"
 primary_region = "syd"
 
 [build]

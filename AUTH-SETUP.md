@@ -37,23 +37,25 @@ Everything below can be done from a browser. The CLI version of the same steps
 follows further down.
 
 **1. Create the Postgres cluster.** In the Fly dashboard, go to Managed
-Postgres and create a cluster in the `syd` region. Copy the cluster ID.
+Postgres and create a cluster in the `syd` region. Open its Connect tab and copy
+the **pooled** connection string.
 
 **2. Create a deploy token.** In the Fly dashboard, choose your organisation,
 then Tokens, then create a new token.
 
-**3. Add it to GitHub.** In the repository, go to Settings, then Secrets and
-variables, then Actions, and add a secret named `FLY_API_TOKEN` with that
-value.
+**3. Add both to GitHub.** In the repository, go to Settings, then Secrets and
+variables, then Actions, and add two secrets:
+
+- `FLY_API_TOKEN` — the token from step 2
+- `DATABASE_URL` — the pooled connection string from step 1
 
 Optionally add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` for Google
 sign-in, and `GOOGLE_SHEETS_API_KEY` and `GOOGLE_SHEETS_SPREADSHEET_ID` for the
 CapEx tracker. The provisioning workflow picks them up if they exist.
 
 **4. Run the provisioning workflow.** Go to the Actions tab, choose
-**Provision Fly app**, and click Run workflow. Fill in the cluster ID from step
-1 and your admin email. It creates the app, attaches the database, and sets the
-secrets. Re-running it is safe.
+**Provision Fly app**, and click Run workflow. Give it your admin email. It
+creates the app and stages the secrets. Re-running it is safe.
 
 **5. Merge the pull request.** That triggers the deploy. The `release_command`
 in `fly.toml` creates the auth tables on the way up, so there is no separate
@@ -66,6 +68,20 @@ to the database, and every request to it fails.
 Then open `/signup` and register with the address you gave in step 4. It is in
 `ADMIN_EMAILS`, so it comes out approved and admin. Everyone else who signs up
 waits in the queue at `/admin/users`.
+
+### Why `fly mpg attach` is not used
+
+Attaching restarts the app to inject `DATABASE_URL`, and an app that has never
+been deployed has no Machines to restart. It fails with:
+
+```
+Error: failed to grab app config from existing machines
+No machines configured for this app
+```
+
+Setting the secret directly sidesteps that, works on an empty app, and means the
+first deploy already has a database to migrate. Once the app is live, `fly mpg
+attach` works normally if you would rather manage the connection that way.
 
 ### Why the tables are created on deploy
 
@@ -93,7 +109,7 @@ dashboard. SSL is on by default; no `sslmode` needed.
 
 ```bash
 fly launch --no-deploy          # reads the committed fly.toml
-fly mpg attach <cluster-id> --app slowfolk-sauna-house
+fly mpg attach <cluster-id> --app slowfolk-benchmark-app
 ```
 
 `mpg attach` sets `DATABASE_URL` on the app for you.
@@ -103,7 +119,7 @@ fly mpg attach <cluster-id> --app slowfolk-sauna-house
 ```bash
 fly secrets set \
   BETTER_AUTH_SECRET="$(openssl rand -base64 32)" \
-  BETTER_AUTH_URL="https://slowfolk-sauna-house.fly.dev" \
+  BETTER_AUTH_URL="https://slowfolk-benchmark-app.fly.dev" \
   ADMIN_EMAILS="you@example.com"
 ```
 
@@ -156,7 +172,7 @@ email and password only. To enable it:
 
 1. In Google Cloud Console create an OAuth 2.0 Client ID (Web application).
 2. Add the authorised redirect URI:
-   `https://slowfolk-sauna-house.fly.dev/api/auth/callback/google`
+   `https://slowfolk-benchmark-app.fly.dev/api/auth/callback/google`
    (and `http://localhost:3000/api/auth/callback/google` for local work).
 3. `fly secrets set GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=...`
 
