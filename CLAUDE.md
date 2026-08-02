@@ -173,15 +173,19 @@ rule existed). Put local secrets in `.env.local` instead.
 
 - **Venue polling** (`.github/workflows/poll-venues.yml`): every 30 min, timezone-aware gating (Melbourne time), polls Acuity and TryBe, commits updated cache files
 - **Token refresh** (`.github/workflows/refresh-glofox-tokens.yml`): weekly on Mondays, refreshes Glofox guest tokens, commits to `src/config/api.ts`
-- **Deploy** (`.github/workflows/deploy.yml`): deploys to Fly on push to `main`. Both workflows above call it after committing, because their `[skip ci]` commits suppress the push trigger and the data they write is baked into the image.
+- Both workflows tag their commits `[skip ci]` so they don't re-trigger themselves. That suppresses GitHub Actions, but **not** Vercel, which has no built-in support for the convention — so the data they commit deploys normally.
 
 ## Deployment
 
-Fly.io, not Vercel. Fly Managed Postgres has no public endpoint, so the app has
-to run inside the same Fly private network to reach it. `Dockerfile` builds the
-Next standalone output; `fly.toml` holds the app config. `src/data` reaches the
-image via `outputFileTracingIncludes` in `next.config.mjs` — the venue JSON is
-read at request time from `process.cwd()` paths the tracer cannot infer.
+Vercel, on push to `main`. No deploy workflow and no build config of its own.
+
+`src/data` reaches the serverless functions via `outputFileTracingIncludes` in
+`next.config.mjs`: the venue JSON is read at request time from `process.cwd()`
+paths the file tracer cannot infer, so it has to be named explicitly.
+
+The database is Postgres (Neon by default, via the Vercel integration). Nothing
+in the app is tied to that choice — it is a `DATABASE_URL` and the schema in
+`src/db/auth-schema.sql`.
 
 ## Key Documentation
 

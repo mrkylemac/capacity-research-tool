@@ -147,25 +147,18 @@ scripts/                    # Polling, token refresh, and utility scripts
 
 ## Deployment
 
-Deploys to Fly.io. The app has to live on Fly because Fly Managed Postgres is
-only reachable over Fly's private network — it has no public endpoint, so a
-Vercel-hosted copy could not connect to it.
+Deploys to Vercel on push to `main`, with no build configuration of its own.
 
-```bash
-fly deploy
-```
+Note that Vercel does not honour `[skip ci]` in commit messages, unlike GitHub
+Actions. The venue-polling and token-refresh workflows tag their commits that
+way to avoid re-triggering themselves, and those commits still deploy normally.
 
-Pushes to `main` deploy automatically via `.github/workflows/deploy.yml`, which
-needs a `FLY_API_TOKEN` repository secret. The venue-polling and token-refresh
-workflows call that deploy workflow directly after they commit, because their
-commits carry `[skip ci]` and the data they write is baked into the image.
-
-First-time setup — creating the database, wiring secrets, creating the auth
-tables — is in [`AUTH-SETUP.md`](./AUTH-SETUP.md).
+Sign-in needs a Postgres database and three environment variables. Setting that
+up is in [`AUTH-SETUP.md`](./AUTH-SETUP.md).
 
 ## Key Documentation
 
-- [`AUTH-SETUP.md`](./AUTH-SETUP.md) — sign-in, manual approval, Fly + Postgres setup
+- [`AUTH-SETUP.md`](./AUTH-SETUP.md) — sign-in, manual approval, Neon + Postgres setup
 - [`ADDING-A-VENUE.md`](./ADDING-A-VENUE.md) — playbook for integrating new booking platforms
 - [`FORECAST-SETUP.md`](./FORECAST-SETUP.md) — Google Sheets forecast integration
 - [`PLAN.md`](./PLAN.md) — CapEx tracker implementation plan

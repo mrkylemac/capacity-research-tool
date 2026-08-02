@@ -69,8 +69,6 @@ jobs:
       needs.gate.outputs.poll-trybe == 'true' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    outputs:
-      committed: ${{ steps.commit.outputs.committed }}
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
@@ -90,9 +88,7 @@ jobs:
         run: yarn poll:trybe
 
       - name: Commit updated cache files
-        id: commit
         run: |
-          echo "committed=false" >> "$GITHUB_OUTPUT"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json
@@ -106,7 +102,6 @@ jobs:
           # refresh workflow) so the push doesn't lose to a race condition.
           for attempt in 1 2 3; do
             if git push; then
-              echo "committed=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             echo "Push attempt $attempt failed; rebasing and retrying"
@@ -114,12 +109,3 @@ jobs:
           done
           echo "Push failed after 3 attempts" >&2
           exit 1
-
-  # The commit above carries [skip ci], so the push trigger on deploy.yml never
-  # fires for it. Call the deploy explicitly instead, otherwise fresh session
-  # data would sit in the repo without ever reaching the running app.
-  deploy:
-    needs: poll
-    if: needs.poll.outputs.committed == 'true'
-    uses: ./.github/workflows/deploy.yml
-    secrets: inherit

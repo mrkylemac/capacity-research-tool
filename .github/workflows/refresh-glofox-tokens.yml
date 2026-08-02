@@ -16,8 +16,6 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    outputs:
-      committed: ${{ steps.commit.outputs.committed }}
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
@@ -32,9 +30,7 @@ jobs:
         run: yarn refresh:glofox
 
       - name: Commit updated tokens
-        id: commit
         run: |
-          echo "committed=false" >> "$GITHUB_OUTPUT"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/config/api.ts
@@ -48,7 +44,6 @@ jobs:
           # concurrent venue poll) so the push doesn't lose to a race.
           for attempt in 1 2 3; do
             if git push; then
-              echo "committed=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             echo "Push attempt $attempt failed; rebasing and retrying"
@@ -56,12 +51,3 @@ jobs:
           done
           echo "Push failed after 3 attempts" >&2
           exit 1
-
-  # Tokens are compiled into the image, so a refresh only takes effect once the
-  # app is redeployed. The commit above carries [skip ci], which suppresses the
-  # push trigger on deploy.yml.
-  deploy:
-    needs: refresh
-    if: needs.refresh.outputs.committed == 'true'
-    uses: ./.github/workflows/deploy.yml
-    secrets: inherit
