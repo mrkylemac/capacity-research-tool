@@ -5,9 +5,9 @@
   "venueName": "Sense of Self",
   "dateRange": {
     "from": "2026-03-04T14:30:00+11:00",
-    "to": "2026-11-06T20:45:00+11:00"
+    "to": "2026-11-07T20:45:00+11:00"
   },
-  "cachedAt": "2026-08-08T11:57:28.030Z",
+  "cachedAt": "2026-08-09T11:30:57.811Z",
   "sessions": [
     {
       "id": "6900046a85652a9a670c2bbd",
@@ -77740,7 +77740,7 @@
       "endsAt": "2026-08-10T16:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 3,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -77788,7 +77788,7 @@
       "endsAt": "2026-08-10T17:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 3,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -77836,7 +77836,7 @@
       "endsAt": "2026-08-10T18:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -77860,7 +77860,7 @@
       "endsAt": "2026-08-10T19:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -77944,7 +77944,7 @@
       "endsAt": "2026-08-10T21:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -77980,7 +77980,7 @@
       "endsAt": "2026-08-10T22:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 2,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78040,7 +78040,7 @@
       "endsAt": "2026-08-11T09:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78064,7 +78064,7 @@
       "endsAt": "2026-08-11T09:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78100,7 +78100,7 @@
       "endsAt": "2026-08-11T10:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78268,7 +78268,7 @@
       "endsAt": "2026-08-11T15:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 4,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78316,7 +78316,7 @@
       "endsAt": "2026-08-11T17:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 4,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78328,7 +78328,7 @@
       "endsAt": "2026-08-11T17:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78388,7 +78388,7 @@
       "endsAt": "2026-08-11T19:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 3,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78412,7 +78412,7 @@
       "endsAt": "2026-08-11T19:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 2,
+      "ticketsSold": 0,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78448,7 +78448,7 @@
       "endsAt": "2026-08-11T20:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 1,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78520,7 +78520,7 @@
       "endsAt": "2026-08-11T22:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78532,7 +78532,7 @@
       "endsAt": "2026-08-11T22:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78640,7 +78640,7 @@
       "endsAt": "2026-08-12T10:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78688,7 +78688,7 @@
       "endsAt": "2026-08-12T12:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 4,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78772,7 +78772,7 @@
       "endsAt": "2026-08-12T14:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 3,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -78988,7 +78988,7 @@
       "endsAt": "2026-08-12T20:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -79096,7 +79096,7 @@
       "endsAt": "2026-08-13T08:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -79144,7 +79144,7 @@
       "endsAt": "2026-08-13T09:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -79420,7 +79420,7 @@
       "endsAt": "2026-08-13T17:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -79456,7 +79456,7 @@
       "endsAt": "2026-08-13T18:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -79684,7 +79684,7 @@
       "endsAt": "2026-08-14T09:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -79708,7 +79708,7 @@
       "endsAt": "2026-08-14T10:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -80248,7 +80248,7 @@
       "endsAt": "2026-08-15T10:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -81436,7 +81436,7 @@
       "endsAt": "2026-08-17T18:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -81532,7 +81532,7 @@
       "endsAt": "2026-08-17T21:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -81736,7 +81736,7 @@
       "endsAt": "2026-08-18T11:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -81772,7 +81772,7 @@
       "endsAt": "2026-08-18T12:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -81916,7 +81916,7 @@
       "endsAt": "2026-08-18T16:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -82072,7 +82072,7 @@
       "endsAt": "2026-08-18T21:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -82456,7 +82456,7 @@
       "endsAt": "2026-08-19T16:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -82492,7 +82492,7 @@
       "endsAt": "2026-08-19T17:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -82636,7 +82636,7 @@
       "endsAt": "2026-08-19T21:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -83260,7 +83260,7 @@
       "endsAt": "2026-08-21T08:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -83332,7 +83332,7 @@
       "endsAt": "2026-08-21T10:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -83572,7 +83572,7 @@
       "endsAt": "2026-08-21T17:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -83884,7 +83884,7 @@
       "endsAt": "2026-08-22T11:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -84412,7 +84412,7 @@
       "endsAt": "2026-08-23T10:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -84796,7 +84796,7 @@
       "endsAt": "2026-08-23T21:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -85000,7 +85000,7 @@
       "endsAt": "2026-08-24T17:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -85384,7 +85384,7 @@
       "endsAt": "2026-08-25T12:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -85444,7 +85444,7 @@
       "endsAt": "2026-08-25T14:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -85624,7 +85624,7 @@
       "endsAt": "2026-08-25T19:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -86992,7 +86992,7 @@
       "endsAt": "2026-08-28T12:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -89152,7 +89152,7 @@
       "endsAt": "2026-09-01T19:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -89452,7 +89452,7 @@
       "endsAt": "2026-09-02T14:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -91204,7 +91204,7 @@
       "endsAt": "2026-09-06T17:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -91300,7 +91300,7 @@
       "endsAt": "2026-09-06T21:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 3,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -91660,7 +91660,7 @@
       "endsAt": "2026-09-08T09:15:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 1,
+      "ticketsSold": 0,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -92704,7 +92704,7 @@
       "endsAt": "2026-09-10T17:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 0,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -93700,7 +93700,7 @@
       "endsAt": "2026-09-12T22:30:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -93952,7 +93952,7 @@
       "endsAt": "2026-09-13T16:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 2,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -93988,7 +93988,7 @@
       "endsAt": "2026-09-13T18:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -96268,7 +96268,7 @@
       "endsAt": "2026-09-19T15:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -96688,7 +96688,7 @@
       "endsAt": "2026-09-20T15:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -101332,7 +101332,7 @@
       "endsAt": "2026-10-02T12:00:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 65,
       "location": "Collingwood",
       "inPerson": true
@@ -101824,7 +101824,7 @@
       "endsAt": "2026-10-03T15:45:00+10:00",
       "durationMinutes": 120,
       "capacity": 4,
-      "ticketsSold": 0,
+      "ticketsSold": 4,
       "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
@@ -115218,6 +115218,426 @@
       "capacity": 4,
       "ticketsSold": 0,
       "fixedTicketPrice": 65,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "6a30c4b01c1373357a008d56",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T06:30:00+11:00",
+      "endsAt": "2026-11-07T08:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "6a30c6129248b89fcc0d9032",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T06:45:00+11:00",
+      "endsAt": "2026-11-07T08:45:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "691bbde46ec82f13a600a9bf",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T07:00:00+11:00",
+      "endsAt": "2026-11-07T09:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "691bbdff76abb74c27047028",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T07:15:00+11:00",
+      "endsAt": "2026-11-07T09:15:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b097af8673a2032ee4",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T07:30:00+11:00",
+      "endsAt": "2026-11-07T09:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b08cf1b3bbe80d9221",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T07:45:00+11:00",
+      "endsAt": "2026-11-07T09:45:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b00f9cb319dd0216cc",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T08:00:00+11:00",
+      "endsAt": "2026-11-07T10:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b07b8628ef660523a6",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T08:30:00+11:00",
+      "endsAt": "2026-11-07T10:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b0003ccb0ab30cc9bb",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T09:00:00+11:00",
+      "endsAt": "2026-11-07T11:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b089852e75ef062e0a",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T09:15:00+11:00",
+      "endsAt": "2026-11-07T11:15:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b0aab7103cd20b90eb",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T09:30:00+11:00",
+      "endsAt": "2026-11-07T11:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b00d9330c4220a93de",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T10:00:00+11:00",
+      "endsAt": "2026-11-07T12:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b04dc1d552c40807da",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T10:15:00+11:00",
+      "endsAt": "2026-11-07T12:15:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b0053aa0c10102d75c",
+      "sessionName": "Quiet Morning Bathhouse",
+      "startsAt": "2026-11-07T10:30:00+11:00",
+      "endsAt": "2026-11-07T12:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b1f850d33e670cd729",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T12:00:00+11:00",
+      "endsAt": "2026-11-07T14:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b1ac2453a11107f8a5",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T12:30:00+11:00",
+      "endsAt": "2026-11-07T14:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b1a7930fe54b0cc9f8",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T13:00:00+11:00",
+      "endsAt": "2026-11-07T15:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b13af3e2ce25051875",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T13:45:00+11:00",
+      "endsAt": "2026-11-07T15:45:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b10f9cb319dd0216cd",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T14:30:00+11:00",
+      "endsAt": "2026-11-07T16:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b127690bbdb9013437",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T14:45:00+11:00",
+      "endsAt": "2026-11-07T16:45:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b1197813d4a80d1b1c",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T15:00:00+11:00",
+      "endsAt": "2026-11-07T17:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b129796f6aaf02c442",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T15:45:00+11:00",
+      "endsAt": "2026-11-07T17:45:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b189852e75ef062e1c",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T16:00:00+11:00",
+      "endsAt": "2026-11-07T18:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b12d0d05c8be08098a",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T16:15:00+11:00",
+      "endsAt": "2026-11-07T18:15:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b1a3f35d7cfe07aca3",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T17:30:00+11:00",
+      "endsAt": "2026-11-07T19:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b1415717d2a00ecdcd",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T17:45:00+11:00",
+      "endsAt": "2026-11-07T19:45:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b129fbf70c670df82a",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T18:00:00+11:00",
+      "endsAt": "2026-11-07T20:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b16203e226940c41bc",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T19:00:00+11:00",
+      "endsAt": "2026-11-07T21:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b17b8628ef660523b3",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T19:15:00+11:00",
+      "endsAt": "2026-11-07T21:15:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b127690bbdb9013438",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T19:30:00+11:00",
+      "endsAt": "2026-11-07T21:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b17d3acfaaba05bd02",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T19:45:00+11:00",
+      "endsAt": "2026-11-07T21:45:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b11ee7161ec70af25e",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T20:00:00+11:00",
+      "endsAt": "2026-11-07T22:00:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b10898302d8e0f5cee",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T20:15:00+11:00",
+      "endsAt": "2026-11-07T22:15:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 2,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b1954e70ed330f33b8",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T20:30:00+11:00",
+      "endsAt": "2026-11-07T22:30:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
+      "location": "Collingwood",
+      "inPerson": true
+    },
+    {
+      "id": "690d44b14a4d7b9ed30e0bc7",
+      "sessionName": "Bathhouse Session",
+      "startsAt": "2026-11-07T20:45:00+11:00",
+      "endsAt": "2026-11-07T22:45:00+11:00",
+      "durationMinutes": 120,
+      "capacity": 4,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 75,
       "location": "Collingwood",
       "inPerson": true
     }
