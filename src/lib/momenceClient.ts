@@ -101,14 +101,20 @@ class MomenceClient {
    * They are filtered out by sanitizeSessions() after all pages are fetched.
    */
   private transformResponse(data: any, params: SessionsQueryParams): MomenceSessionsResponse {
-    // Handle response with 'payload' array (Momence readonly API format)
+    // Handle response with 'payload' array (Momence readonly API format).
+    // Pagination metadata moved into a nested `pagination` object
+    // ({ page, pageSize, totalCount }) — fall back to the legacy top-level
+    // fields for older response shapes.
     if (data.payload && Array.isArray(data.payload)) {
+      const pagination = data.pagination || {};
+      const pageSize = pagination.pageSize || data.pageSize || params.pageSize || API_CONFIG.pageSize;
+      const totalCount = pagination.totalCount ?? data.total ?? data.payload.length;
       return {
         sessions: data.payload.map(this.transformSession),
-        totalCount: data.total || data.payload.length,
-        page: (data.page ?? 0) + 1,
-        pageSize: data.pageSize || params.pageSize || API_CONFIG.pageSize,
-        totalPages: data.totalPages || Math.ceil((data.total || data.payload.length) / (params.pageSize || API_CONFIG.pageSize)),
+        totalCount,
+        page: (pagination.page ?? data.page ?? 0) + 1,
+        pageSize,
+        totalPages: data.totalPages || Math.ceil(totalCount / pageSize),
       };
     }
 

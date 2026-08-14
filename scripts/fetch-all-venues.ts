@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { format, subYears } from 'date-fns';
-import { VENUES, getGlofoxConfig, MARIANATEK_CONFIG, type VenueConfig } from '../src/config/api';
+import { VENUES, getGlofoxConfig, MARIANATEK_CONFIG, INNER_STUDIO_CONFIG, type VenueConfig } from '../src/config/api';
 import { momenceClient } from '../src/lib/momenceClient';
 import { fetchMarianaTekSessions } from '../src/lib/marianatekClient';
 import { sanitizeSessions, logDataQuality } from '../src/lib/utils';
@@ -17,8 +17,17 @@ import type { MomenceSession } from '../src/types/momence';
 import type { GlofoxEvent } from '../src/types/glofox';
 import type { CachedVenueEntry } from '../src/lib/venueCache';
 
-const DATA_WINDOW_YEARS = 2;
+const DATA_WINDOW_YEARS = 4;
 const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
+
+/**
+ * Multi-location Momence venues keyed by combined venue id. The venue id is
+ * not itself a Momence host — each location's hostId is fetched separately and
+ * sessions are labelled with the location name (mirrors useSessions.ts).
+ */
+const MULTI_LOCATION_MOMENCE: Record<string, { name: string; locations: readonly { hostId: string; name: string }[] }> = {
+  innerstudio: INNER_STUDIO_CONFIG,
+};
 
 function getDateWindow() {
   const to = new Date();
@@ -108,7 +117,8 @@ async function fetchAllGlofoxEvents(venue: VenueConfig): Promise<MomenceSession[
     const response = await fetchGlofoxPage(startTs, endTs, token, config.branchId, config.timezone, page);
     allEvents.push(...response.data);
     console.log(`  Glofox page ${page}: ${response.data.length} events (total: ${allEvents.length}/${response.total_count})`);
-    if (!response.has_more || page >= 100) break;
+    // Runaway guard well above the largest known venue (~360 pages at 100/page)
+    if (!response.has_more || page >= 500) break;
     page++;
   }
 
@@ -160,6 +170,52 @@ async function fetchAllMomenceSessions(venue: VenueConfig, from: Date, to: Date)
   return all;
 }
 
+// ── Cached-history merge ──────────────────────────────────────────────────────
+
+/**
+ * Merge freshly fetched sessions with the existing cache file, retaining
+ * cached sessions that fall outside the fetch window [from, to]. Used for
+ * platforms whose API serves a rolling history horizon (MarianaTek rejects
+ * date chunks older than ~6 months with a 403), where a plain rewrite would
+ * permanently lose history the API can no longer serve. Inside the window the
+ * fresh fetch wins wholesale, so sessions cancelled since the last fetch are
+ * still dropped.
+ */
+function mergeWithCachedHistory(
+  venue: VenueConfig,
+  fresh: MomenceSession[],
+  to: Date,
+): MomenceSession[] {
+  const cachePath = path.join(VENUES_DIR, `${venue.id}-${venue.platform}.json`);
+  if (!fs.existsSync(cachePath)) return fresh;
+
+  let cached: CachedVenueEntry;
+  try {
+    cached = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+  } catch {
+    return fresh;
+  }
+
+  // The horizon is the earliest session the API actually served this run.
+  // With no fresh sessions at all (total API failure) the whole cache is kept.
+  const freshIds = new Set(fresh.map(s => s.id));
+  const horizon = fresh.length
+    ? Math.min(...fresh.map(s => new Date(s.startsAt).getTime()))
+    : to.getTime();
+  const windowEnd = to.getTime();
+
+  const retained = (cached.sessions || []).filter(s => {
+    if (freshIds.has(s.id)) return false;
+    const t = new Date(s.startsAt).getTime();
+    return t < horizon || t > windowEnd;
+  });
+
+  if (retained.length > 0) {
+    console.log(`  ↩ Retained ${retained.length} cached sessions outside the API's serveable window`);
+  }
+  return [...retained, ...fresh].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+}
+
 // ── Process and write a single venue ─────────────────────────────────────────
 
 async function processVenue(venue: VenueConfig): Promise<void> {
@@ -170,14 +226,30 @@ async function processVenue(venue: VenueConfig): Promise<void> {
   let hostInfoName = venue.name;
 
   if (venue.platform === 'momence') {
-    // Fetch host info for the display name
-    const hostInfo = await momenceClient.fetchHostInfo(venue.id);
-    if (hostInfo?.name) hostInfoName = hostInfo.name;
+    const multiConfig = MULTI_LOCATION_MOMENCE[venue.id];
 
-    const allRaw = await fetchAllMomenceSessions(venue, from, to);
-    const { sessions, report } = sanitizeSessions(allRaw);
-    logDataQuality(`Momence[${venue.id}]`, report);
-    rawSessions = sessions;
+    if (multiConfig) {
+      // Multi-location venue: fetch each location's host and label sessions
+      hostInfoName = multiConfig.name;
+      const allRaw: MomenceSession[] = [];
+      for (const loc of multiConfig.locations) {
+        console.log(`  Location: ${loc.name} (host ${loc.hostId})`);
+        const locRaw = await fetchAllMomenceSessions({ ...venue, id: loc.hostId }, from, to);
+        allRaw.push(...locRaw.map(s => ({ ...s, location: loc.name })));
+      }
+      const { sessions, report } = sanitizeSessions(allRaw);
+      logDataQuality(`Momence[${venue.id}]`, report);
+      rawSessions = sessions;
+    } else {
+      // Fetch host info for the display name
+      const hostInfo = await momenceClient.fetchHostInfo(venue.id);
+      if (hostInfo?.name) hostInfoName = hostInfo.name;
+
+      const allRaw = await fetchAllMomenceSessions(venue, from, to);
+      const { sessions, report } = sanitizeSessions(allRaw);
+      logDataQuality(`Momence[${venue.id}]`, report);
+      rawSessions = sessions;
+    }
 
   } else if (venue.platform === 'glofox') {
     rawSessions = await fetchAllGlofoxEvents(venue);
@@ -185,7 +257,7 @@ async function processVenue(venue: VenueConfig): Promise<void> {
   } else if (venue.platform === 'marianatek') {
     const configKey = venue.id === 'aerth' ? 'aerthSaunas' : 'projectMood';
     const config = MARIANATEK_CONFIG[configKey];
-    rawSessions = await fetchMarianaTekSessions({
+    const freshSessions = await fetchMarianaTekSessions({
       baseUrl: config.baseUrl,
       locationId: config.locationId,
       regionId: config.regionId,
@@ -194,6 +266,9 @@ async function processVenue(venue: VenueConfig): Promise<void> {
       venueName: config.name,
       classTypeFilters: config.classTypeFilters,
     });
+    // MarianaTek 403s date chunks beyond its history horizon — keep cached
+    // sessions from before that horizon rather than losing them on rewrite.
+    rawSessions = mergeWithCachedHistory(venue, freshSessions, to);
   } else {
     // Platforms handled by their own poll scripts (trybe, acuity, portal,
     // xtraclubs, hapana, bsport). Writing here would clobber their cache
