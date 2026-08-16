@@ -2,11 +2,19 @@ name: Poll future-only venues
 
 on:
   schedule:
-    # Run every 30 min; a lightweight gate step checks Melbourne local time
+    # Run every 15 min; a lightweight gate step checks Melbourne local time
     # and only triggers the actual poll when a session is about to start.
     # DST (AEDT ↔ AEST) is handled automatically via TZ=Australia/Melbourne.
-    - cron: '*/30 * * * *'
-  workflow_dispatch: # Always polls both venues
+    #
+    # 15 rather than 30 is set by Navia: its bookable entries expire every 15
+    # minutes and a slot vanishes from the feed the instant it starts, so the
+    # last pre-start read is the only record that will ever exist.
+    #
+    # Acuity and TryBe now fire two or three times per 35-minute window instead
+    # of once. That is extra freshness rather than a problem, and the repo is
+    # public so standard runners cost nothing.
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Always polls every venue below
 
 permissions:
   contents: write
@@ -24,6 +32,10 @@ jobs:
     outputs:
       poll-acuity: ${{ steps.check.outputs.acuity }}
       poll-trybe: ${{ steps.check.outputs.trybe }}
+      poll-punchpass: ${{ steps.check.outputs.punchpass }}
+      punchpass-deep: ${{ steps.check.outputs.punchpass_deep }}
+      poll-navia: ${{ steps.check.outputs.navia }}
+      navia-deep: ${{ steps.check.outputs.navia_deep }}
     steps:
       - id: check
         run: |
@@ -58,15 +70,70 @@ jobs:
             echo "  TryBe end-of-day window — will poll"
           fi
 
+          # Punchpass (Blue Mountains Sauna) — Sydney local time.
+          # Punchpass removes its "N spots left" badge the moment a session
+          # starts, so the last read before a start is the only chance to
+          # capture that session's utilisation. Blue Mountains runs a session
+          # every 30 min from 07:00 to 19:00, so rather than enumerating start
+          # times the gate is simply the operating window, opening 35 min early
+          # so the 07:00 session is read before it begins.
+          SYD_H=$(TZ=Australia/Sydney date +%-H)
+          SYD_M=$(TZ=Australia/Sydney date +%-M)
+          SYD_NOW=$((SYD_H * 60 + SYD_M))
+          PUNCHPASS=false
+          if [ $SYD_NOW -ge 385 ] && [ $SYD_NOW -le 1140 ]; then
+            PUNCHPASS=true
+            echo "  Punchpass within operating window ($(TZ=Australia/Sydney date +%H:%M) Sydney) — will poll"
+          fi
+
+          # Once a day, while the venue is closed, also re-probe the far-future
+          # capacity oracle and re-read back history. Neither changes often and
+          # both cost six extra 1.1MB requests, so they stay off the 30-min path.
+          PUNCHPASS_DEEP=false
+          if [ $SYD_NOW -ge 180 ] && [ $SYD_NOW -lt 210 ]; then
+            PUNCHPASS_DEEP=true
+            PUNCHPASS=true
+            echo "  Punchpass daily deep refresh window — will re-probe oracle and back history"
+          fi
+
+          # Navia (Byron Bay + Prahran). Both sit in the same local time
+          # year-round (Sydney and Melbourne share DST rules), so the Melbourne
+          # clock above covers both. Prahran runs 06:00-21:00 and Byron
+          # 07:00-17:00, so the gate is the combined operating window, opening
+          # 35 min early so the first sitting is read before it begins.
+          #   05:25 = 325     21:00 = 1260
+          NAVIA=false
+          if [ $NOW -ge 325 ] && [ $NOW -le 1260 ]; then
+            NAVIA=true
+            echo "  Navia within operating window — will poll"
+          fi
+
+          # Once a day, while both venues are closed, walk the full 35-day
+          # forward horizon instead of the 3-day hot window: 72 requests rather
+          # than 6, so it stays off the every-15-minutes path.
+          #   03:00 = 180     03:15 = 195
+          NAVIA_DEEP=false
+          if [ $NOW -ge 180 ] && [ $NOW -lt 195 ]; then
+            NAVIA_DEEP=true
+            NAVIA=true
+            echo "  Navia daily deep refresh window — will walk the full forward horizon"
+          fi
+
+          echo "navia=$NAVIA" >> "$GITHUB_OUTPUT"
+          echo "navia_deep=$NAVIA_DEEP" >> "$GITHUB_OUTPUT"
           echo "acuity=$ACUITY" >> "$GITHUB_OUTPUT"
           echo "trybe=$TRYBE" >> "$GITHUB_OUTPUT"
-          echo "Result — Acuity: $ACUITY, TryBe: $TRYBE"
+          echo "punchpass=$PUNCHPASS" >> "$GITHUB_OUTPUT"
+          echo "punchpass_deep=$PUNCHPASS_DEEP" >> "$GITHUB_OUTPUT"
+          echo "Result — Acuity: $ACUITY, TryBe: $TRYBE, Punchpass: $PUNCHPASS (deep: $PUNCHPASS_DEEP), Navia: $NAVIA (deep: $NAVIA_DEEP)"
 
   poll:
     needs: gate
     if: >-
       needs.gate.outputs.poll-acuity == 'true' ||
       needs.gate.outputs.poll-trybe == 'true' ||
+      needs.gate.outputs.poll-punchpass == 'true' ||
+      needs.gate.outputs.poll-navia == 'true' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -87,17 +154,28 @@ jobs:
         if: needs.gate.outputs.poll-trybe == 'true' || github.event_name == 'workflow_dispatch'
         run: yarn poll:trybe
 
+      - name: Poll Punchpass venues (Blue Mountains Sauna)
+        if: needs.gate.outputs.poll-punchpass == 'true' || github.event_name == 'workflow_dispatch'
+        run: yarn poll:punchpass ${{ (needs.gate.outputs.punchpass-deep == 'true' || github.event_name == 'workflow_dispatch') && '--deep' || '' }}
+
+      - name: Poll Navia venues (Byron Bay + Prahran)
+        if: needs.gate.outputs.poll-navia == 'true' || github.event_name == 'workflow_dispatch'
+        run: yarn poll:navia ${{ (needs.gate.outputs.navia-deep == 'true' || github.event_name == 'workflow_dispatch') && '--deep' || '' }}
+
       - name: Commit updated cache files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json
+          git add src/data/venues/bmsauna-punchpass.json src/data/venues/bmsauna-punchpass-oracle.json
+          git add src/data/venues/naviabyron-navia.json src/data/venues/naviabyron-navia-ledger.json
+          git add src/data/venues/naviaprahran-navia.json src/data/venues/naviaprahran-navia-ledger.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-          git commit -m "chore: poll Acuity + TryBe session data ($TIMESTAMP) [skip ci]"
+          git commit -m "chore: poll Acuity + TryBe + Punchpass + Navia session data ($TIMESTAMP) [skip ci]"
           # Rebase against any commits that landed during the run (e.g. token
           # refresh workflow) so the push doesn't lose to a race condition.
           for attempt in 1 2 3; do

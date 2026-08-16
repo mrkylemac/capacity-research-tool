@@ -27,6 +27,8 @@ export interface DataQualityReport {
     invalidDate: number;
     zeroCapacity: number;
     outsideOperatingHours: number;
+    /** Sessions whose ticketsSold was a placeholder, not an observation. */
+    unknownUtilisation?: number;
   };
   clamped: {
     ticketsExceededCapacity: number;
@@ -53,7 +55,7 @@ export function sanitizeSessions(
   const report: DataQualityReport = {
     inputCount: sessions.length,
     outputCount: 0,
-    dropped: { cancelled: 0, invalidDate: 0, zeroCapacity: 0, outsideOperatingHours: 0 },
+    dropped: { cancelled: 0, invalidDate: 0, zeroCapacity: 0, outsideOperatingHours: 0, unknownUtilisation: 0 },
     clamped: { ticketsExceededCapacity: 0, capacityNormalized: 0 },
   };
 
@@ -61,6 +63,13 @@ export function sanitizeSessions(
     // Drop cancelled sessions (Momence sets isCancelled; other platforms leave undefined)
     if (s.isCancelled) {
       report.dropped.cancelled++;
+      return acc;
+    }
+    // Drop sessions whose booking count is a placeholder rather than an observation.
+    // Writing zero for these would read as an empty session and bias every average
+    // downward. Explicit `false` only — undefined means "known".
+    if (s.utilisationKnown === false) {
+      report.dropped.unknownUtilisation = (report.dropped.unknownUtilisation ?? 0) + 1;
       return acc;
     }
     // Drop sessions with invalid/missing startsAt
@@ -159,6 +168,7 @@ export function logDataQuality(label: string, report: DataQualityReport): void {
     dropped.invalidDate +
     dropped.zeroCapacity +
     dropped.outsideOperatingHours +
+    (dropped.unknownUtilisation ?? 0) +
     clamped.ticketsExceededCapacity +
     clamped.capacityNormalized;
 
@@ -172,6 +182,7 @@ export function logDataQuality(label: string, report: DataQualityReport): void {
     (dropped.invalidDate ? ` | ${dropped.invalidDate} dropped (invalid date)` : '') +
     (dropped.zeroCapacity ? ` | ${dropped.zeroCapacity} dropped (zero capacity)` : '') +
     (dropped.outsideOperatingHours ? ` | ${dropped.outsideOperatingHours} dropped (outside hours)` : '') +
+    (dropped.unknownUtilisation ? ` | ${dropped.unknownUtilisation} dropped (utilisation unknown)` : '') +
     (clamped.ticketsExceededCapacity ? ` | ${clamped.ticketsExceededCapacity} clamped (tickets > capacity)` : '') +
     (clamped.capacityNormalized ? ` | ${clamped.capacityNormalized} normalized (capacity variance)` : '')
   );

@@ -1,0 +1,386 @@
+[
+  {
+    "id": "1-2026-08-18T21:00:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-18T21:00:00.000Z",
+    "endTime": "2026-08-18T23:00:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-18T21:15:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-18T21:15:00.000Z",
+    "endTime": "2026-08-18T23:15:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-18T21:30:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-18T21:30:00.000Z",
+    "endTime": "2026-08-18T23:30:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-18T21:45:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-18T21:45:00.000Z",
+    "endTime": "2026-08-18T23:45:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-18T23:00:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-18T23:00:00.000Z",
+    "endTime": "2026-08-19T01:00:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-18T23:15:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-18T23:15:00.000Z",
+    "endTime": "2026-08-19T01:15:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-18T23:30:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-18T23:30:00.000Z",
+    "endTime": "2026-08-19T01:30:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-18T23:45:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-18T23:45:00.000Z",
+    "endTime": "2026-08-19T01:45:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T01:00:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T01:00:00.000Z",
+    "endTime": "2026-08-19T03:00:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T01:15:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T01:15:00.000Z",
+    "endTime": "2026-08-19T03:15:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T01:30:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T01:30:00.000Z",
+    "endTime": "2026-08-19T03:30:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T01:45:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T01:45:00.000Z",
+    "endTime": "2026-08-19T03:45:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T03:00:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T03:00:00.000Z",
+    "endTime": "2026-08-19T05:00:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T03:15:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T03:15:00.000Z",
+    "endTime": "2026-08-19T05:15:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T03:30:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T03:30:00.000Z",
+    "endTime": "2026-08-19T05:30:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T03:45:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T03:45:00.000Z",
+    "endTime": "2026-08-19T05:45:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T05:00:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T05:00:00.000Z",
+    "endTime": "2026-08-19T07:00:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T05:15:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T05:15:00.000Z",
+    "endTime": "2026-08-19T07:15:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T05:30:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T05:30:00.000Z",
+    "endTime": "2026-08-19T07:30:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T05:45:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T05:45:00.000Z",
+    "endTime": "2026-08-19T07:45:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T07:00:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T07:00:00.000Z",
+    "endTime": "2026-08-19T09:00:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T07:15:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T07:15:00.000Z",
+    "endTime": "2026-08-19T09:15:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T07:30:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T07:30:00.000Z",
+    "endTime": "2026-08-19T09:30:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  },
+  {
+    "id": "1-2026-08-19T07:45:00.000Z-1",
+    "serviceOptionId": 1,
+    "locationId": 1,
+    "startTime": "2026-08-19T07:45:00.000Z",
+    "endTime": "2026-08-19T09:45:00.000Z",
+    "availableCapacity": 4,
+    "maxCapacity": 4,
+    "isBookable": true,
+    "bufferTimeMinutes": 0,
+    "resource": {
+      "id": 5,
+      "name": "Communal Bathhouse"
+    },
+    "occupancyLevel": "available"
+  }
+]

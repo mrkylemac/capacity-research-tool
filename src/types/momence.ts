@@ -13,6 +13,37 @@ export interface MomenceSession {
   inPerson: boolean;
   level?: string;
   isCancelled?: boolean;
+  /**
+   * False when this record's `ticketsSold` could not be established and is a
+   * placeholder rather than an observation. `sanitizeSessions` drops these so a
+   * placeholder zero never reads as an empty session and drags down an average.
+   *
+   * Set by platforms that publish availability only inside a window: Punchpass
+   * hides its "N spots left" badge the moment a session starts, so any session
+   * first seen after it began has an unknowable booking count. Undefined means
+   * "known", so existing platforms are unaffected.
+   */
+  utilisationKnown?: boolean;
+  /**
+   * Where `capacity` came from. Platforms that publish a seat total leave this
+   * undefined; anything derived says so, because a derived denominator should
+   * be visibly labelled wherever it is surfaced rather than passing as a
+   * reported one.
+   *
+   * `derived-grid` is Navia: the feed publishes staggered entry counters, not
+   * sessions, so a sitting's capacity is the sum of its entries' caps.
+   */
+  capacitySource?: 'reported' | 'derived-grid' | 'max-observed' | 'static-config' | 'unknown';
+  /** Where `ticketsSold` came from. */
+  soldSource?: 'reported' | 'reported-remaining' | 'derived-grid' | 'unknown';
+  /**
+   * What a "seat" means at this venue. Only `seats` is comparable to the
+   * benchmark averages — `slot-occupancy` counts bookings against a schedule
+   * with no seat denominator (private hire, rolling-entry grids).
+   */
+  measure?: 'seats' | 'concurrent-occupancy' | 'slot-occupancy';
+  /** Confidence in `capacity`. Derived denominators are at best 'medium'. */
+  confidence?: 'high' | 'medium' | 'low';
 }
 
 export interface MomenceSessionsResponse {

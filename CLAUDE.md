@@ -4,7 +4,7 @@ This file provides context for AI assistants working on the Slow Folk Sauna Capa
 
 ## Project Overview
 
-A Next.js application that compares real venue booking data against financial models. It pulls session data from multiple venue booking platforms (Momence, Glofox, MarianaTeK, TryBe, Acuity, Portal, Xtra Clubs, Hapana, bsport) and provides KPI metrics for sauna/wellness venues.
+A Next.js application that compares real venue booking data against financial models. It pulls session data from multiple venue booking platforms (Momence, Glofox, MarianaTeK, TryBe, Acuity, Portal, Xtra Clubs, Hapana, bsport, Punchpass, Navia) and provides KPI metrics for sauna/wellness venues.
 
 The project has three phases:
 - **Phase 1 (in progress):** CapEx Tracker — budget tracking, burn rate, variance analysis
@@ -35,8 +35,12 @@ yarn test:watch       # Run tests in watch mode
 yarn fetch-venues     # Bulk fetch all venue data
 yarn poll:acuity      # Poll Acuity venues (used by GitHub Actions)
 yarn poll:trybe       # Poll TryBe venues (used by GitHub Actions)
+yarn poll:punchpass   # Poll Punchpass venues (add --deep to re-probe capacity oracle)
+yarn poll:navia       # Poll Navia venues (add --deep to walk the full forward horizon)
 yarn poll:bsport      # Refresh bsport venues (full-history refetch)
 yarn refresh:glofox   # Refresh Glofox guest tokens
+yarn venue:schedule   # Derive polling windows from cached data (add a platform to filter)
+yarn verify:cache     # Refuse-to-publish check: has any cache lost history?
 yarn cache:sync       # Sync venue cache from origin/main
 ```
 
@@ -139,7 +143,7 @@ Required variables (see `.env.example`):
 
 ## CI/CD
 
-- **Venue polling** (`.github/workflows/poll-venues.yml`): every 30 min, timezone-aware gating (Melbourne time), polls Acuity and TryBe, commits updated cache files
+- **Venue polling** (`.github/workflows/poll-venues.yml`): every 15 min, timezone-aware gating (Melbourne time), polls Acuity, TryBe, Punchpass and Navia, commits updated cache files. The 15-minute beat is set by Navia, whose bookable entries expire every 15 min; the repo is public so standard runners are free
 - **Token refresh** (`.github/workflows/refresh-glofox-tokens.yml`): weekly on Mondays, refreshes Glofox guest tokens, commits to `src/config/api.ts`
 
 ## Key Documentation

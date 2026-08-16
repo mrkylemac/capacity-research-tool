@@ -6,7 +6,13 @@ A playbook for integrating a new venue on an unfamiliar booking platform.
 
 ## 1. Identify the booking platform
 
-Check their booking widget URL or page source. Common tells:
+Start with DNS — it names the platform in about two seconds, before any HTML is fetched:
+
+```bash
+dig +short bookings.example.com CNAME
+```
+
+Then check their booking widget URL or page source. Common tells:
 
 | Platform | URL pattern |
 |---|---|
@@ -42,6 +48,61 @@ curl "https://api.example.com/sessions?date=2025-01-01"
 | Returns past sessions with capacity + bookings (like Momence, MarianaTek) | Fetch 2–3 years of history in one go |
 | Returns future/current only, past sessions removed (like TryBe) | Fetch forward window (90 days), merge with cached past sessions on each re-sync |
 | 403 on historical endpoint (like Zenoti `/api/Appointments`) | Need a different / admin-level token — pause and investigate |
+
+---
+
+## 3a. Check that the feed's "capacity" is a *venue* capacity
+
+The most expensive mistake available is a denominator that looks plausible and
+is wrong. A field named `capacity` or `maxCapacity` is not evidence on its own.
+
+Two tests, both cheap:
+
+**Does it exceed itself?** Reconstruct concurrent occupancy from the bookings —
+sum every booked slot over its own `[start, end]` window and take the peak. If
+peak concurrency exceeds the advertised capacity, that field is a per-booking or
+per-entry throttle, not the room. Navia Byron Bay reads `maxCapacity: 4` while
+15 people are demonstrably inside.
+
+**Does it move with the product?** Query the same day through a different
+service option, price tier or duration. If the number changes, it belongs to the
+product, not the venue.
+
+If both tests are passed, the field is a real capacity. If not, look for a
+derivable one — and if there isn't one, emit `capacity: 0` **and**
+`utilisationKnown: false` rather than a guess. `sanitizeSessions` drops those on
+either flag. A placeholder zero reads as an empty room and drags down every
+average it touches.
+
+### Measure classes
+
+Not every venue's "utilisation" means the same thing, and only the first is
+comparable to the benchmark averages:
+
+| Measure | Meaning | Benchmark-eligible |
+|---|---|---|
+| `seats` | discrete session, bookings ÷ seats offered | yes |
+| `concurrent-occupancy` | rolling entry, bodies in the room over time | no |
+| `slot-occupancy` | private hire — the room is booked, seats don't apply | no |
+
+Record where each number came from on the session itself (`capacitySource`,
+`soldSource`, `measure`, `confidence`) so a derived denominator is visibly
+derived wherever it surfaces.
+
+### When the session boundary itself has to be derived
+
+Some platforms publish bookable *entries* rather than sessions. Navia is the
+worked example: it staggers four entries 15 minutes apart, each with its own
+4-seat counter, and each entry buys a 2-hour stay. One session per entry would
+report 24 sessions a day at a venue running six sittings and quarter every
+per-session average.
+
+Derive the grouping from the data — a gap larger than the entry stride starts a
+new sitting — rather than hardcoding clock times, and validate every group
+against an expected shape. Byron drops a sitting on Tuesdays, so hardcoded
+anchors would mis-block one day in seven. Where no boundary exists at all
+(Navia Prahran's unbroken 15-minute grid), there is no honest denominator and
+the venue is schedule-only.
 
 ---
 
@@ -120,6 +181,16 @@ In `ReportSections.tsx`, the `SnapshotSection` accepts a `platform` prop and ren
   bookings)
 - Pricing is credit-based; use a static per-visit rate from the venue's website
 - `establishment` ID maps to a location name (multi-location venues)
+
+### Navia (bespoke)
+- Public API, no auth (`api.naviabathhouse.com.au/api/v2`), genuine UTC timestamps
+- **Future sessions only** — slots vanish at `startTime`, past dates return `{success: true, data: []}` (a 200, not an error)
+- `startDate`/`endDate` is validated then ignored — **one request per venue per day**, no batching or pagination
+- Publishes bookable *entries*, not sessions. Byron Bay groups four 15-minute-staggered entries into one 2-hour sitting of 16 seats; Prahran's grid is continuous and has no derivable denominator
+- `maxCapacity` is a per-entry throttle, **not** venue capacity. `option.maxCapacity` from `/service-options/{id}` is a third, different number (a per-booking party cap) and is not even enforced
+- All service options at a location share one seat counter — poll the option with the superset of start times, never both
+- Entries expire individually, so an entry ledger (`{hostId}-navia-ledger.json`) preserves pre-start readings; without it a mid-block poll can't rebuild a complete sitting
+- Empty days are normal (Byron closes for a week from 2026-08-31)
 
 ### Zenoti (paused)
 - Public `getTokenForV2` token works for Services, Centers, Therapists only

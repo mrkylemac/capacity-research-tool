@@ -175,42 +175,79 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function PricingTable({ pricing }: { pricing: VenuePricingConfig }) {
-  const hasPackRates = pricing.tiers.some(t => t.pack5PerVisit || t.pack10PerVisit);
+/**
+ * Per-visit rate for a pack size on a tier, reading the generic `packs` ladder
+ * first and falling back to the original pack5/pack10 fields.
+ */
+function packRate(tier: VenuePricingConfig['tiers'][number], size: number): number | undefined {
+  const fromLadder = tier.packs?.find(p => p.size === size)?.perVisit;
+  if (fromLadder !== undefined) return fromLadder;
+  if (size === 5) return tier.pack5PerVisit;
+  if (size === 10) return tier.pack10PerVisit;
+  return undefined;
+}
+
+/** Whole dollars stay bare; anything with cents gets both decimal places. */
+function money(amount: number): string {
+  return Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
+}
+
+/**
+ * Pricing is static venue reference data and does not depend on session
+ * history, so it is exported for the report's empty state — a venue we have not
+ * yet observed a completed session for still has a pricing model worth showing.
+ */
+export function PricingTable({ pricing }: { pricing: VenuePricingConfig }) {
   const currency = pricing.currency ?? '$';
+
+  // Column set is the union of pack sizes any tier sells, so a venue with a
+  // 2/5/10/20/40 ladder gets all five rather than being squeezed into 5 and 10.
+  const packSizes = Array.from(
+    new Set(
+      pricing.tiers.flatMap(t =>
+        t.packs?.length
+          ? t.packs.map(p => p.size)
+          : [...(t.pack5PerVisit ? [5] : []), ...(t.pack10PerVisit ? [10] : [])],
+      ),
+    ),
+  ).sort((a, b) => a - b);
+
+  const columns = `minmax(9rem,1fr) auto${' auto'.repeat(packSizes.length)}`;
 
   return (
     <div>
-      {/* Session tier rows */}
-      <div className="border border-border rounded-lg overflow-hidden mb-4">
-        <div className="grid text-[11px] font-medium text-muted-foreground bg-muted/40 px-3 py-2"
-          style={{ gridTemplateColumns: hasPackRates ? '1fr auto auto auto' : '1fr auto' }}
-        >
-          <span>Session</span>
-          <span className="text-right">Single</span>
-          {hasPackRates && <span className="text-right pl-4">5-Pack</span>}
-          {hasPackRates && <span className="text-right pl-4">10-Pack</span>}
-        </div>
-        {pricing.tiers.map((tier, i) => (
-          <div
-            key={tier.label}
-            className="grid items-center px-3 py-2.5 text-sm border-t border-border first:border-t-0"
-            style={{ gridTemplateColumns: hasPackRates ? '1fr auto auto auto' : '1fr auto' }}
+      {/* Session tier rows. Scrolls horizontally rather than letting a long
+          pack ladder push the page wider than the viewport. */}
+      <div className="border border-border rounded-lg overflow-x-auto mb-4">
+        <div className="min-w-max">
+          <div className="grid text-[11px] font-medium text-muted-foreground bg-muted/40 px-3 py-2"
+            style={{ gridTemplateColumns: columns }}
           >
-            <span className="font-medium">{tier.label}</span>
-            <span className="tabular-nums text-right">{currency}{tier.casualRate}</span>
-            {hasPackRates && (
-              <span className="tabular-nums text-right pl-4 text-muted-foreground">
-                {tier.pack5PerVisit ? `${currency}${tier.pack5PerVisit}/visit` : '—'}
-              </span>
-            )}
-            {hasPackRates && (
-              <span className="tabular-nums text-right pl-4 text-muted-foreground">
-                {tier.pack10PerVisit ? `${currency}${tier.pack10PerVisit}/visit` : '—'}
-              </span>
-            )}
+            <span>Session</span>
+            <span className="text-right">Single</span>
+            {packSizes.map(size => (
+              <span key={size} className="text-right pl-4">{size}-Pack</span>
+            ))}
           </div>
-        ))}
+          {pricing.tiers.map(tier => (
+            <div
+              key={tier.label}
+              className="grid items-center px-3 py-2.5 text-sm border-t border-border first:border-t-0"
+              style={{ gridTemplateColumns: columns }}
+            >
+              <span className="font-medium">{tier.label}</span>
+              <span className="tabular-nums text-right">{currency}{money(tier.casualRate)}</span>
+              {packSizes.map(size => {
+                const rate = packRate(tier, size);
+                return (
+                  <span key={size} className="tabular-nums text-right pl-4 text-muted-foreground">
+                    {rate !== undefined ? `${currency}${money(rate)}/visit` : '—'}
+                  </span>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Memberships */}
@@ -227,6 +264,26 @@ function PricingTable({ pricing }: { pricing: VenuePricingConfig }) {
                 {m.description && <p className="text-xs text-muted-foreground mt-0.5">{m.description}</p>}
               </div>
               <span className="tabular-nums text-right whitespace-nowrap">{m.price}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Private / group hire — priced per booking, not per visit, so it sits
+          outside the per-visit ladder above. */}
+      {pricing.privateHire && pricing.privateHire.length > 0 && (
+        <div className="border border-border rounded-lg overflow-hidden mb-3">
+          <div className="grid grid-cols-[1fr_auto] text-[11px] font-medium text-muted-foreground bg-muted/40 px-3 py-2">
+            <span>Private hire</span>
+            <span className="text-right">Per booking</span>
+          </div>
+          {pricing.privateHire.map(h => (
+            <div key={h.label} className="grid grid-cols-[1fr_auto] items-start px-3 py-2.5 text-sm border-t border-border first:border-t-0 gap-3">
+              <div>
+                <p className="font-medium">{h.label}</p>
+                {h.description && <p className="text-xs text-muted-foreground mt-0.5">{h.description}</p>}
+              </div>
+              <span className="tabular-nums text-right whitespace-nowrap">{h.price}</span>
             </div>
           ))}
         </div>

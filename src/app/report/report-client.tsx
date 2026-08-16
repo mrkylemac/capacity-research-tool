@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import Link from 'next/link';
 import { ArrowLeft, Check, ChevronRight, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { ReportSections } from '@/components/ReportSections';
+import { PricingTable } from '@/components/OperatingModel';
 import { ReportSkeleton, ReportCardsSkeleton } from '@/components/ReportSkeleton';
 import { SessionTicker } from '@/components/SessionTicker';
 import { DinoLoader } from '@/components/DinoLoader';
@@ -565,16 +566,64 @@ export function ReportClient() {
     return locationFilteredSessions.filter(s => selectedTypes.has(getNorm(s)));
   }, [locationFilteredSessions, selectedTypes, getNorm]);
 
-  // Eligible = past, non-cancelled. Excludes Momence's future bookings
-  // (which arrive with ticketsSold=0) but keeps historical empty sessions
-  // so "Seat occupancy" reflects seats offered, not seats sold among
-  // sessions that already had at least one booking. Shared by the headline
-  // metrics and the Capacity chart's monthly rollup so every number ties out.
+  // Eligible = past, non-cancelled, with a known booking count. Excludes
+  // Momence's future bookings (which arrive with ticketsSold=0) but keeps
+  // historical empty sessions so "Seat occupancy" reflects seats offered, not
+  // seats sold among sessions that already had at least one booking. Shared by
+  // the headline metrics and the Capacity chart's monthly rollup so every
+  // number ties out.
+  //
+  // `utilisationKnown === false` is a different case from a genuinely empty
+  // session: it means the platform never published this session's bookings, so
+  // its ticketsSold is a placeholder. Punchpass drops its availability badge at
+  // session start, so every session it back-fills carries one. Counting those
+  // zeros as real would read as an empty sauna and drag occupancy to nothing.
   const eligibleSessions = useMemo(() => {
     const nowMs = Date.now();
     return filteredSessions.filter(
-      s => new Date(s.startsAt).getTime() <= nowMs && !s.isCancelled,
+      s => new Date(s.startsAt).getTime() <= nowMs
+        && !s.isCancelled
+        && s.utilisationKnown !== false,
     );
+  }, [filteredSessions]);
+
+  const venuePricing = useMemo(
+    () => VENUES.find(v => v.id === (hostId ?? entry?.hostId))?.pricing,
+    [hostId, entry?.hostId],
+  );
+
+  // Split for the empty state: sessions still to run, versus ones that have run
+  // but whose booking counts the platform never published.
+  //
+  // Two different gaps sit behind `utilisationKnown === false` and they need
+  // different words. Punchpass never published the booking count, so there is
+  // nothing to report. Navia Prahran published it but no seat total to divide
+  // it by, so the visits are real and worth showing even though occupancy
+  // cannot be.
+  const { upcomingCount, scheduleOnlyCount, noCapacityCount, noCapacityVisits } = useMemo(() => {
+    const nowMs = Date.now();
+    let upcoming = 0;
+    let scheduleOnly = 0;
+    let noCapacity = 0;
+    let visits = 0;
+    for (const s of filteredSessions) {
+      if (new Date(s.startsAt).getTime() > nowMs) {
+        upcoming++;
+      } else if (s.utilisationKnown === false) {
+        if (s.soldSource && s.soldSource !== 'unknown') {
+          noCapacity++;
+          visits += s.ticketsSold;
+        } else {
+          scheduleOnly++;
+        }
+      }
+    }
+    return {
+      upcomingCount: upcoming,
+      scheduleOnlyCount: scheduleOnly,
+      noCapacityCount: noCapacity,
+      noCapacityVisits: visits,
+    };
   }, [filteredSessions]);
 
   // Monthly rollup recomputed from the filtered session list so the Capacity
@@ -974,13 +1023,33 @@ export function ReportClient() {
             hostId={hostId ?? entry?.hostId}
           />
         ) : filteredSessions.length > 0 ? (
-          // Sessions exist but none have run yet (e.g. a venue whose platform
-          // only exposes upcoming bookings) — widening the range won't help.
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-base font-medium text-foreground">Only upcoming sessions so far</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              {filteredSessions.length.toLocaleString()} future sessions are booked in. History builds up here as they run.
-            </p>
+          // Sessions exist but none are eligible for utilisation yet. Either
+          // none have run (a platform that only exposes upcoming bookings), or
+          // the ones that have run never published their booking counts
+          // (Punchpass hides its availability badge at session start, so any
+          // session first seen after it began is schedule-only).
+          <div className="py-16">
+            <div className="flex flex-col items-center justify-center text-center">
+              <p className="text-base font-medium text-foreground">
+                {noCapacityCount > 0 ? 'Occupancy can’t be measured here' : 'No completed sessions to measure yet'}
+              </p>
+              <p className="text-sm text-muted-foreground mt-1 max-w-xl">
+                {noCapacityVisits > 0 && `${noCapacityVisits.toLocaleString()} visit${noCapacityVisits === 1 ? '' : 's'} recorded across ${noCapacityCount.toLocaleString()} session${noCapacityCount === 1 ? '' : 's'}. `}
+                {upcomingCount > 0 && `${upcomingCount.toLocaleString()} upcoming session${upcomingCount === 1 ? '' : 's'} booked in. `}
+                {scheduleOnlyCount > 0 && `${scheduleOnlyCount.toLocaleString()} past session${scheduleOnlyCount === 1 ? '' : 's'} on record without published booking counts. `}
+                {noCapacityCount > 0
+                  ? 'This location’s booking system publishes bookings but no seat total, so visits are real while occupancy has nothing to divide by.'
+                  : 'History builds up here as sessions run.'}
+              </p>
+            </div>
+            {/* Pricing does not depend on session history, so show it even with
+                nothing to measure yet. */}
+            {venuePricing && (
+              <div className="mt-10 max-w-2xl mx-auto">
+                <h2 className="text-sm font-medium text-foreground mb-3">Pricing</h2>
+                <PricingTable pricing={venuePricing} />
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">

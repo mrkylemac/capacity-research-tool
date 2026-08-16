@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getGlofoxConfig, getMarianaTekConfig, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig } from '@/config/api';
+import { getGlofoxConfig, getMarianaTekConfig, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig, getPunchpassConfig, getNaviaConfig } from '@/config/api';
 import { fetchPortalSessions } from '@/lib/portalClient';
 import { fetchMarianaTekSessions } from '@/lib/marianatekClient';
 import { fetchXtraClubsSessions } from '@/lib/xtraClient';
 import { fetchAllAcuitySessions } from '@/lib/acuityClient';
 import { fetchAllHapanaSessions } from '@/lib/hapanaClient';
 import { fetchAllBsportSessions } from '@/lib/bsportClient';
+import { fetchAllPunchpassSessions } from '@/lib/punchpassClient';
+import { fetchAllNaviaSessions } from '@/lib/naviaClient';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
@@ -401,6 +403,19 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
           cfg.baseUrl, cfg.locations, cfg.origin,
           existingSessions, onProgress,
         );
+        venueName = cfg.name;
+      } else if (platform === 'punchpass') {
+        const cfg = getPunchpassConfig(hostId);
+        sessions = await fetchAllPunchpassSessions(cfg, existingSessions, { onProgress });
+        venueName = cfg.name;
+      } else if (platform === 'navia') {
+        // No entry ledger on this path, so a sitting whose earlier entries have
+        // already expired rebuilds as a partial block and is emitted
+        // schedule-only. The cron poller (yarn poll:navia) carries the ledger
+        // and is authoritative; the next poll heals anything this refetch
+        // downgrades.
+        const cfg = getNaviaConfig(hostId);
+        sessions = await fetchAllNaviaSessions(cfg, existingSessions, { onProgress });
         venueName = cfg.name;
       } else if (platform === 'bsport') {
         const cfg = getBsportConfig(hostId);

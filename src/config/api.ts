@@ -20,13 +20,28 @@ export const API_CONFIG = {
 } as const;
 
 // Platform types for venue identification
-export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana' | 'bsport';
+export type Platform = 'momence' | 'glofox' | 'marianatek' | 'trybe' | 'portal' | 'xtraclubs' | 'acuity' | 'hapana' | 'bsport' | 'punchpass' | 'navia';
+
+export interface VenuePricingPack {
+  /** Visits included in the pack. */
+  size: number;
+  /** Effective rate per visit. */
+  perVisit: number;
+  /** Total pack price, where it is worth showing alongside the per-visit rate. */
+  total?: number;
+}
 
 export interface VenuePricingTier {
   label: string;
   casualRate: number;       // single-visit price
   pack5PerVisit?: number;   // per-visit rate on a 5-pack
   pack10PerVisit?: number;  // per-visit rate on a 10-pack
+  /**
+   * Full pack ladder, for venues that sell more than a 5 and a 10.
+   * Supersedes pack5PerVisit/pack10PerVisit when present — those remain for the
+   * venues already configured with them.
+   */
+  packs?: VenuePricingPack[];
 }
 
 export interface VenueMembership {
@@ -35,9 +50,18 @@ export interface VenueMembership {
   description?: string;
 }
 
+export interface VenuePricingHire {
+  label: string;
+  /** Formatted price, e.g. '$1,150'. Priced per booking, not per visit. */
+  price: string;
+  description?: string;
+}
+
 export interface VenuePricingConfig {
   tiers: VenuePricingTier[];
   memberships?: VenueMembership[];
+  /** Whole-venue or group hire, charged per booking rather than per visit. */
+  privateHire?: VenuePricingHire[];
   note?: string;
   /** Currency prefix for tier rates (e.g. 'CHF '). Defaults to '$'. */
   currency?: string;
@@ -95,6 +119,60 @@ export const VENUES: VenueConfig[] = [
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
   { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },
   {
+    id: 'bmsauna', name: 'Blue Mountains Sauna', platform: 'punchpass', location: 'Blue Mountains', timezone: 'Australia/Sydney',
+    // Full pass list read from bmsauna.punchpass.com/passes on 2026-08-06.
+    // Per-visit rates are pack total ÷ pack size. Gift cards mirror the pack
+    // prices exactly and are the same product, so they are not listed twice.
+    // One-off event passes (THE BIG SWEAT weekend, Sauna Hat Felting Workshop)
+    // are deliberately excluded — they are not the regular session product and
+    // would distort the rate ladder.
+    pricing: {
+      tiers: [
+        {
+          label: 'Single Pass (off-peak)',
+          casualRate: 45,
+          pack5PerVisit: 42,
+          pack10PerVisit: 40,
+          packs: [
+            { size: 2, perVisit: 44, total: 88 },
+            { size: 5, perVisit: 42, total: 210 },
+            { size: 10, perVisit: 40, total: 400 },
+            { size: 20, perVisit: 34.95, total: 699 },
+            { size: 40, perVisit: 29.98, total: 1199 },
+          ],
+        },
+        {
+          label: 'Single Pass (peak)',
+          casualRate: 55,
+          pack5PerVisit: 53,
+          pack10PerVisit: 52.5,
+          packs: [
+            { size: 2, perVisit: 55, total: 110 },
+            { size: 5, perVisit: 53, total: 265 },
+            { size: 10, perVisit: 52.5, total: 525 },
+            { size: 20, perVisit: 50, total: 1000 },
+            { size: 40, perVisit: 47, total: 1880 },
+          ],
+        },
+      ],
+      memberships: [
+        { label: 'Rise & Sweat (Individual)', price: '$32 / week', description: 'Two 1-hour sessions per week, Mon–Fri' },
+        { label: 'Balance (Individual)', price: '$56 / week', description: '2 sessions per week' },
+        { label: 'Renew (Individual)', price: '$66 / week', description: '3 sessions per week' },
+        { label: 'Restore (Individual)', price: '$76 / week', description: '4 sessions per week' },
+        { label: 'Revive (Individual)', price: '$91 / week', description: '7 sessions per week' },
+        { label: 'Restore (Shared)', price: '$92 / week', description: '4 sessions per week, shared with a partner, child, parent or sibling' },
+        { label: 'Revive (Shared)', price: '$140 / week', description: '14 sessions per week, shared with a partner, child, parent or sibling' },
+      ],
+      privateHire: [
+        { label: 'Private group, Mon–Fri 7am–2pm', price: '$1,150', description: '2-hour whole-venue booking' },
+        { label: 'Private group, Mon–Fri from 2pm', price: '$1,350', description: '2-hour whole-venue booking' },
+        { label: 'Private group, Sat & Sun', price: '$1,650', description: '2-hour whole-venue booking' },
+      ],
+      note: 'Off-peak is Mon–Fri 7am–9pm and weekends 7am–10am; peak is weekends from 10am and public holidays. Punchpass sells packs rather than per-session tickets, so revenue in this report is modelled on the single-pass rate and will overstate what a regular pack or membership customer actually pays.',
+    },
+  },
+  {
     id: 'keenwellbeing', name: 'KEEN Wellbeing', platform: 'bsport', location: 'Zurich', timezone: 'Europe/Zurich',
     pricing: {
       currency: 'CHF ',
@@ -105,6 +183,42 @@ export const VENUES: VenueConfig[] = [
         { label: 'Unlimited Membership', price: 'CHF 249 / month', description: 'Unlimited group classes and solo journeys' },
       ],
       note: 'Bookings are credit-based on bsport; CHF rates from keenwellbeing.com (10-pack CHF 270). Summer special: 10-pack CHF 200, Unlimited CHF 180/month.',
+    },
+  },
+  {
+    id: 'naviabyron', name: 'Navia Bathhouse', platform: 'navia',
+    location: 'Byron Bay', timezone: 'Australia/Sydney',
+    // Byron sells a single bathing product: the 60-minute option (id 8) is
+    // isActive:false, so every seat is the same $80 two-hour session. Pack and
+    // membership rates are not exposed anywhere on the API (no /passes,
+    // /packages or /memberships route) and the site renders prices client-side,
+    // so only the confirmed casual rate is listed. Revenue is therefore an
+    // upper bound — anyone on a pack pays less than $80.
+    pricing: {
+      tiers: [{ label: 'Bathing (2 hours)', casualRate: 80 }],
+      note: 'Capacity is derived, not published. Navia admits four staggered 15-minute ' +
+            'entries per 2-hour sitting, each capped at 4, so a sitting holds 16. ' +
+            'Casual rate confirmed from the booking API; pack and membership rates are ' +
+            'not published, so revenue is modelled at the casual rate and overstates it.',
+    },
+  },
+  {
+    // Listed as its own card rather than folded in with Byron. The two
+    // locations measure differently — Byron has a derived 16-seat sitting,
+    // Prahran has no denominator at all — and combining them under one card
+    // would show Byron-only occupancy under a two-location label, which is the
+    // same denominator leak already fixed once in the Capacity chart.
+    id: 'naviaprahran', name: 'Navia Bathhouse', platform: 'navia',
+    location: 'Prahran', timezone: 'Australia/Melbourne',
+    pricing: {
+      tiers: [
+        { label: 'Bathing (1 hour)', casualRate: 50 },
+        { label: 'Bathing (2 hours)', casualRate: 80 },
+      ],
+      note: 'Prahran opened 15 August 2026. Its booking system publishes bookings but no ' +
+            'seat total, and its 1-hour and 2-hour products share one counter, so visits ' +
+            'are real while occupancy and revenue per visit are not derivable. Bookings ' +
+            'are tracked; the location is excluded from benchmark averages.',
     },
   },
 ];
@@ -347,6 +461,180 @@ export const ACUITY_CONFIG: Record<string, AcuityConfig> = {
 export function getAcuityConfig(hostId: string): AcuityConfig {
   const cfg = ACUITY_CONFIG[hostId];
   if (!cfg) throw new Error(`No Acuity config for hostId "${hostId}"`);
+  return cfg;
+}
+
+// Punchpass configuration (public schedule HTML — no auth, no JSON API)
+//
+// Punchpass never publishes capacity: the badge reads "N SPOTS LEFT", which is
+// remaining. Total capacity comes from a far-future oracle — recurring series
+// are published months ahead while the real booking window is days, so a
+// far-future occurrence is unbooked and its badge equals capacity. See
+// src/lib/punchpassClient.ts for the full data model.
+export interface PunchpassConfig {
+  /** Subdomain tenant, e.g. 'bmsauna' for bmsauna.punchpass.com. */
+  tenant: string;
+  baseUrl: string;
+  name: string;
+  location: string;
+  timezone: string;
+  /** Used when a row's duration text is missing or unparseable. */
+  defaultDurationMinutes: number;
+  /**
+   * Days ahead to sample for the capacity oracle. Several widely-spaced probes,
+   * taking the max — a single sample can land on an already-booked date and
+   * understate capacity, which overstates utilisation permanently.
+   */
+  oracleProbeDaysAhead: number[];
+  /** 20-day windows to fetch forward from today (the live booking window). */
+  forwardWindows: number;
+  /** 20-day windows to fetch backward (schedule history; carries no utilisation). */
+  backWindows: number;
+  /**
+   * How often to re-run the far-future oracle probes and the back-history pass.
+   * Capacity changes rarely and a past schedule is fixed, so these do not belong
+   * on the 30-minute cadence the live window needs. Keeps the steady-state poll
+   * to `forwardWindows` requests instead of that plus seven more.
+   */
+  deepRefreshHours: number;
+  /**
+   * Drop-in prices. Blue Mountains publishes its rule on /passes:
+   *   Off-peak: Mon–Fri 7am–9pm, and weekends 7am–10am
+   *   Peak:     weekends from 10am, and public holidays
+   * Punchpass sells packs rather than per-session tickets, so revenue derived
+   * from these is modelled, not observed. Re-check when pricing changes.
+   */
+  pricing: { peak: number; offPeak: number };
+}
+
+export const PUNCHPASS_CONFIG: Record<string, PunchpassConfig> = {
+  bmsauna: {
+    tenant: 'bmsauna',
+    baseUrl: 'https://bmsauna.punchpass.com',
+    name: 'Blue Mountains Sauna',
+    location: 'Blue Mountains',
+    timezone: 'Australia/Sydney',
+    defaultDurationMinutes: 120,
+    // ~10, 15, 20 and 25 weeks out. All four returned identical capacities for
+    // all 27 recurring courses when verified on 2026-08-06.
+    oracleProbeDaysAhead: [70, 105, 140, 175],
+    forwardWindows: 3,
+    backWindows: 2,
+    deepRefreshHours: 24,
+    pricing: { peak: 55, offPeak: 45 },
+  },
+};
+
+export function getPunchpassConfig(hostId: string): PunchpassConfig {
+  const cfg = PUNCHPASS_CONFIG[hostId];
+  if (!cfg) throw new Error(`No Punchpass config for hostId "${hostId}"`);
+  return cfg;
+}
+
+// Navia Bathhouse configuration (bespoke public API — no auth required)
+//
+// Navia built its own booking platform. The feed publishes bookable *entries*,
+// not sessions: a start time with its own seat counter, where each entry buys a
+// fixed-length stay. Byron Bay staggers four entries 15 minutes apart, each
+// capped at 4, and the next group opens two hours later — so a Byron sitting is
+// four entries and holds 16. Prahran runs a continuous 15-minute grid with no
+// gap to break on, which is why it can carry bookings but not a denominator.
+//
+// See src/lib/naviaClient.ts for the full data model and the derivation.
+export interface NaviaConfig {
+  baseUrl: string;
+  name: string;
+  location: string;
+  timezone: string;
+  /** Session name emitted on every record. */
+  sessionName: string;
+  serviceId: number;
+  locationId: number;
+  /**
+   * The single option to query. All options at a location share one seat
+   * counter, so a second query returns identical numbers for double the
+   * budget. Pick the option whose start-time set is a superset.
+   */
+  serviceOptionId: number;
+  /** Product length in minutes; also the emitted session duration. */
+  sessionDurationMinutes: number;
+  /** Minutes between entries within a sitting. A larger gap starts a new one. */
+  entryStrideMinutes: number;
+  /** Entries per sitting. `null` disables the block model (continuous grid). */
+  blockEntries: number | null;
+  /** Beyond this the grid has gone continuous and the block model is void. */
+  maxBlockEntries: number;
+  /** Per-seat price, or `null` where the product mix behind the counter is unknowable. */
+  seatPrice: number | null;
+  /** False emits `capacity: 0` + `utilisationKnown: false` on every session. */
+  utilisationEligible: boolean;
+  measure: 'seats' | 'slot-occupancy';
+  /** Days fetched on a routine poll. */
+  hotDays: number;
+  /** Days fetched on a deep refresh. */
+  horizonDays: number;
+  /** How long an entry observation is kept so partial sittings can be rebuilt. */
+  ledgerRetentionDays: number;
+  operatingSince: string;
+}
+
+export const NAVIA_CONFIG: Record<string, NaviaConfig> = {
+  naviabyron: {
+    baseUrl: 'https://api.naviabathhouse.com.au/api/v2',
+    name: 'Navia Bathhouse',
+    location: 'Byron Bay',
+    timezone: 'Australia/Sydney',
+    sessionName: 'Bathing',
+    serviceId: 1,
+    locationId: 1,
+    // Option 1 is the only active Byron bathing product — the 1-hour option 8
+    // is isActive: false, so every Byron seat is the same $80 product. That is
+    // precisely why Byron can carry a revenue figure and Prahran cannot.
+    serviceOptionId: 1,
+    sessionDurationMinutes: 120,
+    entryStrideMinutes: 15,
+    blockEntries: 4,
+    maxBlockEntries: 6,
+    seatPrice: 80,
+    utilisationEligible: true,
+    measure: 'seats',
+    hotDays: 3,
+    horizonDays: 35,
+    ledgerRetentionDays: 3,
+    operatingSince: '2026-03-26',
+  },
+  naviaprahran: {
+    baseUrl: 'https://api.naviabathhouse.com.au/api/v2',
+    name: 'Navia Bathhouse',
+    location: 'Prahran',
+    timezone: 'Australia/Melbourne',
+    sessionName: 'Bathing',
+    serviceId: 5,
+    locationId: 2,
+    // Option 9's start times are a strict superset of option 10's, and every
+    // shared start returns identical numbers.
+    serviceOptionId: 9,
+    sessionDurationMinutes: 60,
+    entryStrideMinutes: 15,
+    // No block model: the grid is unbroken 06:00-20:00, so there is no session
+    // boundary to derive and no honest denominator.
+    blockEntries: null,
+    maxBlockEntries: 6,
+    // The $50 1-hour and $80 2-hour products share one counter, so a booked
+    // seat cannot be attributed to a price.
+    seatPrice: null,
+    utilisationEligible: false,
+    measure: 'slot-occupancy',
+    hotDays: 3,
+    horizonDays: 35,
+    ledgerRetentionDays: 3,
+    operatingSince: '2026-08-15',
+  },
+};
+
+export function getNaviaConfig(hostId: string): NaviaConfig {
+  const cfg = NAVIA_CONFIG[hostId];
+  if (!cfg) throw new Error(`No Navia config for hostId "${hostId}"`);
   return cfg;
 }
 
