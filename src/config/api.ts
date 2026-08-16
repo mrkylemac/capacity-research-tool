@@ -614,6 +614,22 @@ export const NAVIA_CONFIG: NaviaConfig = {
       // the facility than a 1-hour one, so the feed is not modelling occupancy
       // over time and no venue capacity can be recovered from it.
       //
+      // Tempting reading, tested and refuted 2026-08-16: that the slot feed's
+      // maxCapacity of 10 is the room's physical capacity, enforced by the
+      // scheduler across every booking overlapping that window, with the
+      // service-option maxCapacity of 6 being the per-reservation party limit.
+      // The 6 is indeed a per-booking party cap. The 10 is not the room.
+      // Entries 45 minutes apart overlap under both the 1-hour and 2-hour
+      // products, and the busiest such window holds 16 bookings (a 105-minute
+      // span holds 24). Sixteen people have been in the bathhouse at once, so a
+      // 10-person ceiling is not being enforced. The 10 is an arrivals throttle:
+      // at most 10 may START in any 15-minute slot, and one entry does sit at
+      // exactly 10/10, so it binds.
+      //
+      // That leaves Prahran bracketed rather than unknown: floor 16 and rising
+      // (duration-independent, so it is solid), grid-derived ceiling 40 or 80
+      // depending on the unobservable booking mix.
+      //
       // Prahran also lists Infrared Sauna (service 6, two machines) and Red
       // Light Therapy (service 7, one machine). Both are APPOINTMENT type with a
       // countable resource pool, so both WOULD be capacity-derivable — but they
