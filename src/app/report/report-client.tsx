@@ -473,12 +473,29 @@ export function ReportClient() {
     return counts;
   }, [allCachedSessions]);
 
+  // Ranked by sessions that can actually be measured, not by raw volume. A
+  // location whose platform publishes no capacity contributes nothing to any
+  // metric, so defaulting to it opens the report on an empty state. Navia
+  // Prahran has ~13x Byron's session count on a rolling 15-minute entry grid
+  // and none of it is measurable; Byron should win the default.
+  const measurableCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    allCachedSessions.forEach(s => {
+      const loc = s.location?.trim();
+      if (loc && s.utilisationKnown !== false) counts.set(loc, (counts.get(loc) ?? 0) + 1);
+    });
+    return counts;
+  }, [allCachedSessions]);
+
   const allLocations = useMemo(
     () =>
       Array.from(locationCounts.keys()).sort(
-        (a, b) => (locationCounts.get(b)! - locationCounts.get(a)!) || a.localeCompare(b),
+        (a, b) =>
+          ((measurableCounts.get(b) ?? 0) - (measurableCounts.get(a) ?? 0)) ||
+          (locationCounts.get(b)! - locationCounts.get(a)!) ||
+          a.localeCompare(b),
       ),
-    [locationCounts],
+    [locationCounts, measurableCounts],
   );
 
   const hasMultipleLocations = allLocations.length > 1;

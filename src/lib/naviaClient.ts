@@ -48,7 +48,7 @@
  * after some of its entries have already expired.
  */
 
-import type { NaviaConfig } from '@/config/api';
+import type { NaviaConfig, NaviaLocation } from '@/config/api';
 import type { MomenceSession } from '@/types/momence';
 import { localDateKey, addLocalDays } from '@/lib/tz';
 
@@ -98,6 +98,32 @@ export interface PersistedNaviaLedger {
 
 const entryKey = (o: { locationId: number; startTime: string }) =>
   `${o.locationId}|${o.startTime}`;
+
+/**
+ * One location plus the venue-wide settings it needs, flattened.
+ *
+ * Navia is one venue with two locations that measure differently, so the
+ * blocking and session-building functions work per location. Flattening keeps
+ * them taking a single object rather than threading two.
+ */
+export type NaviaLocationContext = NaviaLocation & Pick<
+  NaviaConfig,
+  'baseUrl' | 'sessionName' | 'entryStrideMinutes' | 'maxBlockEntries' |
+  'hotDays' | 'horizonDays' | 'ledgerRetentionDays'
+>;
+
+export function resolveLocation(cfg: NaviaConfig, loc: NaviaLocation): NaviaLocationContext {
+  return {
+    ...loc,
+    baseUrl: cfg.baseUrl,
+    sessionName: cfg.sessionName,
+    entryStrideMinutes: cfg.entryStrideMinutes,
+    maxBlockEntries: cfg.maxBlockEntries,
+    hotDays: cfg.hotDays,
+    horizonDays: cfg.horizonDays,
+    ledgerRetentionDays: cfg.ledgerRetentionDays,
+  };
+}
 
 /**
  * Keep only slots still in the future.
@@ -176,7 +202,7 @@ export function mergeLedger(
  */
 export function groupIntoBlocks(
   entries: NaviaEntryObservation[],
-  cfg: NaviaConfig,
+  cfg: NaviaLocationContext,
 ): NaviaEntryObservation[][] {
   const sorted = [...entries]
     .filter(e => e.locationId === cfg.locationId)
@@ -209,7 +235,7 @@ export function groupIntoBlocks(
  * Reasons a block's denominator cannot be trusted. Returning a reason means
  * the session is emitted as schedule-only rather than with a wrong number.
  */
-function invalidateReason(block: NaviaEntryObservation[], cfg: NaviaConfig): string | null {
+function invalidateReason(block: NaviaEntryObservation[], cfg: NaviaLocationContext): string | null {
   if (cfg.blockEntries === null) return 'no-block-model';
 
   if (block.length !== cfg.blockEntries) {
@@ -249,7 +275,7 @@ function invalidateReason(block: NaviaEntryObservation[], cfg: NaviaConfig): str
  * overlap consecutive blocks and render a phantom 32-seat concurrency curve in
  * the operating-model chart.
  */
-export function blockToSession(block: NaviaEntryObservation[], cfg: NaviaConfig): MomenceSession {
+export function blockToSession(block: NaviaEntryObservation[], cfg: NaviaLocationContext): MomenceSession {
   const sorted = [...block].sort((a, b) => a.startTime.localeCompare(b.startTime));
   const anchor = sorted[0];
   const startMs = new Date(anchor.startTime).getTime();
@@ -267,7 +293,7 @@ export function blockToSession(block: NaviaEntryObservation[], cfg: NaviaConfig)
     capacity: 0,
     ticketsSold: 0,
     fixedTicketPrice: cfg.seatPrice ?? 0,
-    location: cfg.location,
+    location: cfg.name,
     inPerson: true,
   };
 
@@ -368,7 +394,7 @@ export interface NaviaFetchOptions {
  * the response always contains exactly the day named by `startDate` — so there
  * is no batching, no pagination and no cursor to exploit.
  */
-async function fetchDay(cfg: NaviaConfig, date: string): Promise<NaviaSlot[]> {
+async function fetchDay(cfg: NaviaLocationContext, date: string): Promise<NaviaSlot[]> {
   const url =
     `${cfg.baseUrl}/slots/availability` +
     `?serviceId=${cfg.serviceId}` +
@@ -384,10 +410,10 @@ async function fetchDay(cfg: NaviaConfig, date: string): Promise<NaviaSlot[]> {
     },
   });
 
-  if (!res.ok) throw new Error(`Navia ${cfg.location} ${date}: HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`Navia ${cfg.name} ${date}: HTTP ${res.status}`);
 
   const body = (await res.json()) as NaviaResponse;
-  if (!body.success) throw new Error(`Navia ${cfg.location} ${date}: success=false`);
+  if (!body.success) throw new Error(`Navia ${cfg.name} ${date}: success=false`);
 
   // An empty day is normal, not a failure: Byron closes for a week from
   // 2026-08-31 and Prahran had no slots before it opened on 2026-08-15.
@@ -401,23 +427,26 @@ export async function fetchAllNaviaSessions(
 ): Promise<MomenceSession[]> {
   const { onProgress, cachedLedger = null, onLedger, forceDeepRefresh = false } = options;
   const now = new Date();
-
   const days = forceDeepRefresh ? cfg.horizonDays : cfg.hotDays;
-  const today = localDateKey(now, cfg.timezone);
 
-  const fresh: NaviaSlot[] = [];
-  for (let i = 0; i < days; i++) {
-    const date = addLocalDays(today, i);
-    const slots = await fetchDay(cfg, date);
-    fresh.push(...slots);
-    onProgress?.(fresh.length);
+  // One ledger covers both locations: entries are keyed by locationId already.
+  const observations: NaviaEntryObservation[] = [];
+  const built: MomenceSession[] = [];
+  let fetched = 0;
+
+  for (const location of cfg.locations) {
+    const loc = resolveLocation(cfg, location);
+    const today = localDateKey(now, loc.timezone);
+
+    const slots: NaviaSlot[] = [];
+    for (let i = 0; i < days; i++) {
+      slots.push(...(await fetchDay(loc, addLocalDays(today, i))));
+      fetched += 1;
+      onProgress?.(fetched);
+    }
+    observations.push(...slotsToObservations(slots, now));
   }
 
-  const observations = slotsToObservations(fresh, now);
-
-  // The ledger is trimmed to the hot window regardless of how far this poll
-  // reached, so a deep pass does not leave a month of forward entries behind to
-  // be rewritten every fifteen minutes.
   const ledger = mergeLedger(cachedLedger, observations, now, cfg.ledgerRetentionDays, cfg.hotDays);
   onLedger?.(ledger);
 
@@ -426,8 +455,12 @@ export async function fetchAllNaviaSessions(
   const byKey = new Map<string, NaviaEntryObservation>();
   for (const o of Object.values(ledger.entries)) byKey.set(entryKey(o), o);
   for (const o of observations) byKey.set(entryKey(o), o);
+  const entries = [...byKey.values()];
 
-  const built = groupIntoBlocks([...byKey.values()], cfg).map(b => blockToSession(b, cfg));
+  for (const location of cfg.locations) {
+    const loc = resolveLocation(cfg, location);
+    built.push(...groupIntoBlocks(entries, loc).map(b => blockToSession(b, loc)));
+  }
 
   const windowStartMs = now.getTime() - cfg.ledgerRetentionDays * DAY_MS;
   const windowEndMs = now.getTime() + days * DAY_MS;

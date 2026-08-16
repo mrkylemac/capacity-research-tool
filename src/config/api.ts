@@ -186,39 +186,22 @@ export const VENUES: VenueConfig[] = [
     },
   },
   {
-    id: 'naviabyron', name: 'Navia Bathhouse', platform: 'navia',
-    location: 'Byron Bay', timezone: 'Australia/Sydney',
-    // Byron sells a single bathing product: the 60-minute option (id 8) is
-    // isActive:false, so every seat is the same $80 two-hour session. Pack and
-    // membership rates are not exposed anywhere on the API (no /passes,
-    // /packages or /memberships route) and the site renders prices client-side,
-    // so only the confirmed casual rate is listed. Revenue is therefore an
-    // upper bound — anyone on a pack pays less than $80.
-    pricing: {
-      tiers: [{ label: 'Bathing (2 hours)', casualRate: 80 }],
-      note: 'Capacity is derived, not published. Navia admits four staggered 15-minute ' +
-            'entries per 2-hour sitting, each capped at 4, so a sitting holds 16. ' +
-            'Casual rate confirmed from the booking API; pack and membership rates are ' +
-            'not published, so revenue is modelled at the casual rate and overstates it.',
-    },
-  },
-  {
-    // Listed as its own card rather than folded in with Byron. The two
-    // locations measure differently — Byron has a derived 16-seat sitting,
-    // Prahran has no denominator at all — and combining them under one card
-    // would show Byron-only occupancy under a two-location label, which is the
-    // same denominator leak already fixed once in the Capacity chart.
-    id: 'naviaprahran', name: 'Navia Bathhouse', platform: 'navia',
-    location: 'Prahran', timezone: 'Australia/Melbourne',
+    // One card, two locations. The report's location selector splits them, and
+    // they measure differently: Byron has a derived 16-seat sitting, Prahran
+    // has no denominator at all.
+    id: 'navia', name: 'Navia Bathhouse', platform: 'navia',
+    location: 'Byron Bay · Prahran', timezone: 'Australia/Sydney',
     pricing: {
       tiers: [
-        { label: 'Bathing (1 hour)', casualRate: 50 },
-        { label: 'Bathing (2 hours)', casualRate: 80 },
+        { label: 'Byron Bay — Bathing (2 hours)', casualRate: 80 },
+        { label: 'Prahran — Bathing (1 hour)', casualRate: 50 },
+        { label: 'Prahran — Bathing (2 hours)', casualRate: 80 },
       ],
-      note: 'Prahran opened 15 August 2026. Its booking system publishes bookings but no ' +
-            'seat total, and its 1-hour and 2-hour products share one counter, so visits ' +
-            'are real while occupancy and revenue per visit are not derivable. Bookings ' +
-            'are tracked; the location is excluded from benchmark averages.',
+      note: 'Byron capacity is derived, not published: four staggered 15-minute entries ' +
+            'per 2-hour sitting, each capped at 4, so a sitting holds 16. Prahran runs a ' +
+            'continuous entry grid with no session boundary, so its bookings are real but ' +
+            'occupancy cannot be measured and it is excluded from benchmark averages. Pack ' +
+            'and membership rates are not published, so revenue uses the casual rate.',
     },
   },
 ];
@@ -540,14 +523,14 @@ export function getPunchpassConfig(hostId: string): PunchpassConfig {
 // four entries and holds 16. Prahran runs a continuous 15-minute grid with no
 // gap to break on, which is why it can carry bookings but not a denominator.
 //
+// One venue, two locations, one cache file — the Portal pattern. Sessions carry
+// their location name so the report's location selector picks them apart.
+//
 // See src/lib/naviaClient.ts for the full data model and the derivation.
-export interface NaviaConfig {
-  baseUrl: string;
+export interface NaviaLocation {
+  /** Display name; becomes MomenceSession.location. */
   name: string;
-  location: string;
   timezone: string;
-  /** Session name emitted on every record. */
-  sessionName: string;
   serviceId: number;
   locationId: number;
   /**
@@ -558,85 +541,96 @@ export interface NaviaConfig {
   serviceOptionId: number;
   /** Product length in minutes; also the emitted session duration. */
   sessionDurationMinutes: number;
-  /** Minutes between entries within a sitting. A larger gap starts a new one. */
-  entryStrideMinutes: number;
   /** Entries per sitting. `null` disables the block model (continuous grid). */
   blockEntries: number | null;
-  /** Beyond this the grid has gone continuous and the block model is void. */
-  maxBlockEntries: number;
   /** Per-seat price, or `null` where the product mix behind the counter is unknowable. */
   seatPrice: number | null;
   /** False emits `capacity: 0` + `utilisationKnown: false` on every session. */
   utilisationEligible: boolean;
   measure: 'seats' | 'slot-occupancy';
+  operatingSince: string;
+}
+
+export interface NaviaConfig {
+  baseUrl: string;
+  name: string;
+  /** Session name emitted on every record. */
+  sessionName: string;
+  /** Minutes between entries within a sitting. A larger gap starts a new one. */
+  entryStrideMinutes: number;
+  /** Beyond this the grid has gone continuous and the block model is void. */
+  maxBlockEntries: number;
   /** Days fetched on a routine poll. */
   hotDays: number;
   /** Days fetched on a deep refresh. */
   horizonDays: number;
   /** How long an entry observation is kept so partial sittings can be rebuilt. */
   ledgerRetentionDays: number;
-  operatingSince: string;
+  locations: NaviaLocation[];
 }
 
-export const NAVIA_CONFIG: Record<string, NaviaConfig> = {
-  naviabyron: {
-    baseUrl: 'https://api.naviabathhouse.com.au/api/v2',
-    name: 'Navia Bathhouse',
-    location: 'Byron Bay',
-    timezone: 'Australia/Sydney',
-    sessionName: 'Bathing',
-    serviceId: 1,
-    locationId: 1,
-    // Option 1 is the only active Byron bathing product — the 1-hour option 8
-    // is isActive: false, so every Byron seat is the same $80 product. That is
-    // precisely why Byron can carry a revenue figure and Prahran cannot.
-    serviceOptionId: 1,
-    sessionDurationMinutes: 120,
-    entryStrideMinutes: 15,
-    blockEntries: 4,
-    maxBlockEntries: 6,
-    seatPrice: 80,
-    utilisationEligible: true,
-    measure: 'seats',
-    hotDays: 3,
-    horizonDays: 35,
-    ledgerRetentionDays: 3,
-    operatingSince: '2026-03-26',
-  },
-  naviaprahran: {
-    baseUrl: 'https://api.naviabathhouse.com.au/api/v2',
-    name: 'Navia Bathhouse',
-    location: 'Prahran',
-    timezone: 'Australia/Melbourne',
-    sessionName: 'Bathing',
-    serviceId: 5,
-    locationId: 2,
-    // Option 9's start times are a strict superset of option 10's, and every
-    // shared start returns identical numbers.
-    serviceOptionId: 9,
-    sessionDurationMinutes: 60,
-    entryStrideMinutes: 15,
-    // No block model: the grid is unbroken 06:00-20:00, so there is no session
-    // boundary to derive and no honest denominator.
-    blockEntries: null,
-    maxBlockEntries: 6,
-    // The $50 1-hour and $80 2-hour products share one counter, so a booked
-    // seat cannot be attributed to a price.
-    seatPrice: null,
-    utilisationEligible: false,
-    measure: 'slot-occupancy',
-    hotDays: 3,
-    horizonDays: 35,
-    ledgerRetentionDays: 3,
-    operatingSince: '2026-08-15',
-  },
+export const NAVIA_CONFIG: NaviaConfig = {
+  baseUrl: 'https://api.naviabathhouse.com.au/api/v2',
+  name: 'Navia Bathhouse',
+  sessionName: 'Bathing',
+  entryStrideMinutes: 15,
+  maxBlockEntries: 6,
+  hotDays: 3,
+  horizonDays: 35,
+  ledgerRetentionDays: 3,
+  locations: [
+    {
+      name: 'Byron Bay',
+      timezone: 'Australia/Sydney',
+      serviceId: 1,
+      locationId: 1,
+      // Option 1 is the only active Byron bathing product — the 1-hour option 8
+      // is isActive: false, so every Byron seat is the same $80 product. That is
+      // precisely why Byron can carry a revenue figure and Prahran cannot.
+      serviceOptionId: 1,
+      sessionDurationMinutes: 120,
+      blockEntries: 4,
+      seatPrice: 80,
+      utilisationEligible: true,
+      measure: 'seats',
+      operatingSince: '2026-03-26',
+    },
+    {
+      name: 'Prahran',
+      timezone: 'Australia/Melbourne',
+      serviceId: 5,
+      locationId: 2,
+      // Option 9's start times are a strict superset of option 10's, and every
+      // shared start returns identical numbers.
+      serviceOptionId: 9,
+      sessionDurationMinutes: 60,
+      // No block model: the grid is unbroken 06:00-20:00, so there is no session
+      // boundary to derive and no honest denominator.
+      //
+      // The 1-hour (opt 9) and 2-hour (opt 10) products share one counter and it
+      // is duration-blind. Re-tested 2026-08-16 against real trading data (49
+      // bookings across 38 shared start times): zero availability mismatches
+      // between the two options. A 2-hour booking does not consume any more of
+      // the facility than a 1-hour one, so the feed is not modelling occupancy
+      // over time and no venue capacity can be recovered from it.
+      //
+      // Prahran also lists Infrared Sauna (service 6, two machines) and Red
+      // Light Therapy (service 7, one machine). Both are APPOINTMENT type with a
+      // countable resource pool, so both WOULD be capacity-derivable — but they
+      // return zero slots on every date and parameter combination tried. That is
+      // not an endpoint limitation: Byron's massages are also APPOINTMENT and do
+      // return slots. They are catalogued but not yet released. Worth revisiting
+      // if they go live.
+      blockEntries: null,
+      // The $50 1-hour and $80 2-hour products share one counter, so a booked
+      // seat cannot be attributed to a price.
+      seatPrice: null,
+      utilisationEligible: false,
+      measure: 'slot-occupancy',
+      operatingSince: '2026-08-15',
+    },
+  ],
 };
-
-export function getNaviaConfig(hostId: string): NaviaConfig {
-  const cfg = NAVIA_CONFIG[hostId];
-  if (!cfg) throw new Error(`No Navia config for hostId "${hostId}"`);
-  return cfg;
-}
 
 // bsport configuration (public booking API — no auth required)
 //

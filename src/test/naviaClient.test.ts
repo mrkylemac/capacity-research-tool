@@ -1,4 +1,5 @@
 import {
+  resolveLocation,
   slotsToObservations,
   mergeLedger,
   groupIntoBlocks,
@@ -14,8 +15,8 @@ import byronDay from './fixtures/navia-byron-day.json';
 import byronTuesday from './fixtures/navia-byron-tuesday.json';
 import prahranDay from './fixtures/navia-prahran-day.json';
 
-const BYRON = NAVIA_CONFIG.naviabyron;
-const PRAHRAN = NAVIA_CONFIG.naviaprahran;
+const BYRON = resolveLocation(NAVIA_CONFIG, NAVIA_CONFIG.locations.find(l => l.name === 'Byron Bay')!);
+const PRAHRAN = resolveLocation(NAVIA_CONFIG, NAVIA_CONFIG.locations.find(l => l.name === 'Prahran')!);
 
 /** Any instant before the fixture day, so every slot counts as future. */
 const BEFORE = new Date('2026-08-17T00:00:00.000Z');
@@ -55,6 +56,15 @@ describe('groupIntoBlocks — Byron', () => {
     const blocks = groupIntoBlocks(observe(byronTuesday), BYRON);
     expect(blocks).toHaveLength(5);
     expect(blocks.map(b => b.length)).toEqual([4, 4, 4, 4, 4]);
+  });
+
+  it('tags each session with its own location name', () => {
+    // One venue, two locations, one cache — the report's location selector
+    // splits them on this field.
+    const byron = groupIntoBlocks(observe(byronDay), BYRON).map(b => blockToSession(b, BYRON));
+    const prahran = groupIntoBlocks(observe(prahranDay), PRAHRAN).map(b => blockToSession(b, PRAHRAN));
+    expect(new Set(byron.map(s => s.location))).toEqual(new Set(['Byron Bay']));
+    expect(new Set(prahran.map(s => s.location))).toEqual(new Set(['Prahran']));
   });
 
   it('ignores entries belonging to the other location', () => {

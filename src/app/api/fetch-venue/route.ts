@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getGlofoxConfig, getMarianaTekConfig, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig, getPunchpassConfig, getNaviaConfig } from '@/config/api';
+import { getGlofoxConfig, getMarianaTekConfig, TRYBE_CONFIG, PORTAL_CONFIG, XTRA_CLUBS_CONFIG, getAcuityConfig, HAPANA_CONFIG, getBsportConfig, getPunchpassConfig, NAVIA_CONFIG } from '@/config/api';
 import { fetchPortalSessions } from '@/lib/portalClient';
 import { fetchMarianaTekSessions } from '@/lib/marianatekClient';
 import { fetchXtraClubsSessions } from '@/lib/xtraClient';
@@ -414,9 +414,8 @@ export async function POST(request: NextRequest): Promise<NextResponse | Respons
         // schedule-only. The cron poller (yarn poll:navia) carries the ledger
         // and is authoritative; the next poll heals anything this refetch
         // downgrades.
-        const cfg = getNaviaConfig(hostId);
-        sessions = await fetchAllNaviaSessions(cfg, existingSessions, { onProgress });
-        venueName = cfg.name;
+        sessions = await fetchAllNaviaSessions(NAVIA_CONFIG, existingSessions, { onProgress });
+        venueName = NAVIA_CONFIG.name;
       } else if (platform === 'bsport') {
         const cfg = getBsportConfig(hostId);
         sessions = await fetchAllBsportSessions(

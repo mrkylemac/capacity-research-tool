@@ -168,8 +168,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json
           git add src/data/venues/bmsauna-punchpass.json src/data/venues/bmsauna-punchpass-oracle.json
-          git add src/data/venues/naviabyron-navia.json src/data/venues/naviabyron-navia-ledger.json
-          git add src/data/venues/naviaprahran-navia.json src/data/venues/naviaprahran-navia-ledger.json
+          git add src/data/venues/navia-navia.json src/data/venues/navia-navia-ledger.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0

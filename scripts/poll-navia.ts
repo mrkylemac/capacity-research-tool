@@ -25,11 +25,13 @@ const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
 /** Pass --deep to walk the full forward horizon instead of the hot window. */
 const FORCE_DEEP = process.argv.includes('--deep');
 
-async function pollVenue(hostId: string): Promise<{ total: number; known: number }> {
-  const cfg = NAVIA_CONFIG[hostId];
-  if (!cfg) throw new Error(`No Navia config for hostId "${hostId}"`);
+const HOST_ID = 'navia';
 
-  console.log(`\n── ${cfg.name} ${cfg.location} (navia/${hostId}) ──`);
+async function pollVenue(): Promise<{ total: number; known: number }> {
+  const cfg = NAVIA_CONFIG;
+  const hostId = HOST_ID;
+
+  console.log(`\n── ${cfg.name} (${cfg.locations.map(l => l.name).join(' + ')}) ──`);
 
   const filePath = path.join(VENUES_DIR, `${hostId}-navia.json`);
   let existingSessions: MomenceSession[] = [];
@@ -88,15 +90,17 @@ async function pollVenue(hostId: string): Promise<{ total: number; known: number
     );
   }
 
-  // If nothing in a utilisation-eligible venue survived validation, the grid
-  // has changed shape and the block model no longer describes it. Better to
-  // fail loudly than to publish a venue that has silently gone schedule-only.
-  if (cfg.utilisationEligible && merged.length > 0) {
-    const known = merged.filter(s => s.utilisationKnown !== false).length;
-    if (known === 0) {
+  // If no sitting at a utilisation-eligible location survived validation, that
+  // location's entry grid has changed shape and the block model no longer
+  // describes it. Fail loudly rather than publish a venue that has silently
+  // gone schedule-only.
+  for (const loc of cfg.locations) {
+    if (!loc.utilisationEligible) continue;
+    const atLoc = merged.filter(s => s.location === loc.name);
+    if (atLoc.length > 0 && atLoc.every(s => s.utilisationKnown === false)) {
       throw new Error(
-        'Refusing to write: every sitting failed validation — the entry grid has ' +
-        'likely changed shape and the block model needs revisiting',
+        `Refusing to write: every sitting at ${loc.name} failed validation — the ` +
+        'entry grid has likely changed shape and the block model needs revisiting',
       );
     }
   }
@@ -113,7 +117,7 @@ async function pollVenue(hostId: string): Promise<{ total: number; known: number
     key: `${hostId}|navia`,
     hostId,
     platform: 'navia',
-    venueName: `${cfg.name} ${cfg.location}`,
+    venueName: cfg.name,
     dateRange,
     cachedAt: new Date().toISOString(),
     sessions: merged,
@@ -132,26 +136,15 @@ async function pollVenue(hostId: string): Promise<{ total: number; known: number
 }
 
 async function main() {
-  const venueIds = Object.keys(NAVIA_CONFIG);
-  console.log(`=== Polling ${venueIds.length} Navia venue(s) at ${new Date().toISOString()} ===`);
-  console.log(`Venues: ${venueIds.join(', ')}${FORCE_DEEP ? ' (deep refresh)' : ''}`);
-
-  let ok = 0;
-  let failed = 0;
-
-  for (const hostId of venueIds) {
-    try {
-      const { total, known } = await pollVenue(hostId);
-      console.log(`  Done: ${total} total sessions (${known} with a usable denominator)`);
-      ok++;
-    } catch (err) {
-      console.error(`  Failed: ${err instanceof Error ? err.message : err}`);
-      failed++;
-    }
+  console.log(`=== Polling Navia at ${new Date().toISOString()}${FORCE_DEEP ? ' (deep refresh)' : ''} ===`);
+  try {
+    const { total, known } = await pollVenue();
+    console.log(`  Done: ${total} total sessions (${known} with a usable denominator)`);
+    console.log('\n=== Done ===');
+  } catch (err) {
+    console.error(`  Failed: ${err instanceof Error ? err.message : err}`);
+    process.exit(1);
   }
-
-  console.log(`\n=== Done: ${ok} succeeded, ${failed} failed ===`);
-  if (failed > 0) process.exit(1);
 }
 
 main().catch((err) => {
