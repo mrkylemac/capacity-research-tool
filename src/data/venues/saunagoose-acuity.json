@@ -5,9 +5,9 @@
   "venueName": "Sauna Goose",
   "dateRange": {
     "from": "2026-03-05T20:00:00.000Z",
-    "to": "2026-08-19T09:30:00.000Z"
+    "to": "2026-08-19T21:00:00.000Z"
   },
-  "cachedAt": "2026-08-17T08:53:24.219Z",
+  "cachedAt": "2026-08-17T10:17:26.273Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -10462,25 +10462,13 @@
       "inPerson": true
     },
     {
-      "id": "acuity-69171187-13121171-2026-08-17T20:30:00+10:00",
-      "sessionName": "Saunagus Session",
-      "startsAt": "2026-08-17T10:30:00.000Z",
-      "endsAt": "2026-08-17T11:30:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 10,
-      "ticketsSold": 3,
-      "fixedTicketPrice": 35.78,
-      "location": "",
-      "inPerson": true
-    },
-    {
       "id": "acuity-83472539-10841888-2026-08-18T07:00:00+10:00",
       "sessionName": "Sauna Session",
       "startsAt": "2026-08-17T21:00:00.000Z",
       "endsAt": "2026-08-17T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -10614,6 +10602,30 @@
       "capacity": 10,
       "ticketsSold": 2,
       "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-69171187-13121171-2026-08-19T20:30:00+10:00",
+      "sessionName": "Saunagus Session",
+      "startsAt": "2026-08-19T10:30:00.000Z",
+      "endsAt": "2026-08-19T11:30:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 2,
+      "fixedTicketPrice": 35.78,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-83472539-10841888-2026-08-20T07:00:00+10:00",
+      "sessionName": "Sauna Session",
+      "startsAt": "2026-08-19T21:00:00.000Z",
+      "endsAt": "2026-08-19T22:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 10,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
     }
