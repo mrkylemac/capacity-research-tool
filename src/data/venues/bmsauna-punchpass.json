@@ -7,7 +7,7 @@
     "from": "2026-06-26T21:00:00.000Z",
     "to": "2026-10-15T08:00:00.000Z"
   },
-  "cachedAt": "2026-08-17T05:52:05.709Z",
+  "cachedAt": "2026-08-17T06:59:28.136Z",
   "sessions": [
     {
       "id": "punchpass-19582340",
@@ -15013,7 +15013,7 @@
       "endsAt": "2026-08-17T09:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 5,
+      "ticketsSold": 9,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -15025,7 +15025,7 @@
       "endsAt": "2026-08-17T09:30:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -15037,7 +15037,7 @@
       "endsAt": "2026-08-17T10:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 7,
-      "ticketsSold": 5,
+      "ticketsSold": 6,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -15241,7 +15241,7 @@
       "endsAt": "2026-08-18T09:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 15,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -15421,7 +15421,7 @@
       "endsAt": "2026-08-19T05:30:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -15781,7 +15781,7 @@
       "endsAt": "2026-08-20T08:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -22815,7 +22815,7 @@
       "endsAt": "2026-09-14T06:30:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
