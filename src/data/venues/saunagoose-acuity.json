@@ -7,7 +7,7 @@
     "from": "2026-03-05T20:00:00.000Z",
     "to": "2026-08-22T23:20:00.000Z"
   },
-  "cachedAt": "2026-08-18T10:31:15.928Z",
+  "cachedAt": "2026-08-18T20:33:49.597Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -10540,7 +10540,7 @@
       "endsAt": "2026-08-18T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 5,
+      "ticketsSold": 6,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -10552,7 +10552,7 @@
       "endsAt": "2026-08-18T23:10:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -10564,7 +10564,7 @@
       "endsAt": "2026-08-19T00:20:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 0,
+      "ticketsSold": 3,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -10576,7 +10576,7 @@
       "endsAt": "2026-08-19T08:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 0,
+      "ticketsSold": 4,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -10612,7 +10612,7 @@
       "endsAt": "2026-08-19T11:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 3,
+      "ticketsSold": 5,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
@@ -10624,7 +10624,7 @@
       "endsAt": "2026-08-19T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -10708,7 +10708,7 @@
       "endsAt": "2026-08-20T22:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 6,
+      "ticketsSold": 7,
       "fixedTicketPrice": 35.78,
       "location": "",
       "inPerson": true
