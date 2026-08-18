@@ -7,7 +7,7 @@
     "from": "2026-06-26T21:00:00.000Z",
     "to": "2026-10-16T08:00:00.000Z"
   },
-  "cachedAt": "2026-08-18T01:46:00.152Z",
+  "cachedAt": "2026-08-18T02:44:14.987Z",
   "sessions": [
     {
       "id": "punchpass-19582340",
@@ -15181,7 +15181,7 @@
       "endsAt": "2026-08-18T06:30:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -15529,7 +15529,7 @@
       "endsAt": "2026-08-19T10:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 7,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -16069,7 +16069,7 @@
       "endsAt": "2026-08-21T09:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 5,
+      "ticketsSold": 7,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
