@@ -7,7 +7,7 @@
     "from": "2026-03-05T20:00:00.000Z",
     "to": "2026-08-20T23:20:00.000Z"
   },
-  "cachedAt": "2026-08-18T23:59:40.972Z",
+  "cachedAt": "2026-08-19T04:39:41.790Z",
   "sessions": [
     {
       "id": "acuity-69171187-12473472-2026-03-06T07:00:00+11:00",
@@ -10588,7 +10588,7 @@
       "endsAt": "2026-08-19T09:30:00.000Z",
       "durationMinutes": 60,
       "capacity": 10,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 25.55,
       "location": "",
       "inPerson": true
@@ -10606,7 +10606,7 @@
       "inPerson": true
     },
     {
-      "id": "acuity-69171187-13121171-2026-08-19T20:30:00+10:00",
+      "id": "acuity-69171187-13505082-2026-08-19T20:30:00+10:00",
       "sessionName": "Saunagus Session",
       "startsAt": "2026-08-19T10:30:00.000Z",
       "endsAt": "2026-08-19T11:30:00.000Z",
