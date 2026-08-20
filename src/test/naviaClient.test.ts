@@ -162,41 +162,50 @@ describe('blockToSession — invalidation', () => {
   });
 });
 
-describe('Prahran — bookings without a denominator', () => {
-  it('emits one session per entry, all schedule-only', () => {
-    const blocks = groupIntoBlocks(observe(prahranDay), PRAHRAN);
-    expect(blocks.every(b => b.length === 1)).toBe(true);
+describe('Prahran — modelled on Byron', () => {
+  const blocks = groupIntoBlocks(observe(prahranDay), PRAHRAN);
 
-    const sessions = blocks.map(b => blockToSession(b, PRAHRAN));
-    expect(sessions.length).toBeGreaterThan(50);
-    for (const s of sessions) {
-      expect(s.capacity).toBe(0);
-      expect(s.utilisationKnown).toBe(false);
-      expect(s.measure).toBe('slot-occupancy');
-      // Its bookings are real, they just have nothing to divide by.
-      expect(s.soldSource).toBe('reported-remaining');
-      // The $50 and $80 products share one counter, so no seat has a price.
-      expect(s.fixedTicketPrice).toBe(0);
+  it('blocks a continuous grid into hourly sittings of four entries', () => {
+    // There is no gap to break on, so the on-the-hour rule is doing the work.
+    const full = blocks.filter(b => b.length === 4);
+    expect(full.length).toBeGreaterThanOrEqual(12);
+    for (const b of full) {
+      expect(new Date(b[0].startTime).getUTCMinutes()).toBe(0);
+      expect(b.map(e => new Date(e.startTime).getUTCMinutes())).toEqual([0, 15, 30, 45]);
     }
   });
 
-  it('keeps the real booking count — only the denominator is missing', () => {
-    // Prahran's bookings are directly observed. Zeroing them (which is right
-    // for a Byron block that failed validation) would throw away the one number
-    // this location does have.
-    const sessions = groupIntoBlocks(observe(prahranDay), PRAHRAN).map(b => blockToSession(b, PRAHRAN));
-    const booked = sessions.reduce((n, s) => n + s.ticketsSold, 0);
-    const expected = observe(prahranDay).reduce((n, e) => n + (e.maxCapacity - e.availableCapacity), 0);
-
-    expect(expected).toBeGreaterThan(0);
-    expect(booked).toBe(expected);
+  it('offers 40 seats per sitting — four entries at 10', () => {
+    const s = blockToSession(blocks.find(b => b.length === 4)!, PRAHRAN);
+    expect(s.capacity).toBe(40);
+    expect(s.durationMinutes).toBe(60);
+    expect(s.measure).toBe('seats');
+    expect(s.capacitySource).toBe('derived-grid');
+    expect(s.utilisationKnown).toBeUndefined();
   });
 
-  it('never derives a denominator from the continuous grid', () => {
-    // Summing maxCapacity across 61 overlapping starts would claim 610 seats a
-    // day in a room measured at 15 concurrent.
-    const sessions = groupIntoBlocks(observe(prahranDay), PRAHRAN).map(b => blockToSession(b, PRAHRAN));
-    expect(sessions.reduce((n, s) => n + s.capacity, 0)).toBe(0);
+  it('tiles: consecutive sittings never overlap', () => {
+    const full = blocks.filter(b => b.length === 4).map(b => blockToSession(b, PRAHRAN))
+      .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+    for (let i = 1; i < full.length; i++) {
+      expect(new Date(full[i].startsAt).getTime())
+        .toBeGreaterThanOrEqual(new Date(full[i - 1].endsAt).getTime());
+    }
+  });
+
+  it('invalidates the final admission rather than calling it a 40-seat sitting', () => {
+    // The last entry of the day stands alone, so it is not a full sitting.
+    const partial = blocks.filter(b => b.length !== 4);
+    for (const b of partial) {
+      const s = blockToSession(b, PRAHRAN);
+      expect(s.capacity).toBe(0);
+      expect(s.utilisationKnown).toBe(false);
+    }
+  });
+
+  it('still carries no price — the two products share one counter', () => {
+    const s = blockToSession(blocks.find(b => b.length === 4)!, PRAHRAN);
+    expect(s.fixedTicketPrice).toBe(0);
   });
 });
 

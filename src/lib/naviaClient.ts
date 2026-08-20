@@ -193,12 +193,23 @@ export function mergeLedger(
 // ── Blocking ─────────────────────────────────────────────────────────────────
 
 /**
- * Split entries into sittings. A gap larger than the entry stride starts a new
- * block.
+ * Split entries into sittings. A new one starts on a gap larger than the entry
+ * stride, or on the hour.
  *
- * Derived rather than hardcoded: Byron drops its 07:00 block on Tuesdays (five
- * blocks, 20 slots), so anchoring on fixed clock times would mis-block one day
- * in seven, and any future re-grid would break silently.
+ * The gap rule alone is derived rather than hardcoded, which matters because
+ * Byron drops its 07:00 sitting on Tuesdays (five blocks, 20 slots) and fixed
+ * clock anchors would mis-block one day in seven.
+ *
+ * The on-the-hour rule is what lets a continuous grid be blocked at all. Byron
+ * hands you the boundaries for free because its sittings are separated by 75
+ * minutes of dead air; Prahran runs an unbroken 15-minute cadence with no gap to
+ * break on, so without this every entry of the day collapses into one block.
+ * Both venues put four entries at :00/:15/:30/:45, so the same rule blocks both
+ * identically and Byron's result is unchanged.
+ *
+ * Reading the minute in UTC is safe here: every Australian timezone Navia
+ * operates in is a whole-hour offset, so minute-of-hour is identical in UTC and
+ * local time. It would not be safe for a venue on a 30- or 45-minute offset.
  */
 export function groupIntoBlocks(
   entries: NaviaEntryObservation[],
@@ -218,8 +229,9 @@ export function groupIntoBlocks(
   let current: NaviaEntryObservation[] = [sorted[0]];
 
   for (const entry of sorted.slice(1)) {
-    const gap = new Date(entry.startTime).getTime() - new Date(current[current.length - 1].startTime).getTime();
-    if (gap > strideMs) {
+    const start = new Date(entry.startTime);
+    const gap = start.getTime() - new Date(current[current.length - 1].startTime).getTime();
+    if (gap > strideMs || start.getUTCMinutes() === 0) {
       blocks.push(current);
       current = [entry];
     } else {

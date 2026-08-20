@@ -197,11 +197,7 @@ export const VENUES: VenueConfig[] = [
         { label: 'Prahran — Bathing (1 hour)', casualRate: 50 },
         { label: 'Prahran — Bathing (2 hours)', casualRate: 80 },
       ],
-      note: 'Byron capacity is derived, not published: four staggered 15-minute entries ' +
-            'per 2-hour sitting, each capped at 4, so a sitting holds 16. Prahran runs a ' +
-            'continuous entry grid with no session boundary, so its bookings are real but ' +
-            'occupancy cannot be measured and it is excluded from benchmark averages. Pack ' +
-            'and membership rates are not published, so revenue uses the casual rate.',
+      note: '',
     },
   },
 ];
@@ -603,46 +599,52 @@ export const NAVIA_CONFIG: NaviaConfig = {
       // Option 9's start times are a strict superset of option 10's, and every
       // shared start returns identical numbers.
       serviceOptionId: 9,
+      // 60 to match the hourly sitting, so consecutive sittings tile. As at
+      // Byron, the last entry of a sitting stays past the nominal end; using the
+      // real end would overlap neighbours and fake a doubled concurrency curve.
       sessionDurationMinutes: 60,
-      // No block model: the grid is unbroken 06:00-20:00, so there is no session
-      // boundary to derive and no honest denominator.
+      // MODELLED ON BYRON (decision, 2026-08-16). Prahran runs an unbroken
+      // 15-minute cadence, so unlike Byron it hands us no session boundary. We
+      // impose Byron's shape on it: four entries per sitting at :00/:15/:30/:45,
+      // one sitting per clock hour, so a sitting offers 4 x 10 = 40 seats and
+      // consecutive sittings tile without overlapping.
       //
-      // The 1-hour (opt 9) and 2-hour (opt 10) products share one counter and it
-      // is duration-blind. Re-tested 2026-08-16 against real trading data (49
-      // bookings across 38 shared start times): zero availability mismatches
-      // between the two options. A 2-hour booking does not consume any more of
-      // the facility than a 1-hour one, so the feed is not modelling occupancy
-      // over time and no venue capacity can be recovered from it.
+      // What this measures is arrivals against admission slots offered, exactly
+      // as at Byron. It deliberately does not model dwell time: Prahran sells
+      // both a 1-hour and a 2-hour product from one duration-blind counter, so a
+      // guest's stay is unobservable. A 2-hour guest occupies one seat in their
+      // arrival hour here, which is right for seat occupancy and wrong for any
+      // "bodies in the room" reading.
       //
-      // Tempting reading, tested and refuted 2026-08-16: that the slot feed's
-      // maxCapacity of 10 is the room's physical capacity, enforced by the
-      // scheduler across every booking overlapping that window, with the
-      // service-option maxCapacity of 6 being the per-reservation party limit.
-      // The 6 is indeed a per-booking party cap. The 10 is not the room.
-      // Entries 45 minutes apart overlap under both the 1-hour and 2-hour
-      // products, and the busiest such window holds 16 bookings (a 105-minute
-      // span holds 24). Sixteen people have been in the bathhouse at once, so a
-      // 10-person ceiling is not being enforced. The 10 is an arrivals throttle:
-      // at most 10 may START in any 15-minute slot, and one entry does sit at
-      // exactly 10/10, so it binds.
+      // THE ASSUMPTION, stated plainly so it can be revisited: that the sitting
+      // is 4 entries deep rather than 8, giving 40 concurrent rather than 80.
       //
-      // That leaves Prahran bracketed rather than unknown: floor 16 and rising
-      // (duration-independent, so it is solid), grid-derived ceiling 40 or 80
-      // depending on the unobservable booking mix.
+      // Supported by floor area, which is the only evidence here independent of
+      // the feed. Prahran is roughly twice Byron's square metreage, and floor
+      // area constrains concurrent occupancy rather than daily throughput.
+      // Byron holds 16, so Prahran should hold something near 32. Depth 4 gives
+      // 40, which is 1.25x that. Depth 8 gives 80, which is 2.5x it and would
+      // require the bathhouse alone to be five times Byron's. Depth 4 it is.
       //
-      // Prahran also lists Infrared Sauna (service 6, two machines) and Red
-      // Light Therapy (service 7, one machine). Both are APPOINTMENT type with a
-      // countable resource pool, so both WOULD be capacity-derivable — but they
-      // return zero slots on every date and parameter combination tried. That is
-      // not an endpoint limitation: Byron's massages are also APPOINTMENT and do
-      // return slots. They are catalogued but not yet released. Worth revisiting
-      // if they go live.
-      blockEntries: null,
-      // The $50 1-hour and $80 2-hour products share one counter, so a booked
-      // seat cannot be attributed to a price.
+      // Two reasons 40 is more likely generous than mean. Prahran's floor area
+      // also carries the infrared rooms and the red light room, which Byron does
+      // not have, so its communal bathhouse is probably rather less than twice
+      // Byron's. And the feed enforces no concurrency ceiling at all, so nothing
+      // stops the operator throttling arrivals more loosely than the room.
+      // Prahran's occupancy is therefore likelier understated than overstated.
+      //
+      // Observed concurrent floor is 24 and rising (duration independent, so
+      // solid), already half the assumed 40 and well past Byron's entire room.
+      // Recompute it off the cache as the venue fills: settling near 40 confirms
+      // this, sailing past it means moving blockEntries to 8.
+      blockEntries: 4,
+      // Still null, and deliberately not inferred from the sitting model. The
+      // $50 1-hour and $80 2-hour products share one counter, so a booked seat
+      // cannot be attributed to a price. Occupancy is now derivable here;
+      // revenue is not.
       seatPrice: null,
-      utilisationEligible: false,
-      measure: 'slot-occupancy',
+      utilisationEligible: true,
+      measure: 'seats',
       operatingSince: '2026-08-15',
     },
   ],
