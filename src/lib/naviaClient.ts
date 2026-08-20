@@ -386,7 +386,23 @@ export function mergeWithCached(
 
     if (outsideWindow || (alreadyRan && !freshIds.has(s.id))) byId.set(s.id, s);
   }
-  for (const s of fresh) byId.set(s.id, s);
+  // A sitting that has already run must never have its booking count fall.
+  // Two pollers reading the same sitting at different moments see different
+  // totals, and bookings accumulate, so the higher reading is the later one.
+  // Without this, a poll that rebuilds an already-run sitting from a staler
+  // ledger silently erases bookings an earlier poll had captured — which is how
+  // 27 real bookings were nearly lost on 2026-08-20.
+  const cachedById = new Map(cached.map(s => [s.id, s]));
+  for (const s of fresh) {
+    const prior = cachedById.get(s.id);
+    const alreadyRan = new Date(s.startsAt).getTime() < nowMs;
+    byId.set(
+      s.id,
+      alreadyRan && prior && prior.ticketsSold > s.ticketsSold
+        ? { ...s, ticketsSold: prior.ticketsSold }
+        : s,
+    );
+  }
 
   return [...byId.values()].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 }

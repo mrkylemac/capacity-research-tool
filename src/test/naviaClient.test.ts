@@ -301,6 +301,21 @@ describe('mergeWithCached', () => {
     expect(mergeWithCached([], [ghost], windowStart, windowEnd, nowMs)).toEqual([]);
   });
 
+  it('never lowers a past sitting’s booking count', () => {
+    // A staler ledger rebuilding an already-run sitting must not erase
+    // bookings an earlier poll captured.
+    const cached = [{ ...session('ran', '2026-08-18T00:00:00.000Z'), ticketsSold: 9 }];
+    const fresh = [{ ...session('ran', '2026-08-18T00:00:00.000Z'), ticketsSold: 3 }];
+    expect(mergeWithCached(fresh, cached, windowStart, windowEnd, nowMs)[0].ticketsSold).toBe(9);
+  });
+
+  it('still lets a future sitting’s count move down', () => {
+    // Cancellations are real, so the floor applies only once a sitting has run.
+    const cached = [{ ...session('soon', '2026-08-21T00:00:00.000Z'), ticketsSold: 9 }];
+    const fresh = [{ ...session('soon', '2026-08-21T00:00:00.000Z'), ticketsSold: 3 }];
+    expect(mergeWithCached(fresh, cached, windowStart, windowEnd, nowMs)[0].ticketsSold).toBe(3);
+  });
+
   it('keeps the forward schedule a short poll did not reach', () => {
     // A 3-day routine poll must not delete the 35-day horizon the nightly deep
     // pass built, or the two would undo each other every fifteen minutes.
