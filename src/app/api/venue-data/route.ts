@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { CachedVenueEntry } from '@/lib/venueCache';
+import { requireApprovedUserForApi } from '@/lib/auth-guard';
 
 const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
 
@@ -10,6 +11,9 @@ function venueFilePath(hostId: string, platform: string): string {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const { error: authError } = await requireApprovedUserForApi();
+  if (authError) return authError;
+
   const hostId = request.nextUrl.searchParams.get('hostId');
   const platform = request.nextUrl.searchParams.get('platform');
 
@@ -33,6 +37,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const { error: authError } = await requireApprovedUserForApi();
+  if (authError) return authError;
+
   let body: { entry: CachedVenueEntry };
   try {
     body = await request.json();

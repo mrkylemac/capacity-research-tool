@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { CachedVenueEntry } from '@/lib/venueCache';
+import { requireApprovedUserForApi } from '@/lib/auth-guard';
 
 const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
 const IMAGES_FILE = path.join(process.cwd(), 'src', 'data', 'venue-images.json');
@@ -34,6 +35,9 @@ function readVenueFileImages(): Record<string, string> {
 }
 
 export async function GET(): Promise<NextResponse> {
+  const { error: authError } = await requireApprovedUserForApi();
+  if (authError) return authError;
+
   // Venue JSON files are authoritative (most recently fetched).
   // Fall back to the static file for venues that haven't been fetched yet.
   const staticImages = readStaticImages();

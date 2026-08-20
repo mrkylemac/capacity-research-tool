@@ -25,7 +25,9 @@
     "refresh:glofox": "tsx scripts/refresh-glofox-tokens.ts",
     "cache:sync": "git fetch origin main && git checkout origin/main -- src/data/venues/",
     "cache:setup": "git config merge.ours.driver true",
-    "predev": "yarn cache:sync"
+    "predev": "yarn cache:sync",
+    "auth:generate": "better-auth generate --config src/lib/auth.ts --output src/db/auth-schema.sql",
+    "auth:migrate": "better-auth migrate --config src/lib/auth.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -59,6 +61,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@tanstack/react-query": "^5.83.0",
     "@untitledui/icons": "^0.0.21",
+    "better-auth": "^1.6.25",
     "class-variance-authority": "^0.7.1",
     "claude-code": "^1.0.0",
     "clsx": "^2.1.1",
@@ -73,6 +76,7 @@
     "next": "^16.1.6",
     "next-themes": "^0.3.0",
     "pdfjs-dist": "4.10.38",
+    "pg": "^8.22.0",
     "react": "^18.3.1",
     "react-aria-components": "^1.15.1",
     "react-day-picker": "^8.10.1",
@@ -81,6 +85,7 @@
     "react-resizable-panels": "^2.1.9",
     "react-use-measure": "^2.1.7",
     "recharts": "^2.15.4",
+    "server-only": "^0.0.1",
     "sonner": "^1.7.4",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",
@@ -88,12 +93,14 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@better-auth/cli": "^1.4.21",
     "@eslint/js": "^9.32.0",
     "@tailwindcss/postcss": "^4.2.0",
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.0.0",
     "@types/node": "^22.16.5",
+    "@types/pg": "^8.20.0",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react-swc": "^3.11.0",
@@ -104,6 +111,7 @@
     "globals": "^15.15.0",
     "jsdom": "^20.0.3",
     "lovable-tagger": "^1.1.13",
+    "playwright": "^1.62.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.2.0",
     "tailwindcss-react-aria-components": "^2.0.1",
