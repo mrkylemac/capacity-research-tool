@@ -41,7 +41,8 @@ yarn poll:bsport      # Refresh bsport venues (full-history refetch)
 yarn refresh:glofox   # Refresh Glofox guest tokens
 yarn venue:schedule   # Derive polling windows from cached data (add a platform to filter)
 yarn verify:cache     # Refuse-to-publish check: has any cache lost history?
-yarn cache:sync       # Sync venue cache from origin/main
+yarn cache:sync       # Sync venue cache from origin/main (discards local cache edits)
+yarn cache:setup      # One-time per clone: register the venue-cache merge driver
 ```
 
 ## Project Structure
@@ -137,6 +138,7 @@ Required variables (see `.env.example`):
 ## Caching Strategy
 
 - **Primary cache:** JSON files in `src/data/venues/` (git-tracked, committed by GitHub Actions)
+- **Merge driver:** these files change every 15 min on `main`, so `.gitattributes` routes them through `scripts/merge-venue-cache.mjs`, which unions both sides by session id rather than writing conflict markers. Run `yarn cache:setup` once per clone or merges will corrupt the JSON
 - **Fallback:** Live API fetches from venue platforms
 - **Client-side:** localStorage with quota management and LRU eviction (`venueCache.ts`)
 - **Sync:** `yarn cache:sync` pulls latest cache from `origin/main`; runs automatically on `yarn dev`

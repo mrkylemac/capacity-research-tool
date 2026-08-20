@@ -24,7 +24,7 @@
     "poll:bsport": "tsx scripts/poll-bsport.ts",
     "refresh:glofox": "tsx scripts/refresh-glofox-tokens.ts",
     "cache:sync": "git fetch origin main && git checkout origin/main -- src/data/venues/",
-    "cache:setup": "git config merge.ours.driver true",
+    "cache:setup": "git config merge.venuecache.name 'union venue cache by session id' && git config merge.venuecache.driver 'node scripts/merge-venue-cache.mjs %O %A %B %P'",
     "predev": "yarn cache:sync"
   },
   "dependencies": {

@@ -146,6 +146,11 @@ jobs:
 
       - run: yarn install --frozen-lockfile
 
+      # Register the venue-cache merge driver before anything can rebase. The
+      # push retry below pulls with --rebase, and without this a cache that CI
+      # updated concurrently merges as conflict markers inside the JSON.
+      - run: yarn cache:setup
+
       - name: Poll Acuity venues (Sauna Goose + The Corner Sauna)
         if: needs.gate.outputs.poll-acuity == 'true' || github.event_name == 'workflow_dispatch'
         run: yarn poll:acuity

@@ -1,5 +1,13 @@
-# Cache files written by GitHub Actions polling workflow.
-# On merge conflicts, keep the version from the branch being merged INTO
-# (main), which has the latest polled data.
-# Requires one-time setup: npm run cache:setup
-src/data/venues/*.json merge=ours
+# Cache files written by the GitHub Actions polling workflow every 15 minutes
+# and by `yarn poll:*` locally, so two sides diverge constantly.
+#
+# The default text merge writes conflict markers into the JSON, which corrupts a
+# venue cache outright. `merge=ours` (the previous rule) avoids that but keeps
+# the local copy and discards the other side's history, and several of these
+# platforms cannot re-fetch the past.
+#
+# This driver unions both sides by session id, so a session that has already run
+# can never be lost. See scripts/merge-venue-cache.mjs.
+#
+# Requires one-time setup per clone: yarn cache:setup
+src/data/venues/*.json merge=venuecache
