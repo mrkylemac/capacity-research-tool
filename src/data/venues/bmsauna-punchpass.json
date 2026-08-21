@@ -7,7 +7,7 @@
     "from": "2026-06-26T21:00:00.000Z",
     "to": "2026-10-19T08:00:00.000Z"
   },
-  "cachedAt": "2026-08-21T00:01:59.416Z",
+  "cachedAt": "2026-08-21T01:59:35.211Z",
   "sessions": [
     {
       "id": "punchpass-19582340",
@@ -16109,7 +16109,7 @@
       "endsAt": "2026-08-21T06:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 3,
+      "ticketsSold": 5,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -16145,7 +16145,7 @@
       "endsAt": "2026-08-21T07:30:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -16181,7 +16181,7 @@
       "endsAt": "2026-08-21T09:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 7,
+      "ticketsSold": 6,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -16229,7 +16229,7 @@
       "endsAt": "2026-08-21T11:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 7,
-      "ticketsSold": 3,
+      "ticketsSold": 6,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -18259,7 +18259,7 @@
       "endsAt": "2026-08-28T08:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -18867,7 +18867,7 @@
       "endsAt": "2026-08-30T07:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 4,
+      "ticketsSold": 5,
       "fixedTicketPrice": 55,
       "location": "Blue Mountains",
       "inPerson": true
@@ -20271,7 +20271,7 @@
       "endsAt": "2026-09-04T09:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 4,
+      "ticketsSold": 6,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -20823,7 +20823,7 @@
       "endsAt": "2026-09-06T07:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 55,
       "location": "Blue Mountains",
       "inPerson": true
@@ -26307,7 +26307,7 @@
       "endsAt": "2026-09-26T03:30:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 1,
+      "ticketsSold": 0,
       "fixedTicketPrice": 55,
       "location": "Blue Mountains",
       "inPerson": true
