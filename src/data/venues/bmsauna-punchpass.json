@@ -7,7 +7,7 @@
     "from": "2026-06-26T21:00:00.000Z",
     "to": "2026-10-22T08:00:00.000Z"
   },
-  "cachedAt": "2026-08-24T08:28:13.967Z",
+  "cachedAt": "2026-08-24T17:19:04.212Z",
   "sessions": [
     {
       "id": "punchpass-19582340",
@@ -17293,6 +17293,20 @@
       "inPerson": true
     },
     {
+      "id": "punchpass-201495-2026-08-25-700",
+      "sessionName": "Regular Session (clothed, all genders and ages)",
+      "startsAt": "2026-08-24T21:00:00.000Z",
+      "endsAt": "2026-08-24T23:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 7,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 45,
+      "location": "Blue Mountains",
+      "inPerson": true,
+      "isCancelled": true,
+      "utilisationKnown": false
+    },
+    {
       "id": "punchpass-19798342",
       "sessionName": "Sit Sweat Chill Repeat",
       "startsAt": "2026-08-24T21:30:00.000Z",
@@ -17303,6 +17317,20 @@
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
+    },
+    {
+      "id": "punchpass-201495-2026-08-25-730",
+      "sessionName": "Regular Session (clothed, all genders and ages)",
+      "startsAt": "2026-08-24T21:30:00.000Z",
+      "endsAt": "2026-08-24T23:30:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 7,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 45,
+      "location": "Blue Mountains",
+      "inPerson": true,
+      "isCancelled": true,
+      "utilisationKnown": false
     },
     {
       "id": "punchpass-19798369",
@@ -17317,6 +17345,20 @@
       "inPerson": true
     },
     {
+      "id": "punchpass-201495-2026-08-25-800",
+      "sessionName": "Regular Session (clothed, all genders and ages)",
+      "startsAt": "2026-08-24T22:00:00.000Z",
+      "endsAt": "2026-08-25T00:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 7,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 45,
+      "location": "Blue Mountains",
+      "inPerson": true,
+      "isCancelled": true,
+      "utilisationKnown": false
+    },
+    {
       "id": "punchpass-19798396",
       "sessionName": "Sit Sweat Chill Repeat",
       "startsAt": "2026-08-24T22:30:00.000Z",
@@ -17329,6 +17371,20 @@
       "inPerson": true
     },
     {
+      "id": "punchpass-201495-2026-08-25-830",
+      "sessionName": "Regular Session (clothed, all genders and ages)",
+      "startsAt": "2026-08-24T22:30:00.000Z",
+      "endsAt": "2026-08-25T00:30:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 7,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 45,
+      "location": "Blue Mountains",
+      "inPerson": true,
+      "isCancelled": true,
+      "utilisationKnown": false
+    },
+    {
       "id": "punchpass-19798423",
       "sessionName": "Sit Sweat Chill Repeat",
       "startsAt": "2026-08-24T23:00:00.000Z",
@@ -17339,6 +17395,20 @@
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
+    },
+    {
+      "id": "punchpass-201495-2026-08-25-900",
+      "sessionName": "Regular Session (clothed, all genders and ages)",
+      "startsAt": "2026-08-24T23:00:00.000Z",
+      "endsAt": "2026-08-25T01:00:00.000Z",
+      "durationMinutes": 120,
+      "capacity": 7,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 45,
+      "location": "Blue Mountains",
+      "inPerson": true,
+      "isCancelled": true,
+      "utilisationKnown": false
     },
     {
       "id": "punchpass-19798450",
@@ -18259,7 +18329,7 @@
       "endsAt": "2026-08-28T08:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 1,
+      "ticketsSold": 2,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -18283,7 +18353,7 @@
       "endsAt": "2026-08-28T09:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 45,
       "location": "Blue Mountains",
       "inPerson": true
@@ -18463,7 +18533,7 @@
       "endsAt": "2026-08-29T04:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 2,
+      "ticketsSold": 4,
       "fixedTicketPrice": 55,
       "location": "Blue Mountains",
       "inPerson": true
@@ -18560,7 +18630,7 @@
       "endsAt": "2026-08-29T07:30:00.000Z",
       "durationMinutes": 120,
       "capacity": 9,
-      "ticketsSold": 5,
+      "ticketsSold": 7,
       "fixedTicketPrice": 55,
       "location": "Blue Mountains",
       "inPerson": true
