@@ -5,9 +5,9 @@
   "venueName": "The Corner Sauna",
   "dateRange": {
     "from": "2026-03-06T07:00:00.000Z",
-    "to": "2026-09-22T08:00:00.000Z"
+    "to": "2026-09-29T08:00:00.000Z"
   },
-  "cachedAt": "2026-09-01T06:47:49.507Z",
+  "cachedAt": "2026-09-01T22:27:22.325Z",
   "sessions": [
     {
       "id": "acuity-71669392-11172572-2026-03-06T18:00:00+1100",
@@ -8740,7 +8740,7 @@
       "endsAt": "2026-09-02T07:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 3,
+      "ticketsSold": 4,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -8764,7 +8764,7 @@
       "endsAt": "2026-09-02T09:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -8902,6 +8902,42 @@
       "inPerson": true
     },
     {
+      "id": "acuity-71669392-11172572-2026-09-06T15:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-09-06T05:00:00.000Z",
+      "endsAt": "2026-09-06T06:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-09-06T16:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-09-06T06:00:00.000Z",
+      "endsAt": "2026-09-06T07:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-09-06T17:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-09-06T07:00:00.000Z",
+      "endsAt": "2026-09-06T08:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
       "id": "acuity-86988395-13261360-2026-09-06T18:00:00+1000",
       "sessionName": "Silent Sauna",
       "startsAt": "2026-09-06T08:00:00.000Z",
@@ -8966,6 +9002,18 @@
       "sessionName": "Women's Wellness Session",
       "startsAt": "2026-09-22T08:00:00.000Z",
       "endsAt": "2026-09-22T09:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-80179076-11172572-2026-09-29T18:00:00+1000",
+      "sessionName": "Women's Wellness Session",
+      "startsAt": "2026-09-29T08:00:00.000Z",
+      "endsAt": "2026-09-29T09:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
       "ticketsSold": 0,
