@@ -7,7 +7,7 @@
     "from": "2026-03-06T07:00:00.000Z",
     "to": "2026-09-29T08:00:00.000Z"
   },
-  "cachedAt": "2026-09-04T05:37:52.595Z",
+  "cachedAt": "2026-09-04T09:57:27.821Z",
   "sessions": [
     {
       "id": "acuity-71669392-11172572-2026-03-06T18:00:00+1100",
@@ -8854,13 +8854,25 @@
       "inPerson": true
     },
     {
+      "id": "acuity-71669392-11172572-2026-09-05T14:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-09-05T04:00:00.000Z",
+      "endsAt": "2026-09-05T05:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
       "id": "acuity-71669392-11172572-2026-09-05T15:00:00+1000",
       "sessionName": "Single Session",
       "startsAt": "2026-09-05T05:00:00.000Z",
       "endsAt": "2026-09-05T06:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -8897,6 +8909,18 @@
       "durationMinutes": 60,
       "capacity": 8,
       "ticketsSold": 1,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-09-06T14:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-09-06T04:00:00.000Z",
+      "endsAt": "2026-09-06T05:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
       "fixedTicketPrice": 40,
       "location": "",
       "inPerson": true
@@ -8950,18 +8974,6 @@
       "inPerson": true
     },
     {
-      "id": "acuity-71669392-11172572-2026-09-08T15:00:00+1000",
-      "sessionName": "Single Session",
-      "startsAt": "2026-09-08T05:00:00.000Z",
-      "endsAt": "2026-09-08T06:00:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 8,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 40,
-      "location": "",
-      "inPerson": true
-    },
-    {
       "id": "acuity-71669392-11172572-2026-09-08T16:00:00+1000",
       "sessionName": "Single Session",
       "startsAt": "2026-09-08T06:00:00.000Z",
@@ -8998,18 +9010,6 @@
       "inPerson": true
     },
     {
-      "id": "acuity-71669392-11172572-2026-09-09T15:00:00+1000",
-      "sessionName": "Single Session",
-      "startsAt": "2026-09-09T05:00:00.000Z",
-      "endsAt": "2026-09-09T06:00:00.000Z",
-      "durationMinutes": 60,
-      "capacity": 8,
-      "ticketsSold": 0,
-      "fixedTicketPrice": 40,
-      "location": "",
-      "inPerson": true
-    },
-    {
       "id": "acuity-71669392-11172572-2026-09-09T16:00:00+1000",
       "sessionName": "Single Session",
       "startsAt": "2026-09-09T06:00:00.000Z",
@@ -9038,6 +9038,42 @@
       "sessionName": "Silent Sauna",
       "startsAt": "2026-09-09T08:00:00.000Z",
       "endsAt": "2026-09-09T09:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 1,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-09-10T16:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-09-10T06:00:00.000Z",
+      "endsAt": "2026-09-10T07:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-09-10T17:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-09-10T07:00:00.000Z",
+      "endsAt": "2026-09-10T08:00:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 8,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 40,
+      "location": "",
+      "inPerson": true
+    },
+    {
+      "id": "acuity-71669392-11172572-2026-09-10T18:00:00+1000",
+      "sessionName": "Single Session",
+      "startsAt": "2026-09-10T08:00:00.000Z",
+      "endsAt": "2026-09-10T09:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
       "ticketsSold": 1,
