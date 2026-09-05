@@ -115,7 +115,11 @@ export const VENUES: VenueConfig[] = [
   // GLOFOX_CONFIG.akariSaunas); re-enable if an occupancy view is built.
   // { id: 'akari', name: 'Akari Saunas', platform: 'glofox', location: 'Brooklyn', timezone: 'America/New_York' },
   { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', timezone: 'Australia/Melbourne' },
-  { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', timezone: 'Australia/Melbourne' },
+  // Moved off Acuity onto Momence on 19 Aug 2026 — last Acuity session 18 Aug
+  // 20:30, first Momence session 19 Aug 07:00. The pre-cutover history lives in
+  // 41275-momence.json alongside the native data; saunagoose-acuity.json is kept
+  // as the untouched Acuity-era record.
+  { id: '41275', name: 'Sauna Goose', platform: 'momence', location: 'Northcote', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
   { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },
   {
@@ -129,7 +133,7 @@ export const VENUES: VenueConfig[] = [
     pricing: {
       tiers: [
         {
-          label: 'Single Pass (off-peak)',
+          label: 'Casual (Off-Peak)',
           casualRate: 45,
           pack5PerVisit: 42,
           pack10PerVisit: 40,
@@ -142,7 +146,7 @@ export const VENUES: VenueConfig[] = [
           ],
         },
         {
-          label: 'Single Pass (peak)',
+          label: 'Casual (Peak)',
           casualRate: 55,
           pack5PerVisit: 53,
           pack10PerVisit: 52.5,
@@ -169,7 +173,7 @@ export const VENUES: VenueConfig[] = [
         { label: 'Private group, Mon–Fri from 2pm', price: '$1,350', description: '2-hour whole-venue booking' },
         { label: 'Private group, Sat & Sun', price: '$1,650', description: '2-hour whole-venue booking' },
       ],
-      note: 'Off-peak is Mon–Fri 7am–9pm and weekends 7am–10am; peak is weekends from 10am and public holidays. Punchpass sells packs rather than per-session tickets, so revenue in this report is modelled on the single-pass rate and will overstate what a regular pack or membership customer actually pays.',
+      note: 'Off-peak is Mon–Fri 7am–9pm and weekends 7am–10am; peak is weekends from 10am and public holidays. Punchpass sells packs rather than per-session tickets, so revenue in this report is modelled on the casual rate and will overstate what a regular pack or membership customer actually pays.',
     },
   },
   {
@@ -374,7 +378,8 @@ export const PORTAL_CONFIG = {
 // Acuity Scheduling configuration (public scheduling widget API — no auth required)
 //
 // Two modes:
-//   'class'   — group classes via POST /availability/class (e.g. Sauna Goose)
+//   'class'   — group classes via POST /availability/class (no live venue since
+//               Sauna Goose left for Momence; kept for the next class-mode venue)
 //   'service' — individual appointments via GET /availability/times (e.g. The Corner Sauna)
 //
 // Service-type venues must specify a `calendarId` on each appointment type
@@ -412,29 +417,10 @@ export const ACUITY_CONFIG: Record<string, AcuityConfig> = {
     ],
     calendarIds: [11172572, 13261360],
   },
-  saunagoose: {
-    baseUrl: 'https://saunagoose.as.me',
-    ownerKey: '1549c4c0',
-    name: 'Sauna Goose',
-    timezone: 'Australia/Melbourne',
-    appointmentTypes: [
-      { id: 69170578, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
-      { id: 83472539, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
-      { id: 69171187, name: 'Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
-      { id: 88489076, name: 'Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
-      { id: 88489132, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
-      { id: 89924672, name: 'Yoga & Saunagus', duration: 120, price: '66.50', classSize: 10 },
-      { id: 89924356, name: "Men's Breathwork & Saunagus", duration: 120, price: '66.50', classSize: 10 },
-      { id: 81434660, name: 'Femme Fridays', duration: 90, price: '56.25', classSize: 10 },
-      { id: 85308919, name: 'Latvian Sauna', duration: 180, price: '97.50', classSize: 18 },
-      { id: 87799529, name: 'Sunset Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
-    ],
-    calendarIds: [
-      12582797, 13267765, 12637053, 11913403, 12002100, 12953939, 13121171,
-      13212786, 11872240, 11864080, 12473472, 12473476, 12473477, 13561145,
-      12582798, 13505082, 12642771, 10841888, 11854765, 12513155,
-    ],
-  },
+  // Sauna Goose migrated to Momence on 19 Aug 2026 (host 41275) and its Acuity
+  // config is gone from here so the poller stops chasing a dead feed. Its
+  // Acuity-era cache is preserved untouched in saunagoose-acuity.json, and the
+  // sessions were carried across into 41275-momence.json.
 };
 
 export function getAcuityConfig(hostId: string): AcuityConfig {

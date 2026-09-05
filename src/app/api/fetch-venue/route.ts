@@ -10,6 +10,7 @@ import { fetchAllHapanaSessions } from '@/lib/hapanaClient';
 import { fetchAllBsportSessions } from '@/lib/bsportClient';
 import { fetchAllPunchpassSessions } from '@/lib/punchpassClient';
 import { fetchAllNaviaSessions } from '@/lib/naviaClient';
+import { mergeWithCachedPast } from '@/lib/utils';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
 
@@ -153,19 +154,6 @@ async function fetchAllGlofoxSessions(
   }
 
   return allEvents.map(glofoxEventToSession);
-}
-
-/**
- * Retain cached past sessions the fresh fetch no longer returns (windows
- * beyond API retention, renamed locations); fresh data wins by id.
- */
-function mergeWithCachedPast(fresh: MomenceSession[], existing: MomenceSession[]): MomenceSession[] {
-  const freshIds = new Set(fresh.map(s => s.id));
-  const nowMs = Date.now();
-  const retained = existing.filter(
-    s => new Date(s.startsAt).getTime() < nowMs && !freshIds.has(s.id),
-  );
-  return [...retained, ...fresh].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 }
 
 // ── TryBe server-side fetcher ─────────────────────────────────────────────────

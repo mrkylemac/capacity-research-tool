@@ -6,7 +6,7 @@ import type { MomenceSession } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import { Card, CardContent } from '@/components/ui/card';
 import { VENUES } from '@/config/api';
-import type { VenuePricingConfig } from '@/config/api';
+import type { VenuePricingConfig, VenuePricingPack } from '@/config/api';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -176,20 +176,23 @@ function Stat({ value, label }: { value: string; label: string }) {
 }
 
 /**
- * Per-visit rate for a pack size on a tier, reading the generic `packs` ladder
- * first and falling back to the original pack5/pack10 fields.
+ * Pack ladder for a tier, reading the generic `packs` list first and falling
+ * back to the original pack5/pack10 fields for venues configured with those.
  */
-function packRate(tier: VenuePricingConfig['tiers'][number], size: number): number | undefined {
-  const fromLadder = tier.packs?.find(p => p.size === size)?.perVisit;
-  if (fromLadder !== undefined) return fromLadder;
-  if (size === 5) return tier.pack5PerVisit;
-  if (size === 10) return tier.pack10PerVisit;
-  return undefined;
+function tierPacks(tier: VenuePricingConfig['tiers'][number]): VenuePricingPack[] {
+  if (tier.packs?.length) return [...tier.packs].sort((a, b) => a.size - b.size);
+  const legacy: VenuePricingPack[] = [];
+  if (tier.pack5PerVisit) legacy.push({ size: 5, perVisit: tier.pack5PerVisit });
+  if (tier.pack10PerVisit) legacy.push({ size: 10, perVisit: tier.pack10PerVisit });
+  return legacy;
 }
 
-/** Whole dollars stay bare; anything with cents gets both decimal places. */
+/** Whole dollars stay bare; cents get both places. Thousands are grouped. */
 function money(amount: number): string {
-  return Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
+  return amount.toLocaleString('en-AU', {
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 /**
@@ -200,54 +203,48 @@ function money(amount: number): string {
 export function PricingTable({ pricing }: { pricing: VenuePricingConfig }) {
   const currency = pricing.currency ?? '$';
 
-  // Column set is the union of pack sizes any tier sells, so a venue with a
-  // 2/5/10/20/40 ladder gets all five rather than being squeezed into 5 and 10.
-  const packSizes = Array.from(
-    new Set(
-      pricing.tiers.flatMap(t =>
-        t.packs?.length
-          ? t.packs.map(p => p.size)
-          : [...(t.pack5PerVisit ? [5] : []), ...(t.pack10PerVisit ? [10] : [])],
-      ),
-    ),
-  ).sort((a, b) => a - b);
-
-  const columns = `minmax(9rem,1fr) auto${' auto'.repeat(packSizes.length)}`;
-
   return (
     <div>
-      {/* Session tier rows. Scrolls horizontally rather than letting a long
-          pack ladder push the page wider than the viewport. */}
-      <div className="border border-border rounded-lg overflow-x-auto mb-4">
-        <div className="min-w-max">
-          <div className="grid text-[11px] font-medium text-muted-foreground bg-muted/40 px-3 py-2"
-            style={{ gridTemplateColumns: columns }}
-          >
-            <span>Session</span>
-            <span className="text-right">Single</span>
-            {packSizes.map(size => (
-              <span key={size} className="text-right pl-4">{size}-Pack</span>
-            ))}
-          </div>
-          {pricing.tiers.map(tier => (
-            <div
-              key={tier.label}
-              className="grid items-center px-3 py-2.5 text-sm border-t border-border first:border-t-0"
-              style={{ gridTemplateColumns: columns }}
-            >
-              <span className="font-medium">{tier.label}</span>
-              <span className="tabular-nums text-right">{currency}{money(tier.casualRate)}</span>
-              {packSizes.map(size => {
-                const rate = packRate(tier, size);
-                return (
-                  <span key={size} className="tabular-nums text-right pl-4 text-muted-foreground">
-                    {rate !== undefined ? `${currency}${money(rate)}/visit` : '—'}
+      {/* One stacked block per session tier. A single wide table would need
+          horizontal scrolling once a venue sells more than a couple of pack
+          sizes (Blue Mountains sells five), and a scrolling table hides the
+          cheapest rates off-screen — which are the ones worth seeing. Stacking
+          keeps every rate visible at any width, and the per-visit column stays
+          vertically aligned so the discount ladder reads straight down. */}
+      <div className="space-y-2 mb-4">
+        {pricing.tiers.map(tier => {
+          const packs = tierPacks(tier);
+          return (
+            <div key={tier.label} className="border border-border rounded-lg overflow-hidden">
+              {/* Casual rate. Shown per-visit like every row beneath it so the
+                  right-hand column is directly comparable top to bottom. */}
+              <div className="grid grid-cols-[1fr_auto_auto_auto] items-baseline gap-x-3 px-3 py-2.5 bg-muted/40">
+                <span className="text-sm font-medium">{tier.label}</span>
+                <span />
+                <span className="text-sm tabular-nums font-medium text-right">
+                  {currency}{money(tier.casualRate)}
+                </span>
+                <span className="text-sm text-muted-foreground">/visit</span>
+              </div>
+
+              {packs.map(pack => (
+                <div
+                  key={pack.size}
+                  className="grid grid-cols-[1fr_auto_auto_auto] items-baseline gap-x-3 px-3 py-2 text-sm border-t border-border"
+                >
+                  <span className="text-muted-foreground">{pack.size}-Pack</span>
+                  <span className="text-xs tabular-nums text-muted-foreground/70 text-right">
+                    {pack.total !== undefined ? `${currency}${money(pack.total)}` : ''}
                   </span>
-                );
-              })}
+                  <span className="tabular-nums text-right">
+                    {currency}{money(pack.perVisit)}
+                  </span>
+                  <span className="text-muted-foreground">/visit</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
       {/* Memberships */}

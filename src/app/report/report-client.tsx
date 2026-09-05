@@ -21,7 +21,7 @@ import { VENUES, API_CONFIG } from '@/config/api';
 import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+import { cn, mergeWithCachedPast } from '@/lib/utils';
 import {
   PeriodSelector,
   getPeriodRange,
@@ -362,8 +362,20 @@ export function ReportClient() {
     if (!hostId) return;
 
     if (syncHook.allSessions.length > 0) {
+      // A sync returns whatever the platform still serves, which is not always
+      // everything the cache holds. Sauna Goose is the case in point: its
+      // pre-19-Aug-2026 history came from Acuity and survives only here, since
+      // Momence's own copy of those sessions lost capacity and price in the
+      // import. Retain cached past sessions the fetch didn't return; future ones
+      // are free to disappear, that's just the venue changing its timetable.
+      const sessions = mergeWithCachedPast(syncHook.allSessions, entry?.sessions ?? []);
+      // The hook's rollups describe the fetch alone. Once retained sessions are
+      // folded back in they no longer do, and the report recomputes all of them
+      // from `sessions` anyway — so store nulls rather than a stale figure,
+      // which is what every poller writes.
+      const retained = sessions.length > syncHook.allSessions.length;
       const dateRange = {
-        from: syncHook.dataRange.from?.toISOString() ?? entry?.dateRange?.from ?? new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
+        from: sessions[0]?.startsAt ?? syncHook.dataRange.from?.toISOString() ?? entry?.dateRange?.from ?? new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
         to: syncHook.dataRange.to?.toISOString() ?? entry?.dateRange?.to ?? new Date().toISOString(),
       };
       const venueName = syncHook.hostInfo?.name ?? entry?.venueName ?? VENUES.find(v => v.id === hostId)?.name ?? hostId;
@@ -372,10 +384,10 @@ export function ReportClient() {
         platform: entry?.platform ?? platform,
         venueName,
         dateRange,
-        sessions: syncHook.allSessions,
-        metrics: syncHook.metrics,
-        monthlyData: syncHook.monthlyData,
-        venueConfig: syncHook.venueConfig,
+        sessions,
+        metrics: retained ? null : syncHook.metrics,
+        monthlyData: retained ? [] : syncHook.monthlyData,
+        venueConfig: retained ? null : syncHook.venueConfig,
         hostInfo: syncHook.hostInfo,
       });
       setEntry(saved);

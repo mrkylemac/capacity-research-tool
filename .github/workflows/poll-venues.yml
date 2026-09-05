@@ -44,11 +44,14 @@ jobs:
           NOW=$((MELB_H * 60 + MELB_M))
           echo "Melbourne time: $(TZ=Australia/Melbourne date +%H:%M) (${NOW} min since midnight)"
 
-          # Acuity session start times (Melbourne local, minutes since midnight)
-          # Sauna Goose:      07:00 08:10 08:30 09:20 09:30 10:30 11:40 12:50 13:50 15:00 16:10 17:20 17:30 18:30 19:30 20:30
-          # Corner Sauna:     07:00 08:00 09:00              15:00 16:00 17:00 18:00 19:00
-          # Merged (deduped):
-          SESSIONS="420 480 490 510 540 560 570 630 700 770 830 900 960 970 1020 1040 1050 1080 1110 1140 1170 1230"
+          # Acuity session start times (Melbourne local, minutes since midnight).
+          # Corner Sauna is Apollo Bay/Sydney time, which matches Melbourne's
+          # clock year-round, so one gate covers it.
+          # Sauna Goose left Acuity for Momence on 19 Aug 2026 and its 16 daily
+          # start times came out of this list — Momence serves full history on
+          # demand, so it needs no poll at all.
+          # Corner Sauna:     07:00 08:00 09:00 15:00 16:00 17:00 18:00 19:00
+          SESSIONS="420 480 540 900 960 1020 1080 1140"
 
           ACUITY=false
           for T in $SESSIONS; do

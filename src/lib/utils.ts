@@ -187,3 +187,21 @@ export function logDataQuality(label: string, report: DataQualityReport): void {
     (clamped.capacityNormalized ? ` | ${clamped.capacityNormalized} normalized (capacity variance)` : '')
   );
 }
+
+/**
+ * Retain cached past sessions the fresh fetch no longer returns (windows
+ * beyond API retention, renamed locations, a venue that changed platform);
+ * fresh data wins by id. Future sessions are not retained — one disappearing
+ * is the venue changing its timetable, not lost history.
+ */
+export function mergeWithCachedPast(
+  fresh: MomenceSession[],
+  existing: MomenceSession[],
+): MomenceSession[] {
+  const freshIds = new Set(fresh.map(s => s.id));
+  const nowMs = Date.now();
+  const retained = existing.filter(
+    s => new Date(s.startsAt).getTime() < nowMs && !freshIds.has(s.id),
+  );
+  return [...retained, ...fresh].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+}
