@@ -4,10 +4,10 @@
   "platform": "marianatek",
   "venueName": "Ærth Saunas",
   "dateRange": {
-    "from": "2026-07-22T15:00:00.000Z",
-    "to": "2026-08-22T04:15:00.000Z"
+    "from": "2022-08-02",
+    "to": "2026-08-02"
   },
-  "cachedAt": "2026-07-22T06:08:49.066Z",
+  "cachedAt": "2026-08-02T05:25:49.059Z",
   "sessions": [
     {
       "id": "20388",
@@ -3232,7 +3232,7 @@
       "endsAt": "2026-08-02T17:45:00.000Z",
       "durationMinutes": 105,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3244,7 +3244,7 @@
       "endsAt": "2026-08-02T18:15:00.000Z",
       "durationMinutes": 105,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3256,7 +3256,7 @@
       "endsAt": "2026-08-02T18:45:00.000Z",
       "durationMinutes": 105,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 6,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3268,7 +3268,7 @@
       "endsAt": "2026-08-02T19:15:00.000Z",
       "durationMinutes": 105,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3280,7 +3280,7 @@
       "endsAt": "2026-08-02T19:45:00.000Z",
       "durationMinutes": 105,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3304,7 +3304,7 @@
       "endsAt": "2026-08-02T20:45:00.000Z",
       "durationMinutes": 105,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 1,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3352,7 +3352,7 @@
       "endsAt": "2026-08-02T22:45:00.000Z",
       "durationMinutes": 105,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3364,7 +3364,7 @@
       "endsAt": "2026-08-03T03:45:00.000Z",
       "durationMinutes": 105,
       "capacity": 8,
-      "ticketsSold": 8,
+      "ticketsSold": 7,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3376,7 +3376,7 @@
       "endsAt": "2026-08-03T04:15:00.000Z",
       "durationMinutes": 105,
       "capacity": 12,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -3388,7 +3388,7 @@
       "endsAt": "2026-08-03T04:15:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 0,
+      "ticketsSold": 2,
       "fixedTicketPrice": 0,
       "location": "Victoria, Quebec St.",
       "inPerson": true
@@ -9190,8 +9190,38 @@
       "inPerson": true
     }
   ],
-  "metrics": null,
-  "monthlyData": [],
+  "metrics": {
+    "totalSessions": 765,
+    "totalTicketsSold": 185,
+    "totalCapacity": 6244,
+    "avgUtilisation": 2.962844330557335,
+    "totalRevenue": 0,
+    "avgRevenuePerVisit": 0,
+    "avgRevenuePerSession": 0,
+    "sessionsPerDay": 0.5232558139534884,
+    "sessionsPerWeek": 3.662790697674419,
+    "operatingSince": "July 2026"
+  },
+  "monthlyData": [
+    {
+      "month": "July",
+      "year": 2026,
+      "sessions": 230,
+      "ticketsSold": 77,
+      "capacity": 1880,
+      "utilisation": 4.095744680851063,
+      "revenue": 0
+    },
+    {
+      "month": "August",
+      "year": 2026,
+      "sessions": 535,
+      "ticketsSold": 108,
+      "capacity": 4364,
+      "utilisation": 2.474793767186068,
+      "revenue": 0
+    }
+  ],
   "venueConfig": null,
   "hostInfo": null
 }

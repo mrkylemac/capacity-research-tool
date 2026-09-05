@@ -4,10 +4,10 @@
   "platform": "marianatek",
   "venueName": "Project Mood",
   "dateRange": {
-    "from": "2025-04-13T21:00:00.000Z",
-    "to": "2026-08-21T08:00:00.000Z"
+    "from": "2022-08-02",
+    "to": "2026-08-02"
   },
-  "cachedAt": "2026-07-22T06:15:10.467Z",
+  "cachedAt": "2026-08-02T05:24:40.594Z",
   "sessions": [
     {
       "id": "8452",
@@ -100402,8 +100402,146 @@
       "inPerson": true
     }
   ],
-  "metrics": null,
-  "monthlyData": [],
+  "metrics": {
+    "totalSessions": 8366,
+    "totalTicketsSold": 9469,
+    "totalCapacity": 168420,
+    "avgUtilisation": 5.622253889086807,
+    "totalRevenue": 0,
+    "avgRevenuePerVisit": 0,
+    "avgRevenuePerSession": 0,
+    "sessionsPerDay": 5.722298221614227,
+    "sessionsPerWeek": 40.05608755129959,
+    "operatingSince": "April 2025"
+  },
+  "monthlyData": [
+    {
+      "month": "April",
+      "year": 2025,
+      "sessions": 421,
+      "ticketsSold": 266,
+      "capacity": 8420,
+      "utilisation": 3.159144893111639,
+      "revenue": 0
+    },
+    {
+      "month": "May",
+      "year": 2025,
+      "sessions": 812,
+      "ticketsSold": 865,
+      "capacity": 16240,
+      "utilisation": 5.3263546798029555,
+      "revenue": 0
+    },
+    {
+      "month": "June",
+      "year": 2025,
+      "sessions": 830,
+      "ticketsSold": 1196,
+      "capacity": 16600,
+      "utilisation": 7.204819277108434,
+      "revenue": 0
+    },
+    {
+      "month": "July",
+      "year": 2025,
+      "sessions": 849,
+      "ticketsSold": 1328,
+      "capacity": 16980,
+      "utilisation": 7.820965842167256,
+      "revenue": 0
+    },
+    {
+      "month": "August",
+      "year": 2025,
+      "sessions": 798,
+      "ticketsSold": 1082,
+      "capacity": 15960,
+      "utilisation": 6.779448621553885,
+      "revenue": 0
+    },
+    {
+      "month": "September",
+      "year": 2025,
+      "sessions": 783,
+      "ticketsSold": 951,
+      "capacity": 15660,
+      "utilisation": 6.0727969348659006,
+      "revenue": 0
+    },
+    {
+      "month": "October",
+      "year": 2025,
+      "sessions": 838,
+      "ticketsSold": 1139,
+      "capacity": 16760,
+      "utilisation": 6.795942720763723,
+      "revenue": 0
+    },
+    {
+      "month": "November",
+      "year": 2025,
+      "sessions": 673,
+      "ticketsSold": 762,
+      "capacity": 13460,
+      "utilisation": 5.661218424962853,
+      "revenue": 0
+    },
+    {
+      "month": "December",
+      "year": 2025,
+      "sessions": 564,
+      "ticketsSold": 560,
+      "capacity": 11280,
+      "utilisation": 4.964539007092199,
+      "revenue": 0
+    },
+    {
+      "month": "January",
+      "year": 2026,
+      "sessions": 648,
+      "ticketsSold": 491,
+      "capacity": 12960,
+      "utilisation": 3.7885802469135803,
+      "revenue": 0
+    },
+    {
+      "month": "February",
+      "year": 2026,
+      "sessions": 655,
+      "ticketsSold": 724,
+      "capacity": 13100,
+      "utilisation": 5.526717557251908,
+      "revenue": 0
+    },
+    {
+      "month": "March",
+      "year": 2026,
+      "sessions": 94,
+      "ticketsSold": 88,
+      "capacity": 1880,
+      "utilisation": 4.680851063829787,
+      "revenue": 0
+    },
+    {
+      "month": "July",
+      "year": 2026,
+      "sessions": 128,
+      "ticketsSold": 17,
+      "capacity": 2908,
+      "utilisation": 0.5845942228335627,
+      "revenue": 0
+    },
+    {
+      "month": "August",
+      "year": 2026,
+      "sessions": 273,
+      "ticketsSold": 0,
+      "capacity": 6212,
+      "utilisation": 0,
+      "revenue": 0
+    }
+  ],
   "venueConfig": null,
   "hostInfo": null
 }
