@@ -11,7 +11,7 @@ import { format, subYears } from 'date-fns';
 import { VENUES, getGlofoxConfig, MARIANATEK_CONFIG, INNER_STUDIO_CONFIG, type VenueConfig } from '../src/config/api';
 import { momenceClient, markPreLaunchSessions } from '../src/lib/momenceClient';
 import { fetchMarianaTekSessions } from '../src/lib/marianatekClient';
-import { sanitizeSessions, logDataQuality } from '../src/lib/utils';
+import { sanitizeSessions, logDataQuality, mergeWithCachedPast } from '../src/lib/utils';
 import { calculateMetrics, calculateMonthlyData } from '../src/lib/metricsCalculator';
 import type { MomenceSession } from '../src/types/momence';
 import type { GlofoxEvent } from '../src/types/glofox';
@@ -149,7 +149,11 @@ async function fetchAllMomenceSessions(venue: VenueConfig, from: Date, to: Date)
   const all: MomenceSession[] = [];
   let page = 1;
   const pageSize = 100;
-  const maxPages = 250;
+  // 4 years at ~30 sessions a day is ~44k for the busiest venue. The old 250
+  // page ceiling (25k) silently cut the newest sessions off the two largest
+  // hosts, and Momence pages oldest first, so the truncation landed on the
+  // months that matter most.
+  const maxPages = 500;
 
   while (page <= maxPages) {
     const response = await momenceClient.fetchSessions({
@@ -167,10 +171,25 @@ async function fetchAllMomenceSessions(venue: VenueConfig, from: Date, to: Date)
     page++;
   }
 
+  if (page > maxPages) {
+    console.warn(`  ⚠ Stopped at the ${maxPages} page ceiling — newer sessions were not fetched`);
+  }
+
   return all;
 }
 
 // ── Cached-history merge ──────────────────────────────────────────────────────
+
+/** The cache file as it stands, or null when there is nothing to read. */
+function readCachedEntry(venue: VenueConfig): CachedVenueEntry | null {
+  const cachePath = path.join(VENUES_DIR, `${venue.id}-${venue.platform}.json`);
+  if (!fs.existsSync(cachePath)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(cachePath, 'utf-8')) as CachedVenueEntry;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Merge freshly fetched sessions with the existing cache file, retaining
@@ -251,11 +270,6 @@ async function processVenue(venue: VenueConfig): Promise<void> {
       rawSessions = sessions;
     }
 
-    // The timetable a venue loaded before it went live comes back with
-    // ticketsSold: 0 on every row. Flag those so the placeholder zeros stay
-    // out of every average, while the schedule itself survives in the cache.
-    rawSessions = markPreLaunchSessions(rawSessions);
-
   } else if (venue.platform === 'glofox') {
     rawSessions = await fetchAllGlofoxEvents(venue);
 
@@ -285,6 +299,27 @@ async function processVenue(venue: VenueConfig): Promise<void> {
 
   console.log(`  → ${rawSessions.length} sessions after sanitization`);
 
+  // Never let a rewrite drop a past session. An API that stops serving old
+  // history, a page ceiling, a venue that changed platform (Sauna Goose's
+  // pre-Momence history came from Acuity and survives only in this file) all
+  // shrink a fetch without anything being wrong at the venue. Fresh data still
+  // wins by id, and future slots are free to disappear — that is the venue
+  // changing its timetable, not lost history. Same rule the browser sync uses.
+  const cachedEntry = readCachedEntry(venue);
+  const beforeMerge = rawSessions.length;
+  rawSessions = mergeWithCachedPast(rawSessions, cachedEntry?.sessions ?? []);
+  if (rawSessions.length > beforeMerge) {
+    console.log(`  ↩ Retained ${rawSessions.length - beforeMerge} past session(s) the fetch no longer returns`);
+  }
+
+  // The timetable a venue loaded before it went live comes back with
+  // ticketsSold: 0 on every row. Flag those so the placeholder zeros stay out
+  // of every average, while the schedule itself survives in the cache. After
+  // the merge, so retained sessions are flagged too.
+  if (venue.platform === 'momence') {
+    rawSessions = markPreLaunchSessions(rawSessions);
+  }
+
   const metrics = calculateMetrics(rawSessions, fromStr, toStr);
   const monthlyData = calculateMonthlyData(rawSessions);
 
@@ -298,8 +333,10 @@ async function processVenue(venue: VenueConfig): Promise<void> {
     sessions: rawSessions,
     metrics,
     monthlyData,
-    venueConfig: null,
-    hostInfo: null,
+    // Carried over, not nulled: hostInfo holds the venue logo the home page
+    // and /api/venue-images read, and only the browser sync ever writes it.
+    venueConfig: cachedEntry?.venueConfig ?? null,
+    hostInfo: cachedEntry?.hostInfo ?? null,
   };
 
   fs.mkdirSync(VENUES_DIR, { recursive: true });
