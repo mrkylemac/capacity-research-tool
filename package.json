@@ -85,6 +85,7 @@
     "react-resizable-panels": "^2.1.9",
     "react-use-measure": "^2.1.7",
     "recharts": "^2.15.4",
+    "resend": "^6.26.0",
     "server-only": "^0.0.1",
     "sonner": "^1.7.4",
     "tailwind-merge": "^3.5.0",

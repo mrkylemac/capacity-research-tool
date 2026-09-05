@@ -161,6 +161,10 @@ Required variables (see `.env.example`):
 - `ADMIN_EMAILS` — comma-separated addresses auto-approved as admin on signup
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google sign-in (optional; unset
   hides the Google button)
+- `RESEND_API_KEY` — email admins when someone requests access (optional; unset
+  skips the send and logs it, signup still succeeds)
+- `EMAIL_FROM` — sender address for those emails (optional; defaults to
+  Resend's shared `onboarding@resend.dev`)
 - `GOOGLE_SHEETS_API_KEY` — CapEx tracker data (optional)
 - `GOOGLE_SHEETS_SPREADSHEET_ID` — CapEx Google Sheet ID (optional)
 

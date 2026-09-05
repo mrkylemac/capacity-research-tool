@@ -58,6 +58,27 @@ Still in the Vercel dashboard, under Settings then Environment Variables:
 `BETTER_AUTH_SECRET` signs session cookies. Changing it later signs everyone
 out, so set it once and leave it.
 
+### 2b. Optional: get told when someone requests access
+
+Nothing else surfaces a pending request. Without this an unapproved account
+sits in the database until an admin opens `/admin/users`.
+
+| Variable | Value |
+|----------|-------|
+| `RESEND_API_KEY` | A key from [resend.com/api-keys](https://resend.com/api-keys) |
+| `EMAIL_FROM` | Sender address. Optional. |
+
+Leave `RESEND_API_KEY` unset and signup still works: the send is skipped and
+logged, and no failure reaches the person signing up. A rejected or failed send
+is swallowed the same way, since the account has already been created by then.
+
+`EMAIL_FROM` defaults to Resend's shared `onboarding@resend.dev`, which needs no
+DNS setup but only delivers to the address that owns the Resend account. To mail
+anyone else, verify a domain in Resend and set this to an address on it.
+
+The email goes to every address in `ADMIN_EMAILS`, minus the requester, and
+links to `/admin/users`.
+
 ### 3. Create the tables
 
 Open the Neon console, go to the SQL Editor, paste the contents of
