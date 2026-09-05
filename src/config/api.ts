@@ -119,6 +119,15 @@ export const VENUES: VenueConfig[] = [
   // 20:30, first Momence session 19 Aug 07:00. The pre-cutover history lives in
   // 41275-momence.json alongside the native data; saunagoose-acuity.json is kept
   // as the untouched Acuity-era record.
+  //
+  // Prices differ across the cutover. Acuity listed every tier about 2.2% above
+  // the Momence price for the same product: $25.55 vs $25, $35.78 vs $35,
+  // $66.50 vs $65, $56.25 vs $55. The cause is unconfirmed — a payment
+  // surcharge folded into the Acuity appointment type price is the likeliest
+  // explanation, since the ratio holds across every tier. Each platform's
+  // figure is stored as reported and is not normalised, so a blended average
+  // spanning 19 Aug mixes the two and every tier appears twice in the derived
+  // price distribution.
   { id: '41275', name: 'Sauna Goose', platform: 'momence', location: 'Northcote', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
   { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },

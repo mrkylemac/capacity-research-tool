@@ -5,6 +5,7 @@ import { parseISO, getHours, getMinutes, format } from 'date-fns';
 import type { MomenceSession } from '@/types/momence';
 import type { BenchmarkMetrics } from '@/lib/benchmarkMetrics';
 import { Card, CardContent } from '@/components/ui/card';
+import { derivePriceTiers, formatPrice } from '@/lib/priceTiers';
 import { VENUES } from '@/config/api';
 import type { VenuePricingConfig, VenuePricingPack } from '@/config/api';
 
@@ -293,39 +294,34 @@ export function PricingTable({ pricing }: { pricing: VenuePricingConfig }) {
   );
 }
 
+const MAX_TIERS_SHOWN = 5;
+
 function DerivedPricingDisplay({ sessions, metrics }: { sessions: MomenceSession[]; metrics: BenchmarkMetrics }) {
-  // Show price distribution from fixedTicketPrice when no config is present
-  const tiers = useMemo(() => {
-    const counts = new Map<number, number>();
-    sessions.forEach(s => {
-      if (s.fixedTicketPrice > 0) {
-        const p = Math.round(s.fixedTicketPrice);
-        counts.set(p, (counts.get(p) ?? 0) + 1);
-      }
-    });
-    if (counts.size === 0) return [];
-    const total = Array.from(counts.values()).reduce((a, b) => a + b, 0);
-    const sorted = Array.from(counts.entries()).sort(([a], [b]) => b - a);
-    const maxPct = (sorted[0]?.[1] ?? 1) / total * 100;
-    return sorted.map(([price, count]) => ({
-      price,
-      pct: total > 0 ? (count / total) * 100 : 0,
-      maxPct,
-    }));
-  }, [sessions]);
+  // Price distribution from fixedTicketPrice, for venues with no config.
+  // Ordered by how common each price is — see src/lib/priceTiers.ts.
+  const tiers = useMemo(() => derivePriceTiers(sessions), [sessions]);
 
   if (tiers.length === 0) return <p className="text-sm text-muted-foreground">No pricing data available.</p>;
 
+  const shown = tiers.slice(0, MAX_TIERS_SHOWN);
+  const hidden = tiers.length - shown.length;
+  const shownPct = shown.reduce((sum, t) => sum + t.pct, 0);
+
   return (
     <div className="space-y-1">
-      {tiers.slice(0, 5).map(t => (
+      {shown.map(t => (
         <StatRow
           key={t.price}
-          label={`$${t.price}`}
+          label={formatPrice(t.price)}
           pct={(t.pct / t.maxPct) * 100}
           right={`${t.pct.toFixed(0)}% of listings`}
         />
       ))}
+      {hidden > 0 && (
+        <p className="text-xs text-muted-foreground mt-2">
+          {shownPct.toFixed(0)}% of listings shown — {hidden} rarer price{hidden === 1 ? '' : 's'} not listed.
+        </p>
+      )}
       {metrics.avgPrice > 0 && (
         <p className="text-xs text-muted-foreground mt-2">
           Average listed price ${metrics.avgPrice.toFixed(0)} — actual revenue per guest is lower when packs or memberships apply.
