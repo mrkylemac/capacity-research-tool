@@ -3,6 +3,8 @@ import { nextCookies } from 'better-auth/next-js';
 import { pool } from './db';
 import { isBootstrapAdmin } from './adminEmails';
 import { resolveBaseURL, resolveTrustedOrigins } from './authOrigins';
+import { buildAccessRequestNotice } from './accessRequestNotice';
+import { sendEmail } from './email';
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -80,6 +82,21 @@ export const auth = betterAuth({
             };
           }
           return { data: { ...user, approved: false, role: 'user' } };
+        },
+        // Nothing else surfaces a pending request: no queue, no digest, no
+        // badge. Without this the account sits in the database until an admin
+        // happens to open /admin/users.
+        after: async user => {
+          // An admin's own signup is approved on creation, so there is nothing
+          // to act on and nobody to tell.
+          if (user.approved === true) return;
+
+          const notice = buildAccessRequestNotice({ name: user.name, email: user.email });
+          if (!notice) return;
+
+          // sendEmail never throws and never rejects. Signup has already
+          // succeeded by this point and must not be undone by a mail failure.
+          await sendEmail(notice);
         },
       },
     },
