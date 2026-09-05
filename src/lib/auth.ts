@@ -2,21 +2,16 @@ import { betterAuth } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import { pool } from './db';
 import { isBootstrapAdmin } from './adminEmails';
+import { resolveBaseURL, resolveTrustedOrigins } from './authOrigins';
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 const googleEnabled = Boolean(googleClientId && googleClientSecret);
 
-function resolveBaseURL(): string | undefined {
-  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
-  // Vercel sets VERCEL_URL to the deployment host without a protocol.
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return undefined;
-}
-
 export const auth = betterAuth({
   database: pool,
   baseURL: resolveBaseURL(),
+  trustedOrigins: resolveTrustedOrigins(),
   secret: process.env.BETTER_AUTH_SECRET,
 
   emailAndPassword: {
