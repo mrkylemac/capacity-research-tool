@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { format, subYears } from 'date-fns';
 import { VENUES, getGlofoxConfig, MARIANATEK_CONFIG, INNER_STUDIO_CONFIG, type VenueConfig } from '../src/config/api';
-import { momenceClient } from '../src/lib/momenceClient';
+import { momenceClient, markPreLaunchSessions } from '../src/lib/momenceClient';
 import { fetchMarianaTekSessions } from '../src/lib/marianatekClient';
 import { sanitizeSessions, logDataQuality } from '../src/lib/utils';
 import { calculateMetrics, calculateMonthlyData } from '../src/lib/metricsCalculator';
@@ -250,6 +250,11 @@ async function processVenue(venue: VenueConfig): Promise<void> {
       logDataQuality(`Momence[${venue.id}]`, report);
       rawSessions = sessions;
     }
+
+    // The timetable a venue loaded before it went live comes back with
+    // ticketsSold: 0 on every row. Flag those so the placeholder zeros stay
+    // out of every average, while the schedule itself survives in the cache.
+    rawSessions = markPreLaunchSessions(rawSessions);
 
   } else if (venue.platform === 'glofox') {
     rawSessions = await fetchAllGlofoxEvents(venue);
