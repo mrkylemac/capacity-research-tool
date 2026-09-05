@@ -10,6 +10,7 @@ import { SessionTicker } from '@/components/SessionTicker';
 import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics, checkMetricInvariants } from '@/lib/benchmarkMetrics';
 import { calculateMonthlyData } from '@/lib/metricsCalculator';
+import { markPreLaunchSessions } from '@/lib/momenceClient';
 import {
   getCachedEntry,
   getCacheKey,
@@ -443,9 +444,15 @@ export function ReportClient() {
 
   // ── All-time data: merge every cached search for this venue ─────────────
   const allCachedSessions = useMemo<MomenceSession[]>(() => {
-    if (!entry?.hostId) return entry?.sessions ?? [];
+    // Momence serves the timetable a venue loaded before it went live with
+    // ticketsSold: 0 on every row. Deriving the flag on read rather than
+    // trusting the stored value fixes caches written before this rule existed,
+    // including a browser copy that may never be refetched.
+    const flagged = (list: MomenceSession[]) =>
+      (entry?.platform ?? platform) === 'momence' ? markPreLaunchSessions(list) : list;
+    if (!entry?.hostId) return flagged(entry?.sessions ?? []);
     // Fall back to the in-memory entry when localStorage is empty (e.g. quota exceeded)
-    if (venueSearches.length === 0) return entry?.sessions ?? [];
+    if (venueSearches.length === 0) return flagged(entry?.sessions ?? []);
     const seen = new Set<string>();
     const result: MomenceSession[] = [];
     venueSearches.forEach(search => {
@@ -453,8 +460,8 @@ export function ReportClient() {
         if (!seen.has(s.id)) { seen.add(s.id); result.push(s); }
       });
     });
-    return result;
-  }, [entry?.hostId, entry?.sessions, venueSearches]);
+    return flagged(result);
+  }, [entry?.hostId, entry?.sessions, entry?.platform, platform, venueSearches]);
 
   // Pre-compute normalised names once — avoids running regex chains on 18K+ sessions
   // repeatedly across allSessionTypes / sessionTypes / filteredSessions / benchmarkMetrics.
@@ -662,6 +669,18 @@ export function ReportClient() {
   const filteredMonthlyData = useMemo<MonthlyData[]>(
     () => calculateMonthlyData(eligibleSessions),
     [eligibleSessions],
+  );
+
+  // What the charts and the demand/operating sections plot. Everything
+  // measurable, plus rows whose booking count is real even where occupancy
+  // cannot be measured (Navia Prahran publishes bookings but no seat total).
+  // A row with no booking count at all plots as a zero visitor session and
+  // contradicts the headline rates, which already ignore it.
+  const chartSessions = useMemo(
+    () => filteredSessions.filter(
+      s => s.utilisationKnown !== false || (!!s.soldSource && s.soldSource !== 'unknown'),
+    ),
+    [filteredSessions],
   );
 
   const benchmarkMetrics = useMemo(() => {
@@ -1044,7 +1063,7 @@ export function ReportClient() {
           <ReportCardsSkeleton />
         ) : benchmarkMetrics ? (
           <ReportSections
-            sessions={filteredSessions}
+            sessions={chartSessions}
             metrics={benchmarkMetrics}
             monthlyData={filteredMonthlyData}
             period={period}
