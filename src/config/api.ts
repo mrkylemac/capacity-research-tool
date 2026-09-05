@@ -78,6 +78,14 @@ export interface VenueConfig {
   tagline?: string;
   /** Known pricing tiers for display in the Operating Model section. */
   pricing?: VenuePricingConfig;
+  /**
+   * Kept in the list and still fetched, but not shown in the venue grid.
+   * Use this rather than deleting the entry: the config carries the name,
+   * timezone and pricing a cached report still needs, and the poller keeps
+   * the history current so unhiding gives current data rather than a frozen
+   * cache. Delete the entry only when the venue should stop being fetched.
+   */
+  hidden?: boolean;
 }
 
 // Venue list
@@ -101,13 +109,13 @@ export const VENUES: VenueConfig[] = [
   },
   { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
   { id: '49448', name: 'Aalto', platform: 'momence', location: 'Adelaide', timezone: 'Australia/Adelaide' },
-  { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', timezone: 'Australia/Melbourne', hidden: true },
   // { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco', timezone: 'America/Los_Angeles' },
   { id: 'lore', name: 'Lore Bathing Club', platform: 'glofox', location: 'New York', timezone: 'America/New_York' },
-  { id: 'projectmood', name: 'Project Mood', platform: 'marianatek', location: 'Melbourne', timezone: 'Australia/Melbourne' },
-  { id: 'aerth', name: 'Ærth Saunas', platform: 'marianatek', location: 'Victoria BC', timezone: 'America/Vancouver' },
+  { id: 'projectmood', name: 'Project Mood', platform: 'marianatek', location: 'Melbourne', timezone: 'Australia/Melbourne', hidden: true },
+  { id: 'aerth', name: 'Ærth Saunas', platform: 'marianatek', location: 'Victoria BC', timezone: 'America/Vancouver', hidden: true },
   { id: 'senseofself', name: 'Sense of Self', platform: 'trybe', location: 'Melbourne', timezone: 'Australia/Melbourne' },
-  { id: '40726', name: 'Panda Society', platform: 'momence', location: '', timezone: 'Australia/Melbourne' },
+  { id: '40726', name: 'Panda Society', platform: 'momence', location: '', timezone: 'Australia/Melbourne', hidden: true },
   { id: 'portal', name: 'PORTAL° Thermaculture', platform: 'portal', location: 'Colorado · Montana · Minnesota', timezone: 'America/Denver' },
   { id: 'xtraclubs', name: 'Xtra Clubs', platform: 'xtraclubs', location: 'Sydney', timezone: 'Australia/Sydney' },
   // Akari uses Glofox for memberships only — no session bookings exist to
