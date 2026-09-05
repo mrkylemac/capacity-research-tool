@@ -119,6 +119,30 @@ export const VENUES: VenueConfig[] = [
   // 20:30, first Momence session 19 Aug 07:00. The pre-cutover history lives in
   // 41275-momence.json alongside the native data; saunagoose-acuity.json is kept
   // as the untouched Acuity-era record.
+  //
+  // Prices differ across the cutover. Acuity listed every product about 2.2%
+  // above the Momence price for the same product, and three of them carry the
+  // same name on both sides, so the pairing is read off the product rather than
+  // inferred from the ratio:
+  //
+  //   Sauna Session                 $25.55  ->  Sauna (silent)/(social)  $25
+  //   Saunagus Session              $35.78  ->  Saunagus                 $35
+  //   Femme Fridays          (90m)  $56.25  ->  Femme Friday      (90m)  $55
+  //   Yoga & Saunagus       (120m)  $66.50  ->  Yoga & Saunagus  (120m)  $65
+  //   Men's Breathwork      (120m)  $66.50  ->  Men's Breathwork (120m)  $65
+  //   Latvian Sauna         (180m)  $97.50  ->  discontinued, no pair
+  //
+  // A venue repricing would not scale five unrelated products by the same
+  // 1.022x, so a payment surcharge folded into the Acuity appointment type
+  // price is the likely cause. That remains inferred, not confirmed against
+  // Acuity.
+  //
+  // Nothing is normalised: each platform's figure is stored as reported, so
+  // every tier appears twice in the derived price distribution and any average
+  // spanning the cutover blends the two. The Acuity-era sessions are past and
+  // Momence never returns their ids, so mergeWithCachedPast retains those
+  // objects verbatim on every refetch — the figures above are stable, and
+  // saunagoose-acuity.json remains the untouched original either way.
   { id: '41275', name: 'Sauna Goose', platform: 'momence', location: 'Northcote', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
   { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },
