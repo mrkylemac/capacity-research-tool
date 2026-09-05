@@ -13,6 +13,7 @@ import { fetchAllNaviaSessions } from '@/lib/naviaClient';
 import { mergeWithCachedPast } from '@/lib/utils';
 import type { CachedVenueEntry } from '@/lib/venueCache';
 import type { MomenceSession } from '@/types/momence';
+import { requireApprovedUserForApi } from '@/lib/auth-guard';
 
 const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
 
@@ -248,6 +249,9 @@ async function fetchAllTrybeSessions(
 // ── Route handler ─────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest): Promise<NextResponse | Response> {
+  const { error: authError } = await requireApprovedUserForApi();
+  if (authError) return authError;
+
   let body: { hostId: string; platform: string };
   try {
     body = await request.json();
