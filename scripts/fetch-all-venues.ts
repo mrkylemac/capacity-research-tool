@@ -7,7 +7,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { format, subYears } from 'date-fns';
+import { addDays, format, subYears } from 'date-fns';
 import { VENUES, getGlofoxConfig, MARIANATEK_CONFIG, INNER_STUDIO_CONFIG, type VenueConfig } from '../src/config/api';
 import { momenceClient, markPreLaunchSessions } from '../src/lib/momenceClient';
 import { fetchMarianaTekSessions } from '../src/lib/marianatekClient';
@@ -18,6 +18,14 @@ import type { GlofoxEvent } from '../src/types/glofox';
 import type { CachedVenueEntry } from '../src/lib/venueCache';
 
 const DATA_WINDOW_YEARS = 4;
+/**
+ * How far ahead to fetch. Every platform here serves its forward timetable,
+ * and the report shows upcoming sessions, so stopping at today both missed
+ * that and — because a rewrite only retains cached *past* sessions — deleted
+ * any forward schedule an earlier fetch had stored. Sauna Goose lost 187
+ * sessions carrying 49 bookings that way.
+ */
+const FORWARD_WINDOW_DAYS = 120;
 const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
 
 /**
@@ -32,11 +40,16 @@ const MULTI_LOCATION_MOMENCE: Record<string, { name: string; locations: readonly
 function getDateWindow() {
   const to = new Date();
   const from = subYears(to, DATA_WINDOW_YEARS);
+  // `to` stays "now" because it is what the cached metrics and dateRange
+  // describe; `fetchTo` is how far the API calls reach.
+  const fetchTo = addDays(to, FORWARD_WINDOW_DAYS);
   return {
     from,
     to,
+    fetchTo,
     fromStr: format(from, 'yyyy-MM-dd'),
     toStr: format(to, 'yyyy-MM-dd'),
+    fetchToStr: format(fetchTo, 'yyyy-MM-dd'),
   };
 }
 
@@ -106,7 +119,7 @@ async function fetchAllGlofoxEvents(venue: VenueConfig): Promise<MomenceSession[
   const token = await getValidGlofoxToken(config.branchId, config.token, config.tokenExpiry);
 
   const startDate = new Date(config.operatingSince);
-  const endDate = new Date();
+  const endDate = addDays(new Date(), FORWARD_WINDOW_DAYS);
   const startTs = Math.floor(startDate.getTime() / 1000);
   const endTs = Math.floor(endDate.getTime() / 1000);
 
@@ -238,7 +251,7 @@ function mergeWithCachedHistory(
 // ── Process and write a single venue ─────────────────────────────────────────
 
 async function processVenue(venue: VenueConfig): Promise<void> {
-  const { from, to, fromStr, toStr } = getDateWindow();
+  const { from, to, fetchTo, fromStr, toStr, fetchToStr } = getDateWindow();
   console.log(`\n── ${venue.name} (${venue.platform}) ──`);
 
   let rawSessions: MomenceSession[] = [];
@@ -253,7 +266,7 @@ async function processVenue(venue: VenueConfig): Promise<void> {
       const allRaw: MomenceSession[] = [];
       for (const loc of multiConfig.locations) {
         console.log(`  Location: ${loc.name} (host ${loc.hostId})`);
-        const locRaw = await fetchAllMomenceSessions({ ...venue, id: loc.hostId }, from, to);
+        const locRaw = await fetchAllMomenceSessions({ ...venue, id: loc.hostId }, from, fetchTo);
         allRaw.push(...locRaw.map(s => ({ ...s, location: loc.name })));
       }
       const { sessions, report } = sanitizeSessions(allRaw);
@@ -264,7 +277,7 @@ async function processVenue(venue: VenueConfig): Promise<void> {
       const hostInfo = await momenceClient.fetchHostInfo(venue.id);
       if (hostInfo?.name) hostInfoName = hostInfo.name;
 
-      const allRaw = await fetchAllMomenceSessions(venue, from, to);
+      const allRaw = await fetchAllMomenceSessions(venue, from, fetchTo);
       const { sessions, report } = sanitizeSessions(allRaw);
       logDataQuality(`Momence[${venue.id}]`, report);
       rawSessions = sessions;
@@ -281,13 +294,13 @@ async function processVenue(venue: VenueConfig): Promise<void> {
       locationId: config.locationId,
       regionId: config.regionId,
       fromDate: fromStr,
-      toDate: toStr,
+      toDate: fetchToStr,
       venueName: config.name,
       classTypeFilters: config.classTypeFilters,
     });
     // MarianaTek 403s date chunks beyond its history horizon — keep cached
     // sessions from before that horizon rather than losing them on rewrite.
-    rawSessions = mergeWithCachedHistory(venue, freshSessions, to);
+    rawSessions = mergeWithCachedHistory(venue, freshSessions, fetchTo);
   } else {
     // Platforms handled by their own poll scripts (trybe, acuity, portal,
     // xtraclubs, hapana, bsport). Writing here would clobber their cache
@@ -306,10 +319,23 @@ async function processVenue(venue: VenueConfig): Promise<void> {
   // wins by id, and future slots are free to disappear — that is the venue
   // changing its timetable, not lost history. Same rule the browser sync uses.
   const cachedEntry = readCachedEntry(venue);
+  const cachedSessions = cachedEntry?.sessions ?? [];
   const beforeMerge = rawSessions.length;
-  rawSessions = mergeWithCachedPast(rawSessions, cachedEntry?.sessions ?? []);
+  rawSessions = mergeWithCachedPast(rawSessions, cachedSessions);
   if (rawSessions.length > beforeMerge) {
     console.log(`  ↩ Retained ${rawSessions.length - beforeMerge} past session(s) the fetch no longer returns`);
+  }
+
+  // A session past the fetch horizon was never asked for, so its absence says
+  // nothing about the venue's timetable. Keep it. Once its date falls inside
+  // the window a later run covers it and fresh data wins by id.
+  const fetchedIds = new Set(rawSessions.map(s => s.id));
+  const beyondHorizon = cachedSessions.filter(
+    s => !fetchedIds.has(s.id) && new Date(s.startsAt).getTime() > fetchTo.getTime(),
+  );
+  if (beyondHorizon.length > 0) {
+    console.log(`  ↩ Retained ${beyondHorizon.length} session(s) beyond the ${FORWARD_WINDOW_DAYS} day fetch horizon`);
+    rawSessions = [...rawSessions, ...beyondHorizon].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   }
 
   // The timetable a venue loaded before it went live comes back with
@@ -354,7 +380,17 @@ async function main() {
   let ok = 0;
   let failed = 0;
 
-  for (const venue of VENUES) {
+  // `yarn fetch-venues 41167 59636` re-runs just those venues — a full pass is
+  // ~1,500 API pages, too much to repeat because one venue hit a 502.
+  const only = process.argv.slice(2);
+  const venues = only.length > 0 ? VENUES.filter(v => only.includes(v.id)) : VENUES;
+  if (only.length > 0) {
+    console.log(`Filtered to ${venues.length} venue(s): ${venues.map(v => v.id).join(', ')}\n`);
+    const unknown = only.filter(id => !VENUES.some(v => v.id === id));
+    if (unknown.length > 0) console.warn(`  ⚠ Unknown venue id(s): ${unknown.join(', ')}`);
+  }
+
+  for (const venue of venues) {
     try {
       await processVenue(venue);
       ok++;
