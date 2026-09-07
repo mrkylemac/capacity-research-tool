@@ -13,7 +13,10 @@ export function HomeClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const showAll = searchParams?.has('all') ?? false;
-  const visibleVenues = showAll ? VENUES : VENUES.filter(v => FEATURED_IDS.includes(v.id));
+  // `hidden` venues stay in the config, and stay fetched, but never reach the
+  // grid — not even under ?all, which is the whole point of hiding them.
+  const listedVenues = VENUES.filter(v => !v.hidden);
+  const visibleVenues = showAll ? listedVenues : listedVenues.filter(v => FEATURED_IDS.includes(v.id));
   const [logos, setLogos] = useState<Record<string, string>>({});
 
   useEffect(() => {
