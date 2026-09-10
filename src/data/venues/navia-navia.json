@@ -7,7 +7,7 @@
     "from": "2026-08-14T07:00:00.000Z",
     "to": "2026-10-15T10:00:00.000Z"
   },
-  "cachedAt": "2026-09-10T17:02:07.646Z",
+  "cachedAt": "2026-09-10T19:42:47.817Z",
   "sessions": [
     {
       "id": "navia-1-2026-08-14T07:00:00.000Z",
@@ -13027,15 +13027,16 @@
       "startsAt": "2026-09-12T03:00:00.000Z",
       "endsAt": "2026-09-12T05:00:00.000Z",
       "durationMinutes": 120,
-      "capacity": 16,
-      "ticketsSold": 3,
+      "capacity": 0,
+      "ticketsSold": 0,
       "fixedTicketPrice": 80,
       "location": "Byron Bay",
       "inPerson": true,
-      "capacitySource": "derived-grid",
-      "soldSource": "derived-grid",
+      "utilisationKnown": false,
+      "capacitySource": "unknown",
+      "soldSource": "unknown",
       "measure": "seats",
-      "confidence": "medium"
+      "confidence": "low"
     },
     {
       "id": "navia-2-2026-09-12T03:00:00.000Z",
@@ -13075,15 +13076,16 @@
       "startsAt": "2026-09-12T05:00:00.000Z",
       "endsAt": "2026-09-12T07:00:00.000Z",
       "durationMinutes": 120,
-      "capacity": 16,
-      "ticketsSold": 9,
+      "capacity": 0,
+      "ticketsSold": 0,
       "fixedTicketPrice": 80,
       "location": "Byron Bay",
       "inPerson": true,
-      "capacitySource": "derived-grid",
-      "soldSource": "derived-grid",
+      "utilisationKnown": false,
+      "capacitySource": "unknown",
+      "soldSource": "unknown",
       "measure": "seats",
-      "confidence": "medium"
+      "confidence": "low"
     },
     {
       "id": "navia-2-2026-09-12T05:00:00.000Z",
@@ -13430,7 +13432,7 @@
       "endsAt": "2026-09-13T07:00:00.000Z",
       "durationMinutes": 120,
       "capacity": 16,
-      "ticketsSold": 5,
+      "ticketsSold": 6,
       "fixedTicketPrice": 80,
       "location": "Byron Bay",
       "inPerson": true,
