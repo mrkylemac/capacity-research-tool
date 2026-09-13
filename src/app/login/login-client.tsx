@@ -52,7 +52,6 @@ export function LoginClient({ googleEnabled }: LoginClientProps) {
   return (
     <AuthShell
       title="Sign in"
-      subtitle="Slow Folk Sauna House"
       footer={
         <>
           No account yet?{' '}
