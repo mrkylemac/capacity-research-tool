@@ -79,6 +79,12 @@ export interface VenueConfig {
   /** Known pricing tiers for display in the Operating Model section. */
   pricing?: VenuePricingConfig;
   /**
+   * Location the report opens on, for venues with more than one. Must match a
+   * session `location` exactly. Without it the location with the most
+   * measurable sessions is chosen.
+   */
+  defaultLocation?: string;
+  /**
    * Kept in the list and still fetched, but not shown in the venue grid.
    * Use this rather than deleting the entry: the config carries the name,
    * timezone and pricing a cached report still needs, and the poller keeps
@@ -227,6 +233,7 @@ export const VENUES: VenueConfig[] = [
     // has no denominator at all.
     id: 'navia', name: 'Navia Bathhouse', platform: 'navia',
     location: 'Byron Bay · Prahran', timezone: 'Australia/Sydney',
+    defaultLocation: 'Prahran',
     pricing: {
       tiers: [
         { label: 'Byron Bay — Bathing (2 hours)', casualRate: 80 },

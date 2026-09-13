@@ -18,6 +18,18 @@ export interface CachedVenueEntry {
   venueName: string;
   dateRange: { from: string; to: string };
   cachedAt: string;
+  /**
+   * When the data itself was produced, as opposed to when this browser saved
+   * it. `cachedAt` is restamped on every save, so it cannot tell a stored copy
+   * of an old server file from a fresh one.
+   *
+   * For a copy of the server file this is the file's own `cachedAt`; for data
+   * the browser fetched live it is the moment of that fetch. Compared against a
+   * server file's `cachedAt` to decide whether the stored copy has gone stale.
+   * Entries saved before this field existed have none, and are treated as older
+   * than any server copy.
+   */
+  sourceCachedAt?: string;
   sessions: MomenceSession[];
   metrics: SessionMetrics | null;
   monthlyData: MonthlyData[];
@@ -52,6 +64,18 @@ function getRecentKeys(): string[] {
 export function getCachedEntry(key: string): CachedVenueEntry | null {
   const cache = getCache();
   return cache[key] ?? null;
+}
+
+/**
+ * Whether a server copy of a venue is newer than the one stored in this browser.
+ *
+ * The polled venues (Acuity, TryBe, Punchpass, Navia) rewrite their server file
+ * every 15 minutes. Without this check a browser that opened a venue once shows
+ * that snapshot forever — Navia's report was still serving its 16 August cache,
+ * from before Prahran was migrated to hourly sittings, four weeks later.
+ */
+export function isServerCopyNewer(stored: CachedVenueEntry, server: CachedVenueEntry): boolean {
+  return String(server.cachedAt ?? '') > String(stored.sourceCachedAt ?? '');
 }
 
 /** Return the full cache map, parsed once. Use for batch lookups to avoid repeated JSON.parse calls. */
@@ -90,10 +114,12 @@ function writeCacheWithEviction(
 export function setCachedEntry(entry: Omit<CachedVenueEntry, 'key' | 'cachedAt'>): CachedVenueEntry {
   if (!canUseStorage()) {
     const key = getCacheKey(entry.hostId, entry.platform);
-    return { ...entry, key, cachedAt: new Date().toISOString() };
+    const now = new Date().toISOString();
+    return { ...entry, key, cachedAt: now, sourceCachedAt: entry.sourceCachedAt ?? now };
   }
   const key = getCacheKey(entry.hostId, entry.platform);
-  const full: CachedVenueEntry = { ...entry, key, cachedAt: new Date().toISOString() };
+  const now = new Date().toISOString();
+  const full: CachedVenueEntry = { ...entry, key, cachedAt: now, sourceCachedAt: entry.sourceCachedAt ?? now };
   const cache = getCache();
   cache[key] = full;
 

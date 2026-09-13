@@ -132,27 +132,25 @@ Prime is 45 per cent of seats and takes 45 per cent of visits at this occupancy 
 
 Anchors from our own data, refreshed: Sol $30/$35 (39.4 per cent full), Aalto $35 (67.2 per cent), Inner Studio $47 (75.6 per cent), Sense of Self $68 (94.1 per cent). Against Inner Studio's single $47 rate, our Quiet price is 32 per cent lower and our Prime price is 17 per cent higher, the same relative positioning as July: cheaper than the market leader for most of the week, dearer only when seats are scarce.
 
-**Table 3.** The four products, unchanged in structure from July.
+**Table 3.** The five products. Membership was six tiers; it is now three, with the low commitment end moved into a new 4 pack instead (section 4a).
 
 | Product | Price | What it includes | Why |
 | --- | --- | --- | --- |
 | **Casual visit** | $32 / $44 / $55 by tier | One visit | Prices scarcity (Finding 2) |
+| **4 pack** | 8% below the tier price ($29 / $40 / $51 per visit) | Four visits, valid 3 months, transferable | Low commitment entry point; replaces the old Early and Two membership tiers |
 | **10 pack** | 15% below the tier price ($27 / $37 / $47 per visit) | Ten visits, valid 12 months, transferable | Rewards commitment; transferability serves the building (section 5) |
-| **Membership** | Capped weekly tiers, $34 to $88 (Table 4) | A set number of visits per week in Quiet and Standard. Prime costs +$18 each | Sells the half empty Quiet bands (Finding 2), protects Prime, and makes frequency a contract term instead of a risk (section 6) |
+| **Membership** | Three tiers, $52 to $88 a week (Table 4) | A set number of visits per week in Quiet and Standard. Prime costs +$18 each | Sells the half empty Quiet bands (Finding 2), protects Prime, and makes frequency a contract term instead of a risk (section 6) |
 | **Private session** | $75 per person, minimum 2 | Whole room, up to 6 people | Highest yield product in the data (Finding 4) |
 
-**Table 4.** The membership ladder, unchanged from July. "Break even" is the number of visits per week at which the membership beats buying a 10 pack.
+**Table 4.** The membership ladder, compressed from six tiers to three. Early, Two and Four are gone; that demand now sits in the 4 pack (Table 3) instead of a membership. "Break even" is the number of visits per week at which the membership beats buying a 10 pack. "Max available" is the ceiling each tier could reach alone, using every seat in Quiet and Standard not already needed by casual visits, packs and private sessions at the Better case, a shared pool of 305 visits a week (section 6).
 
-| Tier | Fee/week | Visits included | People | Effective $/visit | Break even |
-| --- | --- | --- | --- | --- | --- |
-| Early | $34 | 2, Quiet only | 1 | $23.61 | 1.26 |
-| Two | $41 | 2, Quiet + Standard | 1 | $28.47 | 1.37 |
-| Three | $62 | 3 | 1 | $28.70 | 2.00 |
-| Four | $76 | 4 | 1 | $26.39 | 2.45 |
-| **Household** | **$88** | **4, shared between 2 people** | **2** | $30.56 | 2.84 |
-| **Resident** | **$52** | **3, residents of the building** | 1 | $24.07 | 1.76 |
+| Tier | Fee/week | Visits included | People | Effective $/visit | Break even | Max available |
+| --- | --- | --- | --- | --- | --- | --- |
+| **Membership** | **$62** | **3, Quiet + Standard** | 1 | $28.70 | 2.00 | ~100 |
+| **Household** | **$88** | **4, shared between 2 people** | 2 | $30.56 | 2.84 | ~75 households |
+| **Resident** | **$52** | **3, residents of the building** | 1 | $24.07 | 1.76 | **80, capped** |
 
-Effective $/visit assumes members use 72 per cent of their entitlement (section 6). The tier fees have not been revisited; only the number of memberships needed to hit them has moved, because the overall occupancy target moved (Table 5).
+Membership now absorbs what were the Two, Three and Four tiers into one product; the fee is Three's old fee, kept because it sat at the best effective rate of the three. Effective $/visit assumes members use 72 per cent of their entitlement (section 6). The "max available" figures are each tier's ceiling taken alone, not additive: all three draw on the same 305 visits, so growing one leaves less room for the other two. Resident's 80 is a policy cap, not a capacity one, set below its roughly 100 visit ceiling on the assumption it should track the building's own household count rather than the venue's physical limit. The building's actual household count is not yet in this document; 80 is a planning ceiling until it is.
 
 Two supporting rules, unchanged: a $35 guest pass for Quiet and Standard bands, and a $20 no show fee for a booking cancelled inside 12 hours.
 
@@ -162,7 +160,7 @@ Unchanged from July. Slow Folk sits on level 1 of a multi residential building w
 
 | Product | Price | Rule |
 | --- | --- | --- |
-| **Resident membership** | $52/week | 3 visits per week, Quiet and Standard. Proof of residence in the building. Prime at +$18 as normal. |
+| **Resident membership** | $52/week | 3 visits per week, Quiet and Standard. Proof of residence in the building. Prime at +$18 as normal. Capped at 80 memberships (Table 4). |
 | **Household membership** | $88/week | 4 visits per week shared between two people at one address. Either person may use any visit. |
 | **Transferable 10 pack** | $27 to $47/visit by band | Valid 12 months. Any holder may use it, and may bring the people they are with. |
 | **Neighbour hours** | Included in resident and household tiers | Two named Quiet sessions each week reserved for building residents until 24 hours before, then released to everyone. |
@@ -174,19 +172,21 @@ The method from July stands unchanged. What has changed is the target it feeds.
 
 **The recommended method, unchanged.** Cap each tier, estimate one number (utilisation, the share of entitled visits a member actually takes), weight across the tier mix, and check every tier against its break even. This makes frequency a product parameter, not a behavioural guess.
 
-**Table 5.** The result, using the same tier mix as July, applied to the new 48 per cent occupancy target. At 48 per cent, mature weekly visits are 417 (868 times 48 per cent), and a 40 per cent member share of that is 167 member visits a week, against 142 in the July version.
+**Table 5.** The result, using the three tier mix above, at the 48 per cent occupancy target. At 48 per cent, mature weekly visits are 417 (868 times 48 per cent). Moving the old Early and Two tiers into the 4 pack shifted the membership share of visits from 40 to 34 per cent; net of the 12 per cent that goes to private sessions, that is 125 member visits a week to fill, against 167 under the six tier design.
 
-| Utilisation | Member frequency | Average fee | Memberships needed (167 member visits/week) |
+| Utilisation | Member frequency | Average fee | Memberships needed (125 member visits/week) |
 | --- | --- | --- | --- |
-| 60% (cautious) | 1.72 visits/week | $56.96 | 97 |
-| **72% (planning number)** | **2.06 visits/week** | **$56.96** | **81** |
-| 85% (heavy use) | 2.43 visits/week | $56.96 | 69 |
+| 60% (cautious) | 1.91 visits/week | $64.82 | 65 |
+| **72% (planning number)** | **2.29 visits/week** | **$64.82** | **55** |
+| 85% (heavy use) | 2.70 visits/week | $64.82 | 46 |
 
-Frequency and fee are unchanged from July, because both are properties of the tier mix and the utilisation assumption, not of the overall occupancy target. The membership count moved because the target it has to fill moved, from 142 to 167 member visits a week. **Use 81 memberships at 2.06 visits per week as the planning numbers**, not the 69 this document proposed in July, and not the 67 or 88 anywhere in the sheet's own history. Record both as calculated cells, with the tier mix and utilisation as their inputs, and measure real utilisation from the pre sale cohort onward exactly as planned in July.
+Frequency rose from 2.06 to 2.29 visits a week because compressing six tiers to three removed the low cap Early and Two tiers from the weighted average; fewer, more committed members instead of many light ones. Average fee rose from $56.96 to $64.82 for the same reason: Membership, Household and Resident are all fee tiers of $52 and up, with nothing left at $34 to pull the average down. **Use 55 memberships at 2.29 visits per week as the planning numbers**, split roughly 35 Membership, 10 Household and 10 Resident at the tier mix above; well inside Resident's 80 cap. Record all of this as calculated cells, with the tier mix and utilisation as their inputs, and measure real utilisation from the pre sale cohort onward.
+
+**Table 4's "max available" column, worked out.** Quiet and Standard together hold 447 seats a week; at the same 95 per cent ceiling used everywhere else in this document, that is 424 usable visits. Casual visits, packs and private sessions already claim about 119 of those at the Better case, leaving 305 visits a week that membership growth could draw on. Dividing that 305 by each tier's own visit cap, taken alone, gives the ceilings in Table 4: about 100 for Membership, about 75 households for Household. They are not additive, since all three tiers are drawing on the same 305, and Prime is not counted here at all, since members reach it only by paying the surcharge rather than by any reserved room.
 
 ## 7 · What the model earns
 
-The simulation applies the fresh measured demand shape (section 3) to Slow Folk's weekly grid, splits visits by product mix (45 per cent casual, 15 per cent pack, 40 per cent membership), and prices each visit by its band, exactly as in July.
+The simulation applies the fresh measured demand shape (section 3) to Slow Folk's weekly grid, splits visits by product mix (45 per cent casual, 21 per cent pack, 34 per cent membership, the pack share raised by the move to three membership tiers), and prices each visit by its band.
 
 **Table 6.** How the design decisions move ARPV, at 48 per cent occupancy. The target from the Ramp Scenarios tab is $42.43.
 
@@ -194,28 +194,28 @@ The simulation applies the fresh measured demand shape (section 3) to Slow Folk'
 | --- | --- | --- |
 | Flat price everywhere (current model) | $41.59 | $901k |
 | Time bands only, no private sessions, old surcharge | $41.00 | $888k |
-| **Recommended (bands, private sessions, $18 surcharge, $49 membership fee)** | **$47.15** | **$1,022k** |
+| **Recommended (bands, private sessions, $18 surcharge, three tier membership + 4 pack)** | **$46.73** | **$1,012k** |
 
 **Table 7.** The recommended structure across Good, Better and Best.
 
 | Scenario | Visits per week | ARPV | Annual revenue | Memberships |
 | --- | --- | --- | --- | --- |
-| Good (34% occupancy) | 295 | $47.15 | $724k | 65 |
-| **Better (48% occupancy)** | **417** | **$47.15** | **$1,022k** | **91** |
-| Best (65% occupancy) | 564 | $47.15 | $1,383k | 123 |
+| Good (34% occupancy) | 295 | $46.73 | $717k | 39 |
+| **Better (48% occupancy)** | **417** | **$46.73** | **$1,012k** | **55** |
+| Best (65% occupancy) | 564 | $46.73 | $1,371k | 74 |
 
-ARPV itself does not move with the occupancy scenario, since it is a property of the price grid and the mix, not of how full the venue runs. Annual revenue and membership count scale with occupancy directly. At the revised Better case, ARPV is $47.15 against the $42.43 target, roughly the same $4 to $5 of headroom this document found in July, now sitting on a larger revenue base.
+ARPV itself does not move with the occupancy scenario, since it is a property of the price grid and the mix, not of how full the venue runs. Annual revenue and membership count scale with occupancy directly, and even at Best, Resident sits at roughly 13 memberships, well under its 80 cap. At the Better case, ARPV is $46.73 against the $42.43 target, a smaller margin than the six tier design's $47.15 but still $4 of headroom, on a membership base that is simpler to sell and easier to service.
 
 ## 8 · Sensitivity and risk
 
-**Table 8.** ARPV under the recommended structure, one variable at a time. Unchanged from July; none of these relationships depend on the occupancy scenario.
+**Table 8.** ARPV under the three tier structure, one variable at a time. None of these relationships depend on the occupancy scenario.
 
 | Variable | Values and resulting ARPV |
 | --- | --- |
-| Membership fee per week | $39 → $44.96 · $45 → $46.28 · **$49 → $47.15** · $55 → $48.46 · $60 → $49.56 |
-| Prime casual price | $45 → $44.27 · $50 → $45.71 · **$55 → $47.15** · $58 → $48.01 · $62 → $49.16 |
-| Private share of visits | 0% → $43.35 · 8% → $45.88 · **12% → $47.15** · 18% → $49.05 · 25% → $51.26 |
-| Member visits per week | **1.61 → $47.15** · 2.0 → $45.06 · 2.5 → $43.34 · 3.0 → $42.19 |
+| Average member fee per week | $52 → $45.03 · $58 → $45.88 · **$65 → $46.73** · $71 → $47.58 · $78 → $48.43 |
+| Prime casual price | $45 → $43.57 · $50 → $45.15 · **$55 → $46.73** · $58 → $47.68 · $62 → $48.94 |
+| Private share of visits | 0% → $42.87 · 8% → $45.44 · **12% → $46.73** · 18% → $48.66 · 25% → $50.91 |
+| Member visits per week | 1.61 → $50.30 · 2.0 → $47.95 · **2.29 → $46.73** · 2.5 → $46.01 · 3.0 → $44.71 |
 
 The main risk is still member frequency, not price resistance, and the protections are unchanged: capped tiers, the $18 prime surcharge, a daily visit limit, and a review of the fee against measured utilisation rather than the assumed one.
 
@@ -224,8 +224,8 @@ The main risk is still member frequency, not price resistance, and the protectio
 Three items, one of them updated this round.
 
 1. **The daytime membership still costs more than the unlimited membership.** Unchanged since July: the Assumptions tab lists Unlimited at $45/week and Daytime at $55/week. Under this concept, the restricted product is the main product and the unrestricted one does not exist; prime access is bought per visit instead.
-2. **The membership count does not reconcile, and has moved.** In July this was 67 in the sheet against 88 needed. On the revised Better case it is 67 in the sheet against **81 needed** (section 6), a smaller gap in absolute terms even though the occupancy target rose, because the higher target's extra volume falls partly outside the membership channel.
-3. **ARPV is now genuinely an output, not an input, and the target itself may need revisiting.** The sheet's $42.43 was built as a single flat rate; this model's $47.15 comes from the band mix in Table 1. Both the Pricing and Revenue tabs should take their volume split from the band structure, not a single rate, and the $42.43 target itself is worth checking against the revised $47.15 once the Better case above is accepted.
+2. **The membership count does not reconcile, and the target has moved again.** In July this was 67 in the sheet against 88 needed; after the first September revision it was 67 against 81. Compressing to three tiers moves the target again, to **55 needed** (section 6) against the sheet's 67, so the sheet is now overshooting the target rather than undershooting it, the opposite direction from every prior version.
+3. **ARPV is now genuinely an output, not an input, and the target itself may need revisiting.** The sheet's $42.43 was built as a single flat rate; this model's $46.73 comes from the band mix in Table 1 and the three tier ladder. Both the Pricing and Revenue tabs should take their volume split from the band structure, not a single rate, and the $42.43 target itself is worth checking against the revised $46.73 once the Better case above is accepted.
 
 ## 10 · What to test before launch
 

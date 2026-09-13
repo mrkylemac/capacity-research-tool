@@ -13,6 +13,7 @@ import { calculateMonthlyData } from '@/lib/metricsCalculator';
 import { markPreLaunchSessions } from '@/lib/momenceClient';
 import {
   getCachedEntry,
+  isServerCopyNewer,
   getCacheKey,
   getRecentSearches,
   setCachedEntry,
@@ -296,6 +297,18 @@ export function ReportClient() {
     if (found) {
       setEntry(found);
       setLoadPhase('ready');
+      // Show the stored copy straight away, then check the server's. Polled
+      // venues rewrite their file every 15 minutes, and without this a browser
+      // keeps whatever it first saw indefinitely.
+      if (hId && plat) {
+        fetch(`/api/venue-data?hostId=${hId}&platform=${plat}`)
+          .then(r => (r.ok ? r.json() : null))
+          .then((server: CachedVenueEntry | null) => {
+            if (!server || !isServerCopyNewer(found, server)) return;
+            setEntry(setCachedEntry({ ...server, sourceCachedAt: server.cachedAt }));
+          })
+          .catch(() => {/* keep the stored copy */});
+      }
       return;
     }
     if (!hId || !plat) {
@@ -308,8 +321,7 @@ export function ReportClient() {
       .then(r => r.ok ? r.json() : null)
       .then((data: CachedVenueEntry | null) => {
         if (data) {
-          setCachedEntry(data);
-          setEntry(data);
+          setEntry(setCachedEntry({ ...data, sourceCachedAt: data.cachedAt }));
           setLoadPhase('ready');
         } else {
           setLoadPhase('empty');
@@ -331,8 +343,7 @@ export function ReportClient() {
         const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
         if (cacheRes.ok) {
           const fresh: CachedVenueEntry = await cacheRes.json();
-          setCachedEntry(fresh);
-          setEntry(fresh);
+          setEntry(setCachedEntry({ ...fresh, sourceCachedAt: fresh.cachedAt }));
         }
       } catch {
         // swallow — spinner will stop
@@ -519,15 +530,26 @@ export function ReportClient() {
 
   const hasMultipleLocations = allLocations.length > 1;
 
-  // Auto-select the location with the most sessions as default,
-  // or reset if the selected location is no longer in the data.
-  // A deliberate "All locations" choice (sentinel) is never overridden.
+  // A venue can name the location its report should open on. Without one, the
+  // location with the most measurable sessions wins.
+  const venueDefaultLocation = useMemo(
+    () => VENUES.find(v => v.id === (hostId ?? entry?.hostId))?.defaultLocation ?? null,
+    [hostId, entry?.hostId],
+  );
+
+  // Auto-select the default location, or reset if the selected location is no
+  // longer in the data. A deliberate "All locations" choice (sentinel) is never
+  // overridden.
   useEffect(() => {
     if (!hasMultipleLocations) return;
     if (selectedLocation === ALL_LOCATIONS) return;
     if (selectedLocation !== null && allLocations.includes(selectedLocation)) return;
-    setSelectedLocation(allLocations[0]);
-  }, [hasMultipleLocations, selectedLocation, allLocations]);
+    setSelectedLocation(
+      venueDefaultLocation && allLocations.includes(venueDefaultLocation)
+        ? venueDefaultLocation
+        : allLocations[0],
+    );
+  }, [hasMultipleLocations, selectedLocation, allLocations, venueDefaultLocation]);
 
   // Sessions scoped to the selected location (all-time, before period filter).
   const locationScopedSessions = useMemo(() => {
@@ -788,8 +810,7 @@ export function ReportClient() {
             hostId={hostId ?? ''}
             platform={platform}
             onFetched={(data) => {
-              setCachedEntry(data);
-              setEntry(data);
+              setEntry(setCachedEntry({ ...data, sourceCachedAt: data.cachedAt }));
               setLoadPhase('ready');
             }}
           />

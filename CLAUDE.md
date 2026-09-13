@@ -84,7 +84,8 @@ src/
 │   └── setup.ts            # Vitest setup (matchMedia mock)
 └── styles/                 # Global styles
 scripts/                    # Utility scripts (polling, token refresh, testing)
-.github/workflows/          # CI/CD (venue polling every 30 min, weekly token refresh)
+workers/poll-dispatcher/     # Cloudflare Worker that triggers venue polling every 15 min
+.github/workflows/          # CI/CD (venue polling every 15 min, weekly token refresh)
 ```
 
 ## Architecture Patterns
@@ -176,12 +177,13 @@ rule existed). Put local secrets in `.env.local` instead.
 - **Primary cache:** JSON files in `src/data/venues/` (git-tracked, committed by GitHub Actions)
 - **Merge driver:** these files change every 15 min on `main`, so `.gitattributes` routes them through `scripts/merge-venue-cache.mjs`, which unions both sides by session id rather than writing conflict markers. Run `yarn cache:setup` once per clone or merges will corrupt the JSON
 - **Fallback:** Live API fetches from venue platforms
-- **Client-side:** localStorage with quota management and LRU eviction (`venueCache.ts`)
+- **Client-side:** localStorage with quota management and LRU eviction (`venueCache.ts`). The report shows a stored copy immediately, then revalidates against the server file and swaps in the newer one, judged by `sourceCachedAt` (the data's own timestamp; `cachedAt` is restamped on every save and can't be used)
 - **Sync:** `yarn cache:sync` pulls latest cache from `origin/main`; runs automatically on `yarn dev`
 
 ## CI/CD
 
 - **Venue polling** (`.github/workflows/poll-venues.yml`): every 15 min, timezone-aware gating (Melbourne time), polls Acuity, TryBe, Punchpass and Navia, commits updated cache files. The 15-minute beat is set by Navia, whose bookable entries expire every 15 min; the repo is public so standard runners are free
+- **The 15-minute trigger is a Cloudflare Worker** (`workers/poll-dispatcher`), not the workflow's `schedule`. GitHub's scheduler is best effort and delivered as few as 6 of 96 runs a day, so the worker dispatches the workflow through the API instead. `schedule` remains as a fallback. Dispatched runs respect the time gates unless the `force` input is ticked, which polls everything with deep refreshes
 - **Token refresh** (`.github/workflows/refresh-glofox-tokens.yml`): weekly on Mondays, refreshes Glofox guest tokens, commits to `src/config/api.ts`
 - Both workflows tag their commits `[skip ci]` so they don't re-trigger themselves. That suppresses GitHub Actions, but **not** Vercel, which has no built-in support for the convention — so the data they commit deploys normally.
 
