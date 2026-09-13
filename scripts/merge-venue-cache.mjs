@@ -52,14 +52,29 @@ let merged;
 
 if (Array.isArray(ours.sessions) && Array.isArray(theirs.sessions)) {
   // Session cache. Union by id; where both hold the same session, take the one
-  // observed most recently.
+  // observed most recently — with one exception for sessions that have already
+  // run.
   const win = newer(ours.cachedAt, theirs.cachedAt);
   const first = win === 'ours' ? theirs.sessions : ours.sessions;
   const second = win === 'ours' ? ours.sessions : theirs.sessions;
 
+  // A past session with a known booking count beats one flagged unknown,
+  // whichever side is newer. Past sessions cannot be re-fetched, so "unknown"
+  // on a newer copy is never fresher information: it comes from a partial
+  // rebuild, or from a poller still running older rules. Without this, a CI run
+  // that was already in flight when a backfill landed would overwrite every
+  // repaired sitting with its old voided copy.
+  const nowMs = Date.now();
+  const isPast = (x) => new Date(x.startsAt).getTime() < nowMs;
+  const known = (x) => x.utilisationKnown !== false;
+
   const byId = new Map();
   for (const s of first) byId.set(s.id, s);
-  for (const s of second) byId.set(s.id, s);
+  for (const s of second) {
+    const prev = byId.get(s.id);
+    if (prev && isPast(s) && known(prev) && !known(s)) continue;
+    byId.set(s.id, s);
+  }
 
   const sessions = [...byId.values()].sort((a, b) => String(a.startsAt).localeCompare(String(b.startsAt)));
   const base = win === 'ours' ? ours : theirs;
