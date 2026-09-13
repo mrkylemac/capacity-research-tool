@@ -21,19 +21,18 @@
  * Emitting one session per entry instead would report 24 sessions a day at a
  * venue that runs six sittings, inflating every per-session average fourfold.
  *
- * ── Why Prahran carries no capacity ─────────────────────────────────────────
+ * ── Prahran ─────────────────────────────────────────────────────────────────
  *
- * Prahran runs a continuous 15-minute grid from 06:00 to 20:00 with no gap to
- * break on, so there is no block boundary to derive a sitting from. Its
- * overlap depth is a function of which product you query (8-deep for the
- * 2-hour, 4-deep for the 1-hour), so a grid-derived denominator would be 80 or
- * 40 for the same room on the same day. Summing `maxCapacity` across its 57
- * overlapping starts claims 570 seats a day in a room measured at 15
- * concurrent.
+ * Prahran runs a continuous 15-minute grid with no gap to break on, so a
+ * sitting also starts on the clock hour: four entries at :00/:15/:30/:45. The
+ * depth-4 reading (rather than 8) was a judgement call backed by floor area and
+ * later corroborated by observed concurrency; see NAVIA_CONFIG. Prahran carries
+ * no price, because its 1-hour and 2-hour products share one counter.
  *
- * Prahran therefore emits `capacity: 0` + `utilisationKnown: false`, which
- * `sanitizeSessions` drops from every average. Its bookings are real and are
- * still cached; only the denominator is missing.
+ * ── Closed entries ──────────────────────────────────────────────────────────
+ *
+ * An entry marked not bookable offers only the seats already sold in it. Its
+ * free seats are not counted, and it no longer voids the whole sitting.
  *
  * ── No history ──────────────────────────────────────────────────────────────
  *
@@ -262,21 +261,37 @@ function invalidateReason(block: NaviaEntryObservation[], cfg: NaviaLocationCont
     return 'mixed-entry-capacity';
   }
   for (const e of block) {
-    // Seats advertised as free on an unsellable entry are not actually on
-    // offer, so the block's denominator is unknown. Observed on Byron
-    // 2026-08-17 13:00/13:15/13:30: avail 4, occupancyLevel "available",
-    // isBookable false.
-    if (!e.isBookable && e.availableCapacity > 0) return 'unsellable-entry';
+    // An entry that is not bookable no longer voids the sitting; see
+    // offeredSeats. It used to, and that threw out about 40% of Byron's
+    // sittings and 19% of Prahran's. Roughly one entry in five reads "not
+    // bookable" with seats free, at every lead time, so with four entries a
+    // sitting most often tripped it. A sitting with no free seats can never
+    // trip it, so the ones that survived skewed full and occupancy read high.
 
     // A full counter that the venue does not call "available" is the tell for
     // a hold the feed does not expose. Proving it needs a guestCount sweep at
-    // 5-11x the request budget; this catches the visible cases for free.
-    if (e.availableCapacity === e.maxCapacity && e.occupancyLevel !== 'available') {
+    // 5-11x the request budget; this catches the visible cases for free. Only
+    // meaningful on a bookable entry: a closed one offers nothing either way.
+    if (e.isBookable && e.availableCapacity === e.maxCapacity && e.occupancyLevel !== 'available') {
       return 'hidden-hold';
     }
   }
 
   return null;
+}
+
+/**
+ * Seats an entry actually put on offer.
+ *
+ * An entry that is not bookable offers nothing beyond the seats already sold
+ * in it. Its free seats are advertised but cannot be bought, so counting them
+ * would inflate the denominator; the people already booked into it are real
+ * visitors and still count as both a visitor and a seat. A bookable entry
+ * offers its full cap.
+ */
+function offeredSeats(e: NaviaEntryObservation): number {
+  const sold = Math.max(0, e.maxCapacity - e.availableCapacity);
+  return e.isBookable ? e.maxCapacity : sold;
 }
 
 /**
@@ -335,9 +350,19 @@ export function blockToSession(block: NaviaEntryObservation[], cfg: NaviaLocatio
     };
   }
 
+  const offered = sorted.reduce((n, e) => n + offeredSeats(e), 0);
+
+  // Every entry closed and nothing sold: the venue offered nothing, so this is
+  // a closed sitting rather than an empty one. Marked cancelled so it drops out
+  // of session counts as well as occupancy; a zero-capacity sitting would
+  // otherwise still count towards sessions per week.
+  if (offered === 0) {
+    return { ...base, isCancelled: true, capacitySource: 'derived-grid', soldSource: 'derived-grid', measure: cfg.measure, confidence: 'medium' };
+  }
+
   return {
     ...base,
-    capacity: sorted.reduce((n, e) => n + e.maxCapacity, 0),
+    capacity: offered,
     ticketsSold: sold,
     capacitySource: 'derived-grid',
     soldSource: 'derived-grid',
