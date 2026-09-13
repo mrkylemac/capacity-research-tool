@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signUp, signIn } from '@/lib/auth-client';
@@ -14,9 +14,17 @@ const MIN_PASSWORD_LENGTH = 10;
 
 interface SignupClientProps {
   googleEnabled: boolean;
+  /** Present when the person arrived through an admin's invite link. */
+  inviteToken?: string | null;
 }
 
-export function SignupClient({ googleEnabled }: SignupClientProps) {
+type InviteState =
+  | { kind: 'none' }
+  | { kind: 'checking' }
+  | { kind: 'valid'; email: string }
+  | { kind: 'invalid'; message: string };
+
+export function SignupClient({ googleEnabled, inviteToken = null }: SignupClientProps) {
   const router = useRouter();
 
   const [name, setName] = useState('');
@@ -24,6 +32,36 @@ export function SignupClient({ googleEnabled }: SignupClientProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [invite, setInvite] = useState<InviteState>(inviteToken ? { kind: 'checking' } : { kind: 'none' });
+
+  // Opening the invite sets the cookie the signup request carries, and tells us
+  // which address it is for so the form can't be filled in with another one.
+  useEffect(() => {
+    if (!inviteToken) return;
+    let cancelled = false;
+    fetch(`/api/invites?token=${encodeURIComponent(inviteToken)}`)
+      .then(async response => {
+        const payload = await response.json().catch(() => ({}));
+        if (cancelled) return;
+        if (response.ok && payload.email) {
+          setInvite({ kind: 'valid', email: payload.email });
+          setEmail(payload.email);
+        } else {
+          setInvite({
+            kind: 'invalid',
+            message: payload.error || 'This invite has expired or has already been used.',
+          });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setInvite({ kind: 'invalid', message: 'Could not check your invite.' });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [inviteToken]);
+
+  const invited = invite.kind === 'valid';
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,9 +82,9 @@ export function SignupClient({ googleEnabled }: SignupClientProps) {
       return;
     }
 
-    // Accounts start unapproved and `autoSignIn` is off, so there is no session
-    // to land in — go straight to the holding page.
-    router.push('/pending?new=1');
+    // `autoSignIn` is off, so there is no session to land in. An invited account
+    // is already approved and just needs signing in; anyone else waits for review.
+    router.push(invited ? '/login?invited=1' : '/pending?new=1');
   };
 
   const handleGoogle = async () => {
@@ -57,8 +95,12 @@ export function SignupClient({ googleEnabled }: SignupClientProps) {
 
   return (
     <AuthShell
-      title="Request access"
-      subtitle="New accounts are reviewed by hand before they're switched on."
+      title={invited ? "You're invited" : 'Request access'}
+      subtitle={
+        invited
+          ? 'Create your account and you will be let straight in.'
+          : "New accounts are reviewed by hand before they're switched on."
+      }
       footer={
         <>
           Already have an account?{' '}
@@ -68,6 +110,12 @@ export function SignupClient({ googleEnabled }: SignupClientProps) {
         </>
       }
     >
+      {invite.kind === 'invalid' ? (
+        <p role="alert" className="text-sm text-destructive mb-4">
+          {invite.message} You can still request access below.
+        </p>
+      ) : null}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="name">Name</Label>
@@ -90,7 +138,12 @@ export function SignupClient({ googleEnabled }: SignupClientProps) {
             required
             value={email}
             onChange={event => setEmail(event.target.value)}
+            // The invite only lets in the address it was issued for.
+            readOnly={invited}
           />
+          {invited ? (
+            <p className="text-xs text-muted-foreground">Your invite is for this address.</p>
+          ) : null}
         </div>
 
         <div className="space-y-1.5">
@@ -115,8 +168,8 @@ export function SignupClient({ googleEnabled }: SignupClientProps) {
           </p>
         ) : null}
 
-        <Button type="submit" className="w-full" disabled={busy}>
-          {busy ? 'Creating account…' : 'Request access'}
+        <Button type="submit" className="w-full" disabled={busy || invite.kind === 'checking'}>
+          {busy ? 'Creating account…' : invited ? 'Create account' : 'Request access'}
         </Button>
       </form>
 

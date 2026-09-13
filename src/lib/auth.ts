@@ -5,6 +5,8 @@ import { isBootstrapAdmin } from './adminEmails';
 import { resolveBaseURL, resolveTrustedOrigins } from './authOrigins';
 import { buildAccessRequestNotice } from './accessRequestNotice';
 import { sendEmail } from './email';
+import { findUsableInvite, markInviteAccepted } from './invites';
+import { INVITE_COOKIE, cookieHeaderFrom, readCookie } from './inviteTokens';
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -75,21 +77,31 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async user => {
+        before: async (user, context) => {
           if (isBootstrapAdmin(user.email)) {
             return {
               data: { ...user, approved: true, role: 'admin', approvedAt: new Date() },
             };
+          }
+          // Someone signing up through an admin's invite link, with the address
+          // it was issued for, is let straight in. See inviteTokens.ts.
+          if (await matchingInvite(user.email, context)) {
+            return { data: { ...user, approved: true, role: 'user', approvedAt: new Date() } };
           }
           return { data: { ...user, approved: false, role: 'user' } };
         },
         // Nothing else surfaces a pending request: no queue, no digest, no
         // badge. Without this the account sits in the database until an admin
         // happens to open /admin/users.
-        after: async user => {
-          // An admin's own signup is approved on creation, so there is nothing
-          // to act on and nobody to tell.
-          if (user.approved === true) return;
+        after: async (user, context) => {
+          // Approved on creation (an admin, or an invite), so there is nothing to
+          // act on and nobody to tell. An invite that did the approving is used
+          // up here so its link cannot let anyone else in.
+          if (user.approved === true) {
+            const invite = await matchingInvite(user.email, context);
+            if (invite) await markInviteAccepted(invite.id, user.id).catch(() => {});
+            return;
+          }
 
           const notice = buildAccessRequestNotice({ name: user.name, email: user.email });
           if (!notice) return;
@@ -107,5 +119,21 @@ export const auth = betterAuth({
 });
 
 export const isGoogleAuthEnabled = googleEnabled;
+
+/**
+ * The invite the signup request is carrying, if it is still valid for this
+ * address. Never throws: a database hiccup must not break signup, it just means
+ * the person lands in the approval queue as they would without an invite.
+ */
+async function matchingInvite(email: string, context: unknown) {
+  const token = readCookie(cookieHeaderFrom(context), INVITE_COOKIE);
+  if (!token) return null;
+  try {
+    return await findUsableInvite(token, email);
+  } catch (error) {
+    console.error('[auth] invite lookup failed, falling back to manual approval', error);
+    return null;
+  }
+}
 
 export type AuthSession = typeof auth.$Infer.Session;

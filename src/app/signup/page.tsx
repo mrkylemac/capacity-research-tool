@@ -5,9 +5,16 @@ import { SignupClient } from './signup-client';
 
 export const metadata = { title: 'Request access — Slow Folk' };
 
-export default async function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ invite?: string | string[] }>;
+}) {
   const user = await getCurrentUser();
   if (user) redirect(user.approved ? '/' : '/pending');
 
-  return <SignupClient googleEnabled={isGoogleAuthEnabled} />;
+  const { invite } = await searchParams;
+  const inviteToken = typeof invite === 'string' && invite ? invite : null;
+
+  return <SignupClient googleEnabled={isGoogleAuthEnabled} inviteToken={inviteToken} />;
 }

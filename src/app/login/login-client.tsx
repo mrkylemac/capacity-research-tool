@@ -18,6 +18,8 @@ export function LoginClient({ googleEnabled }: LoginClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams?.get('next') || '/';
+  // Arriving from an invited signup: the account is already approved.
+  const invited = searchParams?.get('invited') === '1';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -61,6 +63,10 @@ export function LoginClient({ googleEnabled }: LoginClientProps) {
         </>
       }
     >
+      {invited ? (
+        <p className="text-sm text-muted-foreground mb-4">Your account is ready. Sign in to continue.</p>
+      ) : null}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>

@@ -59,3 +59,13 @@ export async function countPendingUsers(): Promise<number> {
   );
   return Number(rows[0]?.count ?? 0);
 }
+
+/** An account by email, case-insensitively, or null. */
+export async function findUserByEmail(email: string): Promise<ManagedUser | null> {
+  const { rows } = await pool.query<ManagedUser>(
+    `SELECT ${USER_COLUMNS} FROM "user" WHERE lower(email) = lower($1) LIMIT 1`,
+    [email.trim()],
+  );
+  if (rows.length === 0) return null;
+  return { ...rows[0], approved: rows[0].approved === true };
+}

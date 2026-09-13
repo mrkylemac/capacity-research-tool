@@ -149,6 +149,17 @@ created via signup but start `approved = false` and are switched on by hand at
 - `approved` and `role` are `input: false`, so a signup payload cannot set them.
 - Session cookie caching is off on purpose: approving or revoking someone takes
   effect on their next request.
+- **Adding someone ahead of time:** "Add someone" on `/admin/users`. An existing
+  pending account is approved on the spot; otherwise it issues an invite link
+  (single use, 14 days, bound to that address). Opening the link sets an
+  httpOnly cookie, and the user-create hook in `auth.ts` approves a signup that
+  carries a valid invite for the same email. It is a link rather than an
+  allowlisted address because password signups don't verify email, so an
+  address alone could be claimed by anyone who knows it. Only a hash of the
+  token is stored. The `access_invite` table sits outside Better Auth's schema
+  and is created on first use (`src/lib/invites.ts`). Invite emails only reach
+  outside addresses once `EMAIL_FROM` is on a verified domain; the dashboard
+  always shows the link to copy.
 - Schema lives in `src/db/auth-schema.sql`; regenerate with `yarn auth:generate`.
 
 See `AUTH-SETUP.md` for the deployment and bootstrap story.

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth-guard';
 import { listUsers } from '@/lib/users';
-import { UsersClient, type UserRow } from './users-client';
+import { listOpenInvites } from '@/lib/invites';
+import { UsersClient, type UserRow, type InviteRow } from './users-client';
 
 export const metadata = { title: 'Users — Slow Folk' };
 
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminUsersPage() {
   const admin = await requireAdmin();
-  const users = await listUsers();
+  const [users, openInvites] = await Promise.all([listUsers(), listOpenInvites()]);
 
   const rows: UserRow[] = users.map(user => ({
     id: user.id,
@@ -22,6 +23,13 @@ export default async function AdminUsersPage() {
     approvedAt: user.approvedAt ? user.approvedAt.toISOString() : null,
   }));
 
+  const invites: InviteRow[] = openInvites.map(invite => ({
+    id: invite.id,
+    email: invite.email,
+    createdAt: invite.createdAt.toISOString(),
+    expiresAt: invite.expiresAt.toISOString(),
+  }));
+
   return (
     <main className="min-h-screen">
       <div className="page-container">
@@ -29,7 +37,7 @@ export default async function AdminUsersPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Users</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Approve who can see the reports. Signed in as {admin.email}.
+              Add people and approve who can see the reports. Signed in as {admin.email}.
             </p>
           </div>
           {/* Sign-out lives in the account bar above — no need to repeat it. */}
@@ -38,7 +46,7 @@ export default async function AdminUsersPage() {
           </Link>
         </div>
 
-        <UsersClient users={rows} currentUserId={admin.id} />
+        <UsersClient users={rows} invites={invites} currentUserId={admin.id} />
       </div>
     </main>
   );
