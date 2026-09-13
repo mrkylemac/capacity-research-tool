@@ -85,6 +85,13 @@ export interface VenueConfig {
    */
   defaultLocation?: string;
   /**
+   * Locations still fetched and cached but left out of the report. Like
+   * `hidden` for a whole venue: the poller keeps the history current, so
+   * removing a name from this list brings the location back with nothing lost.
+   * Must match a session `location` exactly.
+   */
+  hiddenLocations?: string[];
+  /**
    * Kept in the list and still fetched, but not shown in the venue grid.
    * Use this rather than deleting the entry: the config carries the name,
    * timezone and pricing a cached report still needs, and the poller keeps
@@ -232,11 +239,13 @@ export const VENUES: VenueConfig[] = [
     // they measure differently: Byron has a derived 16-seat sitting, Prahran
     // has no denominator at all.
     id: 'navia', name: 'Navia Bathhouse', platform: 'navia',
-    location: 'Byron Bay · Prahran', timezone: 'Australia/Sydney',
+    location: 'Prahran', timezone: 'Australia/Melbourne',
     defaultLocation: 'Prahran',
+    // Byron Bay is still polled (NAVIA_CONFIG) so its history keeps accruing,
+    // but it is left out of the report. Remove it from this list to bring it back.
+    hiddenLocations: ['Byron Bay'],
     pricing: {
       tiers: [
-        { label: 'Byron Bay — Bathing (2 hours)', casualRate: 80 },
         { label: 'Prahran — Bathing (1 hour)', casualRate: 50 },
         { label: 'Prahran — Bathing (2 hours)', casualRate: 80 },
       ],

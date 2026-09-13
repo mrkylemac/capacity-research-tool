@@ -459,8 +459,16 @@ export function ReportClient() {
     // ticketsSold: 0 on every row. Deriving the flag on read rather than
     // trusting the stored value fixes caches written before this rule existed,
     // including a browser copy that may never be refetched.
+    // Locations a venue keeps collecting but doesn't report on are dropped here,
+    // before anything counts them, so the location selector, the defaults and
+    // every metric behave as if they weren't in the data.
+    const hiddenLocations = new Set(
+      VENUES.find(v => v.id === (hostId ?? entry?.hostId))?.hiddenLocations ?? [],
+    );
+    const visible = (list: MomenceSession[]) =>
+      hiddenLocations.size === 0 ? list : list.filter(s => !hiddenLocations.has(s.location?.trim() ?? ''));
     const flagged = (list: MomenceSession[]) =>
-      (entry?.platform ?? platform) === 'momence' ? markPreLaunchSessions(list) : list;
+      visible((entry?.platform ?? platform) === 'momence' ? markPreLaunchSessions(list) : list);
     if (!entry?.hostId) return flagged(entry?.sessions ?? []);
     // Fall back to the in-memory entry when localStorage is empty (e.g. quota exceeded)
     if (venueSearches.length === 0) return flagged(entry?.sessions ?? []);
@@ -472,7 +480,7 @@ export function ReportClient() {
       });
     });
     return flagged(result);
-  }, [entry?.hostId, entry?.sessions, entry?.platform, platform, venueSearches]);
+  }, [entry?.hostId, entry?.sessions, entry?.platform, platform, venueSearches, hostId]);
 
   // Pre-compute normalised names once — avoids running regex chains on 18K+ sessions
   // repeatedly across allSessionTypes / sessionTypes / filteredSessions / benchmarkMetrics.
