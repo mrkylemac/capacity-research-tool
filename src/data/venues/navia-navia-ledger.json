@@ -1,5 +1,5 @@
 {
-  "refreshedAt": "2026-09-15T03:46:30.517Z",
+  "refreshedAt": "2026-09-15T04:02:17.160Z",
   "entries": {
     "1|2026-09-12T05:00:00.000Z": {
       "locationId": 1,
@@ -88,17 +88,6 @@
       "occupancyLevel": "full",
       "serviceOptionId": 1,
       "observedAt": "2026-09-12T04:37:26.501Z"
-    },
-    "2|2026-09-12T04:00:00.000Z": {
-      "locationId": 2,
-      "startTime": "2026-09-12T04:00:00.000Z",
-      "endTime": "2026-09-12T05:00:00.000Z",
-      "maxCapacity": 8,
-      "availableCapacity": 6,
-      "isBookable": true,
-      "occupancyLevel": "available",
-      "serviceOptionId": 9,
-      "observedAt": "2026-09-12T00:07:41.570Z"
     },
     "2|2026-09-12T04:15:00.000Z": {
       "locationId": 2,
@@ -1748,7 +1737,7 @@
       "isBookable": false,
       "occupancyLevel": "full",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T05:15:00.000Z": {
       "locationId": 1,
@@ -1759,7 +1748,7 @@
       "isBookable": false,
       "occupancyLevel": "full",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T05:30:00.000Z": {
       "locationId": 1,
@@ -1770,7 +1759,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T05:45:00.000Z": {
       "locationId": 1,
@@ -1781,7 +1770,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T07:00:00.000Z": {
       "locationId": 1,
@@ -1792,7 +1781,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T07:15:00.000Z": {
       "locationId": 1,
@@ -1803,7 +1792,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T07:30:00.000Z": {
       "locationId": 1,
@@ -1814,7 +1803,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T07:45:00.000Z": {
       "locationId": 1,
@@ -1825,7 +1814,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T21:00:00.000Z": {
       "locationId": 1,
@@ -1836,7 +1825,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T21:15:00.000Z": {
       "locationId": 1,
@@ -1847,7 +1836,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T21:30:00.000Z": {
       "locationId": 1,
@@ -1858,7 +1847,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T21:45:00.000Z": {
       "locationId": 1,
@@ -1869,7 +1858,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T23:00:00.000Z": {
       "locationId": 1,
@@ -1880,7 +1869,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T23:15:00.000Z": {
       "locationId": 1,
@@ -1891,7 +1880,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T23:30:00.000Z": {
       "locationId": 1,
@@ -1902,7 +1891,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-15T23:45:00.000Z": {
       "locationId": 1,
@@ -1913,7 +1902,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T01:00:00.000Z": {
       "locationId": 1,
@@ -1924,29 +1913,29 @@
       "isBookable": false,
       "occupancyLevel": "full",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T01:15:00.000Z": {
       "locationId": 1,
       "startTime": "2026-09-16T01:15:00.000Z",
       "endTime": "2026-09-16T03:15:00.000Z",
       "maxCapacity": 4,
-      "availableCapacity": 2,
+      "availableCapacity": 4,
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T01:30:00.000Z": {
       "locationId": 1,
       "startTime": "2026-09-16T01:30:00.000Z",
       "endTime": "2026-09-16T03:30:00.000Z",
       "maxCapacity": 4,
-      "availableCapacity": 4,
+      "availableCapacity": 2,
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T01:45:00.000Z": {
       "locationId": 1,
@@ -1957,7 +1946,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T03:00:00.000Z": {
       "locationId": 1,
@@ -1968,7 +1957,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T03:15:00.000Z": {
       "locationId": 1,
@@ -1979,7 +1968,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T03:30:00.000Z": {
       "locationId": 1,
@@ -1990,7 +1979,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T03:45:00.000Z": {
       "locationId": 1,
@@ -2001,7 +1990,7 @@
       "isBookable": false,
       "occupancyLevel": "full",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T05:00:00.000Z": {
       "locationId": 1,
@@ -2012,7 +2001,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T05:15:00.000Z": {
       "locationId": 1,
@@ -2023,7 +2012,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T05:30:00.000Z": {
       "locationId": 1,
@@ -2034,7 +2023,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T05:45:00.000Z": {
       "locationId": 1,
@@ -2045,7 +2034,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T07:00:00.000Z": {
       "locationId": 1,
@@ -2056,7 +2045,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T07:15:00.000Z": {
       "locationId": 1,
@@ -2067,7 +2056,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T07:30:00.000Z": {
       "locationId": 1,
@@ -2078,7 +2067,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T07:45:00.000Z": {
       "locationId": 1,
@@ -2089,7 +2078,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T20:00:00.000Z": {
       "locationId": 2,
@@ -2100,7 +2089,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T20:15:00.000Z": {
       "locationId": 2,
@@ -2111,7 +2100,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T20:30:00.000Z": {
       "locationId": 2,
@@ -2122,7 +2111,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T20:45:00.000Z": {
       "locationId": 2,
@@ -2133,7 +2122,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T21:00:00.000Z": {
       "locationId": 2,
@@ -2144,7 +2133,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T21:15:00.000Z": {
       "locationId": 2,
@@ -2155,7 +2144,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T21:30:00.000Z": {
       "locationId": 2,
@@ -2166,7 +2155,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T21:45:00.000Z": {
       "locationId": 2,
@@ -2177,7 +2166,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T22:00:00.000Z": {
       "locationId": 2,
@@ -2188,7 +2177,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T22:15:00.000Z": {
       "locationId": 2,
@@ -2199,7 +2188,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T22:30:00.000Z": {
       "locationId": 2,
@@ -2210,7 +2199,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T22:45:00.000Z": {
       "locationId": 2,
@@ -2221,7 +2210,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T23:00:00.000Z": {
       "locationId": 2,
@@ -2232,7 +2221,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T23:15:00.000Z": {
       "locationId": 2,
@@ -2243,7 +2232,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T23:30:00.000Z": {
       "locationId": 2,
@@ -2254,7 +2243,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-15T23:45:00.000Z": {
       "locationId": 2,
@@ -2265,7 +2254,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T00:00:00.000Z": {
       "locationId": 2,
@@ -2276,7 +2265,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T00:15:00.000Z": {
       "locationId": 2,
@@ -2287,7 +2276,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T00:30:00.000Z": {
       "locationId": 2,
@@ -2298,7 +2287,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T00:45:00.000Z": {
       "locationId": 2,
@@ -2309,7 +2298,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T01:00:00.000Z": {
       "locationId": 2,
@@ -2320,7 +2309,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T01:15:00.000Z": {
       "locationId": 2,
@@ -2331,7 +2320,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T01:30:00.000Z": {
       "locationId": 2,
@@ -2342,7 +2331,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T01:45:00.000Z": {
       "locationId": 2,
@@ -2353,7 +2342,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T02:00:00.000Z": {
       "locationId": 2,
@@ -2364,7 +2353,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T02:15:00.000Z": {
       "locationId": 2,
@@ -2375,7 +2364,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T02:30:00.000Z": {
       "locationId": 2,
@@ -2386,7 +2375,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T02:45:00.000Z": {
       "locationId": 2,
@@ -2397,7 +2386,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T03:00:00.000Z": {
       "locationId": 2,
@@ -2408,7 +2397,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T03:15:00.000Z": {
       "locationId": 2,
@@ -2419,7 +2408,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T03:30:00.000Z": {
       "locationId": 2,
@@ -2430,7 +2419,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T03:45:00.000Z": {
       "locationId": 2,
@@ -2441,7 +2430,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T04:00:00.000Z": {
       "locationId": 2,
@@ -2452,7 +2441,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T04:15:00.000Z": {
       "locationId": 2,
@@ -2463,7 +2452,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T04:30:00.000Z": {
       "locationId": 2,
@@ -2474,7 +2463,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T04:45:00.000Z": {
       "locationId": 2,
@@ -2485,7 +2474,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T05:00:00.000Z": {
       "locationId": 2,
@@ -2496,7 +2485,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T05:15:00.000Z": {
       "locationId": 2,
@@ -2507,7 +2496,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T05:30:00.000Z": {
       "locationId": 2,
@@ -2518,7 +2507,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T05:45:00.000Z": {
       "locationId": 2,
@@ -2529,7 +2518,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T06:00:00.000Z": {
       "locationId": 2,
@@ -2540,7 +2529,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T06:15:00.000Z": {
       "locationId": 2,
@@ -2551,7 +2540,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T06:30:00.000Z": {
       "locationId": 2,
@@ -2562,7 +2551,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T06:45:00.000Z": {
       "locationId": 2,
@@ -2573,7 +2562,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T07:00:00.000Z": {
       "locationId": 2,
@@ -2584,7 +2573,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T07:15:00.000Z": {
       "locationId": 2,
@@ -2595,7 +2584,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T07:30:00.000Z": {
       "locationId": 2,
@@ -2606,7 +2595,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T07:45:00.000Z": {
       "locationId": 2,
@@ -2617,7 +2606,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T08:00:00.000Z": {
       "locationId": 2,
@@ -2628,7 +2617,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T08:15:00.000Z": {
       "locationId": 2,
@@ -2639,7 +2628,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T08:30:00.000Z": {
       "locationId": 2,
@@ -2650,7 +2639,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T08:45:00.000Z": {
       "locationId": 2,
@@ -2661,7 +2650,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T09:00:00.000Z": {
       "locationId": 2,
@@ -2672,7 +2661,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T09:15:00.000Z": {
       "locationId": 2,
@@ -2683,7 +2672,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T09:30:00.000Z": {
       "locationId": 2,
@@ -2694,7 +2683,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T09:45:00.000Z": {
       "locationId": 2,
@@ -2705,7 +2694,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T10:00:00.000Z": {
       "locationId": 2,
@@ -2716,7 +2705,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T10:15:00.000Z": {
       "locationId": 2,
@@ -2727,7 +2716,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T10:30:00.000Z": {
       "locationId": 2,
@@ -2738,7 +2727,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T10:45:00.000Z": {
       "locationId": 2,
@@ -2749,7 +2738,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T11:00:00.000Z": {
       "locationId": 2,
@@ -2760,7 +2749,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T21:00:00.000Z": {
       "locationId": 1,
@@ -2771,7 +2760,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T21:15:00.000Z": {
       "locationId": 1,
@@ -2782,7 +2771,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T21:30:00.000Z": {
       "locationId": 1,
@@ -2793,7 +2782,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T21:45:00.000Z": {
       "locationId": 1,
@@ -2804,7 +2793,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T23:00:00.000Z": {
       "locationId": 1,
@@ -2815,7 +2804,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T23:15:00.000Z": {
       "locationId": 1,
@@ -2826,7 +2815,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T23:30:00.000Z": {
       "locationId": 1,
@@ -2837,7 +2826,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-16T23:45:00.000Z": {
       "locationId": 1,
@@ -2848,7 +2837,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T01:00:00.000Z": {
       "locationId": 1,
@@ -2859,7 +2848,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T01:15:00.000Z": {
       "locationId": 1,
@@ -2870,7 +2859,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T01:30:00.000Z": {
       "locationId": 1,
@@ -2881,7 +2870,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T01:45:00.000Z": {
       "locationId": 1,
@@ -2892,7 +2881,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T03:00:00.000Z": {
       "locationId": 1,
@@ -2903,7 +2892,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T03:15:00.000Z": {
       "locationId": 1,
@@ -2914,7 +2903,7 @@
       "isBookable": false,
       "occupancyLevel": "full",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T03:30:00.000Z": {
       "locationId": 1,
@@ -2925,7 +2914,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T03:45:00.000Z": {
       "locationId": 1,
@@ -2936,7 +2925,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T05:00:00.000Z": {
       "locationId": 1,
@@ -2947,7 +2936,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T05:15:00.000Z": {
       "locationId": 1,
@@ -2958,7 +2947,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T05:30:00.000Z": {
       "locationId": 1,
@@ -2969,7 +2958,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T05:45:00.000Z": {
       "locationId": 1,
@@ -2980,7 +2969,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T07:00:00.000Z": {
       "locationId": 1,
@@ -2991,7 +2980,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T07:15:00.000Z": {
       "locationId": 1,
@@ -3002,7 +2991,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T07:30:00.000Z": {
       "locationId": 1,
@@ -3013,7 +3002,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "1|2026-09-17T07:45:00.000Z": {
       "locationId": 1,
@@ -3024,7 +3013,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 1,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T20:00:00.000Z": {
       "locationId": 2,
@@ -3035,7 +3024,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T20:15:00.000Z": {
       "locationId": 2,
@@ -3046,7 +3035,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T20:30:00.000Z": {
       "locationId": 2,
@@ -3057,7 +3046,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T20:45:00.000Z": {
       "locationId": 2,
@@ -3068,7 +3057,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T21:00:00.000Z": {
       "locationId": 2,
@@ -3079,7 +3068,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T21:15:00.000Z": {
       "locationId": 2,
@@ -3090,7 +3079,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T21:30:00.000Z": {
       "locationId": 2,
@@ -3101,7 +3090,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T21:45:00.000Z": {
       "locationId": 2,
@@ -3112,7 +3101,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T22:00:00.000Z": {
       "locationId": 2,
@@ -3123,7 +3112,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T22:15:00.000Z": {
       "locationId": 2,
@@ -3134,7 +3123,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T22:30:00.000Z": {
       "locationId": 2,
@@ -3145,7 +3134,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T22:45:00.000Z": {
       "locationId": 2,
@@ -3156,7 +3145,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T23:00:00.000Z": {
       "locationId": 2,
@@ -3167,7 +3156,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T23:15:00.000Z": {
       "locationId": 2,
@@ -3178,7 +3167,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T23:30:00.000Z": {
       "locationId": 2,
@@ -3189,7 +3178,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-16T23:45:00.000Z": {
       "locationId": 2,
@@ -3200,7 +3189,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T00:00:00.000Z": {
       "locationId": 2,
@@ -3211,7 +3200,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T00:15:00.000Z": {
       "locationId": 2,
@@ -3222,7 +3211,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T00:30:00.000Z": {
       "locationId": 2,
@@ -3233,7 +3222,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T00:45:00.000Z": {
       "locationId": 2,
@@ -3244,7 +3233,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T01:00:00.000Z": {
       "locationId": 2,
@@ -3255,7 +3244,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T01:15:00.000Z": {
       "locationId": 2,
@@ -3266,7 +3255,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T01:30:00.000Z": {
       "locationId": 2,
@@ -3277,7 +3266,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T01:45:00.000Z": {
       "locationId": 2,
@@ -3288,7 +3277,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T02:00:00.000Z": {
       "locationId": 2,
@@ -3299,7 +3288,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T02:15:00.000Z": {
       "locationId": 2,
@@ -3310,7 +3299,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T02:30:00.000Z": {
       "locationId": 2,
@@ -3321,7 +3310,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T02:45:00.000Z": {
       "locationId": 2,
@@ -3332,7 +3321,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T03:00:00.000Z": {
       "locationId": 2,
@@ -3343,7 +3332,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T03:15:00.000Z": {
       "locationId": 2,
@@ -3354,7 +3343,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T03:30:00.000Z": {
       "locationId": 2,
@@ -3365,7 +3354,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T03:45:00.000Z": {
       "locationId": 2,
@@ -3376,7 +3365,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T04:00:00.000Z": {
       "locationId": 2,
@@ -3387,7 +3376,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T04:15:00.000Z": {
       "locationId": 2,
@@ -3398,7 +3387,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T04:30:00.000Z": {
       "locationId": 2,
@@ -3409,7 +3398,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T04:45:00.000Z": {
       "locationId": 2,
@@ -3420,7 +3409,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T05:00:00.000Z": {
       "locationId": 2,
@@ -3431,7 +3420,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T05:15:00.000Z": {
       "locationId": 2,
@@ -3442,7 +3431,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T05:30:00.000Z": {
       "locationId": 2,
@@ -3453,7 +3442,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T05:45:00.000Z": {
       "locationId": 2,
@@ -3464,7 +3453,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T06:00:00.000Z": {
       "locationId": 2,
@@ -3475,7 +3464,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T06:15:00.000Z": {
       "locationId": 2,
@@ -3486,7 +3475,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T06:30:00.000Z": {
       "locationId": 2,
@@ -3497,7 +3486,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T06:45:00.000Z": {
       "locationId": 2,
@@ -3508,7 +3497,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T07:00:00.000Z": {
       "locationId": 2,
@@ -3519,7 +3508,7 @@
       "isBookable": true,
       "occupancyLevel": "filling",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T07:15:00.000Z": {
       "locationId": 2,
@@ -3530,7 +3519,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T07:30:00.000Z": {
       "locationId": 2,
@@ -3541,7 +3530,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T07:45:00.000Z": {
       "locationId": 2,
@@ -3552,7 +3541,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T08:00:00.000Z": {
       "locationId": 2,
@@ -3563,7 +3552,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T08:15:00.000Z": {
       "locationId": 2,
@@ -3574,7 +3563,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T08:30:00.000Z": {
       "locationId": 2,
@@ -3585,7 +3574,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T08:45:00.000Z": {
       "locationId": 2,
@@ -3596,7 +3585,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T09:00:00.000Z": {
       "locationId": 2,
@@ -3607,7 +3596,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T09:15:00.000Z": {
       "locationId": 2,
@@ -3618,7 +3607,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T09:30:00.000Z": {
       "locationId": 2,
@@ -3629,7 +3618,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T09:45:00.000Z": {
       "locationId": 2,
@@ -3640,7 +3629,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T10:00:00.000Z": {
       "locationId": 2,
@@ -3651,7 +3640,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T10:15:00.000Z": {
       "locationId": 2,
@@ -3662,7 +3651,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T10:30:00.000Z": {
       "locationId": 2,
@@ -3673,7 +3662,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T10:45:00.000Z": {
       "locationId": 2,
@@ -3684,7 +3673,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     },
     "2|2026-09-17T11:00:00.000Z": {
       "locationId": 2,
@@ -3695,7 +3684,7 @@
       "isBookable": true,
       "occupancyLevel": "available",
       "serviceOptionId": 9,
-      "observedAt": "2026-09-15T03:46:30.517Z"
+      "observedAt": "2026-09-15T04:02:17.160Z"
     }
   }
 }
