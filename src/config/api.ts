@@ -717,8 +717,8 @@ export function getBsportConfig(hostId: string): BsportConfig {
 // The widget API at widgetapi.hapana.com exposes session data including
 // capacity and booking counts. Each location has its own widget ID (siteID).
 //
-// Data availability: ~2-3 months of historical data + future schedule.
-// Past sessions are removed over time, so incremental caching is needed.
+// Data availability: full history from operatingSince per location + future schedule.
+// Fetched in 6-month chunks to avoid API timeouts on large ranges.
 export interface HapanaLocation {
   widgetId: string;
   name: string;
@@ -742,12 +742,12 @@ export const HAPANA_CONFIG = {
   // $40 week unlimited; beach & river sites $20 / $30. Confirmed 2026-07 from alchemysaunas.com.au.
   locations: [
     { widgetId: 'T204UER6NXhMbHQxemhCSTIxdDU2Zz09', name: 'Karrinyup', operatingSince: '2026-01-01', dropInPrice: 35, membershipWeekly: 40 },
-    { widgetId: 'SlN0WjlHeitPRCtSd1h0K00yTmt3Zz09', name: 'Port Beach', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
-    { widgetId: 'bzNBYXpVMkNaT1ltdTcrZFlMSTlaUT09', name: 'Point Walter', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
-    { widgetId: 'MEZ6M1FsaXY2QUpEYkFLelpEQ254QT09', name: 'Fremantle', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
-    { widgetId: 'bzVBYmt0cm41S3h2WXhQZGdRVHE0Zz09', name: 'West Leederville', operatingSince: '2025-01-01', dropInPrice: 35, membershipWeekly: 40 },
-    { widgetId: 'MTVjN0FsbmZMS0JhcVhzdGwvbUpDZz09', name: 'City Beach', operatingSince: '2025-01-01', dropInPrice: 20, membershipWeekly: 30 },
-    { widgetId: 'a2Z6bVlFU2s4TEE4cmo0L3JIZHBqdz09', name: 'East Fremantle', operatingSince: '2025-01-01', dropInPrice: 35, membershipWeekly: 40 },
-    { widgetId: 'dzBFdU1yRWxBQ2dwNktHVGFPM2dLUT09', name: 'Scarborough', operatingSince: '2025-01-01', dropInPrice: 35, membershipWeekly: 40 },
+    { widgetId: 'SlN0WjlHeitPRCtSd1h0K00yTmt3Zz09', name: 'Port Beach', operatingSince: '2024-01-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'bzNBYXpVMkNaT1ltdTcrZFlMSTlaUT09', name: 'Point Walter', operatingSince: '2024-01-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'MEZ6M1FsaXY2QUpEYkFLelpEQ254QT09', name: 'Fremantle', operatingSince: '2024-04-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'bzVBYmt0cm41S3h2WXhQZGdRVHE0Zz09', name: 'West Leederville', operatingSince: '2024-04-01', dropInPrice: 35, membershipWeekly: 40 },
+    { widgetId: 'MTVjN0FsbmZMS0JhcVhzdGwvbUpDZz09', name: 'City Beach', operatingSince: '2024-07-01', dropInPrice: 20, membershipWeekly: 30 },
+    { widgetId: 'a2Z6bVlFU2s4TEE4cmo0L3JIZHBqdz09', name: 'East Fremantle', operatingSince: '2024-01-01', dropInPrice: 35, membershipWeekly: 40 },
+    { widgetId: 'dzBFdU1yRWxBQ2dwNktHVGFPM2dLUT09', name: 'Scarborough', operatingSince: '2025-04-01', dropInPrice: 35, membershipWeekly: 40 },
   ] as HapanaLocation[],
 } as const;
