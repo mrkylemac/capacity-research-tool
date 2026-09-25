@@ -7,7 +7,7 @@
     "from": "2026-08-14T07:00:00.000Z",
     "to": "2026-10-29T10:00:00.000Z"
   },
-  "cachedAt": "2026-09-25T01:32:10.986Z",
+  "cachedAt": "2026-09-25T01:36:25.064Z",
   "sessions": [
     {
       "id": "navia-1-2026-08-14T07:00:00.000Z",
@@ -28150,15 +28150,16 @@
       "startsAt": "2026-09-25T03:00:00.000Z",
       "endsAt": "2026-09-25T04:00:00.000Z",
       "durationMinutes": 60,
-      "capacity": 32,
-      "ticketsSold": 9,
+      "capacity": 0,
+      "ticketsSold": 0,
       "fixedTicketPrice": 0,
       "location": "Prahran",
       "inPerson": true,
-      "capacitySource": "derived-grid",
-      "soldSource": "derived-grid",
+      "utilisationKnown": false,
+      "capacitySource": "unknown",
+      "soldSource": "unknown",
       "measure": "seats",
-      "confidence": "medium"
+      "confidence": "low"
     },
     {
       "id": "navia-2-2026-09-25T04:00:00.000Z",
@@ -28166,15 +28167,16 @@
       "startsAt": "2026-09-25T04:00:00.000Z",
       "endsAt": "2026-09-25T05:00:00.000Z",
       "durationMinutes": 60,
-      "capacity": 32,
-      "ticketsSold": 9,
+      "capacity": 0,
+      "ticketsSold": 0,
       "fixedTicketPrice": 0,
       "location": "Prahran",
       "inPerson": true,
-      "capacitySource": "derived-grid",
-      "soldSource": "derived-grid",
+      "utilisationKnown": false,
+      "capacitySource": "unknown",
+      "soldSource": "unknown",
       "measure": "seats",
-      "confidence": "medium"
+      "confidence": "low"
     },
     {
       "id": "navia-1-2026-09-25T05:00:00.000Z",
