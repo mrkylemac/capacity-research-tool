@@ -7,7 +7,7 @@
     "from": "2026-08-14T07:00:00.000Z",
     "to": "2026-10-29T10:00:00.000Z"
   },
-  "cachedAt": "2026-09-25T04:31:42.669Z",
+  "cachedAt": "2026-09-25T04:46:54.137Z",
   "sessions": [
     {
       "id": "navia-1-2026-08-14T07:00:00.000Z",
@@ -28402,16 +28402,15 @@
       "startsAt": "2026-09-25T05:00:00.000Z",
       "endsAt": "2026-09-25T06:00:00.000Z",
       "durationMinutes": 60,
-      "capacity": 0,
-      "ticketsSold": 0,
+      "capacity": 26,
+      "ticketsSold": 12,
       "fixedTicketPrice": 0,
       "location": "Prahran",
       "inPerson": true,
-      "utilisationKnown": false,
-      "capacitySource": "unknown",
-      "soldSource": "unknown",
+      "capacitySource": "derived-grid",
+      "soldSource": "derived-grid",
       "measure": "seats",
-      "confidence": "low"
+      "confidence": "medium"
     },
     {
       "id": "navia-2-2026-09-25T06:00:00.000Z",
