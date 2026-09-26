@@ -4,8 +4,8 @@
  *
  * Data model:
  * - Returns sessions with capacity + booking counts (reserved/remaining)
- * - Limited historical data (~2-3 months back), plus future schedule
- * - Past sessions are removed over time → incremental caching required
+ * - Full history available from each location's operatingSince date
+ * - Fetched in 6-month chunks to avoid API timeouts on large date ranges
  * - Pricing is credit-based (casualRate: 0); we use static prices from config
  * - Paginated: up to 100 per page, totalRecords in response
  *
@@ -209,43 +209,94 @@ async function fetchHapanaPage(
 }
 
 /**
- * Fetch all sessions for a single Hapana location within a date range.
+ * Fetch all pages for a single date-range chunk.
+ */
+async function fetchChunk(
+  baseUrl: string,
+  widgetId: string,
+  securityToken: string,
+  origin: string,
+  startDate: string,
+  endDate: string,
+  locationName: string,
+  location: HapanaLocation,
+): Promise<MomenceSession[]> {
+  const sessions: MomenceSession[] = [];
+  let pageIndex = 1;
+
+  while (true) {
+    const response = await fetchHapanaPage(
+      baseUrl, widgetId, securityToken, origin,
+      startDate, endDate, pageIndex,
+    );
+
+    if (!response.success || !response.data) {
+      if (response.message === 'Record not found!') break;
+      throw new Error(`Hapana API error: ${response.message || 'unknown'}`);
+    }
+
+    for (const s of response.data) {
+      sessions.push(hapanaSessionToMomence(s, locationName, location.dropInPrice));
+    }
+
+    console.log(`[Hapana/${locationName}] ${startDate}→${endDate} page ${pageIndex}/${response.pagination.noOfPages}: ${response.data.length} (total: ${sessions.length})`);
+
+    if (pageIndex >= response.pagination.noOfPages || pageIndex >= MAX_PAGES) break;
+    pageIndex++;
+  }
+
+  return sessions;
+}
+
+/**
+ * Build 6-month date-range chunks from a start date to an end date.
+ * Keeps requests small enough to avoid Hapana 504 timeouts.
+ */
+function buildChunks(from: string, to: string): { start: string; end: string }[] {
+  const chunks: { start: string; end: string }[] = [];
+  let cursor = new Date(from);
+  const endDate = new Date(to);
+
+  while (cursor < endDate) {
+    const chunkEnd = new Date(cursor);
+    chunkEnd.setMonth(chunkEnd.getMonth() + 6);
+    if (chunkEnd > endDate) chunkEnd.setTime(endDate.getTime());
+
+    chunks.push({
+      start: cursor.toISOString().slice(0, 10),
+      end: chunkEnd.toISOString().slice(0, 10),
+    });
+
+    cursor = new Date(chunkEnd);
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return chunks;
+}
+
+/**
+ * Fetch all sessions for a single Hapana location from its operatingSince
+ * date through 1 month in the future.
  * Dynamically fetches a fresh security token from the settings endpoint.
  */
 async function fetchLocationSessions(
   baseUrl: string,
   location: HapanaLocation,
   origin: string,
-  startDate: string,
-  endDate: string,
+  globalEnd: string,
 ): Promise<MomenceSession[]> {
-  // Fetch a fresh security token for this location's widget
   const securityToken = await fetchSecurityToken(location.widgetId, origin);
-  console.log(`[Hapana/${location.name}] Fetched security token`);
+
+  const chunks = buildChunks(location.operatingSince, globalEnd);
+  console.log(`[Hapana/${location.name}] Fetching ${chunks.length} chunks from ${location.operatingSince} to ${globalEnd}`);
 
   const sessions: MomenceSession[] = [];
-  let pageIndex = 1;
-
-  while (true) {
-    const response = await fetchHapanaPage(
+  for (const chunk of chunks) {
+    const chunkSessions = await fetchChunk(
       baseUrl, location.widgetId, securityToken, origin,
-      startDate, endDate, pageIndex,
+      chunk.start, chunk.end, location.name, location,
     );
-
-    if (!response.success || !response.data) {
-      // "Record not found" means no data for this date range — not an error
-      if (response.message === 'Record not found!') break;
-      throw new Error(`Hapana API error: ${response.message || 'unknown'}`);
-    }
-
-    for (const s of response.data) {
-      sessions.push(hapanaSessionToMomence(s, location.name, location.dropInPrice));
-    }
-
-    console.log(`[Hapana/${location.name}] Page ${pageIndex}/${response.pagination.noOfPages}: ${response.data.length} sessions (total: ${sessions.length})`);
-
-    if (pageIndex >= response.pagination.noOfPages || pageIndex >= MAX_PAGES) break;
-    pageIndex++;
+    sessions.push(...chunkSessions);
   }
 
   return sessions;
@@ -285,25 +336,18 @@ export async function fetchAllHapanaSessions(
 ): Promise<MomenceSession[]> {
   const now = new Date();
 
-  // Fetch from 3 months ago to 1 month ahead
-  const startDate = new Date(now);
-  startDate.setMonth(startDate.getMonth() - 3);
+  // End date: 1 month into the future
   const endDate = new Date(now);
   endDate.setMonth(endDate.getMonth() + 1);
-
-  const startStr = startDate.toISOString().slice(0, 10);
   const endStr = endDate.toISOString().slice(0, 10);
 
-  console.log(`[Hapana] Fetching ${locations.length} locations from ${startStr} to ${endStr}`);
+  console.log(`[Hapana] Fetching ${locations.length} locations (full history) to ${endStr}`);
 
   const freshSessions: MomenceSession[] = [];
   const freshIds = new Set<string>();
 
   const locationResults = await mapConcurrent(locations, CONCURRENCY, async (loc) => {
-    return fetchLocationSessions(
-      baseUrl, loc, origin,
-      startStr, endStr,
-    );
+    return fetchLocationSessions(baseUrl, loc, origin, endStr);
   });
 
   for (const locSessions of locationResults) {
