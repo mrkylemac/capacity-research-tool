@@ -8,7 +8,8 @@ import { VENUES } from '@/config/api';
  * cache. They are simply never listed in the venue grid.
  */
 describe('hidden venues', () => {
-  const HIDDEN = ['41167', 'aerth', '40726', 'projectmood'];
+  // 284871 is Sink Bathhouse, hidden until it has trading data after opening.
+  const HIDDEN = ['41167', 'aerth', '40726', 'projectmood', '284871'];
 
   it.each(HIDDEN)('%s is still configured', id => {
     expect(VENUES.find(v => v.id === id)).toBeDefined();
@@ -18,7 +19,7 @@ describe('hidden venues', () => {
     expect(VENUES.find(v => v.id === id)!.hidden).toBe(true);
   });
 
-  it('hides exactly those four and nothing else', () => {
+  it('hides exactly those and nothing else', () => {
     expect(VENUES.filter(v => v.hidden).map(v => v.id).sort()).toEqual([...HIDDEN].sort());
   });
 

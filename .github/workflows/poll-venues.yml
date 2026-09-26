@@ -77,6 +77,16 @@ jobs:
             fi
           done
 
+          # Capybara Bathing (Surry Hills, Sydney clock = Melbourne clock) opens
+          # an entry every 15 minutes from 08:30 to 19:15, and each entry leaves
+          # the feed the moment it starts, so its final booking count is the
+          # last read before then. A start-time list would be the whole day, so
+          # poll continuously from 35 minutes before the first entry to the last.
+          if [ $NOW -ge 475 ] && [ $NOW -le 1155 ]; then
+            echo "  Capybara Bathing trading window (07:55–19:15) — will poll"
+            ACUITY=true
+          fi
+
           # TryBe (Sense of Self): end-of-day capture at ~22:00 Melbourne
           TRYBE=false
           TRYBE_DIFF=$((1320 - NOW))
@@ -166,7 +176,7 @@ jobs:
       # updated concurrently merges as conflict markers inside the JSON.
       - run: yarn cache:setup
 
-      - name: Poll Acuity venues (Sauna Goose + The Corner Sauna)
+      - name: Poll Acuity venues (The Corner Sauna + Capybara Bathing)
         if: needs.gate.outputs.poll-acuity == 'true' || inputs.force
         run: yarn poll:acuity
 
@@ -186,7 +196,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json
+          git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/capybarabathing-acuity.json src/data/venues/senseofself-trybe.json
           git add src/data/venues/bmsauna-punchpass.json src/data/venues/bmsauna-punchpass-oracle.json
           git add src/data/venues/navia-navia.json src/data/venues/navia-navia-ledger.json
           if git diff --staged --quiet; then

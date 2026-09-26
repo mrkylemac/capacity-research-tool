@@ -165,7 +165,43 @@ export const VENUES: VenueConfig[] = [
   // objects verbatim on every refetch — the figures above are stable, and
   // saunagoose-acuity.json remains the untouched original either way.
   { id: '41275', name: 'Sauna Goose', platform: 'momence', location: 'Northcote', timezone: 'Australia/Melbourne' },
+  // Host id read from the Momence lead-form embed on nativestate.com.au. Kirra is
+  // on the Queensland side of the border, so no daylight saving.
+  { id: '233027', name: 'Native State', platform: 'momence', location: 'Kirra, Gold Coast', timezone: 'Australia/Brisbane' },
+  // Hidden until it has trading data: it opens 2026-10-12, and the only past
+  // sessions are 18 zero-sold Monday test slots from July–August, which would
+  // read as 0% utilisation. markPreLaunchSessions drops those once a booked
+  // session has run, so unhiding a few weeks after opening shows a clean ramp.
+  //
+  // Each 30-minute entry is its own Momence session with 6 places and a
+  // 90-minute stay, so three entries overlap at any time. Utilisation per entry
+  // is arrivals against places offered and compares fine; sessions per day does
+  // not, since it counts entries rather than sittings.
+  //
+  // Prices are NZD and are summed as dollars in revenue figures, as KEEN's CHF
+  // are. City not yet confirmed; Momence reports only the country.
+  { id: '284871', name: 'Sink Bathhouse', platform: 'momence', location: 'New Zealand', timezone: 'Pacific/Auckland', hidden: true },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
+  {
+    id: 'capybarabathing', name: 'Capybara Bathing', platform: 'acuity', location: 'Surry Hills', timezone: 'Australia/Sydney',
+    // Casual rates from the Acuity types (ACUITY_CONFIG.capybarabathing).
+    // Passes and memberships from capybarabathing.com.au on 2026-09-26. Passes
+    // cover all bathing types; "The Renewal" (5 off-peak for $250, 90-day
+    // expiry) is a limited-time offer and left out of the ladder.
+    pricing: {
+      tiers: [
+        { label: 'Bathing (Off-Peak)', casualRate: 65, pack5PerVisit: 63, pack10PerVisit: 60, packs: [{ size: 5, perVisit: 63, total: 315 }, { size: 10, perVisit: 60, total: 600 }] },
+        { label: 'Bathing (Peak)', casualRate: 70, pack5PerVisit: 63, pack10PerVisit: 60, packs: [{ size: 5, perVisit: 63, total: 315 }, { size: 10, perVisit: 60, total: 600 }] },
+        { label: 'Bathing (Quiet Weekend Morning)', casualRate: 70 },
+        { label: 'Guided Session (Soft)', casualRate: 80 },
+      ],
+      memberships: [
+        { label: 'Ritual (Off-Peak)', price: '$40 / week', description: 'One off-peak session per week' },
+        { label: 'Ritual (Full Access)', price: '$45 / week', description: 'One peak or off-peak session per week' },
+      ],
+      note: 'Off-peak is weekdays before 5pm; peak is weeknights from 5pm, weekends and public holidays. Each entry admits 5 people for a 90-minute stay, with a new entry every 15 minutes, so sessions per day counts entries rather than sittings. Acuity sells passes as products rather than per-session tickets, so revenue here is modelled on the casual rate.',
+    },
+  },
   { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },
   {
     id: 'bmsauna', name: 'Blue Mountains Sauna', platform: 'punchpass', location: 'Blue Mountains', timezone: 'Australia/Sydney',
@@ -435,8 +471,7 @@ export const PORTAL_CONFIG = {
 // Acuity Scheduling configuration (public scheduling widget API — no auth required)
 //
 // Two modes:
-//   'class'   — group classes via POST /availability/class (no live venue since
-//               Sauna Goose left for Momence; kept for the next class-mode venue)
+//   'class'   — group classes via POST /availability/class (Capybara Bathing)
 //   'service' — individual appointments via GET /availability/times (e.g. The Corner Sauna)
 //
 // Service-type venues must specify a `calendarId` on each appointment type
@@ -478,6 +513,35 @@ export const ACUITY_CONFIG: Record<string, AcuityConfig> = {
   // config is gone from here so the poller stops chasing a dead feed. Its
   // Acuity-era cache is preserved untouched in saunagoose-acuity.json, and the
   // sessions were carried across into 41275-momence.json.
+  //
+  // Capybara Bathing (Surry Hills). Ids, durations, prices and class sizes are
+  // read from the bootstrap JSON on capybarabathing.as.me/schedule/81d64d64,
+  // 2026-09-26. Every bathing type is an Acuity class, so one paginated call
+  // covers them all and sold-out entries stay in the feed as slotsAvailable 0.
+  //
+  // The grid is an entry every 15 minutes, 5 places each, for a 90-minute stay,
+  // so six entries overlap at any moment (the Sink Bathhouse shape). The 5 is
+  // places admitted at that entry and is what slotsAvailable counts down from,
+  // so per-entry utilisation is sound; sessions per day counts entries, not
+  // sittings. "Up to 4 people per booking" on the site is a per-booking cap,
+  // not the room.
+  //
+  // The guided session sits on the practitioner's calendar (14553892, Tara)
+  // rather than the venue calendar, so both calendars are queried.
+  capybarabathing: {
+    mode: 'class',
+    baseUrl: 'https://capybarabathing.as.me',
+    ownerKey: '81d64d64',
+    name: 'Capybara Bathing',
+    timezone: 'Australia/Sydney',
+    appointmentTypes: [
+      { id: 57411393, name: 'Bathing (Off-Peak)', duration: 90, price: '65.00', classSize: 5, calendarId: 9539301 },
+      { id: 57414776, name: 'Bathing (Peak)', duration: 90, price: '70.00', classSize: 5, calendarId: 9539301 },
+      { id: 66085359, name: 'Bathing (Quiet Weekend Morning)', duration: 90, price: '70.00', classSize: 5, calendarId: 9539301 },
+      { id: 97868741, name: 'Guided Session (Soft)', duration: 90, price: '80.00', classSize: 8, calendarId: 14553892 },
+    ],
+    calendarIds: [9539301, 14553892],
+  },
 };
 
 export function getAcuityConfig(hostId: string): AcuityConfig {
