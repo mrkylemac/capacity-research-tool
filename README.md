@@ -64,7 +64,7 @@ Seventeen venues across nine booking platforms:
 | TryBe | Sense of Self | Future-only — history built up by polling |
 | Portal (Wix) | PORTAL° Thermaculture (Denver, Boulder, Bozeman + Minneapolis via Glofox) | Full |
 | Xtra Clubs | Xtra Clubs (Bondi Junction, Green Square, Merrickville) | Full |
-| Acuity | Sauna Goose, The Corner Sauna | Availability-based — history built up by polling |
+| Acuity | The Corner Sauna, Capybara Bathing | Availability-based — history built up by polling |
 | Hapana | Alchemy Saunas (8 Perth locations) | ~2–3 months — history built up by polling |
 | bsport | KEEN Wellbeing (Zurich) | Full, public offer API |
 
