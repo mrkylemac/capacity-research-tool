@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { momenceClient, type HostInfo } from '@/lib/momenceClient';
+import { momenceClient, markPreLaunchSessions, type HostInfo } from '@/lib/momenceClient';
 import {
   calculateMetrics,
   calculateMonthlyData,
@@ -249,7 +249,13 @@ export function useSessions() {
       }
 
       // 4. Normalize capacity to modal value (reduces variance from special events)
-      const { sessions: cleanData } = normalizeCapacity(hoursFiltered, 0.5, true);
+      const { sessions: normalized } = normalizeCapacity(hoursFiltered, 0.5, true);
+
+      // 5. Flag the timetable that predates the venue's first booking. Momence
+      //    serves those sessions with ticketsSold: 0, which is a placeholder,
+      //    not an empty room. Flagged rather than dropped so the schedule
+      //    survives in the cache while every average ignores it.
+      const cleanData = markPreLaunchSessions(normalized);
 
       setDataRange({
         from: filteredMinDate,

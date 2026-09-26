@@ -10,8 +10,10 @@ import { SessionTicker } from '@/components/SessionTicker';
 import { DinoLoader } from '@/components/DinoLoader';
 import { calculateBenchmarkMetrics, checkMetricInvariants } from '@/lib/benchmarkMetrics';
 import { calculateMonthlyData } from '@/lib/metricsCalculator';
+import { markPreLaunchSessions } from '@/lib/momenceClient';
 import {
   getCachedEntry,
+  isServerCopyNewer,
   getCacheKey,
   getRecentSearches,
   setCachedEntry,
@@ -21,7 +23,7 @@ import { VENUES, API_CONFIG } from '@/config/api';
 import { useSessions } from '@/hooks/useSessions';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+import { cn, mergeWithCachedPast } from '@/lib/utils';
 import {
   PeriodSelector,
   getPeriodRange,
@@ -295,6 +297,18 @@ export function ReportClient() {
     if (found) {
       setEntry(found);
       setLoadPhase('ready');
+      // Show the stored copy straight away, then check the server's. Polled
+      // venues rewrite their file every 15 minutes, and without this a browser
+      // keeps whatever it first saw indefinitely.
+      if (hId && plat) {
+        fetch(`/api/venue-data?hostId=${hId}&platform=${plat}`)
+          .then(r => (r.ok ? r.json() : null))
+          .then((server: CachedVenueEntry | null) => {
+            if (!server || !isServerCopyNewer(found, server)) return;
+            setEntry(setCachedEntry({ ...server, sourceCachedAt: server.cachedAt }));
+          })
+          .catch(() => {/* keep the stored copy */});
+      }
       return;
     }
     if (!hId || !plat) {
@@ -307,8 +321,7 @@ export function ReportClient() {
       .then(r => r.ok ? r.json() : null)
       .then((data: CachedVenueEntry | null) => {
         if (data) {
-          setCachedEntry(data);
-          setEntry(data);
+          setEntry(setCachedEntry({ ...data, sourceCachedAt: data.cachedAt }));
           setLoadPhase('ready');
         } else {
           setLoadPhase('empty');
@@ -330,8 +343,7 @@ export function ReportClient() {
         const cacheRes = await fetch(`/api/venue-data?hostId=${hostId}&platform=${platform}`);
         if (cacheRes.ok) {
           const fresh: CachedVenueEntry = await cacheRes.json();
-          setCachedEntry(fresh);
-          setEntry(fresh);
+          setEntry(setCachedEntry({ ...fresh, sourceCachedAt: fresh.cachedAt }));
         }
       } catch {
         // swallow — spinner will stop
@@ -362,8 +374,20 @@ export function ReportClient() {
     if (!hostId) return;
 
     if (syncHook.allSessions.length > 0) {
+      // A sync returns whatever the platform still serves, which is not always
+      // everything the cache holds. Sauna Goose is the case in point: its
+      // pre-19-Aug-2026 history came from Acuity and survives only here, since
+      // Momence's own copy of those sessions lost capacity and price in the
+      // import. Retain cached past sessions the fetch didn't return; future ones
+      // are free to disappear, that's just the venue changing its timetable.
+      const sessions = mergeWithCachedPast(syncHook.allSessions, entry?.sessions ?? []);
+      // The hook's rollups describe the fetch alone. Once retained sessions are
+      // folded back in they no longer do, and the report recomputes all of them
+      // from `sessions` anyway — so store nulls rather than a stale figure,
+      // which is what every poller writes.
+      const retained = sessions.length > syncHook.allSessions.length;
       const dateRange = {
-        from: syncHook.dataRange.from?.toISOString() ?? entry?.dateRange?.from ?? new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
+        from: sessions[0]?.startsAt ?? syncHook.dataRange.from?.toISOString() ?? entry?.dateRange?.from ?? new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
         to: syncHook.dataRange.to?.toISOString() ?? entry?.dateRange?.to ?? new Date().toISOString(),
       };
       const venueName = syncHook.hostInfo?.name ?? entry?.venueName ?? VENUES.find(v => v.id === hostId)?.name ?? hostId;
@@ -372,10 +396,10 @@ export function ReportClient() {
         platform: entry?.platform ?? platform,
         venueName,
         dateRange,
-        sessions: syncHook.allSessions,
-        metrics: syncHook.metrics,
-        monthlyData: syncHook.monthlyData,
-        venueConfig: syncHook.venueConfig,
+        sessions,
+        metrics: retained ? null : syncHook.metrics,
+        monthlyData: retained ? [] : syncHook.monthlyData,
+        venueConfig: retained ? null : syncHook.venueConfig,
         hostInfo: syncHook.hostInfo,
       });
       setEntry(saved);
@@ -431,9 +455,23 @@ export function ReportClient() {
 
   // ── All-time data: merge every cached search for this venue ─────────────
   const allCachedSessions = useMemo<MomenceSession[]>(() => {
-    if (!entry?.hostId) return entry?.sessions ?? [];
+    // Momence serves the timetable a venue loaded before it went live with
+    // ticketsSold: 0 on every row. Deriving the flag on read rather than
+    // trusting the stored value fixes caches written before this rule existed,
+    // including a browser copy that may never be refetched.
+    // Locations a venue keeps collecting but doesn't report on are dropped here,
+    // before anything counts them, so the location selector, the defaults and
+    // every metric behave as if they weren't in the data.
+    const hiddenLocations = new Set(
+      VENUES.find(v => v.id === (hostId ?? entry?.hostId))?.hiddenLocations ?? [],
+    );
+    const visible = (list: MomenceSession[]) =>
+      hiddenLocations.size === 0 ? list : list.filter(s => !hiddenLocations.has(s.location?.trim() ?? ''));
+    const flagged = (list: MomenceSession[]) =>
+      visible((entry?.platform ?? platform) === 'momence' ? markPreLaunchSessions(list) : list);
+    if (!entry?.hostId) return flagged(entry?.sessions ?? []);
     // Fall back to the in-memory entry when localStorage is empty (e.g. quota exceeded)
-    if (venueSearches.length === 0) return entry?.sessions ?? [];
+    if (venueSearches.length === 0) return flagged(entry?.sessions ?? []);
     const seen = new Set<string>();
     const result: MomenceSession[] = [];
     venueSearches.forEach(search => {
@@ -441,8 +479,8 @@ export function ReportClient() {
         if (!seen.has(s.id)) { seen.add(s.id); result.push(s); }
       });
     });
-    return result;
-  }, [entry?.hostId, entry?.sessions, venueSearches]);
+    return flagged(result);
+  }, [entry?.hostId, entry?.sessions, entry?.platform, platform, venueSearches, hostId]);
 
   // Pre-compute normalised names once — avoids running regex chains on 18K+ sessions
   // repeatedly across allSessionTypes / sessionTypes / filteredSessions / benchmarkMetrics.
@@ -500,15 +538,26 @@ export function ReportClient() {
 
   const hasMultipleLocations = allLocations.length > 1;
 
-  // Auto-select the location with the most sessions as default,
-  // or reset if the selected location is no longer in the data.
-  // A deliberate "All locations" choice (sentinel) is never overridden.
+  // A venue can name the location its report should open on. Without one, the
+  // location with the most measurable sessions wins.
+  const venueDefaultLocation = useMemo(
+    () => VENUES.find(v => v.id === (hostId ?? entry?.hostId))?.defaultLocation ?? null,
+    [hostId, entry?.hostId],
+  );
+
+  // Auto-select the default location, or reset if the selected location is no
+  // longer in the data. A deliberate "All locations" choice (sentinel) is never
+  // overridden.
   useEffect(() => {
     if (!hasMultipleLocations) return;
     if (selectedLocation === ALL_LOCATIONS) return;
     if (selectedLocation !== null && allLocations.includes(selectedLocation)) return;
-    setSelectedLocation(allLocations[0]);
-  }, [hasMultipleLocations, selectedLocation, allLocations]);
+    setSelectedLocation(
+      venueDefaultLocation && allLocations.includes(venueDefaultLocation)
+        ? venueDefaultLocation
+        : allLocations[0],
+    );
+  }, [hasMultipleLocations, selectedLocation, allLocations, venueDefaultLocation]);
 
   // Sessions scoped to the selected location (all-time, before period filter).
   const locationScopedSessions = useMemo(() => {
@@ -604,6 +653,17 @@ export function ReportClient() {
     );
   }, [filteredSessions]);
 
+  // A derived denominator can come with a caveat (Navia Prahran's capacity
+  // before its entry limit changed). Grouped by wording so each shows once,
+  // with how many of the measured sessions it covers.
+  const capacityNotes = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const s of eligibleSessions) {
+      for (const note of s.capacityNotes ?? []) counts.set(note, (counts.get(note) ?? 0) + 1);
+    }
+    return [...counts.entries()];
+  }, [eligibleSessions]);
+
   const venuePricing = useMemo(
     () => VENUES.find(v => v.id === (hostId ?? entry?.hostId))?.pricing,
     [hostId, entry?.hostId],
@@ -650,6 +710,18 @@ export function ReportClient() {
   const filteredMonthlyData = useMemo<MonthlyData[]>(
     () => calculateMonthlyData(eligibleSessions),
     [eligibleSessions],
+  );
+
+  // What the charts and the demand/operating sections plot. Everything
+  // measurable, plus rows whose booking count is real even where occupancy
+  // cannot be measured (Navia Prahran publishes bookings but no seat total).
+  // A row with no booking count at all plots as a zero visitor session and
+  // contradicts the headline rates, which already ignore it.
+  const chartSessions = useMemo(
+    () => filteredSessions.filter(
+      s => s.utilisationKnown !== false || (!!s.soldSource && s.soldSource !== 'unknown'),
+    ),
+    [filteredSessions],
   );
 
   const benchmarkMetrics = useMemo(() => {
@@ -757,8 +829,7 @@ export function ReportClient() {
             hostId={hostId ?? ''}
             platform={platform}
             onFetched={(data) => {
-              setCachedEntry(data);
-              setEntry(data);
+              setEntry(setCachedEntry({ ...data, sourceCachedAt: data.cachedAt }));
               setLoadPhase('ready');
             }}
           />
@@ -1027,12 +1098,23 @@ export function ReportClient() {
           <span className="text-base font-medium sm:block ml-auto sm:text-right w-full text-center">{dateRangeLabel}</span>
         </div>
 
+        {/* Caveats on the denominator behind the figures below, once each. */}
+        {!isTransitioning && benchmarkMetrics && capacityNotes.length > 0 && (
+          <div className="mt-3 space-y-1">
+            {capacityNotes.map(([note, count]) => (
+              <p key={note} className="text-sm text-muted-foreground">
+                {note} Applies to {count.toLocaleString()} of the {eligibleSessions.length.toLocaleString()} sessions measured here.
+              </p>
+            ))}
+          </div>
+        )}
+
         {/* ── Report sections or period-empty state ── */}
         {isTransitioning ? (
           <ReportCardsSkeleton />
         ) : benchmarkMetrics ? (
           <ReportSections
-            sessions={filteredSessions}
+            sessions={chartSessions}
             metrics={benchmarkMetrics}
             monthlyData={filteredMonthlyData}
             period={period}

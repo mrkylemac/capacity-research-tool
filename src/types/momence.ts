@@ -44,6 +44,28 @@ export interface MomenceSession {
   measure?: 'seats' | 'concurrent-occupancy' | 'slot-occupancy';
   /** Confidence in `capacity`. Derived denominators are at best 'medium'. */
   confidence?: 'high' | 'medium' | 'low';
+  /**
+   * Why `capacity` deserves less trust than usual, one caveat per entry, worded
+   * for a reader. The report lists each once beside the figures it qualifies,
+   * so identical wording across sessions groups into one line.
+   */
+  capacityNotes?: string[];
+  /**
+   * A booking count recorded earlier that the platform's own records no longer
+   * support. Kept rather than discarded, so preferring the platform's figure
+   * stays reversible: restore `ticketsSold` from here to undo it.
+   */
+  supersededSold?: SupersededSold;
+}
+
+export interface SupersededSold {
+  /** The count we recorded, which `ticketsSold` has replaced. */
+  ticketsSold: number;
+  source: 'slot-feed';
+  reason: 'cancelled-after-reading' | 'room-full-read-as-sold' | 'no-supporting-reading';
+  note: string;
+  /** When the decision to prefer the platform's figure was made, YYYY-MM-DD. */
+  decidedOn: string;
 }
 
 export interface MomenceSessionsResponse {

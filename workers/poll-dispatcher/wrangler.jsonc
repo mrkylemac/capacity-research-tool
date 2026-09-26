@@ -1,0 +1,28 @@
+{
+  "name": "slowfolk-poll-dispatcher",
+  "main": "src/index.js",
+  "compatibility_date": "2025-06-01",
+
+  // Every quarter hour. Cloudflare runs cron triggers reliably, which is the
+  // whole point: GitHub's schedule was skipping most of them.
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+
+  // No public URL. The worker only ever runs on its cron.
+  "workers_dev": false,
+
+  "vars": {
+    "GITHUB_REPO": "mrkylemac/capacity-research-tool",
+    "WORKFLOW_FILE": "poll-venues.yml",
+    "GIT_REF": "main"
+  },
+
+  // Keeps invocation logs, so a failing dispatch (usually an expired token) is
+  // visible in the dashboard.
+  "observability": {
+    "enabled": true
+  }
+
+  // GITHUB_TOKEN is a secret, never a var: npx wrangler secret put GITHUB_TOKEN
+}

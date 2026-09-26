@@ -8,11 +8,15 @@ import {
   computeCapExSummary,
 } from '@/lib/sheetsClient';
 import type { TrackerApiResponse } from '@/types/tracker';
+import { requireApprovedUserForApi } from '@/lib/auth-guard';
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ tab: string }> },
 ): Promise<NextResponse> {
+  const { error: authError } = await requireApprovedUserForApi();
+  if (authError) return authError;
+
   const { tab } = await params;
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
   const apiKey        = process.env.GOOGLE_SHEETS_API_KEY;

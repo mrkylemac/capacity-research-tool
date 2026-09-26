@@ -2,14 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { CachedVenueEntry } from '@/lib/venueCache';
+import { requireApprovedUserForApi } from '@/lib/auth-guard';
+import { VENUES } from '@/config/api';
 
 const VENUES_DIR = path.join(process.cwd(), 'src', 'data', 'venues');
 
 function venueFilePath(hostId: string, platform: string): string {
-  return path.join(VENUES_DIR, `${hostId}-${platform}.json`);
+  // A venue can point the report at a rebuilt cache (see VenueConfig.cacheFile).
+  // The name comes from config, never the request, so it cannot reach outside
+  // the venues directory.
+  const override = VENUES.find(v => v.id === hostId && v.platform === platform)?.cacheFile;
+  return path.join(VENUES_DIR, `${override ?? `${hostId}-${platform}`}.json`);
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const { error: authError } = await requireApprovedUserForApi();
+  if (authError) return authError;
+
   const hostId = request.nextUrl.searchParams.get('hostId');
   const platform = request.nextUrl.searchParams.get('platform');
 
@@ -33,6 +42,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const { error: authError } = await requireApprovedUserForApi();
+  if (authError) return authError;
+
   let body: { entry: CachedVenueEntry };
   try {
     body = await request.json();

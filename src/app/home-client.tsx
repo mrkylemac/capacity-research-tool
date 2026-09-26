@@ -7,13 +7,16 @@ import { VENUES } from '@/config/api';
 import { getAllCachedEntries, getCacheKey } from '@/lib/venueCache';
 import { Card, CardContent } from '@/components/ui/card';
 
-const FEATURED_IDS = ['innerstudio', '59636', '49448', 'alchemysaunas', 'navia'];
+const FEATURED_IDS = ['innerstudio', '59636', '49448', 'alchemysaunas', 'navia', '41275'];
 
 export function HomeClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const showAll = searchParams?.has('all') ?? false;
-  const visibleVenues = showAll ? VENUES : VENUES.filter(v => FEATURED_IDS.includes(v.id));
+  // `hidden` venues stay in the config, and stay fetched, but never reach the
+  // grid — not even under ?all, which is the whole point of hiding them.
+  const listedVenues = VENUES.filter(v => !v.hidden);
+  const visibleVenues = showAll ? listedVenues : listedVenues.filter(v => FEATURED_IDS.includes(v.id));
   const [logos, setLogos] = useState<Record<string, string>>({});
 
   useEffect(() => {

@@ -37,12 +37,15 @@ yarn poll:acuity      # Poll Acuity venues (used by GitHub Actions)
 yarn poll:trybe       # Poll TryBe venues (used by GitHub Actions)
 yarn poll:punchpass   # Poll Punchpass venues (add --deep to re-probe capacity oracle)
 yarn poll:navia       # Poll Navia venues (add --deep to walk the full forward horizon)
+yarn poll:navia-windows # Navia's settled counts, which the report reads (--deep, --backfill, --seed-feed-history)
 yarn poll:bsport      # Refresh bsport venues (full-history refetch)
 yarn refresh:glofox   # Refresh Glofox guest tokens
 yarn venue:schedule   # Derive polling windows from cached data (add a platform to filter)
 yarn verify:cache     # Refuse-to-publish check: has any cache lost history?
 yarn cache:sync       # Sync venue cache from origin/main (discards local cache edits)
 yarn cache:setup      # One-time per clone: register the venue-cache merge driver
+yarn auth:generate    # Regenerate src/db/auth-schema.sql from src/lib/auth.ts
+yarn auth:migrate     # Apply schema changes to the live database
 ```
 
 ## Project Structure
@@ -82,7 +85,8 @@ src/
 │   └── setup.ts            # Vitest setup (matchMedia mock)
 └── styles/                 # Global styles
 scripts/                    # Utility scripts (polling, token refresh, testing)
-.github/workflows/          # CI/CD (venue polling every 30 min, weekly token refresh)
+workers/poll-dispatcher/     # Cloudflare Worker that triggers venue polling every 15 min
+.github/workflows/          # CI/CD (venue polling every 15 min, weekly token refresh)
 ```
 
 ## Architecture Patterns
@@ -128,25 +132,85 @@ Use `@/*` to import from `src/*` (e.g., `import { something } from '@/lib/utils'
 - No need to import `describe`, `it`, `expect` — they are global
 - Run `yarn test` to validate changes
 
+## Authentication
+
+Every page and API route requires a signed-in, **approved** user. Accounts are
+created via signup but start `approved = false` and are switched on by hand at
+`/admin/users`.
+
+- **Server config:** `src/lib/auth.ts` (Better Auth, Postgres via `pg`)
+- **Guards:** `src/lib/auth-guard.ts` — `requireApprovedUser()` in pages,
+  `requireApprovedUserForApi()` in route handlers. These are the security
+  boundary; `src/middleware.ts` only does a cheap cookie check and skips `/api/*`
+  so route handlers can answer with JSON rather than an HTML redirect.
+- **Adding a page:** call `await requireApprovedUser()` first and make the
+  component `async`.
+- **Adding an API route:** start the handler with
+  `const { error } = await requireApprovedUserForApi(); if (error) return error;`
+- `approved` and `role` are `input: false`, so a signup payload cannot set them.
+- Session cookie caching is off on purpose: approving or revoking someone takes
+  effect on their next request.
+- **Adding someone ahead of time:** "Add someone" on `/admin/users`. An existing
+  pending account is approved on the spot; otherwise it issues an invite link
+  (single use, 14 days, bound to that address). Opening the link sets an
+  httpOnly cookie, and the user-create hook in `auth.ts` approves a signup that
+  carries a valid invite for the same email. It is a link rather than an
+  allowlisted address because password signups don't verify email, so an
+  address alone could be claimed by anyone who knows it. Only a hash of the
+  token is stored. The `access_invite` table sits outside Better Auth's schema
+  and is created on first use (`src/lib/invites.ts`). Invite emails only reach
+  outside addresses once `EMAIL_FROM` is on a verified domain; the dashboard
+  always shows the link to copy.
+- Schema lives in `src/db/auth-schema.sql`; regenerate with `yarn auth:generate`.
+
+See `AUTH-SETUP.md` for the deployment and bootstrap story.
+
 ## Environment Variables
 
 Required variables (see `.env.example`):
-- `VITE_PASSWORD` — password for Forecast/Report pages
+- `DATABASE_URL` — Postgres connection string (auth); required
+- `BETTER_AUTH_SECRET` — session cookie signing secret; required
+- `BETTER_AUTH_URL` — public app URL; required in production
+- `ADMIN_EMAILS` — comma-separated addresses auto-approved as admin on signup
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google sign-in (optional; unset
+  hides the Google button)
+- `RESEND_API_KEY` — email admins when someone requests access (optional; unset
+  skips the send and logs it, signup still succeeds)
+- `EMAIL_FROM` — sender address for those emails (optional; defaults to
+  Resend's shared `onboarding@resend.dev`)
 - `GOOGLE_SHEETS_API_KEY` — CapEx tracker data (optional)
 - `GOOGLE_SHEETS_SPREADSHEET_ID` — CapEx Google Sheet ID (optional)
+
+Note: `.env` is git-tracked despite being in `.gitignore` (committed before the
+rule existed). Put local secrets in `.env.local` instead.
 
 ## Caching Strategy
 
 - **Primary cache:** JSON files in `src/data/venues/` (git-tracked, committed by GitHub Actions)
 - **Merge driver:** these files change every 15 min on `main`, so `.gitattributes` routes them through `scripts/merge-venue-cache.mjs`, which unions both sides by session id rather than writing conflict markers. Run `yarn cache:setup` once per clone or merges will corrupt the JSON
+- **Navia:** the report reads `navia-navia-windows.json` (via `cacheFile` in `VENUES`), sittings rebuilt from Navia's own settled counts. The raw windows are kept append-only in `navia-windows-ledger-YYYY-MM.json`. `navia-navia.json` is the older slot feed cache, still polled and never rewritten by the rebuild. Where Navia's count is below ours, the sitting keeps our figure in `supersededSold` with a note; see `src/lib/naviaWindows.ts`
 - **Fallback:** Live API fetches from venue platforms
-- **Client-side:** localStorage with quota management and LRU eviction (`venueCache.ts`)
+- **Client-side:** localStorage with quota management and LRU eviction (`venueCache.ts`). The report shows a stored copy immediately, then revalidates against the server file and swaps in the newer one, judged by `sourceCachedAt` (the data's own timestamp; `cachedAt` is restamped on every save and can't be used)
 - **Sync:** `yarn cache:sync` pulls latest cache from `origin/main`; runs automatically on `yarn dev`
 
 ## CI/CD
 
 - **Venue polling** (`.github/workflows/poll-venues.yml`): every 15 min, timezone-aware gating (Melbourne time), polls Acuity, TryBe, Punchpass and Navia, commits updated cache files. The 15-minute beat is set by Navia, whose bookable entries expire every 15 min; the repo is public so standard runners are free
+- **The 15-minute trigger is a Cloudflare Worker** (`workers/poll-dispatcher`), not the workflow's `schedule`. GitHub's scheduler is best effort and delivered as few as 6 of 96 runs a day, so the worker dispatches the workflow through the API instead. `schedule` remains as a fallback. Dispatched runs respect the time gates unless the `force` input is ticked, which polls everything with deep refreshes
 - **Token refresh** (`.github/workflows/refresh-glofox-tokens.yml`): weekly on Mondays, refreshes Glofox guest tokens, commits to `src/config/api.ts`
+- Both workflows tag their commits `[skip ci]` so they don't re-trigger themselves. That suppresses GitHub Actions, but **not** Vercel, which has no built-in support for the convention — so the data they commit deploys normally.
+
+## Deployment
+
+Vercel, on push to `main`. No deploy workflow and no build config of its own.
+
+`src/data` reaches the serverless functions via `outputFileTracingIncludes` in
+`next.config.mjs`: the venue JSON is read at request time from `process.cwd()`
+paths the file tracer cannot infer, so it has to be named explicitly.
+
+The database is Postgres (Neon by default, via the Vercel integration). Nothing
+in the app is tied to that choice — it is a `DATABASE_URL` and the schema in
+`src/db/auth-schema.sql`.
 
 ## Key Documentation
 

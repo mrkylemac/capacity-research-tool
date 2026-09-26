@@ -1,4 +1,9 @@
+import { requireApprovedUserForApi } from '@/lib/auth-guard';
+
 export async function GET(request: Request) {
+  const { error: authError } = await requireApprovedUserForApi();
+  if (authError) return authError;
+
   const { searchParams } = new URL(request.url);
   const upstream = new URL('https://api.glofox.com/2.0/events');
   searchParams.forEach((v, k) => upstream.searchParams.set(k, v));

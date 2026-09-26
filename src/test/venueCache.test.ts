@@ -1,4 +1,4 @@
-import { getCacheKey, getCachedEntry, setCachedEntry, getRecentSearches, removeFromRecent, getAllCachedEntries } from '@/lib/venueCache';
+import { getCacheKey, getCachedEntry, setCachedEntry, getRecentSearches, removeFromRecent, getAllCachedEntries, isServerCopyNewer } from '@/lib/venueCache';
 import type { Platform } from '@/config/api';
 
 // ── Mock localStorage ─────────────────────────────────────────────────────────
@@ -173,5 +173,49 @@ describe('error handling', () => {
     expect(entry).not.toBeNull();
 
     localStorageMock.setItem.mockImplementation(originalSetItem);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Stale stored copies
+// ═══════════════════════════════════════════════════════════════════════════════
+
+describe('isServerCopyNewer', () => {
+  it('replaces a copy saved before sourceCachedAt existed', () => {
+    // The Navia case: a browser saved the 16 August cache and kept serving it,
+    // because cachedAt is restamped on save and never looked old.
+    const stored = { ...setCachedEntry(makeEntry('navia', 'navia')), sourceCachedAt: undefined };
+    const server = { ...stored, cachedAt: '2026-09-13T00:25:09.788Z' };
+    expect(isServerCopyNewer(stored, server)).toBe(true);
+  });
+
+  it('keeps the server file timestamp, not the save time', () => {
+    const saved = setCachedEntry({ ...makeEntry('navia', 'navia'), sourceCachedAt: '2026-09-13T00:25:09.788Z' });
+    expect(saved.sourceCachedAt).toBe('2026-09-13T00:25:09.788Z');
+    // cachedAt is still the save time, which is later than the file.
+    expect(saved.cachedAt > saved.sourceCachedAt!).toBe(true);
+  });
+
+  it('picks up the next poll even though the copy was saved after the last one', () => {
+    // Saving restamps cachedAt to now, which is later than the file it came
+    // from. Comparing against cachedAt would wrongly call the stored copy fresh
+    // and ignore every poll that lands after it.
+    const stored = setCachedEntry({ ...makeEntry('navia', 'navia'), sourceCachedAt: '2026-09-13T00:25:00.000Z' });
+    const nextPoll = { ...stored, cachedAt: '2026-09-13T00:40:00.000Z' };
+    expect(isServerCopyNewer(stored, nextPoll)).toBe(true);
+  });
+
+  it('leaves an up-to-date copy alone', () => {
+    const stored = setCachedEntry({ ...makeEntry('navia', 'navia'), sourceCachedAt: '2026-09-13T00:40:00.000Z' });
+    const server = { ...stored, cachedAt: '2026-09-13T00:40:00.000Z' };
+    expect(isServerCopyNewer(stored, server)).toBe(false);
+  });
+
+  it('treats data the browser fetched live as current from the moment of fetch', () => {
+    // A live Momence sync can be newer than the committed server file, so it
+    // must not be replaced by an older one on the next load.
+    const live = setCachedEntry(makeEntry('41275', 'momence'));
+    const olderServerFile = { ...live, cachedAt: '2026-01-01T00:00:00.000Z' };
+    expect(isServerCopyNewer(live, olderServerFile)).toBe(false);
   });
 });

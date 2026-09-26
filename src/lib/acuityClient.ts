@@ -2,7 +2,8 @@
  * Acuity Scheduling client — fetches availability from the public
  * scheduling widget API. Supports two Acuity appointment models:
  *
- *   mode: 'class'   → POST /availability/class  (group classes, e.g. Sauna Goose)
+ *   mode: 'class'   → POST /availability/class  (group classes; no live venue
+ *                                                 since Sauna Goose left for Momence)
  *   mode: 'service' → GET  /availability/times   (individual bookings, e.g. The Corner Sauna)
  *
  * Data model:
@@ -49,7 +50,7 @@ interface AcuityAppointmentType {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// CLASS MODE — POST /availability/class (existing, e.g. Sauna Goose)
+// CLASS MODE — POST /availability/class (no live venue; Sauna Goose was the last)
 // ══════════════════════════════════════════════════════════════════════════════
 
 const PAGE_SIZE = 15; // Acuity caps at 15 per request

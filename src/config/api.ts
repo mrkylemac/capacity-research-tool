@@ -78,6 +78,33 @@ export interface VenueConfig {
   tagline?: string;
   /** Known pricing tiers for display in the Operating Model section. */
   pricing?: VenuePricingConfig;
+  /**
+   * Location the report opens on, for venues with more than one. Must match a
+   * session `location` exactly. Without it the location with the most
+   * measurable sessions is chosen.
+   */
+  defaultLocation?: string;
+  /**
+   * Locations still fetched and cached but left out of the report. Like
+   * `hidden` for a whole venue: the poller keeps the history current, so
+   * removing a name from this list brings the location back with nothing lost.
+   * Must match a session `location` exactly.
+   */
+  hiddenLocations?: string[];
+  /**
+   * Cache file the report reads, without `.json`, when it is not the usual
+   * `{id}-{platform}`. Lets a venue switch to a rebuilt cache while the
+   * original file stays untouched beside it; remove this to switch back.
+   */
+  cacheFile?: string;
+  /**
+   * Kept in the list and still fetched, but not shown in the venue grid.
+   * Use this rather than deleting the entry: the config carries the name,
+   * timezone and pricing a cached report still needs, and the poller keeps
+   * the history current so unhiding gives current data rather than a frozen
+   * cache. Delete the entry only when the venue should stop being fetched.
+   */
+  hidden?: boolean;
 }
 
 // Venue list
@@ -101,13 +128,13 @@ export const VENUES: VenueConfig[] = [
   },
   { id: '59636', name: 'Sol Sauna', platform: 'momence', location: 'Prahran', timezone: 'Australia/Melbourne', tagline: 'Melbourne\'s most loved urban sauna — authentic heat, cold plunge, and community.' },
   { id: '49448', name: 'Aalto', platform: 'momence', location: 'Adelaide', timezone: 'Australia/Adelaide' },
-  { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', timezone: 'Australia/Melbourne' },
+  { id: '41167', name: 'EQ', platform: 'momence', location: 'South Melbourne', timezone: 'Australia/Melbourne', hidden: true },
   // { id: '46052', name: 'Fjord, San Francisco', platform: 'momence', location: 'San Francisco', timezone: 'America/Los_Angeles' },
   { id: 'lore', name: 'Lore Bathing Club', platform: 'glofox', location: 'New York', timezone: 'America/New_York' },
-  { id: 'projectmood', name: 'Project Mood', platform: 'marianatek', location: 'Melbourne', timezone: 'Australia/Melbourne' },
-  { id: 'aerth', name: 'Ærth Saunas', platform: 'marianatek', location: 'Victoria BC', timezone: 'America/Vancouver' },
+  { id: 'projectmood', name: 'Project Mood', platform: 'marianatek', location: 'Melbourne', timezone: 'Australia/Melbourne', hidden: true },
+  { id: 'aerth', name: 'Ærth Saunas', platform: 'marianatek', location: 'Victoria BC', timezone: 'America/Vancouver', hidden: true },
   { id: 'senseofself', name: 'Sense of Self', platform: 'trybe', location: 'Melbourne', timezone: 'Australia/Melbourne' },
-  { id: '40726', name: 'Panda Society', platform: 'momence', location: '', timezone: 'Australia/Melbourne' },
+  { id: '40726', name: 'Panda Society', platform: 'momence', location: '', timezone: 'Australia/Melbourne', hidden: true },
   { id: 'portal', name: 'PORTAL° Thermaculture', platform: 'portal', location: 'Colorado · Montana · Minnesota', timezone: 'America/Denver' },
   { id: 'xtraclubs', name: 'Xtra Clubs', platform: 'xtraclubs', location: 'Sydney', timezone: 'Australia/Sydney' },
   // Akari uses Glofox for memberships only — no session bookings exist to
@@ -115,7 +142,35 @@ export const VENUES: VenueConfig[] = [
   // GLOFOX_CONFIG.akariSaunas); re-enable if an occupancy view is built.
   // { id: 'akari', name: 'Akari Saunas', platform: 'glofox', location: 'Brooklyn', timezone: 'America/New_York' },
   { id: 'wellnesssocial', name: 'Wellness Social Club', platform: 'glofox', location: 'Melbourne', timezone: 'Australia/Melbourne' },
-  { id: 'saunagoose', name: 'Sauna Goose', platform: 'acuity', location: 'Melbourne', timezone: 'Australia/Melbourne' },
+  // Moved off Acuity onto Momence on 19 Aug 2026 — last Acuity session 18 Aug
+  // 20:30, first Momence session 19 Aug 07:00. The pre-cutover history lives in
+  // 41275-momence.json alongside the native data; saunagoose-acuity.json is kept
+  // as the untouched Acuity-era record.
+  //
+  // Prices differ across the cutover. Acuity listed every product about 2.2%
+  // above the Momence price for the same product, and three of them carry the
+  // same name on both sides, so the pairing is read off the product rather than
+  // inferred from the ratio:
+  //
+  //   Sauna Session                 $25.55  ->  Sauna (silent)/(social)  $25
+  //   Saunagus Session              $35.78  ->  Saunagus                 $35
+  //   Femme Fridays          (90m)  $56.25  ->  Femme Friday      (90m)  $55
+  //   Yoga & Saunagus       (120m)  $66.50  ->  Yoga & Saunagus  (120m)  $65
+  //   Men's Breathwork      (120m)  $66.50  ->  Men's Breathwork (120m)  $65
+  //   Latvian Sauna         (180m)  $97.50  ->  discontinued, no pair
+  //
+  // A venue repricing would not scale five unrelated products by the same
+  // 1.022x, so a payment surcharge folded into the Acuity appointment type
+  // price is the likely cause. That remains inferred, not confirmed against
+  // Acuity.
+  //
+  // Nothing is normalised: each platform's figure is stored as reported, so
+  // every tier appears twice in the derived price distribution and any average
+  // spanning the cutover blends the two. The Acuity-era sessions are past and
+  // Momence never returns their ids, so mergeWithCachedPast retains those
+  // objects verbatim on every refetch — the figures above are stable, and
+  // saunagoose-acuity.json remains the untouched original either way.
+  { id: '41275', name: 'Sauna Goose', platform: 'momence', location: 'Northcote', timezone: 'Australia/Melbourne' },
   { id: 'thecornersauna', name: 'The Corner Sauna', platform: 'acuity', location: 'Apollo Bay', timezone: 'Australia/Sydney' },
   { id: 'alchemysaunas', name: 'Alchemy Saunas', platform: 'hapana', location: 'Perth', timezone: 'Australia/Perth' },
   {
@@ -129,7 +184,7 @@ export const VENUES: VenueConfig[] = [
     pricing: {
       tiers: [
         {
-          label: 'Single Pass (off-peak)',
+          label: 'Casual (Off-Peak)',
           casualRate: 45,
           pack5PerVisit: 42,
           pack10PerVisit: 40,
@@ -142,7 +197,7 @@ export const VENUES: VenueConfig[] = [
           ],
         },
         {
-          label: 'Single Pass (peak)',
+          label: 'Casual (Peak)',
           casualRate: 55,
           pack5PerVisit: 53,
           pack10PerVisit: 52.5,
@@ -169,7 +224,7 @@ export const VENUES: VenueConfig[] = [
         { label: 'Private group, Mon–Fri from 2pm', price: '$1,350', description: '2-hour whole-venue booking' },
         { label: 'Private group, Sat & Sun', price: '$1,650', description: '2-hour whole-venue booking' },
       ],
-      note: 'Off-peak is Mon–Fri 7am–9pm and weekends 7am–10am; peak is weekends from 10am and public holidays. Punchpass sells packs rather than per-session tickets, so revenue in this report is modelled on the single-pass rate and will overstate what a regular pack or membership customer actually pays.',
+      note: 'Off-peak is Mon–Fri 7am–9pm and weekends 7am–10am; peak is weekends from 10am and public holidays. Punchpass sells packs rather than per-session tickets, so revenue in this report is modelled on the casual rate and will overstate what a regular pack or membership customer actually pays.',
     },
   },
   {
@@ -190,10 +245,17 @@ export const VENUES: VenueConfig[] = [
     // they measure differently: Byron has a derived 16-seat sitting, Prahran
     // has no denominator at all.
     id: 'navia', name: 'Navia Bathhouse', platform: 'navia',
-    location: 'Byron Bay · Prahran', timezone: 'Australia/Sydney',
+    location: 'Prahran', timezone: 'Australia/Melbourne',
+    defaultLocation: 'Prahran',
+    // Byron Bay is still polled (NAVIA_CONFIG) so its history keeps accruing,
+    // but it is left out of the report. Remove it from this list to bring it back.
+    hiddenLocations: ['Byron Bay'],
+    // Counts rebuilt from Navia's own entry records (see naviaWindows.ts). The
+    // slot feed cache, navia-navia.json, is still written and left as it was;
+    // delete this line to put the report back on it.
+    cacheFile: 'navia-navia-windows',
     pricing: {
       tiers: [
-        { label: 'Byron Bay — Bathing (2 hours)', casualRate: 80 },
         { label: 'Prahran — Bathing (1 hour)', casualRate: 50 },
         { label: 'Prahran — Bathing (2 hours)', casualRate: 80 },
       ],
@@ -209,9 +271,11 @@ export const GLOFOX_CONFIG = {
     namespace: 'lorebathingclub',
     name: 'Lore Bathing Club',
     timezone: 'America/New_York',
-    // Branch deactivated on Glofox (~June 2026): guest login returns "no active
-    // branch", so the weekly token refresh fails for lore and fetches 401.
-    // Reports serve the git-tracked cache (frozen at 2026-03-03).
+    // Lore moved to a different booking platform (confirmed Aug 2026) and the
+    // Glofox branch was deactivated (~June 2026): guest login returns "no
+    // active branch", so the weekly token refresh fails for lore and fetches
+    // 401. Reports serve the git-tracked cache (frozen at 2026-03-03), which
+    // is the only record of the Glofox era.
     token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzgyODkxMjM1LCJpYXQiOjE3ODAyOTkyMzUsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoibG9yZWJhdGhpbmdjbHViIiwiYnJhbmNoX2lkIjoiNjdjNWViMDllZmI0Mjc3YjA2MDg0ZWI2IiwiZmlyc3RfbmFtZSI6Ikd1ZXN0IiwibGFzdF9uYW1lIjoiVXNlciIsInR5cGUiOiJHVUVTVCIsImlzU3VwZXJBZG1pbiI6ZmFsc2V9fQ.9LaCJTJI4LOk-Y_7HEyQMV46z89deXCX1K774VE8ViI',
     tokenExpiry: '2026-07-01',
     operatingSince: '2026-01-01',
@@ -239,8 +303,8 @@ export const GLOFOX_CONFIG = {
     namespace: "wellnesssocialbusine",
     name: 'Wellness Social Club',
     timezone: 'Australia/Melbourne',
-    token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzkwODU1NjQ0LCJpYXQiOjE3ODgxNzcyNDQsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoid2VsbG5lc3Nzb2NpYWxidXNpbmUiLCJicmFuY2hfaWQiOiI2NzY5YmMwN2RkOTYzZDFiMDEwODgwNGIiLCJmaXJzdF9uYW1lIjoiR3Vlc3QiLCJsYXN0X25hbWUiOiJVc2VyIiwidHlwZSI6IkdVRVNUIiwiaXNTdXBlckFkbWluIjpmYWxzZX19.uE5tzlA3myim55qCRVuECPu5xQ_lrIxBCvWg3dDt7Lw',
-    tokenExpiry: '2026-10-01',
+    token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJfIiwiZXhwIjoxNzkyNTgxMDAzLCJpYXQiOjE3ODk5ODkwMDMsImlzcyI6Il8iLCJ1c2VyIjp7Il9pZCI6Imd1ZXN0IiwibmFtZXNwYWNlIjoid2VsbG5lc3Nzb2NpYWxidXNpbmUiLCJicmFuY2hfaWQiOiI2NzY5YmMwN2RkOTYzZDFiMDEwODgwNGIiLCJmaXJzdF9uYW1lIjoiR3Vlc3QiLCJsYXN0X25hbWUiOiJVc2VyIiwidHlwZSI6IkdVRVNUIiwiaXNTdXBlckFkbWluIjpmYWxzZX19.8UjavuO8TqG0K7BXQG_o32B3PetdejlB2yAkfEeKQXI',
+    tokenExpiry: '2026-10-21',
     operatingSince: '2025-06-01',
   },
 } as const;
@@ -283,6 +347,13 @@ export const TRYBE_CONFIG = {
 // Note: ids are per-tenant — Project Mood and Ærth both having 48717/48541 is
 // coincidence, not a copy-paste error (verified against each tenant's
 // /locations endpoint).
+//
+// Data caveats (observed 2026-08-02): the API 403s date chunks older than
+// ~6 months, and the bulk classes endpoint now returns capacity 0 on nearly
+// every session for both tenants, so sanitization drops them. Full refetches
+// therefore yield little or no fresh data; fetch-all-venues merges with the
+// existing cache so the historical data (fetched while capacity was still
+// populated) is preserved rather than overwritten.
 export const MARIANATEK_CONFIG = {
   projectMood: {
     baseUrl: 'https://projectmood.marianatek.com/api/customer/v1',
@@ -374,7 +445,8 @@ export const PORTAL_CONFIG = {
 // Acuity Scheduling configuration (public scheduling widget API — no auth required)
 //
 // Two modes:
-//   'class'   — group classes via POST /availability/class (e.g. Sauna Goose)
+//   'class'   — group classes via POST /availability/class (no live venue since
+//               Sauna Goose left for Momence; kept for the next class-mode venue)
 //   'service' — individual appointments via GET /availability/times (e.g. The Corner Sauna)
 //
 // Service-type venues must specify a `calendarId` on each appointment type
@@ -412,29 +484,10 @@ export const ACUITY_CONFIG: Record<string, AcuityConfig> = {
     ],
     calendarIds: [11172572, 13261360],
   },
-  saunagoose: {
-    baseUrl: 'https://saunagoose.as.me',
-    ownerKey: '1549c4c0',
-    name: 'Sauna Goose',
-    timezone: 'Australia/Melbourne',
-    appointmentTypes: [
-      { id: 69170578, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
-      { id: 83472539, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
-      { id: 69171187, name: 'Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
-      { id: 88489076, name: 'Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
-      { id: 88489132, name: 'Sauna Session', duration: 60, price: '25.55', classSize: 10 },
-      { id: 89924672, name: 'Yoga & Saunagus', duration: 120, price: '66.50', classSize: 10 },
-      { id: 89924356, name: "Men's Breathwork & Saunagus", duration: 120, price: '66.50', classSize: 10 },
-      { id: 81434660, name: 'Femme Fridays', duration: 90, price: '56.25', classSize: 10 },
-      { id: 85308919, name: 'Latvian Sauna', duration: 180, price: '97.50', classSize: 18 },
-      { id: 87799529, name: 'Sunset Saunagus Session', duration: 60, price: '35.78', classSize: 10 },
-    ],
-    calendarIds: [
-      12582797, 13267765, 12637053, 11913403, 12002100, 12953939, 13121171,
-      13212786, 11872240, 11864080, 12473472, 12473476, 12473477, 13561145,
-      12582798, 13505082, 12642771, 10841888, 11854765, 12513155,
-    ],
-  },
+  // Sauna Goose migrated to Momence on 19 Aug 2026 (host 41275) and its Acuity
+  // config is gone from here so the poller stops chasing a dead feed. Its
+  // Acuity-era cache is preserved untouched in saunagoose-acuity.json, and the
+  // sessions were carried across into 41275-momence.json.
 };
 
 export function getAcuityConfig(hostId: string): AcuityConfig {
@@ -545,6 +598,23 @@ export interface NaviaLocation {
   utilisationEligible: boolean;
   measure: 'seats' | 'slot-occupancy';
   operatingSince: string;
+  /**
+   * How sittings are found in the windows endpoint, which lists every quarter
+   * hour of the day rather than only the entries. `every-hour`: each clock hour
+   * is a sitting, right for a continuous grid. `feed-sittings`: only the hours
+   * where the slot feed found one, because a gapped grid's windows also cover
+   * the empty quarter hours between sittings.
+   */
+  sittingAnchors: 'every-hour' | 'feed-sittings';
+  /**
+   * Per-entry limit over time, oldest first. Used only for a window with no
+   * reading taken before it started: past windows report today's limit rather
+   * than the one in force at the time.
+   */
+  entryLimitHistory: { from: string; limit: number }[];
+  /** Sittings starting before this instant carry `capacityUnconfirmedNote`. */
+  capacityConfirmedFrom?: string;
+  capacityUnconfirmedNote?: string;
 }
 
 export interface NaviaConfig {
@@ -562,6 +632,10 @@ export interface NaviaConfig {
   horizonDays: number;
   /** How long an entry observation is kept so partial sittings can be rebuilt. */
   ledgerRetentionDays: number;
+  /** Past days the windows poll refetches so late changes settle. */
+  windowsSettleDays: number;
+  /** The same on a deep refresh. */
+  windowsDeepSettleDays: number;
   locations: NaviaLocation[];
 }
 
@@ -574,6 +648,8 @@ export const NAVIA_CONFIG: NaviaConfig = {
   hotDays: 3,
   horizonDays: 35,
   ledgerRetentionDays: 3,
+  windowsSettleDays: 1,
+  windowsDeepSettleDays: 7,
   locations: [
     {
       name: 'Byron Bay',
@@ -590,6 +666,8 @@ export const NAVIA_CONFIG: NaviaConfig = {
       utilisationEligible: true,
       measure: 'seats',
       operatingSince: '2026-03-26',
+      sittingAnchors: 'feed-sittings',
+      entryLimitHistory: [{ from: '2026-03-26T00:00:00+10:00', limit: 4 }],
     },
     {
       name: 'Prahran',
@@ -646,6 +724,19 @@ export const NAVIA_CONFIG: NaviaConfig = {
       utilisationEligible: true,
       measure: 'seats',
       operatingSince: '2026-08-15',
+      sittingAnchors: 'every-hour',
+      // Read off the slot feed: every reading up to 2:18pm on 22 August showed
+      // 10 per entry, and every reading from 3pm showed 8.
+      entryLimitHistory: [
+        { from: '2026-08-15T00:00:00+10:00', limit: 10 },
+        { from: '2026-08-22T15:00:00+10:00', limit: 8 },
+      ],
+      // The endpoint's room capacity (32) agrees with today's limit of 8 and is
+      // enforced now, but it reports today's settings for every past date, so
+      // nothing confirms what the room was allowed before the change.
+      capacityConfirmedFrom: '2026-08-22T15:00:00+10:00',
+      capacityUnconfirmedNote:
+        'Capacity not confirmed before 3pm on 22 August. Navia allowed 10 people per 15 minute entry until then, and its room limit for that period cannot be checked.',
     },
   ],
 };

@@ -380,9 +380,9 @@ function CapacitySection({
         { value: metrics.totalCapacity.toLocaleString(), label: 'Seats today' },
       ]
     : [
-        { value: `${metrics.modalCapacity}`, label: 'Seats / session' },
-        { value: sessionsPerWeek.toFixed(1), label: 'Sessions / week' },
-        { value: Math.round(seatsPerWeek).toLocaleString(), label: 'Seats / week' },
+        { value: `${metrics.modalCapacity}`, label: 'Seats', type: 'session' },
+        { value: sessionsPerWeek.toFixed(1), label: 'Sessions', type: 'week' },
+        { value: Math.round(seatsPerWeek).toLocaleString(), label: 'Seats', type: 'week' },
       ];
 
   return (
@@ -477,8 +477,10 @@ function CapacitySection({
         <div>
           <div className="space-y-1 mb-4">
             {structuralItems.map(item => (
+              // Label alone is not unique: 'Seats' is both the per-session and
+              // the per-week row. Key on the pair that the row actually shows.
               <div
-                key={item.label}
+                key={`${item.label}-${item.type ?? ''}`}
                 className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full"
               >
                 <div className="absolute inset-0 bg-muted" />
@@ -489,7 +491,7 @@ function CapacitySection({
                     backgroundColor: 'color-mix(in srgb, var(--chart-fill) 18%, transparent)',
                   }}
                 />
-                <span className="relative z-10 text-sm">{item.label}</span>
+                <span className="relative z-10 text-sm">{item.label}<span className="relative z-10 text-muted-foreground text-xs pl-2">{item.type}</span></span>
                 <span className="relative z-10 ml-auto text-sm tabular-nums text-foreground">
                   {item.value}
                 </span>
@@ -505,7 +507,8 @@ function CapacitySection({
                 }}
               />
               <span className="relative z-10 text-sm">
-                {isSingleDay ? 'Seat occupancy (today)' : 'Seat occupancy'}
+                {'Seat'}
+                <span className="relative z-10 text-muted-foreground text-xs pl-2">{isSingleDay ? 'occupancy (today)' : 'occupancy'}</span>
               </span>
               <span className="relative z-10 ml-auto text-sm tabular-nums text-foreground">
                 {seatOccupancyPct.toFixed(1)}%

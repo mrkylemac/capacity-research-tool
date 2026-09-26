@@ -25,3 +25,10 @@ dist-ssr
 *.sw?
 .vercel
 .env
+
+# Stale lockfiles from other package managers. This project is Yarn 1.x;
+# leaving these around makes tooling (Fly launch, CI detectors) pick the wrong
+# package manager and build against dependencies that are not in them.
+bun.lockb
+pnpm-lock.yaml
+package-lock.json

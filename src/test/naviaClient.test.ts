@@ -136,11 +136,52 @@ describe('blockToSession — invalidation', () => {
     expectInvalid(blockToSession(blocks[0].slice(0, 3), BYRON));
   });
 
-  it('invalidates an entry that advertises free seats but is not bookable', () => {
+  it('does not void a sitting when one entry is not bookable', () => {
+    // This used to throw the whole sitting away, which discarded about 40% of
+    // Byron's sittings and left the survivors skewed full.
     const block = blocks[0].map((e, i) =>
       i === 2 ? { ...e, isBookable: false, availableCapacity: 4, occupancyLevel: 'available' } : e,
     );
-    expectInvalid(blockToSession(block, BYRON));
+    const s = blockToSession(block, BYRON);
+    expect(s.utilisationKnown).toBeUndefined();
+    expect(s.capacity).toBeGreaterThan(0);
+  });
+
+  it('does not count the free seats of a closed entry, but keeps its bookings', () => {
+    const base = blocks[0].map(e => ({ ...e, isBookable: true, maxCapacity: 4, availableCapacity: 4, occupancyLevel: 'available' }));
+    // Entry 0: open, 1 sold. Entry 1: closed, 1 sold and 3 free. Entries 2-3: open, empty.
+    const block = base.map((e, i) =>
+      i === 0 ? { ...e, availableCapacity: 3 }
+      : i === 1 ? { ...e, isBookable: false, availableCapacity: 3 }
+      : e,
+    );
+    const s = blockToSession(block, BYRON);
+    expect(s.ticketsSold).toBe(2);
+    // 4 + 1 (only the sold seat of the closed entry) + 4 + 4
+    expect(s.capacity).toBe(13);
+  });
+
+  it('counts a closed entry that is full as fully offered and fully sold', () => {
+    const block = blocks[0].map(e => ({ ...e, isBookable: false, maxCapacity: 4, availableCapacity: 0, occupancyLevel: 'full' }));
+    const s = blockToSession(block, BYRON);
+    expect(s.capacity).toBe(16);
+    expect(s.ticketsSold).toBe(16);
+  });
+
+  it('marks a sitting cancelled when every entry is closed and nothing sold', () => {
+    const block = blocks[0].map(e => ({ ...e, isBookable: false, maxCapacity: 4, availableCapacity: 4, occupancyLevel: 'full' }));
+    const s = blockToSession(block, BYRON);
+    expect(s.isCancelled).toBe(true);
+    expect(s.capacity).toBe(0);
+    expect(s.ticketsSold).toBe(0);
+  });
+
+  it('ignores the hidden-hold tell on a closed entry', () => {
+    // A closed entry offers nothing either way, so its label is irrelevant.
+    const block = blocks[0].map((e, i) =>
+      i === 1 ? { ...e, isBookable: false, availableCapacity: e.maxCapacity, occupancyLevel: 'filling' } : e,
+    );
+    expect(blockToSession(block, BYRON).utilisationKnown).toBeUndefined();
   });
 
   it('invalidates a hidden hold — a full counter the venue calls "filling"', () => {
