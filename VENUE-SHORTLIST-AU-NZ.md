@@ -23,9 +23,9 @@ Definitions used throughout: "supported platform" means one the tracker already 
 
 ## 1 · The short answer
 
-1. **Ten venues can be added with config only**, six of them page checked on Momence, plus two on TryBe, one on Hapana and one reported on Acuity (Table 1). None of the ten is in Melbourne, so they widen the evidence, not just repeat it.
+1. **Eleven venues can be added with config only**: six page checked on Momence, two on TryBe, one on Hapana, one page checked on Acuity (Capybara) and one reported on Acuity (Table 1). None of the eleven is in Melbourne, so they widen the evidence, not just repeat it.
 2. **We track no New Zealand venue today.** Three New Zealand venues are ready now (Cora Studio, Renew Wellness Place, The Bathhouse Queenstown) and two more contrast therapy studios sit on Acuity.
-3. **Wix Bookings is the best platform to build next.** Capybara Bathing (Surry Hills) and Drift Saunas (Perth) are both on it, and the earlier research showed Wix is the only platform that lets us backfill real history.
+3. **Capybara Bathing is on Acuity, not Wix.** Its marketing site is built on Wix, which I first misread as its booking platform; the booking widget is Acuity Scheduling, which the tracker already reads, so it joins the config-only list. It was added on 2026-09-26. Wix Bookings is still worth building next for Drift Saunas (Perth) and the four Wix venues already scoped, since Wix is the only platform that lets us backfill real history.
 4. **Only one new opening can be tracked for ramp evidence**: The Bathhouse Albion in Brisbane, opened 29 June 2026. Löyly Recovery in Perth (opened early 2026) is a second, on Momence.
 5. **Many good small venues cannot be tracked at all.** Some run on Fresha or FareHarbor, which do not publish seat counts, and some have no booking system. That matters for the walk in model: a walk in venue leaves no booking record anywhere, so its occupancy can only come from the operator or from counting.
 
@@ -35,6 +35,7 @@ Definitions used throughout: "supported platform" means one the tracker already 
 
 | Venue | Where | Platform | Advertised price | Why it matters | Fit | Platform check |
 | --- | --- | --- | --- | --- | --- | --- |
+| Capybara Bathing | Surry Hills, Sydney | Acuity | $65 off peak, $70 peak, 90 minutes; passes $63 and $60 a visit; memberships $40 to 45 a week | Boutique communal bathhouse, 5 places per 15 minute entry. The closest Sydney peer, and the one Kyle asked for first. | High | Page checked |
 | Cora Studio | Grey Lynn, Auckland | Momence | NZ$40 drop in; memberships NZ$55 to 99 a week | Single site, shared sessions of up to 6, weekly membership ladder close to ours. First New Zealand data. | High | Page checked |
 | Renew Wellness Place | Parnell, Auckland | Momence | NZ$45 for 60 minutes rooftop communal (up to 9); NZ$75 for 30 minutes private | Communal plus private mix, the same shape as our private product. | High | Page checked |
 | Onsen Sauna and Recovery | Torrensville, Adelaide | Momence | 5 pack $110; weekly memberships $49 to 69 | Communal sauna with cold plunge and weekly memberships, in a city we already track through Aalto. | High | Page checked |
@@ -56,7 +57,7 @@ Building one client unlocks several venues, so group by platform, not by venue.
 
 | Platform | Venues | Fit | Notes |
 | --- | --- | --- | --- |
-| **Wix Bookings** | Capybara Bathing (Surry Hills, $65 off peak, $70 peak, 90 minutes); Drift Saunas (East Fremantle, $25 single, $39 a week unlimited) | High, medium | Best next build. Real history backfill, and the earlier memo scoped it at about 1.5 days. Capybara is a boutique communal bathhouse and a strong peer. An agent reported Capybara as Acuity; its booking page shows Wix. Drift's site is Wix but its booking widget is inferred, not confirmed. |
+| **Wix Bookings** | Drift Saunas (East Fremantle, $25 single, $39 a week unlimited) | Medium | Still the best next build: real history backfill, and the earlier memo scoped it at about 1.5 days for four venues. Drift's site is Wix but its booking widget is inferred, not confirmed. Capybara was listed here in the first version of this report by mistake; it books through Acuity (Table 1). |
 | **Mindbody** | Tory Urban Retreat (Wellington); Steam and Stone (Wollongong); Recovery Lab (Maribyrnong, private suites) | High, high, medium | Tory and Steam and Stone are small communal venues. Mindbody only works where a venue leaves availability display on. 1Remedy showed what happens when it is off (no seat counts), so check each venue before building. |
 | **Zenoti** | Vikasati Bathhouse (3 sites, $49 for 90 minutes, $29 a week membership); About Time (Torquay); Hana (Parnell, private suites, NZ$110) | Medium | Largest unlock, most caveats, about 5 days. Worth it mainly because it also reaches Soak, The Banya and Nature's Energy from the earlier list. |
 | **GymMaster** | Si Sauna and Ice (Mooloolaba, high fit); Brunswick Fire and Ice Recovery Gym (Brunswick, low fit) | High, low | Brunswick Fire and Ice is a gym add on with an infrared sauna, $20 for 40 minutes, but it sits in Slow Folk's own suburb, so it is worth knowing about as a local price marker even if it is a poor comparison. One agent read Si Sauna's booking as Gymflow; its page mentions GymMaster, so confirm before building. |
@@ -119,7 +120,7 @@ For the two that reached the classifier, I would not build on the results. The s
 ## 9 · Limits of this research
 
 1. **Light checks.** Each venue got a short check of about five tool calls. Prices and formats come from public pages and were not confirmed with operators.
-2. **Platform claims.** I loaded the booking pages for 36 venues that claimed a supported or feasible platform. I saw the platform on the page for 29 and corrected two agent reports (Capybara is Wix, not Acuity; The Wellness Studio in Geelong is Momence, not Acuity). Seven sites would not load for me (Genki Vitality, Recovery Lab, 1Remedy, Xtra Clubs Manly, Slow House, Those Floating Saunas, Suelta Saunas), so their platforms stay reported.
+2. **Platform claims.** I loaded the booking pages for 36 venues that claimed a supported or feasible platform. I saw the platform on the page for 29 and corrected one agent report (The Wellness Studio in Geelong is Momence, not Acuity). I also got one wrong myself: Capybara's site is built on Wix and I took that for its booking platform, but the booking page is Acuity, confirmed on 26 September from the widget's own configuration. Seven sites would not load for me (Genki Vitality, Recovery Lab, 1Remedy, Xtra Clubs Manly, Slow House, Those Floating Saunas, Suelta Saunas), so their platforms stay reported.
 3. **Advertised prices only.** None of these prices show what customers pay or how full a venue runs. That is what tracking is for.
 4. **Coverage.** The discovery rounds returned about 240 distinct candidates and I verified 101. Roughly 80 Australian and 10 New Zealand names were not verified because they were mobile, gym based, private suite only, or too far from Slow Folk's positioning to justify the check.
 5. **Walk in venues.** Venues with no booking record cannot be benchmarked this way.
@@ -127,7 +128,7 @@ For the two that reached the classifier, I would not build on the results. The s
 ## 10 · Suggested order
 
 1. Add the ten Table 1 venues, starting with Cora Studio, Renew Wellness Place, Onsen and Löyly. Each needs its host id found, following ADDING-A-VENUE.md.
-2. Build the Wix client next, for Capybara and Drift plus the four Wix venues already scoped in BOOKING-PLATFORM-RESEARCH.md.
+2. Build the Wix client next, for Drift plus the four Wix venues already scoped in BOOKING-PLATFORM-RESEARCH.md.
 3. Ask three to five of the closest peers (Cora, Onsen, Löyly, Tory Urban Retreat) whether they would share anonymised occupancy. Data an operator agrees to share is a stronger investor exhibit than data pulled from a public booking page.
 4. Decide whether the Mindbody and Zenoti builds are worth their cost for this raise, or whether the supported platforms already give enough evidence.
 
