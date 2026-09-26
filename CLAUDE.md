@@ -37,6 +37,7 @@ yarn poll:acuity      # Poll Acuity venues (used by GitHub Actions)
 yarn poll:trybe       # Poll TryBe venues (used by GitHub Actions)
 yarn poll:punchpass   # Poll Punchpass venues (add --deep to re-probe capacity oracle)
 yarn poll:navia       # Poll Navia venues (add --deep to walk the full forward horizon)
+yarn poll:navia-windows # Navia's settled counts, which the report reads (--deep, --backfill, --seed-feed-history)
 yarn poll:bsport      # Refresh bsport venues (full-history refetch)
 yarn refresh:glofox   # Refresh Glofox guest tokens
 yarn venue:schedule   # Derive polling windows from cached data (add a platform to filter)
@@ -187,6 +188,7 @@ rule existed). Put local secrets in `.env.local` instead.
 
 - **Primary cache:** JSON files in `src/data/venues/` (git-tracked, committed by GitHub Actions)
 - **Merge driver:** these files change every 15 min on `main`, so `.gitattributes` routes them through `scripts/merge-venue-cache.mjs`, which unions both sides by session id rather than writing conflict markers. Run `yarn cache:setup` once per clone or merges will corrupt the JSON
+- **Navia:** the report reads `navia-navia-windows.json` (via `cacheFile` in `VENUES`), sittings rebuilt from Navia's own settled counts. The raw windows are kept append-only in `navia-windows-ledger-YYYY-MM.json`. `navia-navia.json` is the older slot feed cache, still polled and never rewritten by the rebuild. Where Navia's count is below ours, the sitting keeps our figure in `supersededSold` with a note; see `src/lib/naviaWindows.ts`
 - **Fallback:** Live API fetches from venue platforms
 - **Client-side:** localStorage with quota management and LRU eviction (`venueCache.ts`). The report shows a stored copy immediately, then revalidates against the server file and swaps in the newer one, judged by `sourceCachedAt` (the data's own timestamp; `cachedAt` is restamped on every save and can't be used)
 - **Sync:** `yarn cache:sync` pulls latest cache from `origin/main`; runs automatically on `yarn dev`

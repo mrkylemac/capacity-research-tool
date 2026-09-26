@@ -178,6 +178,14 @@ jobs:
         if: needs.gate.outputs.poll-punchpass == 'true' || inputs.force
         run: yarn poll:punchpass ${{ (needs.gate.outputs.punchpass-deep == 'true' || inputs.force) && '--deep' || '' }}
 
+      # Navia's own settled counts, which the report reads. Allowed to fail: past
+      # dates stay fetchable, so a missed run costs nothing the next one cannot
+      # recover, whereas the slot feed below cannot re-fetch anything.
+      - name: Poll Navia windows (settled counts)
+        if: needs.gate.outputs.poll-navia == 'true' || inputs.force
+        continue-on-error: true
+        run: yarn poll:navia-windows ${{ (needs.gate.outputs.navia-deep == 'true' || inputs.force) && '--deep' || '' }}
+
       - name: Poll Navia venues (Byron Bay + Prahran)
         if: needs.gate.outputs.poll-navia == 'true' || inputs.force
         run: yarn poll:navia ${{ (needs.gate.outputs.navia-deep == 'true' || inputs.force) && '--deep' || '' }}
@@ -189,6 +197,7 @@ jobs:
           git add src/data/venues/saunagoose-acuity.json src/data/venues/thecornersauna-acuity.json src/data/venues/senseofself-trybe.json
           git add src/data/venues/bmsauna-punchpass.json src/data/venues/bmsauna-punchpass-oracle.json
           git add src/data/venues/navia-navia.json src/data/venues/navia-navia-ledger.json
+          git add src/data/venues/navia-navia-windows.json src/data/venues/navia-windows-ledger-*.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0

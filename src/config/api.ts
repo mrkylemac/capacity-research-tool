@@ -92,6 +92,12 @@ export interface VenueConfig {
    */
   hiddenLocations?: string[];
   /**
+   * Cache file the report reads, without `.json`, when it is not the usual
+   * `{id}-{platform}`. Lets a venue switch to a rebuilt cache while the
+   * original file stays untouched beside it; remove this to switch back.
+   */
+  cacheFile?: string;
+  /**
    * Kept in the list and still fetched, but not shown in the venue grid.
    * Use this rather than deleting the entry: the config carries the name,
    * timezone and pricing a cached report still needs, and the poller keeps
@@ -244,6 +250,10 @@ export const VENUES: VenueConfig[] = [
     // Byron Bay is still polled (NAVIA_CONFIG) so its history keeps accruing,
     // but it is left out of the report. Remove it from this list to bring it back.
     hiddenLocations: ['Byron Bay'],
+    // Counts rebuilt from Navia's own entry records (see naviaWindows.ts). The
+    // slot feed cache, navia-navia.json, is still written and left as it was;
+    // delete this line to put the report back on it.
+    cacheFile: 'navia-navia-windows',
     pricing: {
       tiers: [
         { label: 'Prahran — Bathing (1 hour)', casualRate: 50 },
@@ -588,6 +598,23 @@ export interface NaviaLocation {
   utilisationEligible: boolean;
   measure: 'seats' | 'slot-occupancy';
   operatingSince: string;
+  /**
+   * How sittings are found in the windows endpoint, which lists every quarter
+   * hour of the day rather than only the entries. `every-hour`: each clock hour
+   * is a sitting, right for a continuous grid. `feed-sittings`: only the hours
+   * where the slot feed found one, because a gapped grid's windows also cover
+   * the empty quarter hours between sittings.
+   */
+  sittingAnchors: 'every-hour' | 'feed-sittings';
+  /**
+   * Per-entry limit over time, oldest first. Used only for a window with no
+   * reading taken before it started: past windows report today's limit rather
+   * than the one in force at the time.
+   */
+  entryLimitHistory: { from: string; limit: number }[];
+  /** Sittings starting before this instant carry `capacityUnconfirmedNote`. */
+  capacityConfirmedFrom?: string;
+  capacityUnconfirmedNote?: string;
 }
 
 export interface NaviaConfig {
@@ -605,6 +632,10 @@ export interface NaviaConfig {
   horizonDays: number;
   /** How long an entry observation is kept so partial sittings can be rebuilt. */
   ledgerRetentionDays: number;
+  /** Past days the windows poll refetches so late changes settle. */
+  windowsSettleDays: number;
+  /** The same on a deep refresh. */
+  windowsDeepSettleDays: number;
   locations: NaviaLocation[];
 }
 
@@ -617,6 +648,8 @@ export const NAVIA_CONFIG: NaviaConfig = {
   hotDays: 3,
   horizonDays: 35,
   ledgerRetentionDays: 3,
+  windowsSettleDays: 1,
+  windowsDeepSettleDays: 7,
   locations: [
     {
       name: 'Byron Bay',
@@ -633,6 +666,8 @@ export const NAVIA_CONFIG: NaviaConfig = {
       utilisationEligible: true,
       measure: 'seats',
       operatingSince: '2026-03-26',
+      sittingAnchors: 'feed-sittings',
+      entryLimitHistory: [{ from: '2026-03-26T00:00:00+10:00', limit: 4 }],
     },
     {
       name: 'Prahran',
@@ -689,6 +724,19 @@ export const NAVIA_CONFIG: NaviaConfig = {
       utilisationEligible: true,
       measure: 'seats',
       operatingSince: '2026-08-15',
+      sittingAnchors: 'every-hour',
+      // Read off the slot feed: every reading up to 2:18pm on 22 August showed
+      // 10 per entry, and every reading from 3pm showed 8.
+      entryLimitHistory: [
+        { from: '2026-08-15T00:00:00+10:00', limit: 10 },
+        { from: '2026-08-22T15:00:00+10:00', limit: 8 },
+      ],
+      // The endpoint's room capacity (32) agrees with today's limit of 8 and is
+      // enforced now, but it reports today's settings for every past date, so
+      // nothing confirms what the room was allowed before the change.
+      capacityConfirmedFrom: '2026-08-22T15:00:00+10:00',
+      capacityUnconfirmedNote:
+        'Capacity not confirmed before 3pm on 22 August. Navia allowed 10 people per 15 minute entry until then, and its room limit for that period cannot be checked.',
     },
   ],
 };

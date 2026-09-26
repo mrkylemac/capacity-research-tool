@@ -19,6 +19,7 @@
     "poll:trybe": "tsx scripts/poll-trybe.ts",
     "poll:punchpass": "tsx scripts/poll-punchpass.ts",
     "poll:navia": "tsx scripts/poll-navia.ts",
+    "poll:navia-windows": "tsx scripts/poll-navia-windows.ts",
     "venue:schedule": "tsx scripts/venue-schedule.ts",
     "verify:cache": "tsx scripts/verify-cache.ts",
     "poll:bsport": "tsx scripts/poll-bsport.ts",

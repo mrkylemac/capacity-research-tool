@@ -653,6 +653,17 @@ export function ReportClient() {
     );
   }, [filteredSessions]);
 
+  // A derived denominator can come with a caveat (Navia Prahran's capacity
+  // before its entry limit changed). Grouped by wording so each shows once,
+  // with how many of the measured sessions it covers.
+  const capacityNotes = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const s of eligibleSessions) {
+      for (const note of s.capacityNotes ?? []) counts.set(note, (counts.get(note) ?? 0) + 1);
+    }
+    return [...counts.entries()];
+  }, [eligibleSessions]);
+
   const venuePricing = useMemo(
     () => VENUES.find(v => v.id === (hostId ?? entry?.hostId))?.pricing,
     [hostId, entry?.hostId],
@@ -1086,6 +1097,17 @@ export function ReportClient() {
           </div>
           <span className="text-base font-medium sm:block ml-auto sm:text-right w-full text-center">{dateRangeLabel}</span>
         </div>
+
+        {/* Caveats on the denominator behind the figures below, once each. */}
+        {!isTransitioning && benchmarkMetrics && capacityNotes.length > 0 && (
+          <div className="mt-3 space-y-1">
+            {capacityNotes.map(([note, count]) => (
+              <p key={note} className="text-sm text-muted-foreground">
+                {note} Applies to {count.toLocaleString()} of the {eligibleSessions.length.toLocaleString()} sessions measured here.
+              </p>
+            ))}
+          </div>
+        )}
 
         {/* ── Report sections or period-empty state ── */}
         {isTransitioning ? (

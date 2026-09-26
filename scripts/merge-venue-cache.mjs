@@ -93,6 +93,43 @@ if (Array.isArray(ours.sessions) && Array.isArray(theirs.sessions)) {
     `merge-venue-cache: ${pathName} — ${ours.sessions.length} + ${theirs.sessions.length} ` +
     `-> ${sessions.length} sessions (${gained >= 0 ? '+' : ''}${gained} vs the larger side)`,
   );
+} else if (ours.windows && theirs.windows) {
+  // Navia windows ledger (src/lib/naviaWindows.ts). Append-only, so a window
+  // on either side survives. Where both hold one, the newer latest reading
+  // wins, the older one is kept in revisions if it was a different post-start
+  // figure, and the newest pre-start reading wins. Mirrors foldReading there.
+  const at = (r) => String(r?.observedAt ?? '');
+  const same = (a, b) => ['entries', 'occupancy', 'roomCapacity', 'entryLimit', 'isBookable'].every(k => a[k] === b[k]);
+  const windows = { ...theirs.windows };
+  for (const [k, mine] of Object.entries(ours.windows)) {
+    const other = windows[k];
+    if (!other) { windows[k] = mine; continue; }
+    const [stale, fresh] = at(mine.latest) >= at(other.latest) ? [other, mine] : [mine, other];
+    const revisions = [...(stale.revisions ?? []), ...(fresh.revisions ?? [])];
+    const staleLatest = stale.latest;
+    if (staleLatest?.source === 'windows' && at(staleLatest) >= String(fresh.startAt) && !same(staleLatest, fresh.latest)) {
+      revisions.push(staleLatest);
+    }
+    const seen = new Set();
+    const uniq = revisions
+      .filter(r => at(r) !== at(fresh.latest))
+      .sort((a, b) => at(a).localeCompare(at(b)))
+      .filter(r => (seen.has(at(r)) ? false : seen.add(at(r))));
+    const preStart = at(mine.preStart) >= at(other.preStart) ? mine.preStart : other.preStart;
+    const merged = { ...fresh };
+    if (preStart) merged.preStart = preStart;
+    if (uniq.length) merged.revisions = uniq; else delete merged.revisions;
+    windows[k] = merged;
+  }
+  const refreshedAt = newer(ours.refreshedAt, theirs.refreshedAt) === 'ours' ? ours.refreshedAt : theirs.refreshedAt;
+  const lines = Object.keys(windows).sort().map(k => `    ${JSON.stringify(k)}: ${JSON.stringify(windows[k])}`);
+  console.error(
+    `merge-venue-cache: ${pathName} — windows ${Object.keys(ours.windows).length} + ` +
+    `${Object.keys(theirs.windows).length} -> ${Object.keys(windows).length}`,
+  );
+  // Same layout as serialiseLedger, so a merge does not reformat the file.
+  fs.writeFileSync(ourPath, `{\n  "refreshedAt": ${JSON.stringify(refreshedAt)},\n  "windows": {\n${lines.join(',\n')}\n  }\n}\n`, 'utf-8');
+  process.exit(0);
 } else if (ours.entries && theirs.entries) {
   // Entry ledger (Navia). Same idea, keyed on the entry key, newest observation
   // of each entry wins.
