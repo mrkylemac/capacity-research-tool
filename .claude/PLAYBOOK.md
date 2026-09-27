@@ -57,7 +57,7 @@ How we work with Claude Code on **sauna-session-stats**. This is the *process* g
 - ❌ Skip plan mode on ambiguous work — one wrong assumption spreads across the codebase fast.
 - ❌ Treat Claude like ChatGPT — don't copy-paste prompts into a chat window and paste back. Claude works across your files.
 - ❌ Let agents sprawl. More agents ≠ better output. Tight brief, clear scope.
-- ❌ Hand-edit `src/components/ui/` — shadcn-generated; regenerate via CLI.
+- ❌ Hand-edit `src/components/ui/` — shadcn-generated; regenerate via CLI, then re-apply the brand edits listed in `STYLE-GUIDE.md` §10 (card, tabs, overlays, toast).
 - ❌ Bypass the `predev` cache-sync hook or commit without checking the venue cache diff.
 - ❌ Claim "done" without verification. Types passing ≠ feature working.
 - ❌ Work in isolation on this playbook — if a rule breaks, update the file.

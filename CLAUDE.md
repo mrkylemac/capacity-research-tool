@@ -117,11 +117,13 @@ Use `@/*` to import from `src/*` (e.g., `import { something } from '@/lib/utils'
 
 ## Styling
 
-- **Utility-first** with Tailwind CSS — no separate CSS files for components
+- **Utility-first** with Tailwind CSS v4 (CSS first, `@theme` in `src/styles/`); no separate CSS files for components
+- **Brand:** the Slow Folk design system (`slowfolk/design-system`). Tokens are the `--sf-*` block in `src/styles/globals.css`; components use the semantic layer only. Read `STYLE-GUIDE.md` before adding UI.
 - **Responsive:** mobile-first (`sm:`, `lg:` breakpoints)
-- **Semantic colors** via CSS variables: `primary`, `secondary`, `destructive`, `muted`, `accent`, `card`
-- **Status colors:** `green-4` (success), `amber-4` (warning), `red-4` (danger)
-- **Shadows:** `shadow-1` through `shadow-4`
+- **Semantic colors** via CSS variables: `ground`, `card`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `highlight`, `label`
+- **Status colors:** `bg-status-{info|build|warning|error|success}` with `text-status-{x}-foreground` and `border-status-{x}-border`; success and warning always carry an icon or a word
+- **Shadows:** none. Every `shadow-*` token is transparent; surfaces separate with a 1px `border-border` hairline
+- **Typeface:** ABC Camera Plain (variable file in `public/fonts/`), weights 400, 500, 700; no fallback family, `font-synthesis: none`
 - **Animation:** `section-animate` class with staggered delays
 
 ## Testing
@@ -218,11 +220,12 @@ in the app is tied to that choice — it is a `DATABASE_URL` and the schema in
 - `ADDING-A-VENUE.md` — Step-by-step guide for integrating new booking platforms
 - `FORECAST-SETUP.md` — Google Sheets forecast data integration
 - `PLAN.md` — CapEx tracker implementation plan and architecture
+- `STYLE-GUIDE.md` — Product UI style guide: tokens, type, shape, recipes, chart rules
 - `scripts/README.md` — Script documentation
 
 ## Important Notes
 
-- The `src/components/ui/` directory contains Shadcn-generated components — regenerate via the Shadcn CLI rather than editing directly
+- The `src/components/ui/` directory contains Shadcn-generated components — regenerate via the Shadcn CLI rather than editing directly. Exception: `card.tsx`, `tabs.tsx`, `toast.tsx` and the overlays in `dialog.tsx`, `sheet.tsx`, `alert-dialog.tsx`, `drawer.tsx` carry brand edits listed in `STYLE-GUIDE.md` §10; re-apply them after a regeneration
 - Venue configs (API keys, tokens, endpoint URLs) live in `src/config/api.ts`
 - Glofox tokens expire ~30 days and are auto-refreshed weekly via GitHub Actions
 - The `predev` hook runs `cache:sync` before `yarn dev`, which requires `origin/main` to be fetchable

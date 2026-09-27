@@ -199,7 +199,7 @@ Update home page to include a "Financial Tracker" card/link alongside the venue 
 
 ## Design Principles
 
-1. **Match existing style exactly** — Open Runde font, same Card/BigStat/StatRow patterns, same chart styling, same colour palette (gray-1 through gray-4, semantic colours for status)
+1. **Match existing style exactly** — ABC Camera Plain (the Slow Folk brand face), same Card/BigStat/StatRow patterns, same chart styling, same colour palette (gray-1 through gray-4, `status-*` tokens for status; see STYLE-GUIDE.md)
 2. **Same animation patterns** — `section-animate` class with staggered delays
 3. **Same responsive approach** — `page-container` class, mobile-first grid
 4. **Same data architecture** — server-side API routes with JSON cache fallback, React hooks for data fetching
