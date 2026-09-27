@@ -64,7 +64,7 @@
   --fg-3: var(--sf-brown-60);              /* secondary text: labels and captions only */
   --fg-4: var(--sf-base-black);            /* strongest text: titles, values */
   --gray-1: var(--sf-bone-60);             /* inset and KPI fill */
-  --gray-2: var(--sf-brown-40);            /* hairline */
+  --gray-2: var(--sf-base-40);             /* hairline */
   --gray-3: var(--sf-brown-60);
   --gray-4: var(--sf-brown-80);
   --gray-a1: #00000008;
@@ -99,12 +99,12 @@
   --secondary-foreground: var(--sf-base-black);
   --muted: var(--sf-base-20);
   --muted-foreground: var(--sf-brown-60);  /* 2.71:1 on Bone: labels and captions, never a sentence */
-  --accent: var(--sf-bone-60);
+  --accent: var(--sf-base-20);             /* hover fill: cards, ghost buttons, menu items */
   --accent-foreground: var(--sf-base-black);
   --destructive: var(--sf-brand-red);
   --destructive-foreground: var(--sf-bone);
-  --border: var(--sf-brown-40);
-  --input: var(--sf-brown-40);
+  --border: var(--sf-base-40);             /* hairline on cards, buttons, inputs */
+  --input: var(--sf-base-40);
   --ring: var(--sf-brand-red-dust);
   --radius: 4px;
   --sidebar-background: var(--bg-1);
@@ -161,7 +161,7 @@
   --chart-foreground-muted: var(--muted-foreground);
   --chart-line-primary: var(--chart-1);
   --chart-line-secondary: var(--chart-2);
-  --chart-grid: color-mix(in srgb, var(--border) 50%, transparent);
+  --chart-grid: var(--border);
   --chart-label: var(--muted-foreground);
   --chart-cursor: color-mix(in srgb, var(--sf-brown-80) 6%, transparent);
   --chart-marker-background: var(--card);
