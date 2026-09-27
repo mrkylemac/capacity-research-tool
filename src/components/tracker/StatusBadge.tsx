@@ -1,10 +1,10 @@
 import type { ItemStatus } from '@/types/tracker';
 
 const CONFIG: Record<ItemStatus, { label: string; cls: string }> = {
-  forecast:  { label: 'Forecast',  cls: 'bg-gray-2 text-fg-3' },
-  quoted:    { label: 'Quoted',    cls: 'bg-sky-1   text-sky-4' },
-  invoiced:  { label: 'Invoiced',  cls: 'bg-amber-1 text-amber-4' },
-  paid:      { label: 'Paid',      cls: 'bg-green-1 text-green-4' },
+  forecast:  { label: 'Forecast',  cls: 'bg-muted text-muted-foreground' },
+  quoted:    { label: 'Quoted',    cls: 'bg-status-info text-status-info-foreground' },
+  invoiced:  { label: 'Invoiced',  cls: 'bg-status-warning text-status-warning-foreground' },
+  paid:      { label: 'Paid',      cls: 'bg-status-success text-status-success-foreground' },
 };
 
 export function StatusBadge({ status }: { status: ItemStatus }) {

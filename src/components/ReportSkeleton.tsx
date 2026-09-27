@@ -75,7 +75,7 @@ function SnapshotSkeleton() {
 /** Skeleton matching CapacitySection: title + occupancy % + chart + horizontal bars + description */
 function CapacitySkeleton() {
   return (
-    <Card className="shadow-sm">
+    <Card>
       <CardContent className="px-4 py-4 sm:p-5">
         {/* Header with right-aligned percentage */}
         <div className="flex items-center justify-between mb-8">
@@ -146,7 +146,7 @@ const HEATMAP_OPACITIES = [
 /** Skeleton matching DemandSection: title + weekday/weekend toggle + heatmap + day-of-week bars */
 function DemandSkeleton() {
   return (
-    <Card className="shadow-sm">
+    <Card>
       <CardContent className="px-4 py-4 sm:p-5">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

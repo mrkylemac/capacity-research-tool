@@ -11,8 +11,8 @@ function fmt(n: number) {
 }
 
 function varianceColor(v: number) {
-  if (v > 0) return 'text-green-4';
-  if (v < 0) return 'text-red-4';
+  if (v > 0) return 'text-fg-4';
+  if (v < 0) return 'text-status-error-foreground';
   return 'text-muted-foreground';
 }
 

@@ -909,7 +909,7 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
           </Button>
         </div>
 
-        <div className="w-px h-5 bg-gray-2 mx-0.5 shrink-0" />
+        <div className="w-px h-5 bg-border mx-0.5 shrink-0" />
 
         {/* Zoom */}
         <div className="flex items-center gap-0.5 shrink-0">
@@ -922,7 +922,7 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
           </Button>
         </div>
 
-        <div className="w-px h-5 bg-gray-2 mx-0.5 shrink-0" />
+        <div className="w-px h-5 bg-border mx-0.5 shrink-0" />
 
         <Button
           variant={tool === 'calibrate' ? 'default' : 'outline'}
@@ -957,10 +957,10 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
 
         {chainInProgress && (
           <>
-            <div className="w-px h-5 bg-gray-2 mx-0.5 shrink-0" />
+            <div className="w-px h-5 bg-border mx-0.5 shrink-0" />
             <Button
               size="sm"
-              className="h-7 gap-1.5 text-xs bg-green-600 hover:bg-green-700 shrink-0"
+              className="h-7 gap-1.5 text-xs bg-status-success text-status-success-foreground border border-status-success-border hover:opacity-80 shrink-0"
               onClick={() => finishChain(activeChain!.points)}
               disabled={activeChain!.points.length < 2}
             >
@@ -988,8 +988,8 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
 
       {/* Calibration input strip */}
       {showCalInput && (
-        <div className="shrink-0 flex items-center gap-3 px-4 py-2 bg-amber-50 border-b border-amber-2 text-sm">
-          <span className="font-medium text-amber-800">What is the real length of this line?</span>
+        <div className="shrink-0 flex items-center gap-3 px-4 py-2 bg-status-warning border-b border-status-warning-border text-sm">
+          <span className="font-medium text-status-warning-foreground">What is the real length of this line?</span>
           <div className="relative w-32">
             <Input
               type="number" autoFocus placeholder="5548"
@@ -1009,9 +1009,9 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
       {/* Tool hints */}
       {!showCalInput && tool !== 'view' && (
         <div className={`shrink-0 px-4 py-1.5 text-xs border-b ${
-          tool === 'calibrate' ? 'bg-amber-50 text-amber-700 border-amber-2' :
-          tool === 'room'      ? 'bg-purple-50 text-purple-700 border-purple-2' :
-                                 'bg-blue-50 text-blue-700 border-blue-2'
+          tool === 'calibrate' ? 'bg-status-warning text-status-warning-foreground border-status-warning-border' :
+          tool === 'room'      ? 'bg-status-info text-status-info-foreground border-status-info-border' :
+                                 'bg-gray-1 text-foreground border-border'
         }`}>
           {tool === 'calibrate' ? 'Drag along a known dimension to set the scale.' :
            tool === 'room'      ? 'Drag to draw the room bounding box, then label each side N / E / S / W in the panel.' :
@@ -1022,7 +1022,7 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
 
       {/* Canvas + right panel */}
       <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 overflow-auto bg-neutral-700">
+        <div className="flex-1 overflow-auto bg-primary">
           <div style={{
             width: canvasSize.w * viewZoom,
             height: canvasSize.h * viewZoom,
@@ -1088,7 +1088,7 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-amber-600">Set scale to see dimensions</p>
+                <p className="text-xs text-status-warning-foreground">Set scale to see dimensions</p>
               )}
 
               {/* North wall picker */}
@@ -1100,14 +1100,14 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
                   <button
                     type="button"
                     onClick={() => setRoomBox(b => b ? { ...b, northSide: 'top' } : b)}
-                    className={`rounded text-[11px] font-bold py-1 transition-colors ${roomBox.northSide === 'top' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary'}`}
+                    className={`rounded text-[11px] font-bold py-1 transition-colors ${roomBox.northSide === 'top' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary'}`}
                   >N</button>
                   <div />
                   {/* Left / Right */}
                   <button
                     type="button"
                     onClick={() => setRoomBox(b => b ? { ...b, northSide: 'left' } : b)}
-                    className={`rounded text-[11px] font-bold py-1 transition-colors ${roomBox.northSide === 'left' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary'}`}
+                    className={`rounded text-[11px] font-bold py-1 transition-colors ${roomBox.northSide === 'left' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary'}`}
                   >W</button>
                   <div className="flex items-center justify-center">
                     <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30" />
@@ -1115,14 +1115,14 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
                   <button
                     type="button"
                     onClick={() => setRoomBox(b => b ? { ...b, northSide: 'right' } : b)}
-                    className={`rounded text-[11px] font-bold py-1 transition-colors ${roomBox.northSide === 'right' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary'}`}
+                    className={`rounded text-[11px] font-bold py-1 transition-colors ${roomBox.northSide === 'right' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary'}`}
                   >E</button>
                   {/* Bottom */}
                   <div />
                   <button
                     type="button"
                     onClick={() => setRoomBox(b => b ? { ...b, northSide: 'bottom' } : b)}
-                    className={`rounded text-[11px] font-bold py-1 transition-colors ${roomBox.northSide === 'bottom' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary'}`}
+                    className={`rounded text-[11px] font-bold py-1 transition-colors ${roomBox.northSide === 'bottom' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary'}`}
                   >S</button>
                   <div />
                 </div>
@@ -1161,7 +1161,7 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
                   <li className="flex gap-2"><span className="text-primary font-bold shrink-0">4</span>Click any measurement to link or create an opening</li>
                 </ol>
                 {pxPerMm ? (
-                  <div className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-2.5 py-1.5 rounded-lg">
+                  <div className="flex items-center gap-1.5 text-xs text-status-success-foreground bg-status-success border border-status-success-border px-2.5 py-1.5 rounded-lg">
                     <span>✓</span><span>Scale calibrated</span>
                   </div>
                 ) : null}
@@ -1215,9 +1215,9 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
                       Apply to take-off
                     </Button>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-px bg-gray-2" />
+                      <div className="flex-1 h-px bg-border" />
                       <span className="text-[10px] text-muted-foreground uppercase tracking-wide">or</span>
-                      <div className="flex-1 h-px bg-gray-2" />
+                      <div className="flex-1 h-px bg-border" />
                     </div>
                     <Button
                       size="sm" variant="outline" className="w-full gap-1.5 text-xs"
@@ -1294,7 +1294,7 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
               <div className="divide-y divide-gray-1">
                 {annotations.map(ann => (
                   <div key={ann.id} className="flex items-center gap-2.5 px-4 py-2.5">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-fg-4 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium truncate">{ann.targetLabel}</p>
                       <p className="text-xs text-muted-foreground">{formatMm(ann.mm)}</p>
@@ -1317,7 +1317,7 @@ export function PdfViewer({ file, onClose }: PdfViewerProps) {
                   <button
                     key={ln.id} type="button"
                     onClick={() => { setPageNum(ln.pageNum); setSelectedLine(ln); setLinkTarget(''); setShowAddOpening(false); }}
-                    className={`w-full flex items-center gap-2.5 px-4 py-2 text-left transition-colors hover:bg-muted/50 ${selectedLine?.id === ln.id ? 'bg-purple-1' : ''}`}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2 text-left transition-colors hover:bg-muted/50 ${selectedLine?.id === ln.id ? 'bg-status-info' : ''}`}
                   >
                     <Minus className={`h-3 w-3 shrink-0 ${selectedLine?.id === ln.id ? 'text-primary' : 'text-muted-foreground'}`} />
                     <span className={`flex-1 text-xs font-medium ${selectedLine?.id === ln.id ? 'text-primary' : ''}`}>

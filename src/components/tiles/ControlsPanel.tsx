@@ -48,7 +48,7 @@ export function ControlsPanel({
   };
 
   return (
-    <aside className="bg-card rounded-2xl border border-gray-2 shadow-1 p-4 space-y-5">
+    <aside className="bg-card rounded-2xl border border-gray-2 p-4 space-y-5">
       <header className="flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold">Controls</p>
@@ -163,12 +163,12 @@ function Toggle({
       <button
         onClick={() => onChange(!checked)}
         className={`relative w-9 h-5 rounded-full transition-colors ${
-          checked ? 'bg-primary' : 'bg-gray-2'
+          checked ? 'bg-primary' : 'bg-input'
         }`}
         type="button"
       >
         <span
-          className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+          className={`absolute top-0.5 left-0.5 w-4 h-4 bg-card rounded-full transition-transform ${
             checked ? 'translate-x-4' : ''
           }`}
         />
@@ -220,7 +220,7 @@ function FacingToggle({
           type="button"
           onClick={() => onChange('left')}
           className={`px-2.5 py-0.5 rounded-full text-xs transition-colors ${
-            value === 'left' ? 'bg-primary text-white' : 'text-muted-foreground'
+            value === 'left' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
           }`}
         >
           ← Left
@@ -229,7 +229,7 @@ function FacingToggle({
           type="button"
           onClick={() => onChange('right')}
           className={`px-2.5 py-0.5 rounded-full text-xs transition-colors ${
-            value === 'right' ? 'bg-primary text-white' : 'text-muted-foreground'
+            value === 'right' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
           }`}
         >
           Right →
@@ -254,7 +254,7 @@ function LidTypeToggle({
           type="button"
           onClick={() => onChange('standard')}
           className={`px-2.5 py-0.5 rounded-full text-xs transition-colors ${
-            value === 'standard' ? 'bg-primary text-white' : 'text-muted-foreground'
+            value === 'standard' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
           }`}
         >
           Standard
@@ -263,7 +263,7 @@ function LidTypeToggle({
           type="button"
           onClick={() => onChange('hide')}
           className={`px-2.5 py-0.5 rounded-full text-xs transition-colors ${
-            value === 'hide' ? 'bg-primary text-white' : 'text-muted-foreground'
+            value === 'hide' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
           }`}
         >
           HIDE

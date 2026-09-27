@@ -22,10 +22,10 @@ function fmtAUD(n: number) {
 function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-card border border-gray-2 rounded-xl shadow-2 px-3 py-2 text-sm min-w-32">
+    <div className="bg-card border border-border rounded-xl px-3 py-2 text-sm min-w-32">
       <p className="font-semibold text-fg-4 mb-1.5">{label}</p>
       {payload.map(p => (
-        <div key={p.name} className="flex items-center gap-2 text-fg-3 mb-0.5">
+        <div key={p.name} className="flex items-center gap-2 text-muted-foreground mb-0.5">
           <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: p.color }} />
           <span className="capitalize">{p.name}</span>
           <span className="ml-auto font-medium text-fg-4">{fmtAUD(p.value as number)}</span>
@@ -52,22 +52,22 @@ export function CategoryBreakdown({ categories }: { categories: CategorySummary[
       <CardContent>
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -8 }}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--gray-2)" />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--chart-grid)" />
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 11, fill: 'var(--fg-3)', fontFamily: 'var(--font-body)' }}
+              tick={{ fontSize: 11, fill: 'var(--chart-label)', fontFamily: 'var(--font-body)' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: 'var(--fg-3)', fontFamily: 'var(--font-body)' }}
+              tick={{ fontSize: 11, fill: 'var(--chart-label)', fontFamily: 'var(--font-body)' }}
               axisLine={false}
               tickLine={false}
               tickFormatter={fmtAUD}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--gray-a1)' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
             <Legend
-              wrapperStyle={{ fontSize: 12, fontFamily: 'var(--font-body)', color: 'var(--fg-3)' }}
+              wrapperStyle={{ fontSize: 12, fontFamily: 'var(--font-body)', color: 'var(--chart-label)' }}
               iconType="square"
               iconSize={8}
             />

@@ -14,7 +14,7 @@ export function ElevationView({ config }: ElevationViewProps) {
   const [layDir, setLayDir] = useState<LayDirection>('bottomUp');
 
   return (
-    <div className="bg-card rounded-2xl border border-gray-2 shadow-1">
+    <div className="bg-card rounded-2xl border border-gray-2">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-2">
         <div>
           <p className="text-sm font-semibold">Wall elevations</p>
@@ -26,7 +26,7 @@ export function ElevationView({ config }: ElevationViewProps) {
           <button
             onClick={() => setLayDir('bottomUp')}
             className={`px-3 py-1 rounded-full transition-colors ${
-              layDir === 'bottomUp' ? 'bg-card text-primary font-semibold' : 'text-muted-foreground'
+              layDir === 'bottomUp' ? 'bg-primary text-primary-foreground font-semibold' : 'text-muted-foreground'
             }`}
           >
             Bottom-up
@@ -34,7 +34,7 @@ export function ElevationView({ config }: ElevationViewProps) {
           <button
             onClick={() => setLayDir('topDown')}
             className={`px-3 py-1 rounded-full transition-colors ${
-              layDir === 'topDown' ? 'bg-card text-primary font-semibold' : 'text-muted-foreground'
+              layDir === 'topDown' ? 'bg-primary text-primary-foreground font-semibold' : 'text-muted-foreground'
             }`}
           >
             Top-down
@@ -42,7 +42,7 @@ export function ElevationView({ config }: ElevationViewProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
         <PoolElevation
           title="Hot pool — long wall"
           config={config}
@@ -273,13 +273,13 @@ function Stat({
 }) {
   const toneClass =
     tone === 'good'
-      ? 'text-green-4'
+      ? 'text-fg-4'
       : tone === 'warn'
-        ? 'text-amber-4'
+        ? 'text-status-warning-foreground'
         : 'text-fg-4';
   return (
     <div className="bg-gray-1 rounded-lg px-2.5 py-1.5">
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-label">{label}</div>
       <div className={`text-sm font-semibold ${toneClass} tabular-nums`}>{value}</div>
       {hint && <div className="text-[10px] text-muted-foreground mt-0.5">{hint}</div>}
     </div>

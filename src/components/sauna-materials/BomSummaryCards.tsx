@@ -21,7 +21,7 @@ interface CardProps {
 function Card({ label, value, badge, sub, hero }: CardProps) {
   return (
     <div
-      className="bg-card rounded-2xl border border-gray-2 shadow-1 px-5 py-4"
+      className="bg-card rounded-2xl border border-gray-2 px-5 py-4"
       style={hero ? { borderTop: '2px solid var(--primary)' } : undefined}
     >
       <p className="text-xs text-muted-foreground font-medium mb-1.5 uppercase tracking-wide">{label}</p>

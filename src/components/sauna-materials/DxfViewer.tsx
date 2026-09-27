@@ -470,7 +470,7 @@ export function DxfViewer() {
             className={[
               'flex flex-col items-center justify-center gap-3 cursor-pointer rounded-xl',
               'border-2 border-dashed transition-colors min-h-56',
-              dragging ? 'border-primary bg-purple-1' : 'border-gray-2 hover:border-primary hover:bg-purple-1/50',
+              dragging ? 'border-primary bg-accent' : 'border-gray-2 hover:border-primary hover:bg-accent/50',
             ].join(' ')}
             onDragOver={e => { e.preventDefault(); setDragging(true); }}
             onDragLeave={() => setDragging(false)}
@@ -609,7 +609,7 @@ export function DxfViewer() {
               {annotations.map(ann => (
                 <div key={ann.id} className="flex items-center justify-between gap-3 px-4 py-3">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-fg-4 shrink-0" />
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{ann.label}</p>
                       <p className="text-xs text-muted-foreground">

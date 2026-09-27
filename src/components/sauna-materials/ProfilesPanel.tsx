@@ -96,7 +96,7 @@ function SupplierStrip({
             onClick={() => onChange(active === s ? null : s)}
             className={`h-7 px-3 rounded-full text-xs font-medium border transition-colors ${
               active === s
-                ? 'bg-primary text-white border-primary shadow-sm'
+                ? 'bg-primary text-primary-foreground border-primary'
                 : 'bg-card text-muted-foreground border-gray-2 hover:border-primary/50 hover:text-fg-4'
             }`}
           >
@@ -154,7 +154,7 @@ function ProfilePicker({
       <div className="flex items-center justify-between min-h-[1.25rem] gap-2">
         <Label className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</Label>
         {isMixed && (
-          <span className="shrink-0 text-[10px] font-medium text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2 py-px leading-tight">
+          <span className="shrink-0 text-[10px] font-medium text-status-warning-foreground bg-status-warning border border-status-warning-border rounded-full px-2 py-px leading-tight">
             {supplierShort(selectedProfile.supplier)}
           </span>
         )}

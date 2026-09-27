@@ -1,10 +1,10 @@
 import type { FinancialSignal, SignalType } from '@/types/tracker';
 
 const SIGNAL_STYLES: Record<SignalType, { bg: string; border: string; title: string; icon: string }> = {
-  danger:  { bg: 'bg-red-1',   border: 'border-red-3',   title: 'text-red-4',   icon: '⚠' },
-  warning: { bg: 'bg-amber-1', border: 'border-amber-3', title: 'text-amber-4', icon: '◉' },
-  info:    { bg: 'bg-sky-1',   border: 'border-sky-3',   title: 'text-sky-4',   icon: 'ℹ' },
-  success: { bg: 'bg-green-1', border: 'border-green-3', title: 'text-green-4', icon: '✓' },
+  danger:  { bg: 'bg-status-error',   border: 'border-status-error-border',   title: 'text-status-error-foreground',   icon: '⚠' },
+  warning: { bg: 'bg-status-warning', border: 'border-status-warning-border', title: 'text-status-warning-foreground', icon: '◉' },
+  info:    { bg: 'bg-status-info',    border: 'border-status-info-border',    title: 'text-status-info-foreground',    icon: 'ℹ' },
+  success: { bg: 'bg-status-success', border: 'border-status-success-border', title: 'text-status-success-foreground', icon: '✓' },
 };
 
 function SignalCard({ signal }: { signal: FinancialSignal }) {

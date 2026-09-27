@@ -167,7 +167,7 @@ function SegmentedToggle({ value, onChange }: { value: ViewMode; onChange: (v: V
         type="button"
         className={`flex-1 px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer transition-colors ${
           value === 'average'
-            ? 'bg-background text-foreground shadow-sm'
+            ? 'bg-primary text-primary-foreground'
             : 'text-muted-foreground hover:text-foreground'
         }`}
         onPointerDown={(e) => { e.stopPropagation(); onChange('average'); }}
@@ -178,7 +178,7 @@ function SegmentedToggle({ value, onChange }: { value: ViewMode; onChange: (v: V
         type="button"
         className={`flex-1 px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer transition-colors ${
           value === 'by-date'
-            ? 'bg-background text-foreground shadow-sm'
+            ? 'bg-primary text-primary-foreground'
             : 'text-muted-foreground hover:text-foreground'
         }`}
         onPointerDown={(e) => { e.stopPropagation(); onChange('by-date'); }}

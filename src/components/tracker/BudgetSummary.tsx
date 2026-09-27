@@ -15,14 +15,14 @@ interface StatCardProps {
 function StatCard({ label, value, sub, accent = 'default', hero = false }: StatCardProps) {
   const valueColor = {
     default: hero ? '' : 'text-fg-4',
-    green:   'text-green-4',
-    amber:   'text-amber-4',
-    red:     'text-red-4',
+    green:   'text-fg-4',
+    amber:   'text-status-warning-foreground',
+    red:     'text-status-error-foreground',
   }[accent];
 
   return (
     <div
-      className="bg-card rounded-2xl border border-gray-2 shadow-1 px-5 py-4 transition-all"
+      className="bg-card rounded-2xl border border-gray-2 px-5 py-4 transition-all"
       style={hero ? { borderTop: '2px solid var(--primary)' } : undefined}
     >
       <p className="text-xs text-muted-foreground font-medium mb-1.5 uppercase tracking-wide">{label}</p>
@@ -46,14 +46,14 @@ interface BurnBarProps {
 function BurnBar({ percentage, spent, budget }: BurnBarProps) {
   const clamped = Math.min(100, Math.max(0, percentage));
   const color =
-    clamped > 90 ? 'bg-red-4' :
-    clamped > 75 ? 'bg-amber-4' :
-    'bg-green-4';
+    clamped > 90 ? 'bg-highlight' :
+    clamped > 75 ? 'bg-status-warning-foreground' :
+    'bg-primary';
 
   const label = clamped < 50 ? 'On track' : clamped < 75 ? 'Progressing' : clamped < 90 ? 'High utilisation' : 'Near capacity';
 
   return (
-    <div className="bg-card rounded-2xl border border-gray-2 shadow-1 px-5 py-4">
+    <div className="bg-card rounded-2xl border border-gray-2 px-5 py-4">
       <div className="flex justify-between items-baseline mb-3">
         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Budget burn</p>
         <div className="flex items-baseline gap-2">
@@ -61,7 +61,7 @@ function BurnBar({ percentage, spent, budget }: BurnBarProps) {
           <span className="text-sm font-bold text-fg-4">{clamped.toFixed(1)}%</span>
         </div>
       </div>
-      <div className="h-2 bg-gray-2 rounded-full overflow-hidden">
+      <div className="h-2 bg-muted rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ease-out ${color}`}
           style={{ width: `${clamped}%` }}

@@ -12,30 +12,30 @@ interface LayupBriefProps {
 
 const SEVERITY_TONE = {
   red: {
-    bg: 'bg-[#FDF6F6]',
-    border: 'border-[#F2D6D2]',
-    dot: 'bg-[#ff2f00]',
-    text: 'text-[#7a1a05]',
-    chip: 'bg-[#ffe2db] text-[#ff2f00] border-[#ffd5cc]',
+    bg: 'bg-status-error',
+    border: 'border-status-error-border',
+    dot: 'bg-status-error-foreground text-primary-foreground',
+    text: 'text-status-error-foreground',
+    chip: 'bg-status-error text-status-error-foreground border-status-error-border',
   },
   amber: {
-    bg: 'bg-[#FCFAEF]',
-    border: 'border-[#EFE2B4]',
-    dot: 'bg-[#ffa600]',
-    text: 'text-[#7a5610]',
-    chip: 'bg-[#ffeac2] text-[#9a6700] border-[#ffc65c]',
+    bg: 'bg-status-warning',
+    border: 'border-status-warning-border',
+    dot: 'bg-status-warning-foreground text-primary-foreground',
+    text: 'text-status-warning-foreground',
+    chip: 'bg-status-warning text-status-warning-foreground border-status-warning-border',
   },
   green: {
-    bg: 'bg-[#F6F9F7]',
-    border: 'border-[#D9E6DC]',
-    dot: 'bg-[#33c758]',
-    text: 'text-[#1c5b2e]',
-    chip: 'bg-[#c2efcd] text-[#1c5b2e] border-[#71da8b]',
+    bg: 'bg-card',
+    border: 'border-border',
+    dot: 'bg-status-success text-status-success-foreground',
+    text: 'text-fg-4',
+    chip: 'bg-status-success text-status-success-foreground border-status-success-border',
   },
   clear: {
     bg: 'bg-card',
     border: 'border-gray-2',
-    dot: 'bg-gray-3',
+    dot: 'bg-gray-3 text-primary-foreground',
     text: 'text-muted-foreground',
     chip: 'bg-gray-1 text-muted-foreground border-gray-2',
   },
@@ -59,7 +59,7 @@ export function LayupBriefView({ config, stats }: LayupBriefProps) {
   return (
     <div className="space-y-4">
       {/* Document header */}
-      <header className="bg-card rounded-2xl border border-gray-2 shadow-1 px-5 py-4">
+      <header className="bg-card rounded-2xl border border-gray-2 px-5 py-4">
         <div className="flex items-baseline justify-between gap-4 flex-wrap">
           <div>
             <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">
@@ -102,15 +102,15 @@ export function LayupBriefView({ config, stats }: LayupBriefProps) {
       </header>
 
       {/* Bottom line */}
-      <section className="bg-[#F9F8F7] border border-[#E8E5DF] rounded-2xl px-5 py-4">
-        <p className="text-[10px] uppercase tracking-wider font-semibold text-[#7a6a4a] mb-1.5">
+      <section className="bg-gray-1 border border-border rounded-2xl px-5 py-4">
+        <p className="text-[10px] uppercase tracking-wider font-semibold text-label mb-1.5">
           Bottom line
         </p>
         <p className="text-base leading-relaxed text-fg-4">{brief.bottomLine}</p>
       </section>
 
       {/* Scorecard + Heat map */}
-      <section className="bg-card rounded-2xl border border-gray-2 shadow-1 overflow-hidden">
+      <section className="bg-card rounded-2xl border border-gray-2 overflow-hidden">
         <div className="px-5 py-3 border-b border-gray-2">
           <p className="text-sm font-semibold">Summary</p>
           <p className="text-xs text-muted-foreground">
@@ -184,14 +184,14 @@ export function LayupBriefView({ config, stats }: LayupBriefProps) {
 
       {/* Green table */}
       {brief.greenNotes.length > 0 && (
-        <section className="bg-[#F6F9F7] border border-[#D9E6DC] rounded-2xl overflow-hidden">
-          <div className="px-5 py-3 border-b border-[#D9E6DC]">
-            <p className="text-sm font-semibold text-[#1c5b2e]">Standard, on module</p>
-            <p className="text-xs text-[#3a6b47]">
+        <section className="bg-card border border-border rounded-2xl overflow-hidden">
+          <div className="px-5 py-3 border-b border-border">
+            <p className="text-sm font-semibold text-fg-4">Standard, on module</p>
+            <p className="text-xs text-muted-foreground">
               Read and ticked. No action needed.
             </p>
           </div>
-          <ul className="divide-y divide-[#D9E6DC]">
+          <ul className="divide-y divide-border">
             {brief.greenNotes.map(g => (
               <li key={g.id} className="px-5 py-2.5 grid grid-cols-12 gap-3 text-sm">
                 <span className="col-span-3 font-medium text-fg-4 truncate">{g.item}</span>
@@ -205,12 +205,12 @@ export function LayupBriefView({ config, stats }: LayupBriefProps) {
 
       {/* Questions */}
       {brief.questions.length > 0 && (
-        <section className="bg-[#FAF7FC] border border-[#E3D7EE] rounded-2xl overflow-hidden">
-          <div className="px-5 py-3 border-b border-[#E3D7EE]">
-            <p className="text-sm font-semibold text-[#4d2e6b]">
+        <section className="bg-status-info border border-status-info-border rounded-2xl overflow-hidden">
+          <div className="px-5 py-3 border-b border-status-info-border">
+            <p className="text-sm font-semibold text-status-info-foreground">
               Asks before the tiler starts
             </p>
-            <p className="text-xs text-[#6a4d80]">
+            <p className="text-xs text-muted-foreground">
               Send these to your pool builder and tiler in writing.
             </p>
           </div>
@@ -225,8 +225,8 @@ export function LayupBriefView({ config, stats }: LayupBriefProps) {
       )}
 
       {/* Housekeeping */}
-      <section className="bg-[#F9F8F7] border border-[#E8E5DF] rounded-2xl px-5 py-4">
-        <p className="text-[10px] uppercase tracking-wider font-semibold text-[#7a6a4a] mb-1.5">
+      <section className="bg-gray-1 border border-border rounded-2xl px-5 py-4">
+        <p className="text-[10px] uppercase tracking-wider font-semibold text-label mb-1.5">
           Housekeeping
         </p>
         <ul className="text-sm text-fg-4 space-y-1 list-disc list-inside">
@@ -306,7 +306,7 @@ function IssueCard({
   return (
     <article className={`${t.bg} ${t.border} border rounded-2xl px-5 py-4`}>
       <header className="flex items-start gap-3 mb-3">
-        <span className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white ${t.dot}`}>
+        <span className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${t.dot}`}>
           {index}
         </span>
         <div className="min-w-0">

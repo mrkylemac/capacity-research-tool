@@ -30,7 +30,7 @@ export function TrackerNav() {
                 className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-muted-foreground cursor-not-allowed opacity-50"
               >
                 {tab.label}
-                <span className="text-xs bg-gray-2 text-muted-foreground px-1.5 py-0.5 rounded-full leading-none">
+                <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full leading-none">
                   soon
                 </span>
               </button>
