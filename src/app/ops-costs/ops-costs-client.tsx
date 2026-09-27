@@ -216,14 +216,14 @@ interface StatTileProps {
 function StatTile({ label, value, sub, accent = 'default', hero = false }: StatTileProps) {
   const valueColor = {
     default: hero ? '' : 'text-fg-4',
-    green: 'text-green-4',
-    amber: 'text-amber-4',
-    red: 'text-red-4',
+    green: 'text-fg-4',
+    amber: 'text-status-warning-foreground',
+    red: 'text-status-error-foreground',
   }[accent];
 
   return (
     <div
-      className="bg-card rounded-2xl border border-gray-2 shadow-1 px-5 py-4 transition-all"
+      className="bg-card rounded-2xl border border-gray-2 px-5 py-4 transition-all"
       style={hero ? { borderTop: '2px solid var(--primary)' } : undefined}
     >
       <p className="text-xs text-muted-foreground font-medium mb-1.5 uppercase tracking-wide">{label}</p>
@@ -326,10 +326,10 @@ export function OpsCostsClient() {
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-1 text-amber-4 border border-amber-2 tracking-wide uppercase">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-status-info text-status-info-foreground border border-status-info-border tracking-wide uppercase">
                 Lab
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-1 text-purple-4 border border-purple-2 tracking-wide uppercase">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-status-info text-status-info-foreground border border-status-info-border tracking-wide uppercase">
                 OpEx
               </span>
             </div>
@@ -377,7 +377,7 @@ export function OpsCostsClient() {
 
           {/* Globals */}
           <div className="section-animate" style={{ animationDelay: '60ms' }}>
-            <div className="bg-card rounded-2xl border border-gray-2 shadow-1 px-5 py-5">
+            <div className="bg-card rounded-2xl border border-gray-2 px-5 py-5">
               <div className="mb-4">
                 <h2 className="text-base font-semibold tracking-tight">Global assumptions</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -433,7 +433,7 @@ export function OpsCostsClient() {
 
           {/* Sauna heater */}
           <div className="section-animate" style={{ animationDelay: '120ms' }}>
-            <div className="bg-card rounded-2xl border border-gray-2 shadow-1 px-5 py-5">
+            <div className="bg-card rounded-2xl border border-gray-2 px-5 py-5">
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-base font-semibold tracking-tight">Sauna heater energy</h2>
@@ -562,10 +562,10 @@ export function OpsCostsClient() {
               { label: 'HVAC', note: 'Reception, change rooms, lounge conditioning' },
               { label: 'Laundry', note: 'Towels + robes: water, gas, detergent, labour' },
             ].map((c) => (
-              <div key={c.label} className="bg-card rounded-2xl border border-gray-2 border-dashed shadow-1 px-5 py-4 opacity-70">
+              <div key={c.label} className="bg-card rounded-2xl border border-gray-2 border-dashed px-5 py-4 opacity-70">
                 <div className="flex items-center gap-2 mb-1.5">
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{c.label}</p>
-                  <span className="text-[10px] bg-gray-2 text-muted-foreground px-1.5 py-0.5 rounded-full leading-none uppercase tracking-wide">soon</span>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full leading-none uppercase tracking-wide">soon</span>
                 </div>
                 <p className="text-2xl font-bold tabular-nums tracking-tight leading-none text-muted-foreground">—</p>
                 <p className="text-xs text-muted-foreground mt-1.5">{c.note}</p>

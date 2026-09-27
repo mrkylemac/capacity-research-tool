@@ -56,7 +56,7 @@ export function PlanView({
   );
 
   return (
-    <div className="bg-card rounded-2xl border border-gray-2 shadow-1 overflow-hidden">
+    <div className="bg-card rounded-2xl border border-gray-2 overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-2">
         <div>
           <p className="text-sm font-semibold">Plan view</p>

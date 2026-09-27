@@ -31,7 +31,7 @@ export function TilesClient() {
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-sky-1 text-sky-4 border border-sky-2 tracking-wide uppercase">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-status-build text-status-build-foreground border border-status-build-border tracking-wide uppercase">
               Build
             </span>
           </div>

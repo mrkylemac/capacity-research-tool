@@ -237,7 +237,7 @@ function SnapshotSection({
                       onClick={() => setGranularity(g)}
                       className={`flex-1 sm:flex-none px-2.5 py-1 text-xs font-medium rounded-full transition-colors ${
                         granularity === g
-                          ? 'bg-background text-foreground shadow-sm'
+                          ? 'bg-primary text-primary-foreground'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
@@ -253,7 +253,7 @@ function SnapshotSection({
                   <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
                   <XAxis
                     dataKey="label"
-                    tick={{ fill: 'var(--color-gray-4)', fontSize: 11 }}
+                    tick={{ fill: 'var(--chart-label)', fontSize: 11 }}
                     axisLine={false}
                     tickLine={false}
                   />
@@ -263,7 +263,7 @@ function SnapshotSection({
                     labelStyle={chartTooltipLabelStyle}
                     itemStyle={chartTooltipItemStyle}
                     separator=": "
-                    cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+                    cursor={{ fill: 'var(--chart-cursor)' }}
                     formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
                   />
                   <Bar dataKey="visitors" fill="var(--color-gray-2)" radius={[4, 4, 0, 0]} />
@@ -386,7 +386,7 @@ function CapacitySection({
       ];
 
   return (
-    <Card className="print-section shadow-sm">
+    <Card className="print-section">
       <CardContent className="px-4 py-4 sm:p-5">
         <CardHeader
           title="Capacity"
@@ -438,7 +438,7 @@ function CapacitySection({
                   labelStyle={chartTooltipLabelStyle}
                   itemStyle={chartTooltipItemStyle}
                   separator=": "
-                  cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+                  cursor={{ fill: 'var(--chart-cursor)' }}
                   formatter={(value: number, name: string, props: { payload: { occupancyPct: number; isPartial: boolean } }) => {
                     if (name === 'visitors') {
                       const { occupancyPct, isPartial } = props.payload;
@@ -536,7 +536,7 @@ function DemandSection({
   period: string;
 }) {
   return (
-    <Card className="print-section shadow-sm">
+    <Card className="print-section">
       <CardContent className="px-4 py-4 sm:p-5">
         <CardHeader title="Demand" />
         <DemandIntelligence

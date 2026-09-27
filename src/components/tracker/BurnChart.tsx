@@ -53,10 +53,10 @@ function fmtAUD(n: number) {
 function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-card border border-gray-2 rounded-xl shadow-2 px-3 py-2 text-sm">
+    <div className="bg-card border border-border rounded-xl px-3 py-2 text-sm">
       <p className="font-semibold text-fg-4 mb-1">{label}</p>
       {payload.map(p => (
-        <div key={p.name} className="flex items-center gap-2 text-fg-3">
+        <div key={p.name} className="flex items-center gap-2 text-muted-foreground">
           <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
           <span>{p.name === 'cumulativeBudget' ? 'Budget pace' : 'Actual spend'}</span>
           <span className="ml-auto font-medium text-fg-4">
@@ -94,25 +94,25 @@ export function BurnChart({ items }: { items: CostLineItem[] }) {
       <CardContent>
         <div className="flex gap-4 mb-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-0.5 bg-sky-3 rounded inline-block" />
+            <span className="w-3 h-0.5 rounded inline-block" style={{ background: 'var(--sky-3)' }} />
             Budget pace
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-0.5 bg-green-4 rounded inline-block" />
+            <span className="w-3 h-0.5 rounded inline-block" style={{ background: 'var(--green-4)' }} />
             Actual spend
           </span>
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <ComposedChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -8 }}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--gray-2)" />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--chart-grid)" />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 11, fill: 'var(--fg-3)', fontFamily: 'var(--font-body)' }}
+              tick={{ fontSize: 11, fill: 'var(--chart-label)', fontFamily: 'var(--font-body)' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: 'var(--fg-3)', fontFamily: 'var(--font-body)' }}
+              tick={{ fontSize: 11, fill: 'var(--chart-label)', fontFamily: 'var(--font-body)' }}
               axisLine={false}
               tickLine={false}
               tickFormatter={fmtAUD}

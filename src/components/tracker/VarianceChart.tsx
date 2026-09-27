@@ -24,9 +24,9 @@ function CustomTooltip({ active, payload, label }: TooltipProps<number, string>)
   if (!active || !payload?.length) return null;
   const v = payload[0].value as number;
   return (
-    <div className="bg-card border border-gray-2 rounded-xl shadow-2 px-3 py-2 text-sm">
+    <div className="bg-card border border-border rounded-xl px-3 py-2 text-sm">
       <p className="font-semibold text-fg-4 mb-1">{label}</p>
-      <p className={v >= 0 ? 'text-green-4' : 'text-red-4'}>
+      <p style={{ color: v >= 0 ? 'var(--green-4)' : 'var(--red-4)' }}>
         {v >= 0 ? 'Under budget' : 'Over budget'}: {fmtAUD(v)}
       </p>
     </div>
@@ -52,10 +52,10 @@ export function VarianceChart({ categories }: { categories: CategorySummary[] })
             data={data}
             margin={{ top: 0, right: 12, bottom: 0, left: 0 }}
           >
-            <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="var(--gray-2)" />
+            <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="var(--chart-grid)" />
             <XAxis
               type="number"
-              tick={{ fontSize: 11, fill: 'var(--fg-3)', fontFamily: 'var(--font-body)' }}
+              tick={{ fontSize: 11, fill: 'var(--chart-label)', fontFamily: 'var(--font-body)' }}
               axisLine={false}
               tickLine={false}
               tickFormatter={n => `$${Math.abs(n / 1000).toFixed(0)}k`}
@@ -64,11 +64,11 @@ export function VarianceChart({ categories }: { categories: CategorySummary[] })
               type="category"
               dataKey="name"
               width={96}
-              tick={{ fontSize: 12, fill: 'var(--fg-3)', fontFamily: 'var(--font-body)' }}
+              tick={{ fontSize: 12, fill: 'var(--chart-label)', fontFamily: 'var(--font-body)' }}
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--gray-a1)' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
             <Bar dataKey="variance" radius={[0, 4, 4, 0]} maxBarSize={20}>
               {data.map((entry, i) => (
                 <Cell

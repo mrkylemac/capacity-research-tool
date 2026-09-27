@@ -175,7 +175,7 @@ function ColumnsCard() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs uppercase tracking-wide text-muted-foreground">{c.finish} column</span>
                     <Button size="icon" variant="ghost" onClick={() => dispatchProject({ type: 'REMOVE_COLUMN', id: c.id })} aria-label="Remove">
-                      <Trash2 className="h-4 w-4 text-red-4" />
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

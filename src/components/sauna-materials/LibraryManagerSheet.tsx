@@ -61,7 +61,7 @@ function ProfileEditor({ profile, onChange, onRemove }: {
       <div className="flex items-center justify-between">
         <span className="text-xs uppercase tracking-wide text-muted-foreground">Profile</span>
         <Button size="icon" variant="ghost" onClick={onRemove} aria-label="Remove profile">
-          <Trash2 className="h-4 w-4 text-red-4" />
+          <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -147,7 +147,7 @@ function MaterialEditor({ material, onChange, onRemove }: {
       <div className="flex items-center justify-between">
         <span className="text-xs uppercase tracking-wide text-muted-foreground">Material</span>
         <Button size="icon" variant="ghost" onClick={onRemove} aria-label="Remove material">
-          <Trash2 className="h-4 w-4 text-red-4" />
+          <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

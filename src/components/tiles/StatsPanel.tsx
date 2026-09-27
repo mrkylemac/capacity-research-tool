@@ -17,7 +17,7 @@ export function StatsPanel({ stats, config }: StatsPanelProps) {
     stats.total === 0 ? 0 : (stats.cut / stats.total) * 100;
 
   return (
-    <div className="bg-card rounded-2xl border border-gray-2 shadow-1 p-4 space-y-4">
+    <div className="bg-card rounded-2xl border border-gray-2 p-4 space-y-4">
       <div>
         <p className="text-sm font-semibold">Deck tile count</p>
         <p className="text-xs text-muted-foreground">Top horizontal surface only</p>
@@ -40,7 +40,7 @@ export function StatsPanel({ stats, config }: StatsPanelProps) {
             <span className="text-muted-foreground"> used</span>
           </p>
         </div>
-        <div className="h-2 bg-gray-2 rounded-full overflow-hidden">
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div
             className="h-full bg-primary transition-all"
             style={{ width: `${usedAreaPct}%` }}
@@ -88,13 +88,13 @@ function KPI({
 }) {
   const toneClass =
     tone === 'good'
-      ? 'text-green-4'
+      ? 'text-fg-4'
       : tone === 'warn'
-        ? 'text-red-4'
+        ? 'text-status-error-foreground'
         : 'text-fg-4';
   return (
     <div className="bg-gray-1 rounded-lg px-3 py-2">
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-label">{label}</div>
       <div className={`text-lg font-semibold tabular-nums leading-tight ${toneClass}`}>
         {value}
       </div>

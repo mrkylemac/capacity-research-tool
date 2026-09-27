@@ -253,7 +253,7 @@ function NonMomenceNoData({ hostId, platform, onFetched }: NonMomenceNoDataProps
         type="button"
         onClick={handleFetch}
         disabled={isFetching}
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-background shadow-2 font-medium text-foreground hover:bg-gray-2 disabled:opacity-50 transition-colors ${isFetching ? '' : 'loading-pulse'}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-background border border-border font-medium text-foreground hover:bg-muted disabled:opacity-50 transition-colors ${isFetching ? '' : 'loading-pulse'}`}
       >
         <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
         {isFetching ? 'Fetching…' : 'Fetch data'}
@@ -803,7 +803,7 @@ export function ReportClient() {
             <div className="flex items-center gap-3 min-w-0">
               <Link
                 href="/"
-                className="cursor-pointer hover:opacity-70 py-1.5 px-1.5 shadow-2 bg-background rounded-md"
+                className="cursor-pointer hover:opacity-70 py-1.5 px-1.5 bg-background border border-border rounded-md"
                 aria-label="Back"
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -856,7 +856,7 @@ export function ReportClient() {
           <div className="flex items-center gap-3 min-w-0">
             <Link
               href="/"
-              className="cursor-pointer hover:opacity-70 py-1.5 px-1.5 shadow-2 bg-background rounded-md"
+              className="cursor-pointer hover:opacity-70 py-1.5 px-1.5 bg-background border border-border rounded-md"
               aria-label="Back"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -877,7 +877,7 @@ export function ReportClient() {
               type="button"
               onClick={handleSync}
               disabled={isSyncInProgress}
-              className="p-1.5 rounded-md cursor-pointer text-muted-foreground hover:text-foreground bg-background shadow-2 transition-colors disabled:opacity-40"
+              className="p-1.5 rounded-md cursor-pointer text-muted-foreground hover:text-foreground bg-background border border-border transition-colors disabled:opacity-40"
               aria-label="Refresh data"
             >
               <RefreshCw className={`h-4 w-4 ${isSyncInProgress ? 'animate-spin' : ''}`} />
@@ -917,7 +917,7 @@ export function ReportClient() {
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
+                    className="bg-background rounded-2xl border border-border flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-muted h-auto whitespace-nowrap shrink-0"
                   >
                     <span className="truncate overflow-hidden w-full text-left">
                       {selectedLocation === ALL_LOCATIONS ? 'All locations' : selectedLocation ?? 'All locations'}
@@ -925,7 +925,7 @@ export function ReportClient() {
                     <ChevronsUpDown className="h-4.5 w-4.5 opacity-50" />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2">
+                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl">
                   {[ALL_LOCATIONS, ...allLocations].map(loc => {
                     const isAll = loc === ALL_LOCATIONS;
                     const count = isAll
@@ -961,7 +961,7 @@ export function ReportClient() {
               onChange={(p) => { startTransition(() => { setPeriod(p); setSelectedTypes(new Set()); }); }}
               availableMonths={availableMonths}
               disabledValues={disabledPeriods}
-              className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto whitespace-nowrap shrink-0"
+              className="bg-background rounded-2xl border border-border flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-muted h-auto whitespace-nowrap shrink-0"
             />
 
             {/* Session type filter — shown whenever the venue has multiple session types
@@ -971,7 +971,7 @@ export function ReportClient() {
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="bg-background rounded-2xl shadow-2 flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-gray-2 hover:shadow-1 border-0 h-auto min-w-[120px] max-w-[240px]"
+                    className="bg-background rounded-2xl border border-border flex gap-2 cursor-pointer items-center justify-between px-3.5 py-2 text-base font-medium text-foreground transition-colors hover:bg-muted h-auto min-w-[120px] max-w-[240px]"
                   >
                     <span className="truncate overflow-hidden w-full text-left">
                     {selectedTypes.size === 0
@@ -984,7 +984,7 @@ export function ReportClient() {
                   </button>
                 </PopoverTrigger>
 
-                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl shadow-2 max-h-[70vh] overflow-y-auto">
+                <PopoverContent align="start" sideOffset={6} className="bg-background p-1.5 rounded-2xl max-h-[70vh] overflow-y-auto">
                   <button
                     type="button"
                     onClick={() => startTransition(() => setSelectedTypes(new Set()))}

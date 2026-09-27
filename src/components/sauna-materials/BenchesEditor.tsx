@@ -159,7 +159,7 @@ function SlatDepthPanel({
           {slatProfile.name} · {slatProfile.faceWidth}×{slatProfile.thickness}mm
         </p>
         {isBox && (
-          <span className="text-[10px] font-medium text-violet-600 bg-violet-50 border border-violet-200 rounded-full px-2 py-0.5 shrink-0">
+          <span className="text-[10px] font-medium text-status-info-foreground bg-status-info border border-status-info-border rounded-full px-2 py-0.5 shrink-0">
             Box construction
           </span>
         )}
@@ -230,7 +230,7 @@ function MaterialEfficiencyNote() {
 
   if (sameProfile) {
     return (
-      <div className="rounded-lg bg-violet-50 border border-violet-200 px-3 py-2.5 text-[11px] text-violet-700 leading-relaxed">
+      <div className="rounded-lg bg-status-info border border-status-info-border px-3 py-2.5 text-[11px] text-status-info-foreground leading-relaxed">
         <span className="font-semibold">Same profile for walls and benches</span>
         {' '}— ordering from a single run maximises board yield and ensures a perfect colour match.
         Vertical cladding cut-offs can feed directly into bench slats.
@@ -240,7 +240,7 @@ function MaterialEfficiencyNote() {
 
   if (sameFaceWidth && sameSpecies) {
     return (
-      <div className="rounded-lg bg-violet-50 border border-violet-200 px-3 py-2.5 text-[11px] text-violet-700 leading-relaxed">
+      <div className="rounded-lg bg-status-info border border-status-info-border px-3 py-2.5 text-[11px] text-status-info-foreground leading-relaxed">
         <span className="font-semibold">
           Walls and benches share the same face width ({wallProfile.faceWidth} mm) and species.
         </span>
@@ -369,7 +369,7 @@ export function BenchesEditor() {
                       onClick={() => dispatchProject({ type: 'REMOVE_BENCH', id: b.id })}
                       aria-label="Remove bench"
                     >
-                      <Trash2 className="h-4 w-4 text-red-4" />
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
 
@@ -496,7 +496,7 @@ export function BenchesEditor() {
                           onClick={() => deactivateSlatMode(b.id)}
                           className={`px-3 py-1 transition-colors ${
                             !slatMode
-                              ? 'bg-primary text-white'
+                              ? 'bg-primary text-primary-foreground'
                               : 'text-muted-foreground hover:text-fg-4'
                           }`}
                         >
@@ -507,7 +507,7 @@ export function BenchesEditor() {
                           onClick={() => activateSlatMode(b)}
                           className={`px-3 py-1 transition-colors ${
                             slatMode
-                              ? 'bg-primary text-white'
+                              ? 'bg-primary text-primary-foreground'
                               : 'text-muted-foreground hover:text-fg-4'
                           }`}
                         >

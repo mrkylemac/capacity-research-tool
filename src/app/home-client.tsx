@@ -56,13 +56,13 @@ export function HomeClient() {
 
         {/* Financial Tracker entry point */}
         {/* <Link href="/tracker" className="block mb-6">
-          <Card className="bg-purple-1 border-purple-2 rounded-2xl shadow-1 hover:shadow-2 transition-shadow">
+          <Card className="bg-status-info border-status-info-border rounded-2xl hover:bg-accent transition-colors">
             <CardContent className="p-4 flex items-center justify-between">
               <div>
-                <p className="font-semibold text-purple-4">Financial Tracker</p>
+                <p className="font-semibold text-status-info-foreground">Financial Tracker</p>
                 <p className="text-sm text-muted-foreground mt-0.5">CapEx burn · Forecast vs actual · Signals</p>
               </div>
-              <span className="text-purple-4 text-lg">→</span>
+              <span className="text-status-info-foreground text-lg">→</span>
             </CardContent>
           </Card>
         </Link> */}
@@ -73,7 +73,7 @@ export function HomeClient() {
           {visibleVenues.map((venue) => (
             <Card
               key={venue.id}
-              className="cursor-pointer transition-colors bg-background rounded-2xl shadow-2"
+              className="cursor-pointer transition-colors hover:bg-accent"
               onClick={() => router.push(`/report?hostId=${venue.id}&platform=${venue.platform}`)}
             >
               <CardContent className="p-0">

@@ -11,11 +11,11 @@ import { useCapExData }       from '@/hooks/useSheets';
 
 function DemoDataBanner() {
   return (
-    <div className="bg-amber-1 border border-amber-3 rounded-xl px-4 py-3 text-sm text-amber-4 mb-4">
+    <div className="bg-status-warning border border-status-warning-border rounded-xl px-4 py-3 text-sm text-status-warning-foreground mb-4">
       <span className="font-semibold">Demo data</span> — set{' '}
-      <code className="font-mono bg-amber-2 px-1 rounded">GOOGLE_SHEETS_API_KEY</code> and{' '}
-      <code className="font-mono bg-amber-2 px-1 rounded">GOOGLE_SHEETS_SPREADSHEET_ID</code>{' '}
-      in <code className="font-mono bg-amber-2 px-1 rounded">.env.local</code> to connect your workbook.
+      <code className="font-mono bg-card/60 px-1 rounded">GOOGLE_SHEETS_API_KEY</code> and{' '}
+      <code className="font-mono bg-card/60 px-1 rounded">GOOGLE_SHEETS_SPREADSHEET_ID</code>{' '}
+      in <code className="font-mono bg-card/60 px-1 rounded">.env.local</code> to connect your workbook.
     </div>
   );
 }
@@ -36,7 +36,7 @@ function LoadingState() {
 
 function ErrorState({ message }: { message: string }) {
   return (
-    <div className="bg-red-1 border border-red-3 rounded-xl px-4 py-4 text-sm text-red-4">
+    <div className="bg-status-error border border-status-error-border rounded-xl px-4 py-4 text-sm text-status-error-foreground">
       <p className="font-semibold">Failed to load data</p>
       <p className="mt-1 text-muted-foreground">{message}</p>
     </div>
@@ -53,7 +53,7 @@ export function TrackerClient() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-1 text-purple-4 border border-purple-2 tracking-wide uppercase">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-status-info text-status-info-foreground border border-status-info-border tracking-wide uppercase">
               CapEx
             </span>
           </div>

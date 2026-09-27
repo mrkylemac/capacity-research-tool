@@ -363,7 +363,7 @@ export function OperatingModel({ sessions, metrics, hostId }: OperatingModelProp
   const hasMembershipSignal = overbooking.pct >= 2;
 
   return (
-    <Card className="print-section shadow-sm">
+    <Card className="print-section">
       <CardContent className="px-4 py-4 sm:p-5">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

@@ -167,8 +167,8 @@ bg-card · bg-gray-1 · border-gray-2 · shadow-1
 text-fg-3 · text-fg-4 · text-muted-foreground
 rounded-2xl · section-animate
 page-container · data-table
-Colors: purple-1/2/3/4 · amber-1..4 · green-4 · red-4 · sky-4
-Font: "Open Runde" (woff2, 400/500/600/700)
+Colors: status-info · status-build · status-warning · status-error · status-success (fill, -foreground, -border)
+Font: "ABC Camera Plain" (variable woff2, 400/500/700; semibold renders 500)
 ```
 
 ## Important constants
