@@ -287,6 +287,25 @@ export function PricingTable({ pricing }: { pricing: VenuePricingConfig }) {
         </div>
       )}
 
+      {/* Offers — promotions and concessions with conditions attached. */}
+      {pricing.offers && pricing.offers.length > 0 && (
+        <div className="border border-border rounded-lg overflow-hidden mb-3">
+          <div className="grid grid-cols-[1fr_auto] text-[11px] font-medium text-muted-foreground bg-muted/40 px-3 py-2">
+            <span>Offers</span>
+            <span className="text-right">Price</span>
+          </div>
+          {pricing.offers.map(o => (
+            <div key={o.label} className="grid grid-cols-[1fr_auto] items-start px-3 py-2.5 text-sm border-t border-border first:border-t-0 gap-3">
+              <div>
+                <p className="font-medium">{o.label}</p>
+                {o.description && <p className="text-xs text-muted-foreground mt-0.5">{o.description}</p>}
+              </div>
+              <span className="tabular-nums text-right whitespace-nowrap">{o.price}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {pricing.note && (
         <p className="text-xs text-muted-foreground">{pricing.note}</p>
       )}

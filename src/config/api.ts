@@ -57,11 +57,23 @@ export interface VenuePricingHire {
   description?: string;
 }
 
+export interface VenuePricingOffer {
+  label: string;
+  /** Formatted price, e.g. '$45 for two'. */
+  price: string;
+  description?: string;
+}
+
 export interface VenuePricingConfig {
   tiers: VenuePricingTier[];
   memberships?: VenueMembership[];
   /** Whole-venue or group hire, charged per booking rather than per visit. */
   privateHire?: VenuePricingHire[];
+  /**
+   * Promotions and concessions (e.g. a 2-for-1 day, a kids' rate). Kept apart
+   * from the tier ladder because they carry conditions the casual rate doesn't.
+   */
+  offers?: VenuePricingOffer[];
   note?: string;
   /** Currency prefix for tier rates (e.g. 'CHF '). Defaults to '$'. */
   currency?: string;
@@ -256,9 +268,15 @@ export const VENUES: VenueConfig[] = [
         { label: 'Revive (Shared)', price: '$140 / week', description: '14 sessions per week, shared with a partner, child, parent or sibling' },
       ],
       privateHire: [
-        { label: 'Private group, Mon–Fri 7am–2pm', price: '$1,150', description: '2-hour whole-venue booking' },
-        { label: 'Private group, Mon–Fri from 2pm', price: '$1,350', description: '2-hour whole-venue booking' },
-        { label: 'Private group, Sat & Sun', price: '$1,650', description: '2-hour whole-venue booking' },
+        { label: 'Private group, Mon–Fri 7am–2pm', price: '$1,150', description: '2-hour whole-venue booking, up to 30 guests' },
+        { label: 'Private group, Mon–Fri from 2pm', price: '$1,350', description: '2-hour whole-venue booking, up to 30 guests' },
+        { label: 'Private group, Sat & Sun', price: '$1,650', description: '2-hour whole-venue booking, up to 30 guests' },
+      ],
+      // Re-read from /passes and bmsauna.com.au on 2026-09-29; the rest of the
+      // price list was unchanged from the 2026-08-06 capture.
+      offers: [
+        { label: '2-for-1 Thursdays', price: '$45 for two', description: 'Two people, same Thursday session ($22.50 each). Buy Fri–Wed only, valid 2 months, no rollover, not combinable with memberships or packs' },
+        { label: 'Kids under 18', price: '$20', description: 'In-store purchase only' },
       ],
       note: 'Off-peak is Mon–Fri 7am–9pm and weekends 7am–10am; peak is weekends from 10am and public holidays. Punchpass sells packs rather than per-session tickets, so revenue in this report is modelled on the casual rate and will overstate what a regular pack or membership customer actually pays.',
     },
