@@ -7,7 +7,7 @@
     "from": "2026-08-14T07:00:00.000Z",
     "to": "2026-10-04T10:00:00.000Z"
   },
-  "cachedAt": "2026-10-02T08:31:47.969Z",
+  "cachedAt": "2026-10-02T08:46:43.845Z",
   "sessions": [
     {
       "id": "navia-1-2026-08-14T07:00:00.000Z",
@@ -16044,8 +16044,8 @@
       "startsAt": "2026-10-02T08:00:00.000Z",
       "endsAt": "2026-10-02T09:00:00.000Z",
       "durationMinutes": 60,
-      "capacity": 29,
-      "ticketsSold": 19,
+      "capacity": 22,
+      "ticketsSold": 18,
       "fixedTicketPrice": 0,
       "location": "Prahran",
       "inPerson": true,
@@ -16057,7 +16057,7 @@
         "ticketsSold": 20,
         "source": "slot-feed",
         "reason": "room-full-read-as-sold",
-        "note": "We recorded 20 and Navia has 19. The room was nearly full when we read it, and the slot feed reports a full room as seats sold, so ours was most likely an overcount rather than cancellations. Navia's figure is used, decided 2026-09-13. Our count is kept here so that can be revisited.",
+        "note": "We recorded 20 and Navia has 18. The room was nearly full when we read it, and the slot feed reports a full room as seats sold, so ours was most likely an overcount rather than cancellations. Navia's figure is used, decided 2026-09-13. Our count is kept here so that can be revisited.",
         "decidedOn": "2026-09-13"
       }
     },
@@ -16100,7 +16100,7 @@
       "endsAt": "2026-10-02T12:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 8,
-      "ticketsSold": 2,
+      "ticketsSold": 5,
       "fixedTicketPrice": 0,
       "location": "Prahran",
       "inPerson": true,
