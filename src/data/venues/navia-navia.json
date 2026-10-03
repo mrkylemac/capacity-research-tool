@@ -7,7 +7,7 @@
     "from": "2026-08-14T07:00:00.000Z",
     "to": "2026-11-06T10:00:00.000Z"
   },
-  "cachedAt": "2026-10-03T06:16:38.013Z",
+  "cachedAt": "2026-10-03T06:31:40.686Z",
   "sessions": [
     {
       "id": "navia-1-2026-08-14T07:00:00.000Z",
@@ -38643,6 +38643,23 @@
       "confidence": "low"
     },
     {
+      "id": "navia-2-2026-09-30T06:45:00.000Z",
+      "sessionName": "Bathing",
+      "startsAt": "2026-09-30T06:45:00.000Z",
+      "endsAt": "2026-09-30T07:45:00.000Z",
+      "durationMinutes": 60,
+      "capacity": 0,
+      "ticketsSold": 0,
+      "fixedTicketPrice": 0,
+      "location": "Prahran",
+      "inPerson": true,
+      "utilisationKnown": false,
+      "capacitySource": "unknown",
+      "soldSource": "unknown",
+      "measure": "seats",
+      "confidence": "low"
+    },
+    {
       "id": "navia-1-2026-09-30T07:00:00.000Z",
       "sessionName": "Bathing",
       "startsAt": "2026-09-30T07:00:00.000Z",
@@ -39745,15 +39762,16 @@
       "startsAt": "2026-10-03T08:00:00.000Z",
       "endsAt": "2026-10-03T09:00:00.000Z",
       "durationMinutes": 60,
-      "capacity": 24,
-      "ticketsSold": 12,
+      "capacity": 0,
+      "ticketsSold": 0,
       "fixedTicketPrice": 0,
       "location": "Prahran",
       "inPerson": true,
-      "capacitySource": "derived-grid",
-      "soldSource": "derived-grid",
+      "utilisationKnown": false,
+      "capacitySource": "unknown",
+      "soldSource": "unknown",
       "measure": "seats",
-      "confidence": "medium"
+      "confidence": "low"
     },
     {
       "id": "navia-2-2026-10-03T09:00:00.000Z",
@@ -39778,7 +39796,7 @@
       "endsAt": "2026-10-03T11:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 32,
-      "ticketsSold": 1,
+      "ticketsSold": 0,
       "fixedTicketPrice": 0,
       "location": "Prahran",
       "inPerson": true,
@@ -40003,7 +40021,7 @@
       "endsAt": "2026-10-04T04:00:00.000Z",
       "durationMinutes": 60,
       "capacity": 32,
-      "ticketsSold": 2,
+      "ticketsSold": 3,
       "fixedTicketPrice": 0,
       "location": "Prahran",
       "inPerson": true,
