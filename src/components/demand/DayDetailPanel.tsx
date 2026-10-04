@@ -105,7 +105,11 @@ function MonthlyGroupedList({ groups }: { groups: MonthGroup[] }) {
   const toggle = (key: string) =>
     setExpanded(prev => {
       const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
       return next;
     });
 
@@ -118,6 +122,8 @@ function MonthlyGroupedList({ groups }: { groups: MonthGroup[] }) {
           <div key={month.monthKey}>
             <button
               type="button"
+              aria-expanded={isOpen}
+              aria-label={`${month.monthLabel}: ${month.avgOccupancyPct.toFixed(0)}% average occupancy. Click to ${isOpen ? 'collapse' : 'expand'}`}
               onClick={() => toggle(month.monthKey)}
               className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left cursor-pointer hover:opacity-80 active:scale-[0.98] transition-[opacity,transform]"
             >

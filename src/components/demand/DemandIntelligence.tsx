@@ -189,6 +189,8 @@ export function DemandIntelligence({ sessions, metrics, selectedDate }: DemandIn
               <div key={d.name}>
                 <button
                   type="button"
+                  aria-expanded={isExpanded}
+                  aria-label={`${d.name}: ${d.visitors > 0 ? `${d.visitors.toLocaleString()} guests` : 'No guests'}. Click to ${isExpanded ? 'collapse' : 'expand'} hourly breakdown`}
                   onClick={() => setExpandedDay(isExpanded ? null : d.name)}
                   className="relative h-8 rounded-lg overflow-hidden flex items-center px-3 w-full text-left cursor-pointer hover:opacity-80 active:scale-[0.98] transition-[opacity,transform]"
                 >
